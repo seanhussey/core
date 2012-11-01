@@ -1,0 +1,30 @@
+- @window_title = "Asset Library"
+- @page_title = "#{link_to "Asset Library", admin_asset_category_path(:category => 'all' , :page => 1 )} > Add asset"
+
+.row-fluid
+  = render :partial => "/gluttonberg/admin/asset_library/shared/sidebar"
+  .span9
+    .row-fluid
+      .page-header
+        %h1
+          = @page_title.html_safe
+
+
+      .tabbable
+
+      %ul.nav.nav-tabs
+        %li.active
+          %a{:href => "#{new_admin_asset_path}" }
+            Add Asset
+        %li
+          %a{:href => "#{admin_add_assets_in_bulk_path}"  }
+            Add Assets in Bulk
+      .tab-content
+        .tab-pane.active#add
+          .pad
+            %legend File
+            = render :partial => "form" , :locals => { :url_opts =>{ :action => :create } , :method_name => "post" }
+        .tab-pane#bulk
+          .pad
+
+

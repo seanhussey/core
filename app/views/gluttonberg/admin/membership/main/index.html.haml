@@ -1,0 +1,11 @@
+- @page_title = "Membership"
+
+.row-fluid
+  = render :partial => "/gluttonberg/admin/membership/main/sidebar"
+  .span9
+    .row-fluid
+      %ul#iconNav
+        %li
+          = link_to("All Members", admin_membership_members_path, :id => "membersNav" , :title => "All Members")
+        %li
+          = link_to("Groups", admin_membership_groups_path, :id => "groupsNav", :title => "Groups")

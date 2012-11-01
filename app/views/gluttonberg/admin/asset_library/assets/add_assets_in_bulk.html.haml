@@ -1,0 +1,51 @@
+- @window_title = "Asset Library"
+- @page_title = "#{link_to "Asset Library", admin_asset_category_path(:category => 'all' , :page => 1 )} > Add assets in bulk"
+
+.row-fluid
+  = render :partial => "/gluttonberg/admin/asset_library/shared/sidebar"
+  .span9
+    .row-fluid
+      .page-header
+        %h1
+          = @page_title.html_safe
+
+      .tabbable
+
+      %ul.nav.nav-tabs
+        %li
+          %a{:href => "#{new_admin_asset_path}"}
+            Add Asset
+        %li.active
+          %a{:href => "#{admin_add_assets_in_bulk_path}"  }
+            Add Assets in Bulk
+      .tab-content
+        .tab-pane#add
+          .pad
+        .tab-pane.active#bulk
+          .pad
+            = form_for( @asset , :as => :asset , :url => { :action => :create_assets_in_bulk } ,  :html => { :multipart=>true  , :method => "post", :id => 'asset_bulk',  :class => "nosubnav validation"} ) do |asset_form|
+              = gb_error_messages_for(@asset)
+
+              = render :partial => "collection_select_form" , :locals => {:asset_form => asset_form }
+
+              = block("File") do
+                = asset_form.label :file , "Please upload a zip folder. System will automatically give names to assets based on file names"
+                = asset_form.file_field(:file , :class => "required")
+
+                %br
+
+              = form_controls(admin_assets_url)
+
+
+      / = form_for( @asset , :as => :asset , :url => { :action => :create_assets_in_bulk } ,  :html => { :multipart=>true  , :method => "post", :class => "nosubnav validation"} ) do |asset_form|
+      /   = gb_error_messages_for(@asset)
+      /
+      /   = render :partial => "collection_select_form" , :locals => {:asset_form => asset_form }
+      /
+      /   = block("File") do
+      /     = asset_form.label :file , "Please upload a zip folder. System will automatically give names to assets based on file names"
+      /     = asset_form.file_field(:file , :class => "required")
+      /
+      /     %br
+      /
+      /   = form_controls(admin_assets_url)

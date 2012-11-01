@@ -1,0 +1,31 @@
+.row-fluid
+  = form_for(  @asset , :as => :asset , :url => url_opts ,  :html => { :multipart=>true  , :method => method_name, :class => "nosubnav validation"} ) do |asset_form|
+    = gb_error_messages_for(@asset)
+  
+    - unless @asset.thumb_large_url.blank?
+      %p
+        %img{:src => @asset.thumb_large_url}
+      %p
+    .row-fluid
+      .span6
+        %legend Upload
+        %p
+          = asset_form.label :file , "File to upload"
+          = asset_form.file_field(:file , :class => "#{action_name == "new" ? 'required' : ''}")
+        %p
+          = asset_form.label :name , "Name"
+          = asset_form.text_field(:name, :class => "large required" , :maxlength => 255)
+        %p
+          = asset_form.label :alt , "Description"
+          = asset_form.text_field(:alt, :class => "large" , :maxlength => 255 )
+      .span6
+        - if Rails.configuration.enable_gallery == true
+          .help
+            "Description" field is also used for image caption in photo galleries.
+        = render :partial => "collection_select_form" , :locals => {:asset_form => asset_form }
+          
+    .row-fluid
+      .span6
+        %legend Publish
+        .controls{:class => "#{ method_name == "put" ? '' : 'center-new' }"}
+          = form_controls(admin_assets_url)

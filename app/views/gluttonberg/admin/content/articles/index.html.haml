@@ -1,0 +1,64 @@
+- @page_title = "#{link_to "Blogs", admin_blogs_path} >  #{@blog.name}".html_safe
+
+.row-fluid
+  = render :partial => "/gluttonberg/admin/content/main/sidebar"
+  .span9
+    .row-fluid
+      .page-header
+        %h1
+          = @page_title
+      .subnav
+        = sub_nav do
+          = nav_link('Add New Post', new_admin_blog_article_path)
+
+      - if @articles.empty?
+        %p.empty No Articles
+      - else
+        %table{:cellpadding => 0, :cellspacing => 0, :summary => "Articles" , :class => "table table-bordered "}
+          %thead
+            %tr
+              %th
+                Article
+              %th
+                Comments
+              %th
+                Author
+              %th
+                Created By
+              %th.controls
+
+          %tbody
+            - @articles.each do |article|
+              %tr{ :class => "#{cycle("even", "odd")}"}
+                %td{:style => "width:40%;"}
+                  = link_to "#{article.title}", edit_admin_blog_article_path(@blog, article)
+                %td{:style => "width:15%;"}
+                  = link_to(pluralize(article.comments.size, "comment"), admin_blog_article_comments_path(@blog, article))
+                %td{:style => "width:10%"}
+                  = article.author.full_name
+                %td{:style => "width:15%"}
+                  = article.publishing_status
+                  - unless article.published_at.blank?
+                    %br
+                    %span.date
+                      = article.published_at.strftime("%d/%m/%Y")
+                %td.controls{:style => "width:30%"}
+                  .btn-group
+                    %a{ :class => "btn dropdown-toggle" , "data-toggle" => "dropdown" , :href => "#"}
+                      Actions
+                      %span.caret
+                    %ul.dropdown-menu
+                      %li
+                        = link_to "Edit", edit_admin_blog_article_path(@blog, article) , :class => " "
+
+
+                      %li.divider
+                      %li= link_to("Duplicate", duplicate_admin_blog_article_path( @blog, article), :class => "")
+
+                      - if can? :destroy , Gluttonberg::Article
+                        %li.divider
+                        %li.danger
+                          = link_to "Delete", delete_admin_blog_article_path(@blog, article) , :class => ""
+
+
+        = will_paginate(@articles)

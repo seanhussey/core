@@ -1,0 +1,27 @@
+// This page needs to be edited accordingly to suit your content
+
+- @window_title = "Content"
+- @page_title = "#{link_to("<%= plural_class_name %>", admin_<%= plural_name %>_path)} > #{@<%= singular_name %>.title_or_name?}"
+
+= sub_nav do
+  = nav_link("Edit", edit_admin_<%= singular_name %>_path(@<%= singular_name %>))
+  - if can? :destroy , <%= class_name %>
+    = nav_link("Delete", delete_admin_<%= singular_name %>_path(@<%= singular_name %>))
+
+%div#show_wrapper
+  %div.pageBlock
+    %dl
+    <% attributes.each do |attribute| -%>
+  %dt <%= attribute.name %>
+      %dd #{@<%= singular_name %>.<%= attribute.name %>.humanize}
+    <% end %>
+
+  %dl.meta
+    %dt
+      Created at
+    %dd
+      = @<%= singular_name %>.created_at.to_s(:long)
+    %dt
+      Updated at
+    %dd
+      = @<%= singular_name %>.updated_at.to_s(:long)

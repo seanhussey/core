@@ -1,0 +1,40 @@
+- breadcrumbs_val = "?previous_page_title=Recent&return_url=#{admin_library_path}?tab=recent"
+
+- if assets.blank?
+  %ul.assetList
+    %li
+- else
+  %table{:id => 'assets_table', :class => 'table table-bordered', :cellpadding => 0, :cellspacing => 0, :rel => "" , :summary => "Assets" }
+    %thead
+      %tr
+        %th{:width => 170}
+        %th Title
+        %th{:class => "author", :width => 80} File Type
+        %th{:class => "author", :width => 80} Author
+        %th{:class => "date", :style => 'width: 20%'}
+          Date added
+        %th{:style => 'width: 20%'}
+    %tbody
+      - for asset in assets
+        %tr
+          %td
+            %a{:href => admin_asset_url(asset), :class => "thumbnail"}
+              %img{:src => asset.thumb_small_url  }
+          %td
+            %a{:href => admin_asset_url(asset)+breadcrumbs_val, :class => "assetLink"}
+              = asset.name
+              
+          %td.author
+            = asset.asset_type.name      
+          %td.author
+            = asset.user.full_name
+          %td.date
+            = date_format(asset.created_at)
+          %td
+            %span.controls
+              %a{:href => edit_admin_asset_url(asset)+breadcrumbs_val, :class => "assetLink btn"}
+                Edit  
+              %a{:href => crop_admin_asset_url(asset)+breadcrumbs_val, :class => "assetLink btn"}
+                Crop
+              %a{:href => delete_admin_asset_url(asset) +breadcrumbs_val, :class => "assetLink btn btn-danger"}
+                Delete

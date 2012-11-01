@@ -1,0 +1,12 @@
+- unless flash.blank?
+  - flash.each do |name, msg|
+    - class_name = name
+    - if name.to_s == "notice"
+      - class_name = "success"
+    - elsif name.to_s == "warning"
+      - class_name = ""
+      
+    .page_flash#flash.alert.alert-block{:class => "alert-#{class_name}"}
+      %a.close{ "data-dismiss" => "alert" , :href=>"#"}
+        &times;
+      = msg

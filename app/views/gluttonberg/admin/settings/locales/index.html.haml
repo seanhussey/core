@@ -1,0 +1,35 @@
+- @window_title = "Settings"
+- @page_title = "#{link_to "Settings", admin_settings_path} > Locales"
+
+.row-fluid
+  = render :partial => "/gluttonberg/admin/settings/main/sidebar"
+  .span9
+    .row-fluid
+      .page-header
+        %h1
+          = @page_title.html_safe
+      .subnav
+        = sub_nav do
+          = nav_link('New', new_admin_locale_path)
+
+      - if @locales.empty?
+        %p.empty No locales
+      - else
+        %table{:cellpadding => 0, :cellspacing => 0, :summary => "List of Locales", :class => "table table-bordered"}
+          %thead
+            %tr
+              %th Locale
+              %th Slug
+              %th Type
+              %th.controls Controls
+          %tbody
+            - i = 0
+            - for locale in @locales
+              - i += 1
+              %tr{ :class => "#{i % 2 == 0? "even" : ""}"}
+                %td= locale.name
+                %td= locale.slug
+                %td= locale.slug_type.humanize
+                %td.controls
+                  = link_to('Edit', edit_admin_locale_path(locale), :class => "btn")
+                  = link_to "Delete", delete_admin_locale_path(locale), :class => "btn btn-danger"

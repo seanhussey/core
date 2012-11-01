@@ -1,0 +1,563 @@
+//
+  gb_skin
+
+.container-fluid .row-fluid 
+  min-size: 960px !important
+
+a.brand-img 
+  background: url(/assets/gb_logo_top.png) no-repeat 15px 6px
+  text-indent: -9999px
+  float: left
+  display: block
+  font-size: 20px
+  font-weight: 200
+  line-height: 1
+  color: white
+  height: 30px
+  margin-left: -20px
+  width: 115px
+  padding: 0
+  
+.navbar .brand 
+  float: left
+  display: block
+  margin-left: 10px
+  font-size: 14px
+  font-weight: normal
+  line-height: 40px
+  color: #fff
+  padding: 0
+  
+  
+body
+  :padding
+    :top 160px !important
+  background: url(/assets/bg.png) repeat
+	
+.navbar-fixed-top 
+  z-index: 1035
+  
+.navbar-inner
+  background-color: #333
+  background-image: -moz-linear-gradient(top, #555, #333)
+  background-image: -ms-linear-gradient(top, #555, #333)
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#555), to(#333))
+  background-image: -webkit-linear-gradient(top, #555, #333)
+  background-image: -o-linear-gradient(top, #555, #333)
+  background-image: linear-gradient(top, #555, #333)
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#555555', endColorstr='#333333', GradientType=0)
+  -webkit-box-shadow: 0 2px 0px rgba(0, 0, 0, 0.2), inset 0 -1px 0 rgba(0, 0, 0, 0.2)
+  -moz-box-shadow: 0 2px 0px rgba(0, 0, 0, 0.2), inset 0 -1px 0 rgba(0, 0, 0, 0.2)
+  box-shadow: 0 2px 0px rgba(0, 0, 0, 0.2), inset 0 -1px 0 rgba(0, 0, 0, 0.2)
+
+.navbar-inner img
+  float: left
+  margin: 5px 0 0 0
+  border-radius: 2px
+  
+.navbar-main
+  top: 40px
+  position: fixed
+  z-index: 1033
+  right: 0
+  left: 0
+  background: #f15d5e
+  box-shadow: inset 0 -2px 0px #D35152
+  -webkit-box-shadow: inset 0 -2px 0px #D35152
+  -moz-box-shadow: inset 0 -2px 0px #D35152
+
+  .nav
+    margin: 0px
+    padding: 0px
+    height: 80px
+	
+    li
+      float: left
+      width: 130px
+      height: 80px
+      
+      a
+        display:block
+        color: #fff
+        font-size: 14px
+        font-weight: bold
+        text-align: center
+        padding: 55px 0px 11px 0px
+        line-height: 1em
+        background-position: 50% 100%
+        background-repeat: no-repeat
+        
+      a:hover, a.active
+        background-color: #d35152
+        background-position: 50% 0
+        background-repeat: no-repeat
+      
+      a#dashboard_nav
+        background-image: url('/assets/icon_dashboard.png')
+      
+      a#content_nav
+        background-image: url('/assets/icon_content.png')
+	      
+      a#library_nav
+        background-image: url('/assets/icon_library.png')
+        
+      a#membership_nav
+        background-image: url('/assets/icon_members.png')
+        
+      a#settings_nav
+        background-image: url('/assets/icon_settings.png')
+        
+.dash-left
+  background: #fff
+  height: 100%
+  margin: 0
+  
+  
+.page-header
+  margin: 0 0 18px 0
+  
+.well.sidebar-nav 
+  background: white
+  border: 1px solid #DDD
+  box-shadow: none
+  
+.nav-list > .active > a, .nav-list > .active > a:hover 
+  color: white
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2)
+  background-color: #83A2B2
+  padding: 3px 10px 3px 35px
+  background-position: 15px -32px  !important
+  
+.nav-list > li > a
+  padding: 3px 10px 3px 35px
+  background-image: url(/assets/icon_default.png) 
+  background-position: 15px 5px 
+  background-repeat: no-repeat
+
+.nav-list a.blog
+  background-image: url(/assets/icon_blog.png) 
+  background-position: 15px 5px 
+  background-repeat: no-repeat
+
+.nav-list a.pages
+  background-image: url(/assets/icon_pages.png) 
+  background-position: 15px 5px 
+  background-repeat: no-repeat
+  
+.nav-list a#groupsNav
+  background-image: url(/assets/icon_member.png) 
+  background-position: 15px 5px 
+  background-repeat: no-repeat
+    
+.nav-list a#membersNav
+  background-image: url(/assets/icon_member.png) 
+  background-position: 15px 5px 
+  background-repeat: no-repeat
+  
+.nav-list a.upload
+  background-image: url(/assets/icon_upload.png) 
+  background-position: 15px 5px 
+  background-repeat: no-repeat
+  
+.nav-list a.collections
+  background-image: url(/assets/icon_collection.png) 
+  background-position: 15px 5px 
+  background-repeat: no-repeat
+  
+.nav-list a.assets
+  background-image: url(/assets/icon_asset.png) 
+  background-position: 15px 5px 
+  background-repeat: no-repeat
+  
+.nav-list a.active
+  background-position: 15px -32px 
+  background-repeat:no-repeat
+
+.dashboard.well
+  background-color: #fff
+
+.dashboard .nav-list 
+  margin: 0
+  padding: 0
+
+.dashboard a
+  display: block
+  margin: 0 0 3px 0
+ 
+.dashboard a.edit
+  background-image: url(/assets/icon_blog.png) 
+
+.dashboard a.add
+  background-image: url(/assets/icon_add.png) 
+  
+
+
+a
+  color: #83A2B2
+  
+a:hover
+  color: #728d9b
+  
+
+h1  
+  color: #333
+
+h1 a
+  color: #f15d5e
+
+h1 a:hover
+  text-decoration: none
+  
+input, textarea
+  display: block
+  
+label
+  display: inline-block
+  
+input[type="radio"], input[type="checkbox"]
+  display: inline-block
+  float: left
+  margin: 3px 5px 3px 0
+
+select
+  display: block
+  
+legend
+  margin-bottom: 15px  
+  
+input:focus, textarea:focus, select:focus
+  border-color: rgba(0, 0, 0, 0.3)
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 0, 0, 0.2)
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 0, 0, 0.2)
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 0, 0, 0.2)
+  outline: 0
+
+.btn-success, .btn-primary 
+  background-color: #96bacc
+  background-image: -moz-linear-gradient(top, #83a2b2, #627985)
+  background-image: -ms-linear-gradient(top, #83a2b2, #627985)
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#83a2b2), to(#627985))
+  background-image: -webkit-linear-gradient(top, #83a2b2, #627985)
+  background-image: -o-linear-gradient(top, #83a2b2, #627985)
+  background-image: linear-gradient(top, #83a2b2, #627985)
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#83a2b2', endColorstr='#627985', GradientType=0)
+  border-color: #83a2b2 #83a2b2 #556a74
+      
+.btn-success:hover, .btn-success:active, .btn-primary:hover, .btn-primary:active,  .btn-success.active, .btn-success.disabled, .btn-success[disabled]
+  background-color: #627985
+
+.comment
+  background: white
+  border: 1px solid #DDD
+  padding: 10px 15px
+  word-wrap: break-word
+  margin: 0 0 10px 0
+  -webkit-border-radius: 4px
+  -moz-border-radius: 4px
+  border-radius: 4px
+
+.comment hr
+  margin: 5px 0
+  
+.comment .controls
+  text-align: right
+  
+span.date
+  color: #999
+
+#asset_search_form, #list_search_form
+  input
+    display: inline-block
+  input.button 
+    background: #83A2B2
+    color: white
+    border: none
+    padding: 5px 10px
+  input.button:hover
+    background: #728d9b
+    color: #fff
+
+.table-bordered
+  background: #fff
+  
+.meta_body
+  dl
+    :width 100%
+    :margin 0
+  dt, dd
+    :width 42%
+    :float left
+    :margin 0 0 5px 0
+    :display block
+    :border-top 1px dotted #eee
+    :padding-top 10px
+  dt:first-child, dd:nth-child(2)
+    :border-top none
+    :padding-top 0
+     
+    
+      
+#login
+  img
+    :float left
+    :margin -5px 10px 0 0
+  
+  #form.well
+    :margin 10px 0
+    
+    .alert
+      .error-title
+        :font
+          :size 14px
+        :margin
+          :bottom 10px
+          
+    form
+      :margin 0
+            
+      input.span4
+        :width 420px
+        
+form
+  .span5
+    :margin 0 !important
+    :width 520px
+    
+    input[type="text"]
+      :width 510px
+      
+    textarea
+      :width 510px
+      :height 200px
+td
+  a.thumbnail
+    :background #ffffff
+    :width 160px
+  
+ul.thumbnails
+  p 
+    :margin 9px 0 0 !important
+    
+.modal
+  :position fixed !important
+  :top 50%
+  :left 50%
+
+.progress
+  :width 200px
+  :position fixed
+  :top 50%
+  :left 50%
+  :margin
+    :top -100px
+    :left -100px
+    
+    
+.ui-draggable
+  background: url('/assets/drag_handle.png') no-repeat
+  width: 11px
+  height: 10px
+  display: block
+  float: left
+  margin: 2px 15px 0 0
+  cursor: move
+  &.home, &.page
+    background: url('/assets/drag_handle.png') no-repeat
+    width: 11px
+    height: 10px
+    display: block
+    float: left
+    margin: 2px 15px 0 0
+    cursor: move
+
+.ui-dialog.ui-draggable .ui-dialog-titlebar
+  cursor: move
+  cursor: move
+
+.ui-resizable-handle
+  position: absolute
+  font-size: 0.1px
+  z-index: 99999
+
+.ui-resizable .ui-resizable-handle
+  display: block
+  
+tr
+  &.insert_after td
+    border: none
+    border-bottom: 2px solid black
+    padding-bottom: 4px
+  &.insert_before td
+    border: none
+    border-top: 2px solid black
+    padding-top: 4px
+
+.treeTable tr
+  &.insert_child td
+    border: none
+    background-color: #3875d7
+    color: white
+  &.ui-draggable-dragging td
+    color: black
+    background-color: #EB98A9
+    z-index: 1
+
+
+.help-block 
+  .span2
+    :margin-left 0px
+    :color #BFBFBF
+    :margin-top -5px
+    :font-size 12px
+    
+label.error
+  :color #b94a48
+
+form .span5
+  input.span2, textarea.span2, .uneditable-input.span2
+    :width 130px
+
+.clear
+  :clear both
+  
+
+.model-error
+  :width 469px  
+  
+  
+legend.expandable
+  background: url('/assets/arrow.png') top right no-repeat
+  cursor: pointer
+
+legend.collapsed 
+  background: url('/assets/arrow.png') bottom right no-repeat
+
+//
+  For tags autocomplete
+.ui-menu
+  list-style: none
+  padding: 2px
+  margin: 0
+  display: block
+  float: left
+  min-width: 160px
+  padding: 4px 0
+  margin: 1px 0 0
+  background-color: #ffffff
+  border: 1px solid #ccc
+  border: 1px solid rgba(0, 0, 0, 0.2)
+  *border-right-width: 2px
+  *border-bottom-width: 2px
+  -webkit-border-radius: 5px
+  -moz-border-radius: 5px
+  border-radius: 5px
+  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2)
+  -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2)
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2)
+  -webkit-background-clip: padding-box
+  -moz-background-clip: padding
+  background-clip: padding-box
+  .ui-menu
+    margin-top: -3px
+  .ui-menu-item
+    margin: 0
+    padding: 0
+    zoom: 1
+    float: left
+    clear: left
+    width: 100%
+    a
+      text-decoration: none
+      display: block
+      padding: .2em .4em
+      line-height: 1.5
+      zoom: 1
+      &.ui-state-hover, &.ui-state-active
+        color: white
+        text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2)
+        background-color: #08C
+        
+.pagination
+  span.disabled, em
+    float: left
+    padding: 0 14px
+    line-height: 34px
+    text-decoration: none
+    border: 1px solid #ddd
+    border-left-width: 0
+  .disabled.previous_page
+    border-left-width: 1px
+    -webkit-border-radius: 3px 0 0 3px
+    -moz-border-radius: 3px 0 0 3px
+    border-radius: 3px 0 0 3px
+    
+
+table
+  thead
+    th
+      a
+        display: inline-block
+        &:hover, &.desc:hover, &.current.asc
+          :padding-right 25px
+          background: url("/assets/library/sort_by_asc.png") right no-repeat
+        &:hover, &.asc:hover, &.current.desc
+          :padding-right 25px
+          background: url("/assets/library/sort_by_desc.png") right no-repeat
+          
+#page_slug_holder
+  .domain
+    :float left
+
+  #page_slug
+    span
+      :background none
+    
+    #page_hidden_slug
+      :display none
+      
+.nav-tabs
+  margin: 0
+  
+.tab-content 
+  display: table
+  width: 100%
+  border: 1px solid #DDD
+  border-top: transparent
+  background: white
+
+.tab-content .pad
+  padding: 15px 10px
+  
+  
+.span5 .pad input[type="text"], .span5 .pad textarea
+  width: 480px
+  
+  
+.nav-tabs > li > a
+  font-size: 19.5px
+  color: #333
+
+.tabbable
+  position: relative
+
+.versions
+  position: absolute
+  right: 0
+  
+
+.table-bordered th
+  border-left: none
+  background: #eee
+  
+  
+.table-bordered th:first-child
+  border-left: 1px solid #DDD
+  
+.nav > li > a:hover
+  background-color:  #f5f5f5
+
+.dropdown-menu li > a:hover
+  background-color: #83A2B2  
+
+.dropdown-menu li.danger > a:hover
+  background-color: #DA4F49 

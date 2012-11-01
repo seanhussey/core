@@ -1,0 +1,82 @@
+%h1
+  Welcome, #{current_member.first_name}
+  
+#sub_nav.manual
+  %ul
+    %li.current#view_ideasNav
+      %a{:href=>"/member/profile"}
+        Your Details
+    
+#complete_profile
+  = form_for @member, :url => member_profile_path, :method => :put ,  :html => {:multipart => true, :id => "register_form"} do |f|
+    - if @member.errors.any?
+      #error
+        %ul
+          - @member.errors.full_messages.each do |msg|
+            %li
+              = msg
+    = f.hidden_field(:return_url, :value => "/member/profile")
+    
+    .form_element
+      = f.label :email
+      = f.text_field :email
+    
+    .form_element
+      = f.label :password
+      = f.password_field :password
+    
+    .form_element
+      = f.label :password_confirmation
+      = f.password_field :password_confirmation
+    
+    .form_element
+      = f.label "Profile Image"
+      = f.file_field :image , :class => ""
+      
+    .form_element
+      = f.submit
+      = image_tag("/assets/spinner.gif" , :id => "user_submit_progress" , :style => "display:none" )
+
+
+#form_hidden_field
+  
+
+
+:javascript
+  $(document).ready(function() {
+    
+    $("form#register_form").validate({
+      rules: {
+        "user[term_and_conditions]" : {
+          required: true
+        }
+        
+      },
+      messages: {
+        "user[first_name]": {
+        required: "#{t('validation_messages.first_name_required')}"
+        },
+        "user[email]": {
+        required: "#{t('validation_messages.email_required')}"
+        },
+        "user[password]": {
+        required: "#{t('validation_messages.password_required')}"
+        },
+        "user[password_confirmation]": {
+        required: "#{t('validation_messages.password_confirmation_required')}"
+        },
+        
+        "user[term_and_conditions]" : {
+          required: "#{t('validation_messages.term_and_conditions_required')}"
+        }  
+        
+      }  ,
+          submitHandler: function(form) {
+            
+            $("#user_submit_progress").show();
+           }
+    });
+    
+    
+    
+  });

@@ -1,0 +1,56 @@
+= form_for(@member, :url => url , :html => {:class => "validation" , :multipart=>true}) do  |f|
+  = gb_error_messages_for(@member)
+
+  .span5
+    %legend
+      Member Details
+    %p
+      = f.label :first_name
+      = f.text_field(:first_name, :class => "large required")
+  
+    %p
+      = f.label :last_name
+      = f.text_field(:last_name, :class => "large")  
+
+    %p
+      = f.label :email , "E-mail"
+      = f.text_field(:email, :class => "large required")
+    
+    %p
+      = f.label :bio, "Bio"
+      = f.text_area(:bio, :class => "large ")
+    
+    - if action_name == "edit" || action_name == "update"
+      %p
+        = f.label :password
+        = f.password_field(:password, :class => "large ")
+      
+      %p
+        = f.label :password_confirmation
+        = f.password_field(:password_confirmation, :class => "large ")    
+    
+         
+  .span3 
+    %legend Image
+    = f.file_field :image , :class => ""
+    - unless @member.image_file_name.blank?
+      = link_to image_tag(@member.image.url(:thumb)) , @member.image.url , :target => "_blank" , :title => "Click on image to see larger version"
+      %span Delete?
+      = f.check_box :image_delete, :label => 'Delete Image'
+      
+    - unless @member.new_record?
+      .clear
+      %br  
+      - if @member.welcome_email_sent == true
+        = link_to("Resend welcome email" , welcome_admin_membership_member_path(@member) , :class => "btn")
+      - else
+        = link_to("Send welcome email" , welcome_admin_membership_member_path(@member) , :class => "btn")
+
+    - unless @groups.blank?
+      %legend Add to group
+      =# f.select(:group_ids, @groups.collect{|g| [g.name , g.id] }, :prompt => "No Group", {:multiple => true , :class => "large"})
+      = select_tag :group_ids, options_for_select(@groups.collect{|g| [g.name , g.id] }),:multiple => true, :prompt => 'No Group', :name=>'gluttonberg_member[group_ids][]'
+      
+      
+    %hr
+    = form_controls(admin_membership_members_path)

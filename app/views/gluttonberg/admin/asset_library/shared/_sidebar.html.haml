@@ -1,0 +1,11 @@
+.span3
+  .well.sidebar-nav
+    %ul.nav.nav-list
+      %li.nav-header
+        Library
+      %li
+        = active_link_to("Assets", admin_asset_category_path(:category => 'all' , :page => 1 ), :title => "Assets", :class => 'assets')
+      %li
+        = active_link_to("Collections", admin_collections_path, :title => "Collections", :class => 'collections')
+      %li
+        = active_link_to("Add asset", new_admin_asset_path, :title => "Add asset", :class => 'upload')

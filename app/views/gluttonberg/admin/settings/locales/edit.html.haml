@@ -1,0 +1,4 @@
+- @window_title = "Settings"
+- @page_title = "#{link_to "Settings", admin_settings_path} > #{link_to('Locales', admin_locales_path)} > Edit locale"
+
+= render :partial => "form" , :locals => { :url => admin_locale_path( @locale) }

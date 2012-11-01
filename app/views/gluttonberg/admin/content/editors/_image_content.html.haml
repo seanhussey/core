@@ -1,0 +1,7 @@
+%p
+  %label= content.section_label
+
+  - name_of_tag = "gluttonberg_page_localization[contents][#{content.association_name}][#{content.id}][asset_id]"
+
+  = asset_browser_tag( name_of_tag ,  opts = { :filter => "" ,  :id => "page_image_#{content.id}" , :asset_id => content.asset_id } )  
+

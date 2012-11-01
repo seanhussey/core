@@ -1,0 +1,82 @@
+- @page = @page_localization.page
+= form_for(@page_localization, :url => url) do  |f|
+  
+  = gb_error_messages_for(@page_localization)
+
+  
+    
+  .span5
+    .tabbable
+      .versions
+        - unless @page_localization.contents.blank?
+          = version_listing(@page_localization.contents.first.versions , @version )
+    %ul.nav.nav-tabs
+      %li.active
+        %a{:href => "#content", "data-toggle" => "tab" }
+          Content
+      %li
+        %a{:href => "#seo", "data-toggle" => "tab"  }
+          SEO
+    .tab-content
+      .tab-pane.active#content
+        .pad
+          %p
+            = f.label :name
+            = f.text_field(:name, :id => "page_title", :class => "span5")    
+          %p
+            #page_slug_holder
+              %span.domain
+                = current_domain
+              #page_slug
+                %span{:donotedit => true}
+                  = @page_localization.slug
+                = f.text_field(:slug, :id => 'page_hidden_slug')
+                .edit.btn.btn-mini
+                  Edit URL
+          .clear
+          %p
+            = f.label :navigation_label
+            = f.text_field(:navigation_label, :class => "span5")
+          - if @page_localization.contents.length >= 1
+            - for content in @page_localization.contents
+              - unless @version.blank? || !content.versioned?
+                - content.revert_to(@version)
+              = content_editor(content)
+          - else
+            %p.no_content
+              This page does not have any content areas.
+
+      .tab-pane#seo
+        .pad
+          %p
+            = f.label :seo_title, "Page Title"
+            = f.text_field :seo_title , :class => "span4 "
+          %p
+            = f.label :seo_keywords , "Keywords"
+            = f.text_area :seo_keywords , :class => "span4 "   , :rows => 3
+          %p
+            = f.label :seo_description , "Description"
+            = f.text_area :seo_description , :class => "span4 " , :rows => 3
+          %p
+            = f.label :fb_icon_id , "Facebook Icon"
+            = f.asset_browser :fb_icon_id , :class => "" , :filter => "image"
+
+
+  .span4
+    %legend
+      Page Settings
+    %p
+      = f.fields_for :page , @page do |page_form|  
+        = render :partial => "/gluttonberg/admin/content/pages/page_settings" , :locals => {:f => page_form}
+
+    %legend
+      Publish
+      
+    %p
+      - if @page.published?
+        = submit_tag "Update", :class => "btn btn-success"
+        = submit_tag "Unpublish", :class => "btn btn-danger"
+      - else
+        = submit_tag "Publish", :class => "btn btn-success"
+        = submit_tag "Save as a draft", :class => "btn btn-inverse"    
+    

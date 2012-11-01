@@ -1,0 +1,60 @@
+= image_tag("/assets/spinner.gif" , :id => "progress_ajax_upload" , :style => "display:none")
+
+%ul.nav.nav-tabs#asset_tabs
+  %li.active
+    %a{:href => "#recent", "data-toggle" => "tab"}
+      Recent
+  %li
+    %a{:href => "#collections", "data-toggle" => "tab"}
+      Collections
+  %li
+    %a{:href => "#upload", "data-toggle" => "tab"}
+      Upload
+  %li
+    %a{:href => "#search_tab", "data-toggle" => "tab"}
+      Search
+
+.tab-content#assetsDisplay
+  #recent.tab-pane.active
+    - if @assets.blank?
+      %ul.assetList
+        %li
+    - else
+      = render :partial => "gluttonberg/admin/shared/asset_panel.html" , :locals => {:assets => @assets}
+
+  #collections.tab-pane
+    - unless @collections.empty?
+      .accordion#accordion_for_collections
+        - for collection in @collections
+          - unless @category.blank? || @category.asset_type_ids.blank?
+            - assets = collection.assets.where({:asset_type_id => @category.asset_type_ids })
+          - else
+            - assets = collection.assets
+          - if assets.length > 0
+            .accordion-group
+              .accordion-heading
+                %a{ :class=>"accordion-toggle no-ajax" , "data-toggle" => "collapse" , "data-parent" => "#accordion_for_collections" , "data-target" => "#collection-#{collection.id}", "href" => "#collection-#{collection.id}"}
+                  = "#{collection.name} ( #{pluralize(assets.length,'asset')} )"
+              .accordion-body{:id => "collection-#{collection.id}" , :class => "collapse  in"}
+                .accordion-inner
+                  = render :partial => "gluttonberg/admin/shared/asset_panel.html" , :locals => {:assets => assets}
+
+  #upload.tab-pane
+    - @asset  = Gluttonberg::Asset.new
+    = form_for( @asset , :as => :asset , :url => admin_add_asset_using_ajax_path  ,  :html => { :multipart=>true  , :method => "POST", :class => "nosubnav validation" , :id => "ajax_new_asset_form"} ) do |asset_form|
+      = block("Asset") do
+        = asset_form.label :file , "File to upload"
+        = asset_form.file_field(:file , :class => "required")
+        = asset_form.label :name , "Name"
+        = asset_form.text_field(:name, :class => "large required")
+        %br
+      = render :partial => "collection_select_form" , :locals => {:asset_form => asset_form }
+
+      .controls
+        = asset_form.submit("Upload" , :id => "ajax_image_upload", :class => "button button_upload" )
+  #search_tab.tab-pane
+    = render :partial => "search_form"
+    #search_tab_results
+
+:javascript
+  $(".collapse").collapse({parent: "#accordion_for_collections"})

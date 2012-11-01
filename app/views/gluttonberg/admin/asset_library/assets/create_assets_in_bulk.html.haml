@@ -1,0 +1,17 @@
+- @window_title = "Asset Library"
+- @page_title = "#{link_to "Asset Library", admin_asset_category_path(:category => 'all' , :page => 1 )} > Bulk uploaded assets"
+
+.row-fluid
+  = render :partial => "/gluttonberg/admin/asset_library/shared/sidebar"
+  .span9
+    .row-fluid
+      .page-header
+        %h1
+          = @page_title.html_safe
+      .subnav
+
+
+      - @assets = @new_assets
+      = render :partial => "/gluttonberg/admin/asset_library/shared/asset_panels.html" , :locals => {:assets => @new_assets}
+
+

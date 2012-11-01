@@ -1,0 +1,79 @@
+!!!
+%html{:lang => "en"}
+  %head
+    %meta{:charset => "utf-8"}
+      %title
+        = "#{website_title} #{@window_title.blank? ? '' : ' : ' + @window_title}"
+      %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}
+      %meta{:content => "", :name => "description"}
+      %meta{:content => "", :name => "author"}
+      = csrf_meta_tag
+      / Le styles
+      %link{:href => "/assets/bootstrap.css", :rel => "stylesheet"}
+      %link{:href => "/assets/jcrop/css/jquery-Jcrop.css", :rel => "stylesheet"}
+      %link{:href => "/assets/admin-override.css", :rel => "stylesheet"}
+      = javascript_include_tag "jquery-1-7-1", "bootstrap", "bootstrap-datepicker", "jquery-dimensions-min" , "jquery-ui-1-8-23-custom-min" , "jquery-validate" , "jquery-dragTree" , "rails" , "gb_tags" , "jeditable" , "ajaxfileupload" , "expander" , "/assets/jcrop/js/jquery-Jcrop-min"
+
+      = wysiwyg_js_css_link_tag
+      = javascript_include_tag "gb_application" ,  :charset => "utf-8"
+      = custom_javascript_include_tag
+
+      :css
+        body {
+          padding-top: 60px;
+          padding-bottom: 40px;
+        }
+        .sidebar-nav {
+          padding: 9px 0;
+        }
+      /[if lt IE 9]
+        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+
+  %body
+    .navbar.navbar-fixed-top
+      .navbar-inner
+        .container-fluid
+          %a.btn.btn-navbar{"data-target" => ".nav-collapse", "data-toggle" => "collapse"}
+            %span.icon-bar
+            %span.icon-bar
+            %span.icon-bar
+          = backend_logo("/assets/gb_logo_top.png" , {:height => "30px"})
+          %a.brand{:href => admin_root_path}
+            = website_title
+          .nav-collapse
+            %ul.nav.pull-right
+              %li
+                %a{:href => "/admin/logout"}
+                  Logout
+
+    .navbar-main
+      %ul.nav
+        %li
+          = active_link_to("Dashboard", admin_root_path, :id => "dashboard_nav" , :title => "Dashboard", :active => params[:controller].include?('Gluttonberg/admin/main'))
+        %li
+          = active_link_to("Content", admin_pages_path, :id => "content_nav" , :title => "Content", :active => (params[:controller].include?('Gluttonberg/admin/Content') || (( Gluttonberg::Components.nav_entries.collect{|c| c[1]}).include?(controller_name.to_sym) )))
+        %li
+          = active_link_to("Library", admin_asset_category_path(:category => 'all' , :page => 1 ), :id => "library_nav" , :title => "Library" , :active => params[:controller].include?('Gluttonberg/admin/AssetLibrary')  )
+
+        - for entry in Gluttonberg::Components.main_nav_entries
+          -if entry[2].blank? || entry[2]==false || (entry[2]==true && session.user.is_super_admin)
+            %li{:class => "custom"}
+              = active_link_to(entry[0], url_for(entry[1]), :id => (entry[0].to_s.underscore).gsub(/\s/, '_') + "Nav" , :title => entry[0]  )
+        - if Gluttonberg::Member.enable_members == true
+          %li
+            = active_link_to("Members", admin_membership_members_path, :id => "membership_nav" , :title => "Members" , :active => /^\/admin\/membership/)
+        %li
+          = active_link_to("Settings", admin_generic_settings_path, :id => "settings_nav" , :title => "Settings" , :active => params[:controller].include?('Gluttonberg/admin/Settings/')  )
+
+
+    .container-fluid
+      = render "/layouts/flash_messages"
+      = yield
+
+      %hr
+        %footer
+          %p
+            &copy;
+            %a{:href => "http://freerangefuture.com", :target => "_blank"}
+              Freerange Future
+            2012

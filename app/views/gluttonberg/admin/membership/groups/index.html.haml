@@ -1,0 +1,35 @@
+- @window_title = "Membership"
+- @page_title = "Groups"
+
+.row-fluid
+  = render :partial => "/gluttonberg/admin/membership/main/sidebar"
+  .span9
+    .row-fluid
+      .page-header
+        %h1
+          = @page_title.html_safe
+      .subnav
+        = sub_nav do
+          = nav_link("New Group", new_admin_membership_group_url )
+
+
+      - if @groups.empty?
+        %p.empty No groups available
+      - else
+        %table{:id => 'pages_table', :class => "table table-bordered" , :cellpadding => 0, :cellspacing => 0, :rel => "" , :summary => "Groups" }
+          %thead
+            %tr
+              %th Name
+              %th
+              %th.controls
+          %tbody
+            - for group in @groups
+              %tr{:id => drag_tree_row_id(group), :class => drag_tree_row_class(group) + "#{cycle("even", "odd")}"}
+                %td
+                  %span{:class => "#{drag_tree_drag_point_class} page" , :rel => drag_tree_row_id(group)}
+                  = group.name
+                %td{:style => 'width:10%;'}= group.default == true ? "Default Group" : ""
+                %td.controls{:style => 'width:20%'}
+                  = link_to("Edit", edit_admin_membership_group_url(group)   , :class => "btn")
+                  = link_to("Delete", delete_admin_membership_group_url(group) , :class => "btn btn-danger" )
+

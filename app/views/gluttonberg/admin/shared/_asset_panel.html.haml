@@ -1,0 +1,33 @@
+- if assets.blank?
+  - if type == "search"
+    .alert
+      Sorry, There were no search results found.
+  - elsif @category_filter.blank? || @category_filter == "all"
+    .alert
+      Sorry, There are no assets added as yet.
+  - else
+    .alert
+      Sorry, There are no
+      %i
+        = @category_filter
+      added as yet.
+  
+- else
+  %ul#assetPanels.thumbnails
+    - for asset in assets
+      %li.span3
+        .thumbnail
+          %img{:src => "#{asset.thumb_small_url}"}
+          .caption
+            %h5
+              = asset.name
+            %p
+              = "Added #{asset.created_at}"
+            %p
+              %a{:href => "#{admin_asset_url(asset)}", :rel => "#{asset.category}", :class => "assetLink btn btn-primary" , "data-title" => "#{asset.name}" , "data-thumb" => "#{asset.thumb_small_url}" , "data-jwysiwyg" => "#{(asset.category == "image" ? asset.url_for(:jwysiwyg_image) : asset.url)}" , "data-category" => "#{asset.category}"}
+                Select
+          
+          
+  
+  - if assets.respond_to? :total_pages          
+    = will_paginate(assets)

@@ -1,0 +1,20 @@
+%fieldset
+- unless @pages.empty?
+  %fieldset
+    %p
+      = f.label :parent_id , "Parent page", :class => "block_label"
+      = f.select(:parent_id, @pages.collect{|p| [p.name , p.id] }, :prompt => "No Parent", :class=>"medium")
+%label
+  Page Template
+%fieldset
+  %p
+    - if( action_name == "new" )
+      = f.select(:description_name, @descriptions , { :include_blank => true } , {:class => "required"} ) 
+    - else
+      = f.select(:description_name, @descriptions , { :include_blank => true } , {:disabled => "disabled"})  
+
+- if Gluttonberg::Member.enable_members == true && action_name != "new"
+  %fieldset
+    %p
+      = f.label :groups, "Make this page only available to:"
+      = f.select("group_ids" ,  Gluttonberg::Group.order("position ASC").collect{|cc| [cc.name , cc.id] }   , { :include_blank => true  } , { :multiple => true , :class => "large" } )

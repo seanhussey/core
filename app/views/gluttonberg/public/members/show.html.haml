@@ -1,0 +1,35 @@
+#sub_nav.manual
+  %ul
+    %li.current#view_ideasNav
+      %a{:href=>"/member/profile"}
+        Your Details
+    
+    
+        
+%h1
+  Welcome, #{current_member.first_name}
+
+#profile
+  .change
+    = link_to "Update your details", member_profile_edit_path
+  .avatar
+    - if current_user.blank?
+      = image_tag("/images/comment/missing.png", :class => "comment_image")
+    - else
+      = image_tag(current_member.image.url(:thumb))
+  
+  %dl
+    %dt
+      Name:
+    %dd
+      = current_member.full_name
+    %dt
+      Email:
+    %dd
+      = current_member.email
+    
+      
+  - unless current_member.profile_confirmed
+    .confirm
+      = link_to "resend confirmation email", member_resend_confirmation_path
+  

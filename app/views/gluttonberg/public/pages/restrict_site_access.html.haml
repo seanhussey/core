@@ -1,0 +1,57 @@
+!!!
+%html{:lang => "en"}
+  %head
+    %meta{:charset => "utf-8"}
+      %title
+        = "#{website_title}- #{@page_title}" if @page_title
+      %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}
+      %meta{:content => "", :name => "description"}
+      %meta{:content => "", :name => "author"}
+      = csrf_meta_tag
+      / Le styles
+      %link{:href => "/assets/bootstrap.css", :rel => "stylesheet"}
+      %link{:href => "/assets/bootstrap-responsive.css", :rel => "stylesheet"}
+      %link{:href => "/assets/admin-override.css", :rel => "stylesheet"}
+      :css
+        body {
+          padding-top: 60px;
+          padding-bottom: 40px;
+        }
+        .sidebar-nav {
+          padding: 9px 0;
+        }
+      /[if lt IE 9]
+        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+            
+  %body#login
+    .container-fluid
+      .row
+        .span5.offset4
+          = backend_logo("/assets/gb_logo.png" , {:height => "46px"})
+          %h1#login_title
+            = Gluttonberg::Setting.get_setting("title")
+    
+          %div#form.well
+            %p
+              This site is currently offline.
+              %br
+              If you have an access password, please enter it below.
+            = form_tag restrict_site_access_path , :method => :get do
+              = hidden_field_tag "return_url" ,params[:return_url]
+              %fieldset
+                .control-group
+                  = password_field_tag 'password', nil, :class => "span4" , :value => "", :title=>"Password"
+                .control-group
+                  = submit_tag('Enter', :class => "btn btn-success", :disable_with => "Logging you in...")
+              
+          &copy; 
+          %a{:href => "http://freerangefuture.com", :target => "_blank"}
+            Freerange Future
+          2012
+      
+    
+
+    %script{:src => "/assets/jquery.js"}
+    %script{:src => "/assets/bootstrap.js"}
+    = javascript_include_tag "jgb_login"
+    = custom_javascript_include_tag    

@@ -1,0 +1,37 @@
+- @window_title = "Content"
+- @page_title = "#{link_to("<%= plural_class_name %>", admin_<%= plural_name %>_path)} > Import <%= class_name %>"
+
+.row-fluid
+  = render :partial => "/gluttonberg/admin/content/main/sidebar"
+  .span9
+    .page-header
+      %h1
+        = @page_title.html_safe
+
+    .row-fluid
+      = form_tag(admin_<%= plural_name %>_import_path , :multipart => true) do  |f|
+        - if !@feedback.blank? && @feedback != true
+          .error.model-error.alert.alert-block.alert-error
+            %h4 Sorry, There was an error importing the CSV file.
+            %p
+              No records were imported, Please fix following errors and re-import the CSV file.
+            %ul
+              - @feedback.each_with_index do |feed , index|
+                - unless feed == true
+                  %li
+                    Row #{index+2}
+                    %ul
+                      - feed.full_messages.each do |msg|
+                        %li= msg
+        .span5
+          %legend CSV Content
+          %p
+            = label_tag "Select CSV File"
+            = file_field_tag :csv
+          %p
+            The CSV file must have a header row. The column titles are supplied below. The columns can be in any order. The CSV must contain the required columns.
+
+            %ul
+              - <%= class_name %>.import_export_columns.each do |column|
+                %li= column
+          = form_controls(admin_<%= plural_name %>_path)

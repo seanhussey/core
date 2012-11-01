@@ -1,0 +1,12 @@
+- @window_title = "Library"
+- @page_title = "Add new collection"
+
+.row-fluid
+  = render :partial => "/gluttonberg/admin/asset_library/shared/sidebar"
+  .span9
+    .row-fluid
+      .page-header
+        %h1
+          = @page_title.html_safe
+
+      = render :partial => "form" , :locals => { :url_opts =>{ :action => :create } , :method_name => "post" }

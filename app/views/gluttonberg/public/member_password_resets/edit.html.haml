@@ -1,0 +1,22 @@
+%h1
+  = t("Change My Password")
+
+#complete_profile
+  = form_for(@member, :url => member_password_reset_path, :method => :put) do |f|
+    - if @member && @member.errors.any?
+      #error.alert.alert-block.alert-error
+        %ul
+          - @member.errors.full_messages.each do |msg|
+            %li
+              = msg
+    
+    %fieldset.form_element
+      = f.label :password
+      = f.password_field :password, :class => "text_field"
+  
+    %fieldset.form_element
+      = f.label :password_confirmation
+      = f.password_field :password_confirmation, :class => "text_field"
+    
+    %fieldset.form_element
+      = f.submit t("reset_my_password"), :class => "button"

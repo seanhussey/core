@@ -1,0 +1,22 @@
+= form_for(@locale, :url => url , :html => {:class => "validation"}) do  |f|
+  = gb_error_messages_for(@locale)
+  .span5
+    %legend
+      Locale
+    %p
+      = f.label :name
+      = f.text_field(:name)
+    %p
+      = f.label :slug
+      = f.text_field(:slug)
+    %p
+      = f.label :slug_type
+      = f.select(:slug_type , options_for_select(Gluttonberg::Locale.all_slug_types , @locale.slug_type ) , :include_blank => "Select Locale Type" , :class => "required" )
+    %p
+      %label{:for => "gluttonberg_locale_default"} Default
+      = f.check_box(:default, :boolean => true , :class => "checkbox")
+
+
+    = form_controls(admin_locales_path)
+
+  .clear

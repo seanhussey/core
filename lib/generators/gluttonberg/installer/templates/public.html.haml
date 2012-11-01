@@ -1,0 +1,24 @@
+!!!
+%html
+  %head
+    %title= page_title
+    = javascript_include_tag "", :charset => "utf-8"
+    = stylesheet_link_tag ""
+    = csrf_meta_tag
+    %meta{ :charset =>"utf-8"}
+    = google_analytics_js_tag
+    - unless page_keywords.blank?
+      %meta{:content=>"#{page_keywords}",:property=>"keywords"}
+    - unless page_description.blank?
+      %meta{:content=>"#{page_description}",:property=>"description"}
+      %meta{:content=>"#{page_description}",:property=>"og:description"}
+    - unless page_fb_icon_path.blank?
+      %meta{:content=>"#{page_fb_icon_path}",:property=>"og:image"}
+    - unless page_title.blank?
+      %meta{:content=>"#{page_title}",:property=>"og:title"}
+    %link{ :rel=>"shortcut icon", :href=>"/images/favicon.png"}
+  %body{:class=>body_class(@page)}
+    - @pages = Gluttonberg::Page.find(:all , :conditions => { :home => true } )
+    - slug = @locale ? @locale.slug : ""
+    = navigation_tree(@pages, :id => "navigation" , :slug => slug   )
+    = yield

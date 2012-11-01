@@ -1,0 +1,110 @@
+- @page_title = "Dashboard"
+
+.row-fluid
+  .span3
+    %h3 Your Site
+    .well.dashboard
+      .row-fluid
+        .span6
+          %p
+            %strong Content
+          - if Gluttonberg::Comment.table_exists?
+            %p
+              = "#{Gluttonberg::Article.count} Posts"
+          %p
+            = "#{Gluttonberg::Page.count} Pages"
+          %p
+            = "#{@categories_count} Categories"
+          %p
+            = "#{@tags_counts} Tags"
+        .span6
+          - if Gluttonberg::Comment.table_exists?
+            %p
+              %strong Discussion
+            %p
+              = "#{Gluttonberg::Comment.count} Comments"
+            %p
+              = "#{Gluttonberg::Comment.all_approved.count} Approved"
+            %p
+              = "#{Gluttonberg::Comment.all_pending.count} Pending"
+            %p
+              = "#{Gluttonberg::Comment.all_rejected.count} Spam"
+  .span9
+    %h1
+      = website_title
+    %hr
+    %h3 Edit Your Site
+    %br
+    .row-fluid.dashboard
+      - if Gluttonberg::Blog.table_exists?
+        - @blog = Gluttonberg::Blog.first
+        - if @blog
+          .span3
+            .well
+              %h3 Blog
+              %p
+                Keep your site up to date with new Blog Posts.
+              %ul.nav.nav-list
+                %li.nav-header
+                  Edit Your Blog
+                %li
+                  %a{:href => new_admin_blog_article_path(@blog), :class => 'add'}
+                    Add a Blog Post
+                %li
+                  %a{:href => admin_blog_articles_path(@blog), :class => 'edit'}
+                    Edit your Blog
+      .span3
+        .well
+          %h3 Pages
+          %p
+            Create new pages or edit your existing content.
+          %ul.nav.nav-list
+            %li.nav-header
+              Edit Your Pages
+            %li
+              %a{:href => new_admin_page_path, :class => 'add'}
+                Add a Page
+            %li
+              %a{:href => admin_pages_path, :class => 'edit'}
+                Edit Content
+      .span3
+        .well
+          %h3 Assets
+          %p
+            Upload & Organise all your online assets.
+          %ul.nav.nav-list
+            %li.nav-header
+              Edit Your Pages
+            %li
+              %a{:href => new_admin_asset_path, :class => 'upload'}
+                Upload Assets
+            %li
+              %a{:href => admin_collections_path, :class => 'collections'}
+                View Collections
+    .row-fluid
+      .span12
+        - if Gluttonberg::Comment.table_exists? && @comments.length > 0
+          %h3 Recent Comments
+          %br
+          - @comments.each do |comment|
+
+            .comment
+              = comment.body.truncate(270)
+              %hr
+              .row-fluid
+                .span6
+                  %em
+                    Posted by
+                  = comment.author_name
+                  %em
+                    on
+                  = comment.commentable.title
+                .span6
+                  .controls
+                    - if comment.moderation_required
+                      = link_to "Approve", moderation_admin_blog_article_comment_path(comment.commentable.blog, comment.commentable, comment, :moderation => "approve"),:class=>"approve_comment btn btn-success"
+                      = link_to "Reject", moderation_admin_blog_article_comment_path(comment.commentable.blog, comment.commentable, comment, :moderation => "disapprove"),:class=>"disapprove_comment btn"
+                    - else
+                      = link_to "Delete", delete_admin_blog_article_comment_path(comment.commentable.blog, comment.commentable, comment), :class=>"btn btn-danger"
+
+

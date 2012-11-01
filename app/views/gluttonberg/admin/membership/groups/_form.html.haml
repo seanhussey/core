@@ -1,0 +1,15 @@
+= form_for(  @group , :url => url_opts ,  :html => { :method => method_name, :class => "nosubnav validation"} ) do |group_form|
+  = gb_error_messages_for(@group)
+  .span5
+    %legend
+      Add new group
+    %p
+      = group_form.label :name
+      = group_form.text_field(:name , :class => "required large")
+  
+    - if Gluttonberg::Group.default_group.blank? || @group.default == true
+      %p
+        = group_form.label :default
+        = group_form.check_box(:default, :boolean => true , :class => "checkbox")
+  
+    = form_controls(admin_membership_groups_url)

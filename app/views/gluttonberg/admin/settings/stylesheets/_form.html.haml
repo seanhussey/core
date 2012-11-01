@@ -1,0 +1,28 @@
+- css_prefix_list = [["IE6 Only" , "<!--[if eq IE 6]>"] , ["IE7 Only" , "<!--[if eq IE 7]>"] , ["IE8 Only" , "<!--[if eq IE 8]>"] , ["IE9 Only" , "<!--[if eq IE 9]>"] , ["IE6 & IE7" , "<!--[if lte IE 7]>"] , ["IE6 & IE7 & IE8" , "<!--[if lte IE 8]>"] , ["Webkit based browsers (Safari, Chrome, etc)" , "if Webkit"] , ["Firefox" , "if Gecko"]]
+
+- unless @stylesheet.blank?
+  = version_listing(@stylesheet.versions , @version )
+
+= form_for(@stylesheet, :url => url , :html => {:class => "validation"}) do  |f|
+  = gb_error_messages_for(@stylesheet)
+  
+  %fieldset
+    %p
+      = f.label :name
+      = f.text_field(:name, :id => "page_title" , :class => "required")
+  
+    %p
+      = f.label :slug
+      = f.text_field(:slug, :id => 'page_slug')
+  
+    %p
+      = f.label :css_prefix , "Target Browser(s)"
+      = f.select(:css_prefix , css_prefix_list , :include_blank => "All Browsers")
+  
+  %fieldset
+    %p
+      = f.label :value , "CSS"
+      = f.text_area(:value , :class => "fullscreen" )    
+  = form_controls(admin_stylesheets_path)
+
+= enable_jwysiwyg_on_class("jwysiwyg")

@@ -1,0 +1,23 @@
+- @page_title = "#{link_to "Content", admin_content_path} > #{link_to "Galleries", admin_galleries_path} > Edit #{@gallery.name}"
+
+.row-fluid
+  = render :partial => "/gluttonberg/admin/content/main/sidebar"
+  .span9
+    .row-fluid
+      .page-header
+        %h1
+          = @page_title.html_safe
+      .subnav
+
+
+
+      = render :partial => "form", :locals => {:url => admin_gallery_path(@gallery)}
+      %p
+        %span.thumbnails
+          = add_image_to_gallery_tag( "Attach an image" , add_image_admin_gallery_path(@gallery) , @gallery.id )
+
+      #images_container
+        = render :partial => "images_list"
+
+:javascript
+  initEditGalleryList();

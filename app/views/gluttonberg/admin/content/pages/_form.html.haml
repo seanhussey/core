@@ -1,0 +1,30 @@
+.row-fluid
+  = form_for(@page, :url => url , :html => {:class => "validation"}) do  |f|
+    = gb_error_messages_for(@page)
+    .span5
+      - if( action_name == "new"  || ( !@pages.blank?  || !(Gluttonberg.localized? && @page.localizations &&  @page.localizations.length > 1) ) )
+        - if( action_name == "new"  || !(Gluttonberg.localized? && @page.localizations &&  @page.localizations.length > 1) )
+          %fieldset
+            %p
+              = f.label :name
+              = f.text_field(:name, :id => "page_title", :class=>"span5 required")
+                    
+            -#- if Gluttonberg::Member.enable_members == true
+              %p
+                = f.label :groups 
+                = f.select("group_ids" ,  Gluttonberg::Group.order("position ASC").collect{|cc| [cc.name , cc.id] }   , { :include_blank => true  } , { :multiple => true , :class => "large" } )
+        
+      %fieldset
+        %p
+          %label Please select a page template
+          - if( action_name == "new" )
+            = f.select(:description_name, @descriptions , { :include_blank => true } , {:class => "required"} ) 
+          - else
+            = f.select(:description_name, @descriptions , { :include_blank => true } , {:disabled => "disabled"})       
+      %hr
+      %p
+        - if @page.published?
+          = submit_tag "Update", :class => "btn btn-success"
+          = submit_tag "Unpublish", :class => "btn btn-danger"
+        - else
+          = submit_tag "Add Page", :class => "btn btn-success"

@@ -1,0 +1,7 @@
+%h1
+  <%= singular_name %>
+  
+<% attributes.each do |attribute| -%>
+%p
+  = @<%= singular_name %>.<%= attribute.name %>.humanize
+<% end %>

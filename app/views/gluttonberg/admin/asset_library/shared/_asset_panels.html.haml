@@ -1,0 +1,62 @@
+- breadcrumbs_val = ""
+- if defined?(previous_page_title) && !previous_page_title.blank?
+  - breadcrumbs_val = "?previous_page_title=#{previous_page_title}&return_url=#{sorter_url}"
+%table{:id => 'assets_table', :class => 'table table-bordered', :cellpadding => 0, :cellspacing => 0, :rel => "" , :summary => "Assets" }
+
+
+  %thead
+    %tr
+      %th{:width => 20}
+        - unless breadcrumbs_val.blank?
+          = check_box_tag "select_asset_all" , nil, false , :class => "select_all_assets"
+      %th{:width => 170}
+      %th
+        - if defined?(sorter_url)
+          = sorter_link("Title",   "asset_name",   sorter_url )
+        - else
+          Title
+      %th{:class => "author", :width => 80}
+        File Type
+      %th{:class => "date", :style => 'width:18%'}
+        - if defined?(sorter_url)
+          = sorter_link("Date added",   "date-added",   sorter_url )
+        - else
+          Date added
+
+      %th{:style => 'width: 28%'}
+  %tbody
+    - if @assets.blank?
+      %tr
+        %td{:colspan => 6, :align => "center"}
+          No assets
+    - else
+      - for asset in @assets
+        %tr
+          %td
+            - unless breadcrumbs_val.blank?
+              = check_box_tag "select_asset_#{asset.id}" , nil, false, :rel => "#{asset.id}" , :class => "select_asset_checkbox"
+          %td
+            %a{:href => admin_asset_url(asset), :class => "thumbnail"}
+              %img{:src => asset.thumb_small_url  }
+          %td
+            %a{:href => "#{admin_asset_url(asset)}#{breadcrumbs_val}", :class => "assetLink"}
+              = asset.name
+          %td.author
+            = asset.asset_type.name
+          %td.date
+            = date_format(asset.created_at)
+          %td.date
+            %span.controls
+              - unless breadcrumbs_val.blank?
+                %a{:href => "#{edit_admin_asset_url(asset)}#{breadcrumbs_val}" , :class => "assetLink btn"}
+                  Edit
+                %a{:href => "#{crop_admin_asset_url(asset)}#{breadcrumbs_val}" , :class => "assetLink btn"}
+                  Crop
+                %a{:href => "#{delete_admin_asset_url(asset)}#{breadcrumbs_val}" , :class => "assetLink btn btn-danger"}
+                  Delete
+
+%a{:href => "#",  :class => "delete_selected_assets btn btn-danger"} Delete Selected Assets
+%form#delete_selected_assets_form{ :action => admin_destroy_assets_in_bulk_path}
+  %input{ :type => "hidden" , :value =>"", :name => "asset_ids"}
+- if @assets.respond_to?(:total_pages)
+  = will_paginate(@assets)

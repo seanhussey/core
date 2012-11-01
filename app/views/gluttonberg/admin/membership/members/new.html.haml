@@ -1,0 +1,13 @@
+- @window_title = "Membership"
+- @page_title = "#{link_to "Membership", admin_membership_root_path} > #{link_to("Members", admin_membership_members_path)} > Add new member"
+
+.row-fluid
+  = render :partial => "/gluttonberg/admin/membership/main/sidebar"
+  .span9
+    .row-fluid
+      .page-header
+        %h1
+          = @page_title.html_safe
+      .subnav
+
+      = render :partial => "form", :locals => { :url => admin_membership_members_path }

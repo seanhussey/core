@@ -1,0 +1,3 @@
+- @page_title = "#{link_to "Content", admin_content_path} > #{link_to "Stylesheets", admin_stylesheets_path} > Edit #{@stylesheet.name}"
+
+= render :partial => "form", :locals => {:url => admin_stylesheet_path(@stylesheet)}

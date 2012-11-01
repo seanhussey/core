@@ -1,0 +1,9 @@
+.span3
+  .well.sidebar-nav
+    %ul.nav.nav-list
+      %li.nav-header
+        Membership
+      %li
+        = active_link_to("All Members", admin_membership_members_path, :id => "membersNav" , :title => "All Members")
+      %li
+        = active_link_to("Groups", admin_membership_groups_path, :id => "groupsNav", :title => "Groups")

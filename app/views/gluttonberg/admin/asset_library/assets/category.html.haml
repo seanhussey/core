@@ -1,0 +1,28 @@
+- @window_title = "Asset Library"
+- params[:category] = params[:category].pluralize if params[:category] != "all" && params[:category] != "uncategorised"
+- @page_title = "#{link_to "Asset Library", admin_asset_category_path(:category => 'all' , :page => 1 )} > #{params[:category].titleize}"
+
+.row-fluid
+  = render :partial => "/gluttonberg/admin/asset_library/shared/sidebar"
+  .span9
+    .row-fluid
+      .page-header
+        %h1
+          = @page_title.html_safe
+      .subnav
+        = sub_nav do
+          %li
+            %a{:href => admin_asset_category_path(:category => 'all' , :page => 1 ), :class => "browseAll"}
+              All
+          - @categories.each do |category|
+            %li
+              - text = ( category.name == "uncategorised" ?  "Other" : category.name.pluralize.capitalize )
+              - if text == "Audios"
+                - text = "Audio"
+              %a{:href => admin_asset_category_path(:category => category.name , :page => 1), :class => "browse#{text}"}
+                = text
+
+      = render :partial => "search_form"
+
+      = render :partial => "/gluttonberg/admin/asset_library/shared/asset_panels" , :locals => { :type => "category" , :name_or_id =>  params[:category] , :sorter_url => admin_asset_category_path(:category => params[:category]) , :previous_page_title => params[:category] }
+
