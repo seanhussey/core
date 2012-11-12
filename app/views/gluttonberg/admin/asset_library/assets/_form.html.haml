@@ -1,7 +1,7 @@
 .row-fluid
   = form_for(  @asset , :as => :asset , :url => url_opts ,  :html => { :multipart=>true  , :method => method_name, :class => "nosubnav validation"} ) do |asset_form|
     = gb_error_messages_for(@asset)
-  
+
     - unless @asset.thumb_large_url.blank?
       %p
         %img{:src => @asset.thumb_large_url}
@@ -18,12 +18,25 @@
         %p
           = asset_form.label :alt , "Description"
           = asset_form.text_field(:alt, :class => "large" , :maxlength => 255 )
-      .span6
+          - if Rails.configuration.enable_gallery == true
+            .help
+              "Description" field is also used for image caption in photo galleries.
+        %p
+          = asset_form.label :artist_name
+          = asset_form.text_field(:artist_name, :class => "large" , :maxlength => 255 )
+
         - if Rails.configuration.enable_gallery == true
-          .help
-            "Description" field is also used for image caption in photo galleries.
+          %p
+            = asset_form.label :link
+            = asset_form.text_field(:link, :class => "large" , :maxlength => 255 )
+
+          - if Rails.configuration.enable_gallery == true
+            .help
+              "link" field is also used for image target url in photo galleries.
+      .span6
+
         = render :partial => "collection_select_form" , :locals => {:asset_form => asset_form }
-          
+
     .row-fluid
       .span6
         %legend Publish

@@ -10,13 +10,9 @@ module Gluttonberg
         klass.class_eval do
           extend  Model::ClassMethods
           include Model::InstanceMethods
-
-          #class << self;
-            cattr_accessor :localized, :localized_model, :localized_model_name, :localized_fields, :locale;
-          #end
+          cattr_accessor :localized, :localized_model, :localized_model_name, :localized_fields, :locale;
           self.localized = false
           self.localized_fields = []
-
         end
       end
 
@@ -55,6 +51,9 @@ module Gluttonberg
             exclusions = [:id, :created_at, :updated_at, :locale_id , :parent_id]
             localized_properties = self.localized_model.column_names.reject { |p| exclusions.include? p }
             non_localized_properties = self.column_names.reject { |p| exclusions.include? p }
+
+            self.localized_model.attr_accessible :locale_id , :parent_id
+
 
             localized_properties.each do |prop|
               self.localized_fields << prop
@@ -194,8 +193,6 @@ module Gluttonberg
               end
             end
           end #create_localization
-
-
 
 
           private

@@ -146,7 +146,7 @@ module Gluttonberg
               options[:alt] = asset.alt.blank? ? asset.name : asset.alt
             end
             options[:src] = path
-            tag(:img , ""  , options)
+            tag("img" , options)
           end
        end
 
@@ -157,7 +157,7 @@ module Gluttonberg
              options[:alt] = asset.name
              options[:title] = asset.name
              options[:src] = thumbnail_type.blank? ? asset.url : asset.url_for(thumbnail_type)
-             tag(:img , "" , options)
+             tag("img" , options)
            end
        end
 
@@ -241,7 +241,7 @@ module ActionView
         def asset_tag(asset , thumbnail_type = nil)
            unless asset.blank?
              path = thumbnail_type.blank? ? asset.url : asset.url_for(thumbnail_type)
-             tag(:img , "", :class => asset.name , :alt => asset.name , :src => path)
+             tag(:img , :class => asset.name , :alt => asset.name , :src => path)
            end
         end
 

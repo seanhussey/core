@@ -10,21 +10,21 @@ module Gluttonberg
         klass.class_eval do
           extend ClassMethods
           include InstanceMethods
-          
+
           before_validation :slug_management
           class << self;  attr_accessor :slug_source_field_name end
           attr_accessor :current_slug
-          
-                    
+
+
         end
       end
-    
+
       module ClassMethods
-        
+
       end
-      
+
       module InstanceMethods
-        
+
         def get_slug_source
           if self.class.slug_source_field_name.blank?
             if self.respond_to?(:name)
@@ -37,19 +37,19 @@ module Gluttonberg
           end
           self.class.slug_source_field_name
         end
-        
+
         def slug=(new_slug)
           #if you're changing this regex, make sure to change the one in /javascripts/slug_management.js too
           # utf-8 special chars are fixed for new ruby 1.9.2
           unless new_slug.blank?
-            new_slug = new_slug.downcase.gsub(/\s/, '_').gsub(/[\!\*'"″′‟‛„‚”“”˝\(\)\;\:\.\@\&\=\+\$\,\/?\%\#\[\]]/, '')
+            new_slug = new_slug.to_s.downcase.gsub(/\s/, '_').gsub(/[\!\*'"″′‟‛„‚”“”˝\(\)\;\:\.\@\&\=\+\$\,\/?\%\#\[\]]/, '')
             new_slug = new_slug.gsub('__','_') # remove consective underscores
             new_slug = new_slug.gsub(/_$/,'') # remove trailing underscore
-          end  
+          end
           write_attribute(:slug, new_slug)
         end
-        
-        protected 
+
+        protected
         # Checks If slug is blank then tries to set slug using following logic
         # if slug_field_name is set then use its value and make it slug
         # otherwise checks for name column
@@ -77,12 +77,12 @@ module Gluttonberg
             if !already_exist.blank?
               if already_exist.length > 1 || (already_exist.length == 1 && already_exist.first.id != self.id )
                 self.slug= "#{self.slug}_#{already_exist.length+1}"
-              end  
+              end
             end
           end
-          
+
       end
-      
+
     end
   end
 end

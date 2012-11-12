@@ -10,6 +10,12 @@ module Gluttonberg
       acts_as_taggable_on :locations , :characters , :themes, :photographers
 
       include Library::AttachmentMixin
+      asset_mixins = Rails.configuration.asset_mixins
+      unless asset_mixins.blank?
+        asset_mixins.each do |mixin|
+          include mixin
+        end
+      end
 
       has_and_belongs_to_many :asset_collections     , :join_table => "gb_asset_collections_assets"
       belongs_to  :asset_type
@@ -17,7 +23,9 @@ module Gluttonberg
 
       belongs_to :user
 
-      attr_accessible :file, :name, :alt, :asset_collection_ids, :mime_type, :description, :synopsis, :copyrights, :year_of_production, :duration, :width, :height, :alt , :processed, :copied_to_s3
+      attr_accessible :file, :name, :alt, :asset_collection_ids, :mime_type
+      attr_accessible :description, :synopsis, :copyrights, :year_of_production, :duration
+      attr_accessible :artist_name, :link, :width, :height, :alt , :processed, :copied_to_s3
 
       # constants for formatted file size
       GIGA_SIZE = 1073741824.0

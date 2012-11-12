@@ -1,7 +1,7 @@
 - @window_title = "Content"
 - select_page_title = @page.name.blank? ? "Edit Content" : "#{@page.name}"
 - if(Gluttonberg.localized? && @page.localizations &&  @page.localizations.length > 1)
-  - select_page_title = "Edit #{@page_localization.locale.slug} Content"
+  - select_page_title = "Edit #{@page_localization.locale.name} Content"
 - @page_title = "#{link_to "Pages", admin_pages_path} > #{select_page_title}"
 
 .row-fluid#edit-form

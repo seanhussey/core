@@ -8,7 +8,7 @@ module Gluttonberg
     config.widget_factory_name = "default factory name"
     config.mount_at = '/'
     config.admin_path = '/admin'
-    config.app_name = 'Gluttonberg 2.1'
+    config.app_name = 'Gluttonberg 2.5'
     config.localize = false
     config.flagged_content = false
     config.active_record.observers = ['gluttonberg/page_observer' , 'gluttonberg/page_localization_observer' , 'gluttonberg/locale_observer' ]
@@ -27,6 +27,8 @@ module Gluttonberg
     #use this to provide additional processor for assets
     #in first stage I am going to use it with Tv
     config.asset_processors = []
+    config.asset_mixins = []
+    config.member_mixins = []
     config.search_models = {
         "Gluttonberg::Page" => [:name],
         "Gluttonberg::Blog" => [:name , :description],

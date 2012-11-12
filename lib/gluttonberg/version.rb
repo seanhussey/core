@@ -1,3 +1,3 @@
 module Gluttonberg
-  VERSION = "2.5"
+  VERSION = "2.5.2"
 end

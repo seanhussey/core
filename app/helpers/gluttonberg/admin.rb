@@ -409,7 +409,8 @@ module ActionView
 
         def datetime_field(field_name,date_field_html_opts = {},time_field_html_opts = {})
           date_field_html_opts["data-datepicker"] = "bsdatepicker"
-          date_field_html_opts[:onblur] = "checkDateFormat(this,'.#{field_name}_error');combine_datetime('#{field_name}');"
+          unique_field_name = "#{field_name}_#{Gluttonberg::Member.generateRandomString}"
+          date_field_html_opts[:onblur] = "checkDateFormat(this,'.#{unique_field_name}_error');combine_datetime('#{unique_field_name}');"
           if date_field_html_opts[:class].blank?
             date_field_html_opts[:class] = "small datefield"
 
@@ -422,7 +423,7 @@ module ActionView
           else
             time_field_html_opts[:class] += " timefield"
           end
-          time_field_html_opts[:onblur] = "checkTimeFormat(this,'.#{field_name}_error');combine_datetime('#{field_name}')"
+          time_field_html_opts[:onblur] = "checkTimeFormat(this,'.#{unique_field_name}_error');combine_datetime('#{unique_field_name}')"
 
           html = ""
           date = ""
@@ -431,15 +432,15 @@ module ActionView
             date = self.object.send(field_name).strftime("%d/%m/%Y")
             time = self.object.send(field_name).strftime("%I:%M %p")
           end
-          html += text_field_tag("#{field_name}_date" , date , date_field_html_opts )
+          html += text_field_tag("#{unique_field_name}_date" , date , date_field_html_opts )
           html += "<span class='date'>DD/MM/YYYY</span>"
           html += " "
-          html += text_field_tag("#{field_name}_time" , time , time_field_html_opts )
+          html += text_field_tag("#{unique_field_name}_time" , time , time_field_html_opts )
           html += "<span class='date time'>HH:MM AM/PM</span>"
-          html += self.hidden_field("#{field_name}" ,  :class => "#{field_name}")
-          html += "<label class='error #{field_name}_error'></label>"
+          html += self.hidden_field("#{field_name}" ,  :class => "#{unique_field_name}")
+          html += "<label class='error #{unique_field_name}_error'></label>"
           html += "<div class='clear'></div>"
-          html += "<script type='text/javascript'>$(document).ready(function() { combine_datetime('#{field_name}'); }); </script>"
+          html += "<script type='text/javascript'>$(document).ready(function() { combine_datetime('#{unique_field_name}'); }); </script>"
           html.html_safe
         end
 
