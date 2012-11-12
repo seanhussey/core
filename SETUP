@@ -20,8 +20,8 @@ Gluttonberg engine.
 The require should look like this - assuming you use the same dirs as me:
 
   gem 'gluttonberg', :path => '../gluttonberg'
-  
-  bundle install 
+
+  bundle install
 
 If this is the first time you are bootstrapping gluttonberg, you will need to copy the migrations to the host app.
 There is a simple generator that will do this for you.
@@ -56,34 +56,34 @@ You will need to fire up a console and run the following commands (Change email,
   user = User.new(:email => "admin@freerangefuture.com", :password => "password1", :password_confirmation => "password1" , :first_name => "first_name" )
   user.role = "super_admin"
   user.save
-  
+
 You will now be able to log in.
 
 ** require_user **
 require_user is called on every admin page via the Gluttonberg::Admin::BaseController.
 
 To skip require_user use
-  
+
   skip_before_filter :require_user, :only => [:method]
-  
+
 =======================================================================================
 
 SETTINGS
   rake gluttonberg:library:bootstrap
   rake gluttonberg:generate_default_locale
   rake gluttonberg:generate_or_update_default_settings
-  
+
 
 
 VERSIONING
 ======================================================================================
 
-If you want to make your make versions of your model data. 
+If you want to make your make versions of your model data.
 Put following line in your model
 
 is_versioned
 
-or 
+or
 
 is_versioned opts_hash # for more detail about opts hash Please read acts_as_versioned documentation
 
