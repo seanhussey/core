@@ -412,16 +412,16 @@ module ActionView
           unique_field_name = "#{field_name}_#{Gluttonberg::Member.generateRandomString}"
           date_field_html_opts[:onblur] = "checkDateFormat(this,'.#{unique_field_name}_error');combine_datetime('#{unique_field_name}');"
           if date_field_html_opts[:class].blank?
-            date_field_html_opts[:class] = "small datefield"
+            date_field_html_opts[:class] = "small span2 datefield"
 
           else
-            date_field_html_opts[:class] += " small datefield"
+            date_field_html_opts[:class] += " small span2 datefield"
           end
 
           if time_field_html_opts[:class].blank?
-            time_field_html_opts[:class] = "timefield"
+            time_field_html_opts[:class] = " small span2 timefield"
           else
-            time_field_html_opts[:class] += " timefield"
+            time_field_html_opts[:class] += " small span2 timefield"
           end
           time_field_html_opts[:onblur] = "checkTimeFormat(this,'.#{unique_field_name}_error');combine_datetime('#{unique_field_name}')"
 
@@ -433,11 +433,12 @@ module ActionView
             time = self.object.send(field_name).strftime("%I:%M %p")
           end
           html += text_field_tag("#{unique_field_name}_date" , date , date_field_html_opts )
-          html += "<span class='date'>DD/MM/YYYY</span>"
+          # html += "<span class='date'>DD/MM/YYYY</span>"
           html += " "
           html += text_field_tag("#{unique_field_name}_time" , time , time_field_html_opts )
-          html += "<span class='date time'>HH:MM AM/PM</span>"
+          # html += "<span class='date time'>HH:MM AM/PM</span>"
           html += self.hidden_field("#{field_name}" ,  :class => "#{unique_field_name}")
+          html += "<span class='help-block'><span class='span2'>DD/MM/YYYY</span> <span class='span2'>HH:MM AM/PM</span></span>"
           html += "<label class='error #{unique_field_name}_error'></label>"
           html += "<div class='clear'></div>"
           html += "<script type='text/javascript'>$(document).ready(function() { combine_datetime('#{unique_field_name}'); }); </script>"
