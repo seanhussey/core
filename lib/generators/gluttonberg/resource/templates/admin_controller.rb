@@ -108,8 +108,6 @@ module Admin
 
     private
 
-
-
       def authorize_user
         authorize! :manage, <%= class_name %>
       end
