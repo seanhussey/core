@@ -10,7 +10,7 @@ module Gluttonberg
     has_and_belongs_to_many :groups, :class_name => "Group" , :join_table => "gb_groups_pages"
 
     attr_protected :user_id , :state , :published_at
-    attr_accessible :parent_id, :name, :navigation_label, :slug, :description_name, :hide_in_nav, :group_ids
+    attr_accessible :parent_id, :name, :navigation_label, :slug, :description_name, :hide_in_nav, :group_ids, :home
 
     # Generate the associations for the block/content classes
     Content::Block.classes.each do |klass|
