@@ -18,4 +18,4 @@
           %td.controls
             = link_to "Edit image" ,  edit_admin_asset_path(gallery_item.image.id)  , :target => "_blank"
             = link_to "Detach", "javascript:;" , :class => "delete_gallery_item" , :rel => gallery_item.id , "data-url" => remove_image_admin_gallery_path(gallery_item.id) , :title => "Detach this image from the photo gallery"
-            = image_tag("/assets/spinner.gif" , :id => "progress_#{gallery_item.id}" , :style => "display:none")
+            = image_tag("/assets/gb_spinner.gif" , :id => "progress_#{gallery_item.id}" , :style => "display:none")
