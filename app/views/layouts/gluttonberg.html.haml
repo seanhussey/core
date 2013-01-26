@@ -9,10 +9,10 @@
       %meta{:content => "", :name => "author"}
       = csrf_meta_tag
       / Le styles
-      %link{:href => "/assets/bootstrap.css", :rel => "stylesheet"}
-      %link{:href => "/assets/jcrop/css/jquery-Jcrop.css", :rel => "stylesheet"}
-      %link{:href => "/assets/admin-override.css", :rel => "stylesheet"}
-      = javascript_include_tag "jquery-1-7-1", "bootstrap", "bootstrap-datepicker", "jquery-dimensions-min" , "jquery-ui-1-8-23-custom-min" , "jquery-validate" , "jquery-dragTree" , "rails" , "gb_tags" , "jeditable" , "ajaxfileupload" , "expander" , "/assets/jcrop/js/jquery-Jcrop-min"
+      %link{:href => "/assets/gb_bootstrap.css", :rel => "stylesheet"}
+      %link{:href => "/assets/jcrop/css/gb_jquery-Jcrop.css", :rel => "stylesheet"}
+      %link{:href => "/assets/gb_admin-override.css", :rel => "stylesheet"}
+      = javascript_include_tag "jquery-1-7-1", "gb_bootstrap", "gb_bootstrap-datepicker", "jquery-dimensions-min" , "jquery-ui-1-8-23-custom-min" , "jquery-validate" , "gb_jquery-dragTree" , "rails" , "gb_tags" , "gb_jeditable" , "gb_ajaxfileupload" , "gb_expander" , "/assets/jcrop/js/jquery-Jcrop-min"
 
       = wysiwyg_js_css_link_tag
       = javascript_include_tag "gb_application" ,  :charset => "utf-8"

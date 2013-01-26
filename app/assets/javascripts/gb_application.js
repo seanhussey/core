@@ -7,15 +7,15 @@ $(document).ready(function() {
   init_setting_dropdown_ajax();
   initPublishedDateTime();
   initBulkDeleteAsset();
-  
+
   $("#wrapper p#contextualHelp a").click(Help.click);
-  
+
   if ($('table').length > 0) {
     $('table').find('tr:last').css('background-image', 'none !important');
   }
 
   $("form.validation").validate();
-  
+
   if( $('.page_flash').length > 0){
     if($(".model-error").length > 0){
       $('.page_flash').remove();
@@ -23,11 +23,11 @@ $(document).ready(function() {
       $('.page_flash').insertBefore(".page-header");
     }
   }
-  
+
   $("ul.nav a.active").each(function(){
     $(this).parent("li").addClass('active')
   });
-  
+
 });
 
 function initBetterSlugManagement() {
@@ -42,16 +42,16 @@ function initBetterSlugManagement() {
   var slugLength = 0;
   var slug = "";
   var currentSlug = "";
-    
+
   if (typeof doNotEdit == 'string') {
     doNotEdit = true;
     editPage = true;
   } else {
     doNotEdit = false;
   }
-  
+
   $('#page_slug_holder .domain').html($.trim(str));
-  
+
   pt.keyup(function(){
     if (!doNotEdit) {
       slug = pt.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, '')
@@ -59,7 +59,7 @@ function initBetterSlugManagement() {
       hs.attr('value', slug);
     };
   })
-  
+
   pb.click(function(){
     hs.show();
     ps.hide();
@@ -90,7 +90,7 @@ function initBetterSlugManagement() {
         ps.show();
         pb.show();
         if (!editPage) {
-          doNotEdit = false; 
+          doNotEdit = false;
         }
       } else {
         hs.hide();
@@ -101,7 +101,7 @@ function initBetterSlugManagement() {
       };
     };
   })
-  
+
 }
 
 
@@ -113,7 +113,7 @@ function enable_jwysiwyg_on(selector) {
 
       // General options
       theme: "advanced",
-      plugins: "autolink,lists,style,table,advhr,advimage,advlink,gb_assets,inlinepopups,insertdatetime,preview,paste,fullscreen,advlist,wordcount",
+      plugins: "autolink,lists,style,table,advhr,advlink,gb_assets,inlinepopups,insertdatetime,preview,paste,fullscreen,advlist,wordcount",
 
       // Theme options
       theme_advanced_buttons1: "gb_assets,newdocument,|,bold,italic,underline,|,justifyleft,justifyright,styleselect,formatselect,|,attribs,removeformat,cleanup,code",
@@ -180,7 +180,7 @@ function enable_slug_management_on(src_class){
 function initClickEventsForAssetLinks(element) {
   element.find(".thumbnails a.choose_button").click(function(e) {
     var p = $(this).parent().parent().parent(".asset_selector_wrapper");
-    
+
     var link = $(this);
     AssetBrowser.showOverlay()
     $.get(link.attr("href"), null, function(markup) {
@@ -238,7 +238,7 @@ var AssetBrowser = {
     if (Wysiwyg != undefined) {
       AssetBrowser.Wysiwyg = Wysiwyg;
     }
-    // its used for category filtering on assets and collections  
+    // its used for category filtering on assets and collections
     AssetBrowser.filter = $("#filter_" + $(link).attr("rel"));
 
     if ($(link).is(".logo_setting")) {
@@ -302,7 +302,7 @@ var AssetBrowser = {
       "margin-top": "-" + (($(window).height()*0.9)/2) + "px",
       "margin-left": "-" + (($(window).width()*0.7)/2) + "px"
     })
-    
+
     $(".modal-body").css({
       "max-height": (($(window).height()*0.9) - 135) + "px",
       "height": (($(window).height()*0.9) - 135) + "px"
@@ -361,7 +361,7 @@ var AssetBrowser = {
   updateDisplay: function(markup) {
     AssetBrowser.display.html(markup);
     AssetBrowser.display.find("a").click(AssetBrowser.click);
-    
+
     try {
       $("form.validation").validate();
     } catch(ex) {}
@@ -414,7 +414,7 @@ var AssetBrowser = {
         auto_save_asset(AssetBrowser.logo_setting_url, id); //auto save if it is required
       } else {
         if (AssetBrowser.actualLink.hasClass("add_image_to_gallery")) {
-          
+
           $.ajax({
             url: AssetBrowser.actualLink.attr("data_url"),
             data: 'asset_id=' + id,
@@ -636,7 +636,7 @@ function ajaxFileUpload(link) {
         secureuri:use secure protocol
         success: call back function when the ajax complete
         error: callback function when the ajax failed
-        
+
             */
   $.ajaxFileUpload({
     url: '/admin/add_asset_using_ajax',
@@ -653,7 +653,7 @@ function ajaxFileUpload(link) {
         }
       }
 
-      
+
       new_id = data["asset_id"]
       file_path = data["url"]
       jwysiwyg_image = data["jwysiwyg_image"];
@@ -667,16 +667,16 @@ function ajaxFileUpload(link) {
         } else {
           AssetBrowser.link_parent.prepend("<img src='" + file_path + "' />")
         }
-      }catch(e){}  
+      }catch(e){}
       if(data["category"] == "image")
         insert_image_in_wysiwyg(jwysiwyg_image,data["category"],data["title"]);
       else
         insert_image_in_wysiwyg(file_path,data["category"],data["title"]);
-        
+
       data_id = $(this).attr("data_id");
       url = AssetBrowser.logo_setting_url;
       auto_save_asset(url, new_id); // only if autosave is required
-      
+
       if (AssetBrowser.actualLink.hasClass("add_image_to_gallery")) {
         $.ajax({
           url: AssetBrowser.actualLink.attr("data_url"),
@@ -691,8 +691,8 @@ function ajaxFileUpload(link) {
           }
         });
       }
-      
-      
+
+
       AssetBrowser.close();
     },
     error: function(data, status, e) {
@@ -735,11 +735,11 @@ function updateCoords(c) {
 
 function initPublishedDateTime() {
 
-  
+
   $(".publishing_state").change(function(){
     updatePublishedDateField()
   })
-  
+
   function updatePublishedDateField(){
     if($(".publishing_state").val()=="published"){
       $(".published_at").show()
@@ -783,7 +783,7 @@ function initBulkDeleteAsset(){
       }
     }
   });
-  
+
   $(".select_all_assets").click(function(e){
     var status = $(".select_all_assets").is(':checked');
     $(".select_asset_checkbox").attr('checked', status);
@@ -797,9 +797,9 @@ function initBulkDeleteAsset(){
       selected_assets_ids = [];
       $(".delete_selected_assets").hide();
     }
-    
+
   });
-  
+
   $(".delete_selected_assets").click(function(e){
     if(selected_assets_ids == null || selected_assets_ids.length <= 0){
       alert("Please select at least one asset.")
@@ -810,7 +810,7 @@ function initBulkDeleteAsset(){
         $("form#delete_selected_assets_form").submit();
       }
     }
-    
+
   });
 }
 
