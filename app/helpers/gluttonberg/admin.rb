@@ -279,7 +279,7 @@ module Gluttonberg
 
 
       def honeypot_field_tag
-        html = label_tag(Rails.configuration.honeypot_field_name , 'Please leave this field empty:' )
+        html = label_tag(Rails.configuration.honeypot_field_name , Rails.configuration.honeypot_field_name.humanize )
         html << text_field_tag( Rails.configuration.honeypot_field_name )
         content_tag :div , html , :class => Rails.configuration.honeypot_field_name , :style => "display:none"
       end
