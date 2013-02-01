@@ -33,5 +33,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'acl9', '0.12.0'
   s.add_dependency "sitemap_generator", '3.1.1'
   s.add_development_dependency "rspec-rails", "2.0.1"
+  s.add_dependency 'domainatrix'
 
 end
