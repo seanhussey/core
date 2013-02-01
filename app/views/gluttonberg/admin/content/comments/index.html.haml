@@ -1,5 +1,4 @@
 - @page_title = "Comments"
-- @page_title = "#{link_to @blog.name, admin_blog_articles_path(@blog)} > #{@article.title} Comments".html_safe
 
 .row-fluid
   = render :partial => "/gluttonberg/admin/content/main/sidebar"
@@ -9,6 +8,15 @@
         %h1
           = @page_title
       .subnav
+        - if action_name != "index"
+          = sub_nav do
+            = nav_link("All (#{Gluttonberg::Comment.all_comments_count})", admin_all_comments_path)
+            = nav_link("Pending (#{Gluttonberg::Comment.pending_comments_count})", admin_pending_comments_path)
+            = nav_link("Approved (#{Gluttonberg::Comment.approved_comments_count})", admin_approved_comments_path)
+            = nav_link("Rejected (#{Gluttonberg::Comment.rejected_comments_count})", admin_rejected_comments_path)
+            = nav_link("Spam (#{Gluttonberg::Comment.spam_comments_count})", admin_spam_comments_path)
+
+
       - if @comments.empty?
         %p.empty No Comments
       - else
@@ -34,7 +42,7 @@
                   = comment.created_at
                 %td.controls{:style => "width:35%;"}
                   - if comment.moderation_required && can?(:moderate , Gluttonberg::Comment)
-                    = link_to("Approve", moderation_admin_blog_article_comment_path(@blog, @article, comment, :moderation => "approve"), :class => "btn")
-                    = link_to( "Disapprove", moderation_admin_blog_article_comment_path(@blog, @article, comment, :moderation => "disapprove") , :class => "btn")
-                    = link_to("Delete", delete_admin_blog_article_comment_path(@blog, @article, comment), :class => "btn btn-danger")
+                    = link_to("Approve", admin_comment_moderation_path(comment, :moderation => "approve"), :class => "btn")
+                    = link_to( "Disapprove", admin_comment_moderation_path(comment, :moderation => "disapprove") , :class => "btn")
+                    = link_to("Delete", admin_comment_delete_path(comment), :class => "btn btn-danger")
         = will_paginate(@comments)

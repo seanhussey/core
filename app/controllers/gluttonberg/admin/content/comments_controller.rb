@@ -6,8 +6,8 @@ module Gluttonberg
       class CommentsController < Gluttonberg::Admin::BaseController
         include ActionView::Helpers::TextHelper
 
-        before_filter :find_blog
-        before_filter :find_article ,  :except => [:index]
+        before_filter :find_blog , :except => [:all , :approved, :rejected , :pending , :spam , :moderation , :delete , :destroy]
+        before_filter :find_article ,  :except => [:index, :all , :approved , :rejected , :pending , :spam , :moderation , :delete , :destroy]
         before_filter :authorize_user ,  :except => [:moderation]
 
 
@@ -17,21 +17,21 @@ module Gluttonberg
         end
 
         def delete
-          @comment = Comment.find(params[:id], :conditions => {:commentable_type => "Gluttonberg::Article", :commentable_id => @article.id})
+          @comment = Comment.find(params[:id])
           display_delete_confirmation(
             :title      => "Delete Comment ?",
-            :url        => admin_blog_article_comment_path(@blog, @article, @comment),
-            :return_url => admin_blog_article_comments_path(@blog, @article),
+            :url        => admin_comment_destroy_path(@comment),
+            :return_url => :back,
             :warning    => ""
           )
         end
 
         def moderation
           authorize_user_for_moderation
-          @comment = Comment.find(params[:id], :conditions => {:commentable_type => "Gluttonberg::Article", :commentable_id => @article.id})
+          @comment = Comment.find(params[:id])
           @comment.moderate(params[:moderation])
           Gluttonberg::Feed.log(current_user,@comment, truncate(@comment.body, :length => 100) , params[:moderation])
-          redirect_to admin_blog_article_comments_path(@blog, @article)
+          redirect_to :back
         end
 
         def destroy
@@ -39,12 +39,39 @@ module Gluttonberg
           if @comment.delete
             flash[:notice] = "The comment was successfully deleted."
             Gluttonberg::Feed.log(current_user,@comment, truncate(@comment.body, :length => 100) , "deleted")
-            redirect_to admin_blog_article_comments_path(@blog, @article)
+            redirect_to admin_all_comments_path()
           else
             flash[:error] = "There was an error deleting the comment."
-            redirect_to admin_blog_article_comments_path(@blog, @article)
+            redirect_to admin_all_comments_path()
           end
         end
+
+        def all
+          @comments = Comment.order("created_at DESC").paginate(:per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), :page => params[:page] , :order => "created_at DESC")
+          render :template => "/gluttonberg/admin/content/comments/index"
+        end
+
+        def pending
+          @comments = Comment.all_pending.order("created_at DESC").paginate(:per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), :page => params[:page] , :order => "created_at DESC")
+          render :template => "/gluttonberg/admin/content/comments/index"
+        end
+
+        def approved
+          @comments = Comment.all_approved.order("created_at DESC").paginate(:per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), :page => params[:page] , :order => "created_at DESC")
+          render :template => "/gluttonberg/admin/content/comments/index"
+        end
+
+        def rejected
+          @comments = Comment.all_rejected.order("created_at DESC").paginate(:per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), :page => params[:page] , :order => "created_at DESC")
+          render :template => "/gluttonberg/admin/content/comments/index"
+        end
+
+        def spam
+          @comments = Comment.all_spam.order("created_at DESC").paginate(:per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), :page => params[:page] , :order => "created_at DESC")
+          render :template => "/gluttonberg/admin/content/comments/index"
+        end
+
+
 
         protected
 
