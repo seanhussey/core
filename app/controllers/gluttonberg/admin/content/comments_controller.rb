@@ -39,17 +39,13 @@ module Gluttonberg
           if @comment.delete
             flash[:notice] = "The comment was successfully deleted."
             Gluttonberg::Feed.log(current_user,@comment, truncate(@comment.body, :length => 100) , "deleted")
-            redirect_to admin_all_comments_path()
+            redirect_to admin_pending_comments_path()
           else
             flash[:error] = "There was an error deleting the comment."
-            redirect_to admin_all_comments_path()
+            redirect_to admin_pending_comments_path()
           end
         end
 
-        def all
-          @comments = Comment.order("created_at DESC").paginate(:per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), :page => params[:page] , :order => "created_at DESC")
-          render :template => "/gluttonberg/admin/content/comments/index"
-        end
 
         def pending
           @comments = Comment.all_pending.order("created_at DESC").paginate(:per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), :page => params[:page] , :order => "created_at DESC")
