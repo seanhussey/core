@@ -2,6 +2,7 @@ module Gluttonberg
  class Setting  < ActiveRecord::Base
    self.table_name = "gb_settings"
    after_save  :update_settings_in_config
+
    before_destroy :destroy_cache
    attr_accessible :name, :value, :values_list, :help, :category, :row , :delete_able , :enabled
     def self.generate_or_update_settings(settings={})
@@ -88,7 +89,7 @@ module Gluttonberg
 
     def self.update_settings(settings={})
       settings.each do |key , val |
-        obj = self.first(:name=> key)
+        obj = self.where(:name=> key).first
         obj.value = val
         obj.save!
       end

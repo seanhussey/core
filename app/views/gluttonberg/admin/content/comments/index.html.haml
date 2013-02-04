@@ -48,12 +48,19 @@
 
                       - if comment.moderation_required && can?(:moderate , Gluttonberg::Comment)
                         %li= link_to("Approve", admin_comment_moderation_path(comment, :moderation => "approve"), :class => "")
-                        %li= link_to( "Disapprove", admin_comment_moderation_path(comment, :moderation => "disapprove") , :class => "")
+                        %li= link_to( "Reject", admin_comment_moderation_path(comment, :moderation => "disapprove") , :class => "")
+                        %li= link_to( "Block comments from this author", admin_block_comment_author_path(comment) , :class => "")
                       - elsif can?(:moderate , Gluttonberg::Comment)
                         - if comment.approved == true
-                          %li= link_to( "Disapprove", admin_comment_moderation_path(comment, :moderation => "disapprove") , :class => "btn")
+                          %li= link_to( "Reject", admin_comment_moderation_path(comment, :moderation => "disapprove") , :class => "btn")
                         - else
                           %li= link_to("Approve", admin_comment_moderation_path(comment, :moderation => "approve"), :class => "")
                       %li.divider
                       %li.danger= link_to("Delete", admin_comment_delete_path(comment), :class => "")
         = will_paginate(@comments)
+
+        - if action_name == "pending"
+          %p
+            If you have recently updated spam settings then please click on following link for re-assessing all pending comments with new spam settings.
+
+          = link_to "Detect spam in all pending comments" , admin_spam_detection_for_all_pending_comments_path , :class => "btn btn-info"

@@ -6,8 +6,8 @@ module Gluttonberg
       class CommentsController < Gluttonberg::Admin::BaseController
         include ActionView::Helpers::TextHelper
 
-        before_filter :find_blog , :except => [:all , :approved, :rejected , :pending , :spam , :moderation , :delete , :destroy]
-        before_filter :find_article ,  :except => [:index, :all , :approved , :rejected , :pending , :spam , :moderation , :delete , :destroy]
+        before_filter :find_blog , :except => [:all , :approved, :rejected , :pending , :spam , :moderation , :delete , :destroy , :spam_detection_for_all_pending , :block_comment_author]
+        before_filter :find_article ,  :except => [:index, :all , :approved , :rejected , :pending , :spam , :moderation , :delete , :destroy , :spam_detection_for_all_pending , :block_comment_author]
         before_filter :authorize_user ,  :except => [:moderation]
 
 
@@ -65,6 +65,40 @@ module Gluttonberg
         def spam
           @comments = Comment.all_spam.order("created_at DESC").paginate(:per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), :page => params[:page] , :order => "created_at DESC")
           render :template => "/gluttonberg/admin/content/comments/index"
+        end
+
+        def spam_detection_for_all_pending
+          Comment.spam_detection_for_all
+          redirect_to admin_pending_comments_path
+        end
+
+        def block_comment_author
+          @comment = Comment.find(params[:id])
+
+          author_string = ""
+          unless @comment.author_name.blank? || @comment.author_name == "NULL" || @comment.author_name.length < 3
+            author_string += @comment.author_name
+          end
+          unless @comment.author_email.blank? || @comment.author_email == "NULL" || @comment.author_email.length < 3
+            author_string += ", " unless author_string.blank?
+            author_string += @comment.author_email
+          end
+          unless @comment.author_website.blank? || @comment.author_website == "NULL" || @comment.author_website.length < 3
+            author_string += ", " unless author_string.blank?
+            author_string += @comment.author_website
+          end
+          unless author_string.blank?
+            author_string
+            gb_blacklist_settings = Gluttonberg::Setting.get_setting("comment_blacklist")
+            if gb_blacklist_settings.blank?
+              gb_blacklist_settings = author_string
+            else
+              gb_blacklist_settings = gb_blacklist_settings + ", " + author_string
+            end
+            Gluttonberg::Setting.update_settings("comment_blacklist" => gb_blacklist_settings)
+            Comment.spam_detection_for_all
+          end
+          redirect_to admin_pending_comments_path
         end
 
 

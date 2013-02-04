@@ -22,6 +22,7 @@ Rails.application.routes.draw do
         end
 
         get "pages_list_for_tinymce" => "pages#pages_list_for_tinymce" , :as => :pages_list_for_tinymce
+        get "/comments/spam_detection_for_all_pending" => "comments#spam_detection_for_all_pending" , :as => :spam_detection_for_all_pending_comments
         get "/comments/pending" => "comments#pending" , :as => :pending_comments
         get "/comments/spam" => "comments#spam" , :as => :spam_comments
         get "/comments/approved" => "comments#approved" , :as => :approved_comments
@@ -29,6 +30,7 @@ Rails.application.routes.draw do
         get "/comments/moderation/:id" => "comments#moderation" , :as => :comment_moderation
         get "/comments/delete/:id" => "comments#delete" , :as => :comment_delete
         delete "/comments/destroy/:id" => "comments#destroy" , :as => :comment_destroy
+        get "/comments/block_comment_author/:id" => "comments#block_comment_author" , :as => :block_comment_author
 
         resources :blogs do
           get 'delete', :on => :member
