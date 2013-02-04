@@ -10,7 +10,6 @@
       .subnav
         - if action_name != "index"
           = sub_nav do
-            = nav_link("All (#{Gluttonberg::Comment.all_comments_count})", admin_all_comments_path)
             = nav_link("Pending (#{Gluttonberg::Comment.pending_comments_count})", admin_pending_comments_path)
             = nav_link("Approved (#{Gluttonberg::Comment.approved_comments_count})", admin_approved_comments_path)
             = nav_link("Rejected (#{Gluttonberg::Comment.rejected_comments_count})", admin_rejected_comments_path)
@@ -34,15 +33,27 @@
           %tbody
             - @comments.each do |comment|
               %tr
-                %td{:style => "width:10%;"}
+                %td{:style => "width:15%;"}
                   = comment.author_name
-                %td{:style => "width:40%;"}
+                %td{:style => "width:50%;"}
                   = simple_format(comment.body)
-                %td{:style => "width:17%;"}
+                %td{:style => "width:10%;"}
                   = comment.created_at
-                %td.controls{:style => "width:35%;"}
-                  - if comment.moderation_required && can?(:moderate , Gluttonberg::Comment)
-                    = link_to("Approve", admin_comment_moderation_path(comment, :moderation => "approve"), :class => "btn")
-                    = link_to( "Disapprove", admin_comment_moderation_path(comment, :moderation => "disapprove") , :class => "btn")
-                    = link_to("Delete", admin_comment_delete_path(comment), :class => "btn btn-danger")
+                %td.controls{:style => "width:20%;"}
+                  .btn-group
+                    %a{ :class => "btn dropdown-toggle" , "data-toggle" => "dropdown" , :href => "#"}
+                      Actions
+                      %span.caret
+                    %ul.dropdown-menu
+
+                      - if comment.moderation_required && can?(:moderate , Gluttonberg::Comment)
+                        %li= link_to("Approve", admin_comment_moderation_path(comment, :moderation => "approve"), :class => "")
+                        %li= link_to( "Disapprove", admin_comment_moderation_path(comment, :moderation => "disapprove") , :class => "")
+                      - elsif can?(:moderate , Gluttonberg::Comment)
+                        - if comment.approved == true
+                          %li= link_to( "Disapprove", admin_comment_moderation_path(comment, :moderation => "disapprove") , :class => "btn")
+                        - else
+                          %li= link_to("Approve", admin_comment_moderation_path(comment, :moderation => "approve"), :class => "")
+                      %li.divider
+                      %li.danger= link_to("Delete", admin_comment_delete_path(comment), :class => "")
         = will_paginate(@comments)

@@ -22,7 +22,6 @@ Rails.application.routes.draw do
         end
 
         get "pages_list_for_tinymce" => "pages#pages_list_for_tinymce" , :as => :pages_list_for_tinymce
-        get "/comments/all" => "comments#all" , :as => :all_comments
         get "/comments/pending" => "comments#pending" , :as => :pending_comments
         get "/comments/spam" => "comments#spam" , :as => :spam_comments
         get "/comments/approved" => "comments#approved" , :as => :approved_comments
