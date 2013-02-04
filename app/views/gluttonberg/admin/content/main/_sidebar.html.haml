@@ -9,7 +9,7 @@
         %li
           = active_link_to("Blogs", admin_blogs_path, :title => "Blogs", :class => "blog")
         %li
-          = active_link_to("Comments", admin_pending_comments_path, :title => "Comments", :class => "comments")
+          = active_link_to("Comments", admin_pending_comments_path, :title => "Comments", :class => "comments", :active => /^\/admin\/comments/)
 
       - if Rails.configuration.enable_gallery == true
         %li
