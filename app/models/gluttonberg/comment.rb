@@ -93,7 +93,7 @@ module Gluttonberg
     end
 
     def self.spam_detection_for_all
-      self.all.each do |c|
+      self.all_pending.each do |c|
         c.send("spam_detection")
         c.save(:validate => false)
       end
