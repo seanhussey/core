@@ -52,7 +52,7 @@
                         %li= link_to( "Block comments from this author", admin_block_comment_author_path(comment) , :class => "")
                       - elsif can?(:moderate , Gluttonberg::Comment)
                         - if comment.approved == true
-                          %li= link_to( "Reject", admin_comment_moderation_path(comment, :moderation => "disapprove") , :class => "btn")
+                          %li= link_to( "Reject", admin_comment_moderation_path(comment, :moderation => "disapprove") , :class => "")
                         - else
                           %li= link_to("Approve", admin_comment_moderation_path(comment, :moderation => "approve"), :class => "")
                       %li.divider
