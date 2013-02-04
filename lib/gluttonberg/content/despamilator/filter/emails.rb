@@ -21,13 +21,25 @@ module Gluttonberg
             domain_tld_regex  = '(?:[A-Z]{2,4}|museum|travel)'
             /\A#{email_name_regex}@#{domain_head_regex}#{domain_tld_regex}\z/i
           end
-          if !Rails.configuration.spam_email_scores.blank? && Rails.configuration.spam_email_scores > 0
+
+          comment_email_as_spam = Gluttonberg::Setting.get_setting("comment_email_as_spam")
+          if comment_email_as_spam == "Yes"
+            text = subject.text.strip
+            subject.register_match!({
+             :score => 1.0, :filter => self
+            }) if @email_regex.match(text)
+          end
+
+          comment_number_of_emails_allowed = Gluttonberg::Setting.get_setting("comment_number_of_emails_allowed")
+          if !comment_number_of_emails_allowed.blank? && comment_number_of_emails_allowed.to_i > 0
+            comment_number_of_emails_allowed = comment_number_of_emails_allowed.to_i
             subject.text.split(/%s/).each do |word|
               subject.register_match!({
-               :score => Rails.configuration.spam_email_scores, :filter => self
+               :score => (1.0/comment_number_of_emails_allowed), :filter => self
               }) if @email_regex.match(word)
             end
           end
+
         end
 
       end

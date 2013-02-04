@@ -40,9 +40,17 @@ module Gluttonberg
         :s3_access_key => ["" , 15 , "S3 Access Key"],
         :s3_server_url => ["" , 16 , "S3 Server URL"],
         :s3_bucket => ["" , 17 , "S3 Bucket Name"],
-        :audio_assets => ["" , 18 , "Audio settings" , "Enable;Disable"]
+        :audio_assets => ["" , 18 , "Audio settings" , "Enable;Disable"],
+        :comment_blacklist => ["" , 19 , "When a comment contains any of these words in its comment, Author Name, Author website, Author e-mail, it will be marked as spam. It will match inside words, so \"able\" will match \"comparable\". Please separate words with a comma."],
+        :comment_email_as_spam => ["Yes" , 20 , "Do you want to mark those comments as spam which only contains emails and urls?" , "Yes;No" ],
+        :comment_number_of_emails_allowed => ["2" , 21 , "How many email addresses should a comment include to be marked as spam?" ],
+        :comment_number_of_urls_allowed => ["2" , 21 , "How many URLs should a comment include to be marked as spam?" ]
       }
       self.generate_or_update_settings(settings)
+    end
+
+    def self.has_deletable_settings?
+      self.where(:delete_able => true).count > 0
     end
 
     def dropdown_required?

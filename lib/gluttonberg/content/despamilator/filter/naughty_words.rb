@@ -20,6 +20,32 @@ module Gluttonberg
           naughty_words.each do |word|
             subject.register_match!({:score => 0.1, :filter => self}) if text =~ /\b#{word}s?\b/
           end
+
+          gb_blacklist_settings = Gluttonberg::Setting.get_setting("comment_blacklist")
+          unless gb_blacklist_settings.blank?
+            gb_blacklist_settings_words = gb_blacklist_settings.split(",")
+            gb_blacklist_settings_words.each do |word|
+              subject.register_match!({:score => 1.0, :filter => self}) if text =~ /\b#{word}s?\b/
+            end
+          end
+        end
+
+        def local_parse subject
+          local_score = 0.0
+          text = subject.downcase
+
+          naughty_words.each do |word|
+            local_score += 0.1 if text =~ /\b#{word}s?\b/
+          end
+
+          gb_blacklist_settings = Gluttonberg::Setting.get_setting("comment_blacklist")
+          unless gb_blacklist_settings.blank?
+            gb_blacklist_settings_words = gb_blacklist_settings.split(",")
+            gb_blacklist_settings_words.each do |word|
+              local_score += 1.0 if text =~ /\b#{word}s?\b/
+            end
+          end
+          local_score
         end
 
         def naughty_words
@@ -44,11 +70,6 @@ module Gluttonberg
             preteen
             lolita
            }
-          if Rails.configuration.spam_naughty_words.blank?
-            words
-          else
-            words + Rails.configuration.spam_naughty_words
-          end
         end
 
       end
