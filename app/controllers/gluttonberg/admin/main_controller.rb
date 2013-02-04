@@ -16,7 +16,7 @@ module Gluttonberg
         end
 
         if Comment.table_exists?
-          @comments = Comment.find(:all , :conditions => {:commentable_type => "Gluttonberg::Article" , :moderation_required => true } , :order => "created_at DESC" , :limit => 3)
+          @comments = Comment.all_pending.where({:commentable_type => "Gluttonberg::Article" , :moderation_required => true }).order("created_at DESC").limit(5)
           @article = Article.new
           @article_localization = ArticleLocalization.new(:article => @article , :locale_id => Locale.first_default.id)
           @blogs = Gluttonberg::Blog.all
