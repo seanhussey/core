@@ -18,7 +18,8 @@
           %tr
             %th Name
             %th Value (Click to edit)
-            %th.controls Controls
+            - if Gluttonberg::Setting.has_deletable_settings?
+              %th.controls Controls
         %tbody
           - i = 1
           %tr{ :class => ""}
@@ -26,15 +27,17 @@
               Select Home Page
             %td.second_column
               = select_tag :home , options_from_collection_for_select(@pages, "id", "name" , selected = @current_home_page_id.to_s )  ,  { :include_blank => true , :class => "home_page_setting_dropdown"  , :rel => admin_page_update_home_path(1)  }
-
-            %td.controls
               = image_tag("/assets/gb_spinner.gif" , :id => "progress_home_page" , :style => "display:none")
           - for setting in @settings
             - i += 1
             %tr{ :class => "#{cycle("even", "odd")}"}
-              %td.first_column{ :style => 'width:20%' }
+              %td.first_column{ :style => 'width:220px' }
                 = setting.user_friendly_name
               %td.second_column
+                - unless setting.help.blank?
+                  %i{ :style => "font-size: 90%;" }= setting.help
+                  %span{:style => "height: 10px; display: block;"}
+
                 - if setting.dropdown_required?
                   = select_tag(:value , options_for_select( setting.parsed_values_list_for_dropdown , setting.value  ) , { :include_blank => true , :data_id => setting.id  , :rel => admin_generic_setting_path( setting) , :class => "setting_dropdown"   })
                 - elsif setting.name == "fb_icon"
@@ -46,8 +49,9 @@
                   = gb_editable_field setting, :value , :update_url => admin_generic_setting_path( setting)
 
                 = image_tag("/assets/gb_spinner.gif" , :id => "progress_#{setting.id}" , :style => "display:none")
-              %td.controls
-                - if setting.delete_able
-                  = link_to 'Delete', delete_admin_generic_setting_path(setting)
+              - if Gluttonberg::Setting.has_deletable_settings?
+                %td.controls
+                  - if setting.delete_able
+                    = link_to 'Delete', delete_admin_generic_setting_path(setting)
 
 
