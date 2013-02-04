@@ -350,7 +350,7 @@ module Gluttonberg
                    height : '20px',
                    cancel    : 'Cancel',
                    submit    : 'OK',
-                   indicator : '#{image_tag('/assets/spinner.gif')}'
+                   indicator : '#{image_tag('/assets/gb_spinner.gif')}'
                 };
                 $.extend(args, #{args.to_json});
                 $(".editable[data-id='#{object.id}'][data-name='#{name}']").editable("#{update_url}", args);
