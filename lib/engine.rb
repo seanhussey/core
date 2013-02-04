@@ -23,8 +23,6 @@ module Gluttonberg
     config.honeypot_field_name = "our_newly_weekly_series"
     config.custom_css_for_cms = false
     config.custom_js_for_cms = false
-    config.spam_naughty_words = []
-    config.spam_email_scores = 1.0
     #engines which depends on gluttonberg-core can
     #use this to provide additional processor for assets
     #in first stage I am going to use it with Tv
