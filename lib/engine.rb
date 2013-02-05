@@ -20,7 +20,7 @@ module Gluttonberg
     config.identify_locale = :prefix
     config.host_name = "localhost:3000"
     config.user_roles = [] # User model always concat following two roles ["superadmin" , "admin"]
-    config.honeypot_field_name = "gluttonberg_honeypot"
+    config.honeypot_field_name = "our_newly_weekly_series"
     config.custom_css_for_cms = false
     config.custom_js_for_cms = false
     #engines which depends on gluttonberg-core can

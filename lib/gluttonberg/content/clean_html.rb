@@ -1,33 +1,35 @@
 module Gluttonberg
   module Content
-    
+
     module CleanHtml
-      
+
       def self.setup
         ::ActiveRecord::Base.send :include, Gluttonberg::Content::CleanHtml
       end
-      
+
       def self.included(klass)
         klass.class_eval do
           extend  ClassMethods
-          include InstanceMethods
-          before_validation :clean_all_html_content
-          
-          cattr_accessor :html_columns_list
         end
       end
-      
+
       module ClassMethods
         def clean_html(cols)
-          self.html_columns_list = cols 
+          class_eval <<-EOV
+            include InstanceMethods
+            before_validation :clean_all_html_content
+            cattr_accessor :html_columns_list
+            self.html_columns_list = cols
+
+          EOV
         end
-        
+
         def clean_tags(str)
           if !str.blank? && str.instance_of?(String)
             str = self.removeStyle(str)
             str = self.removeMetaTag(str)
             str = removeEmptyTag(str)
-          end  
+          end
           str
         end
 
@@ -58,17 +60,17 @@ module Gluttonberg
           str
         end
       end
-      
+
       module InstanceMethods
         def clean_all_html_content
           unless self.class.html_columns_list.blank?
             self.class.html_columns_list.each do |field|
               write_attribute(field , self.class.clean_tags(read_attribute(field)) )
             end
-          end  
+          end
         end
       end
-      
+
     end
   end
 end

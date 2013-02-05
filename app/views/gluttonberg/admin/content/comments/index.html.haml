@@ -1,5 +1,4 @@
 - @page_title = "Comments"
-- @page_title = "#{link_to @blog.name, admin_blog_articles_path(@blog)} > #{@article.title} Comments".html_safe
 
 .row-fluid
   = render :partial => "/gluttonberg/admin/content/main/sidebar"
@@ -9,6 +8,14 @@
         %h1
           = @page_title
       .subnav
+        - if action_name != "index"
+          = sub_nav do
+            = nav_link("Pending (#{Gluttonberg::Comment.pending_comments_count})", admin_pending_comments_path)
+            = nav_link("Approved (#{Gluttonberg::Comment.approved_comments_count})", admin_approved_comments_path)
+            = nav_link("Rejected (#{Gluttonberg::Comment.rejected_comments_count})", admin_rejected_comments_path)
+            = nav_link("Spam (#{Gluttonberg::Comment.spam_comments_count})", admin_spam_comments_path)
+
+
       - if @comments.empty?
         %p.empty No Comments
       - else
@@ -26,15 +33,34 @@
           %tbody
             - @comments.each do |comment|
               %tr
-                %td{:style => "width:10%;"}
+                %td{:style => "width:15%;"}
                   = comment.author_name
-                %td{:style => "width:40%;"}
+                %td{:style => "width:50%;"}
                   = simple_format(comment.body)
-                %td{:style => "width:17%;"}
+                %td{:style => "width:10%;"}
                   = comment.created_at
-                %td.controls{:style => "width:35%;"}
-                  - if comment.moderation_required && can?(:moderate , Gluttonberg::Comment)
-                    = link_to("Approve", moderation_admin_blog_article_comment_path(@blog, @article, comment, :moderation => "approve"), :class => "btn")
-                    = link_to( "Disapprove", moderation_admin_blog_article_comment_path(@blog, @article, comment, :moderation => "disapprove") , :class => "btn")
-                    = link_to("Delete", delete_admin_blog_article_comment_path(@blog, @article, comment), :class => "btn btn-danger")
+                %td.controls{:style => "width:20%;"}
+                  .btn-group
+                    %a{ :class => "btn dropdown-toggle" , "data-toggle" => "dropdown" , :href => "#"}
+                      Actions
+                      %span.caret
+                    %ul.dropdown-menu
+
+                      - if comment.moderation_required && can?(:moderate , Gluttonberg::Comment)
+                        %li= link_to("Approve", admin_comment_moderation_path(comment, :moderation => "approve"), :class => "")
+                        %li= link_to( "Reject", admin_comment_moderation_path(comment, :moderation => "disapprove") , :class => "")
+                        %li= link_to( "Block comments from this author", admin_block_comment_author_path(comment) , :class => "")
+                      - elsif can?(:moderate , Gluttonberg::Comment)
+                        - if comment.approved == true
+                          %li= link_to( "Reject", admin_comment_moderation_path(comment, :moderation => "disapprove") , :class => "")
+                        - else
+                          %li= link_to("Approve", admin_comment_moderation_path(comment, :moderation => "approve"), :class => "")
+                      %li.divider
+                      %li.danger= link_to("Delete", admin_comment_delete_path(comment), :class => "")
         = will_paginate(@comments)
+
+        - if action_name == "pending"
+          %p
+            If you have recently updated spam settings then please click on following link for re-assessing all pending comments with new spam settings.
+
+          = link_to "Detect spam in all pending comments" , admin_spam_detection_for_all_pending_comments_path , :class => "btn btn-info"

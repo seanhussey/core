@@ -83,6 +83,8 @@ module Gluttonberg
           localized_model.attr_accessible :text, :parent, :page_localization
           localized_model.is_versioned
 
+          localized_model.clean_html([:text])
+
         end
 
         # Does this class have an associated localization class.

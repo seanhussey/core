@@ -2,18 +2,18 @@
 module Gluttonberg
   module RecordHistory
     def self.setup
-      ::ActionController::Base.send  :include, Gluttonberg::RecordHistory::ActionController  
+      ::ActionController::Base.send  :include, Gluttonberg::RecordHistory::ActionController
     end
 
     module ActionController
       def self.included(base)
         base.extend(ClassMethods)
       end
-  
-  
+
+
       module ClassMethods
         def record_history(object_name, title_field_name="", options = {})
-          class << self; 
+          class << self;
             attr_accessor :object_name, :title_field_name;
           end
           self.object_name = object_name
@@ -23,7 +23,7 @@ module Gluttonberg
           after_filter :log_update , :only => [:update]
           after_filter :log_destroy, :only => [:destroy]
         end
-    
+
       end # class methods
 
       module ControllerHelperClassMethods
@@ -32,22 +32,22 @@ module Gluttonberg
             if object.new_record?
             else
               Gluttonberg::Feed.log(current_user, object ,object_title , "created")
-            end  
-          end  
+            end
+          end
         end
 
         def log_update
           unless object.blank?
             if object.errors.blank?
               Gluttonberg::Feed.log(current_user, object ,object_title , "updated")
-            end  
-          end  
+            end
+          end
         end
 
         def log_destroy
           if object && object.destroyed?()
             Gluttonberg::Feed.log(current_user, object ,object_title , "deleted")
-          end   
+          end
         end
 
         def object
@@ -73,21 +73,20 @@ module Gluttonberg
                 field_name = :id
               end
             else
-              field_name = self.class.title_field_name     
+              field_name = self.class.title_field_name
             end
-            puts "====================  field_name  #{field_name}"
             unless field_name.blank?
               object.send(field_name)
             end
-          end  
-        end  
+          end
+        end
 
       end #ControllerHelperClassMethods
 
 
     end
 
-  end #RecordHistory  
+  end #RecordHistory
 end #Gluttonberg
 
 

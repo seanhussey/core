@@ -136,7 +136,7 @@ module Gluttonberg
       def nav_link(*args)
         class_names = "button"
         class_names = "#{class_names} #{args[2][:class]}" if args.length >= 3
-        content_tag(:li, link_to(args[0] , args[1] , :title => args[0]), :class => class_names)
+        content_tag(:li, active_link_to(args[0] , args[1] , :title => args[0]), :class => class_names)
       end
 
       # Writes out the back control for the sub nav.
@@ -279,7 +279,7 @@ module Gluttonberg
 
 
       def honeypot_field_tag
-        html = label_tag(Rails.configuration.honeypot_field_name , 'Please leave this field empty:' )
+        html = label_tag(Rails.configuration.honeypot_field_name , Rails.configuration.honeypot_field_name.humanize )
         html << text_field_tag( Rails.configuration.honeypot_field_name )
         content_tag :div , html , :class => Rails.configuration.honeypot_field_name , :style => "display:none"
       end
@@ -350,7 +350,7 @@ module Gluttonberg
                    height : '20px',
                    cancel    : 'Cancel',
                    submit    : 'OK',
-                   indicator : '#{image_tag('/assets/spinner.gif')}'
+                   indicator : '#{image_tag('/assets/gb_spinner.gif')}'
                 };
                 $.extend(args, #{args.to_json});
                 $(".editable[data-id='#{object.id}'][data-name='#{name}']").editable("#{update_url}", args);

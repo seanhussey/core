@@ -134,7 +134,7 @@ module Gluttonberg
        end
 
        def asset_panel(assets, name_or_id , type )
-          render :partial => "gluttonberg/admin/shared/asset_panel.html" , :locals => {:assets => assets , :name_or_id => name_or_id , :type => type}
+          render :partial => "/gluttonberg/admin/shared/asset_panel" , :locals => {:assets => assets , :name_or_id => name_or_id , :type => type} , :formats => [:html]
        end
 
 

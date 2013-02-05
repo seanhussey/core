@@ -5,6 +5,8 @@ module Gluttonberg
     before_save    :generate_reference_hash
     belongs_to     :article
 
+    attr_accessible :article_id , :author_email , :author_name
+
     def self.notify_subscribers_of(article , comment)
       subscribers = self.find(:all , :conditions => {:article_id => article.id})
       subscribers.each do |subscriber|

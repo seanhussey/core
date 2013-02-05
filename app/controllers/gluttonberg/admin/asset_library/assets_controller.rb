@@ -75,7 +75,6 @@ module Gluttonberg
             end
           end # category#all
           page = params[:page].blank? ? 1 : params[:page].to_i
-          puts "----#{Gluttonberg::Setting.get_setting("number_of_per_page_items")}   #{page}"
           @assets = @assets.paginate( :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items") , :page => page ).order(get_order)
         end
 

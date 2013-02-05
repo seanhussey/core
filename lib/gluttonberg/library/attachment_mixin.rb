@@ -325,9 +325,7 @@ module Gluttonberg
                 generate_thumb_and_proper_resolution(asset)
               elsif asset.asset_type.asset_category.name == "audio"
                 # If its mp3 file, collect its sound info
-                puts "==========step1 - audio"
                 collect_mp3_info(asset)
-                puts "==========step last - audio"
               end
               #additional processing
               asset_processors = Rails.configuration.asset_processors

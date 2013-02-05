@@ -27,6 +27,8 @@ module Gluttonberg
       attr_accessible :description, :synopsis, :copyrights, :year_of_production, :duration
       attr_accessible :artist_name, :link, :width, :height, :alt , :processed, :copied_to_s3
 
+      attr_accessor :type
+
       # constants for formatted file size
       GIGA_SIZE = 1073741824.0
       MEGA_SIZE = 1048576.0
@@ -78,9 +80,9 @@ module Gluttonberg
         self.asset_type = AssetType.for_file(mime_type, file_name)
         cat = self.category.to_s.downcase
         if cat == "image"
-          self[:type]  = "Photo"
+          self.type = "Photo"
         elsif cat == "video"
-          self[:type]  = "Video"
+          self.type = "Video"
         end
       end
 

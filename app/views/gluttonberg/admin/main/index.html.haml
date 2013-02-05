@@ -22,13 +22,13 @@
             %p
               %strong Discussion
             %p
-              = "#{Gluttonberg::Comment.count} Comments"
+              = link_to "#{Gluttonberg::Comment.all_pending.count} Pending" , admin_pending_comments_path
             %p
-              = "#{Gluttonberg::Comment.all_approved.count} Approved"
+              = link_to "#{Gluttonberg::Comment.all_approved.count} Approved" , admin_approved_comments_path
             %p
-              = "#{Gluttonberg::Comment.all_pending.count} Pending"
+              = link_to "#{Gluttonberg::Comment.all_rejected.count} Rejected" , admin_rejected_comments_path
             %p
-              = "#{Gluttonberg::Comment.all_rejected.count} Spam"
+              = link_to "#{Gluttonberg::Comment.all_spam.count} Spam" , admin_spam_comments_path
   .span9
     %h1
       = website_title

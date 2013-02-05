@@ -296,6 +296,20 @@ var AssetBrowser = {
       e.preventDefault();
     });
 
+    // same height for all elements within same row
+    $.each(AssetBrowser.browser.find(".tab-pane") , function(index , element){
+      AssetBrowser.sameHeightForAllElementsOfSameRow($(element));
+    });
+
+    try{
+      $().collapse({parent: "#accordion_for_collections"});
+    }catch(e){
+      console.log(e);
+    }
+
+
+
+
     $("#assetsDialog").css({
       height: ($(window).height()*0.9) + "px",
       width: ($(window).width()*0.7) + "px",
@@ -321,6 +335,26 @@ var AssetBrowser = {
       })
 
     })
+  },
+  sameHeightForAllElementsOfSameRow: function(parent_element){
+
+    var all_spans = parent_element.find(".thumbnails .span3");
+    var row_num = 1;
+    var ASSET_MAX_COLUMNS = 5;
+    var row_max_height = 0;
+    $.each(all_spans , function(index , element){
+      if($(element).height() > row_max_height){
+        row_max_height = $(element).height();
+      }
+      $(element).attr('data-row' , row_num);
+      if( (index+1) % ASSET_MAX_COLUMNS == 0 ){
+        if(row_max_height > 0){
+          parent_element.find("[data-row="+row_num+"]").height(row_max_height);
+        }
+        row_num++;
+        row_max_height = 0;
+      }
+    });
   },
   resizeDisplay: function() {
     // var newHeight = AssetBrowser.browser.innerHeight() - AssetBrowser.offsetHeight;

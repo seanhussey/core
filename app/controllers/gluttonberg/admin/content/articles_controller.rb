@@ -2,32 +2,32 @@
 
 module Gluttonberg
   module Admin
-    module Content    
+    module Content
       class ArticlesController < Gluttonberg::Admin::BaseController
-        
+
         before_filter :find_blog , :except => [:create]
         before_filter :find_article, :only => [:show, :edit, :update, :delete, :destroy , :duplicate]
-        before_filter :authorize_user , :except => [:destroy , :delete]  
-        before_filter :authorize_user_for_destroy , :only => [:destroy , :delete]  
+        before_filter :authorize_user , :except => [:destroy , :delete]
+        before_filter :authorize_user_for_destroy , :only => [:destroy , :delete]
         record_history :@article , :title
-        
+
         def index
           conditions = {:blog_id => @blog.id}
           conditions[:user_id] = current_user.id unless current_user.super_admin?
-          @articles = Article.where( conditions).paginate(:per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), :page => params[:page])
+          @articles = Article.where( conditions).order("created_at DESC").paginate(:per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), :page => params[:page])
         end
-        
-        
+
+
         def show
           @comment = Comment.new
         end
-        
+
         def new
           @article = Article.new
           @article_localization = ArticleLocalization.new(:article => @article , :locale_id => Locale.first_default.id)
           @authors = User.all
         end
-        
+
         def create
           params[:gluttonberg_article_localization][:article][:name] = params[:gluttonberg_article_localization][:title]
           article_attributes = params["gluttonberg_article_localization"].delete(:article)
@@ -42,7 +42,7 @@ module Gluttonberg
             render :edit
           end
         end
-        
+
         def edit
           @authors = User.all
           unless params[:version].blank?
@@ -50,7 +50,7 @@ module Gluttonberg
             @article.revert_to(@version)
           end
         end
-        
+
         def update
           article_attributes = params["gluttonberg_article_localization"].delete(:article)
           if @article_localization.update_attributes(params[:gluttonberg_article_localization])
@@ -59,7 +59,7 @@ module Gluttonberg
             article.assign_attributes(article_attributes)
             article.previous_slug = article.current_slug if article.slug_changed?
             article.save
-            
+
             localization_detail = ""
             if Gluttonberg.localized?
               localization_detail = " (#{@article_localization.locale.slug}) "
@@ -69,22 +69,22 @@ module Gluttonberg
             end
 
             flash[:notice] = "The article was successfully updated."
-            redirect_to admin_blog_articles_path(@blog)
+            redirect_to edit_admin_blog_article_path(@article.blog, @article)
           else
             flash[:error] = "Sorry, The article could not be updated."
             render :edit
           end
         end
-        
+
         def delete
           display_delete_confirmation(
             :title      => "Delete Article '#{@article.title}'?",
             :url        => admin_blog_article_path(@blog, @article),
-            :return_url => admin_blog_articles_path(@blog), 
+            :return_url => admin_blog_articles_path(@blog),
             :warning    => ""
           )
         end
-        
+
         def destroy
           title = @article.current_localization.title
           if @article.destroy
@@ -107,13 +107,13 @@ module Gluttonberg
             redirect_to admin_blog_articles_path(@blog)
           end
         end
-        
+
         protected
-        
+
           def find_blog
             @blog = Blog.find(params[:blog_id])
           end
-          
+
           def find_article
             if params[:localization_id].blank?
               conditions = { :article_id => params[:id] , :locale_id => Locale.first_default.id}
@@ -124,7 +124,7 @@ module Gluttonberg
             end
             @article = Article.find(:first , :conditions => {:id => params[:id]})
           end
-          
+
           def authorize_user
             authorize! :manage, Gluttonberg::Article
           end
@@ -132,7 +132,7 @@ module Gluttonberg
           def authorize_user_for_destroy
             authorize! :destroy, Gluttonberg::Article
           end
-        
+
       end
     end
   end
