@@ -59,7 +59,7 @@ module Gluttonberg
                 else
                   key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822})
                 end
-                asset.update_attributes(:copied_to_s3 => true)
+                Gluttonberg::Asset.update_attributes(:copied_to_s3 => true)
                 puts "Copied"
               end
             end
@@ -152,7 +152,7 @@ module Gluttonberg
               else
                 key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822})
               end
-              self.update_attributes(:copied_to_s3 => true)
+              self.update_column(:copied_to_s3 , true)
               puts "Copied"
             end
           end
