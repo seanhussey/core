@@ -45,30 +45,23 @@ module Gluttonberg
 
           #takes file from public/assets folder and upload to s3 if s3 info is given in CMS settings
           def self.migrate_file_to_s3(asset_hash , file_name)
-            puts "--------copy_file_to_s3"
-
             bucket = bucket_handle
             unless bucket.blank?
-              #begin
-                local_file = "public/user_assets/" + asset_hash + "/" + file_name
-                key_for_s3 = "user_assets/" + asset_hash + "/" + file_name
-                date = Time.now+1.years
-                puts " Copying #{local_file} to #{S3::ClassMethods.s3_bucket_name}"
-                key = bucket.key(key_for_s3, true)
-                asset = Gluttonberg::Asset.where(:asset_hash => asset_hash).first
-                unless asset.blank?
-                  unless asset.mime_type.blank?
-                    key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822, "content-type" => asset.mime_type})
-                  else
-                    key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822})
-                  end
+              local_file = "public/user_assets/" + asset_hash + "/" + file_name
+              key_for_s3 = "user_assets/" + asset_hash + "/" + file_name
+              date = Time.now+1.years
+              puts " Copying #{local_file} to #{S3::ClassMethods.s3_bucket_name}"
+              key = bucket.key(key_for_s3, true)
+              asset = Gluttonberg::Asset.where(:asset_hash => asset_hash).first
+              unless asset.blank?
+                unless asset.mime_type.blank?
+                  key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822, "content-type" => asset.mime_type})
+                else
+                  key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822})
                 end
-                #self.update_attributes(:copied_to_s3 => true)
-                puts "Copied"
-              #rescue => e
-              #  puts "#{base_name} failed to copy"
-              #  puts "** #{e} **"
-              #end
+              end
+              self.update_attributes(:copied_to_s3 => true)
+              puts "Copied"
             end
           end
 
@@ -104,34 +97,28 @@ module Gluttonberg
             "#{s3_bucket_root_url}/user_assets"
           end
 
-          #TODO
           def make_backup
             unless File.exist?(tmp_original_file_on_disk)
               FileUtils.cp tmp_location_on_disk, tmp_original_file_on_disk
               FileUtils.chmod(0755,tmp_original_file_on_disk)
-              puts "~~~~~~~~~~~~~~----------#{"original_" + file_name}"
               move_tmp_file_to_actual_directory("original_" + file_name , true)
             end
           end
 
-          #TODO
           def remove_file_from_storage
             remove_file_from_tmp_storage
-            #if File.exists?(directory)
-              remove_asset_folder_from_s3
-            #end
+            remove_asset_folder_from_s3
           end
 
           def remove_file_from_tmp_storage
-            puts "--------remove_file_from_tmp_storage-"
             if File.exists?(tmp_directory)
+              puts "Remove assset folder from tmp storage (tmp_directory)"
               FileUtils.rm_r(tmp_directory)
             end
           end
 
           def update_file_on_storage
             if file
-              puts "----------------------------------------------------#{tmp_directory}"
               FileUtils.mkdir(tmp_directory) unless File.exists?(tmp_directory)
               FileUtils.cp file.tempfile.path, tmp_location_on_disk
               FileUtils.chmod(0755, tmp_location_on_disk)
@@ -153,27 +140,20 @@ module Gluttonberg
 
           #takes file from tmp folder and upload to s3 if s3 info is given in CMS settings
           def copy_file_to_s3(file_name)
-            puts "--------copy_file_to_s3"
-
             bucket = bucket_handle
             unless bucket.blank?
-              #begin
-                local_file = self.tmp_directory + "/" + file_name
-                folder = self.asset_hash
-                date = Time.now+1.years
-                puts " Copying #{file_name} (#{local_file}) to #{S3::ClassMethods.s3_bucket_name}"
-                key = bucket.key(self.directory + "/" + file_name, true)
-                unless self.mime_type.blank?
-                  key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822, "content-type" => self.mime_type})
-                else
-                  key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822})
-                end
-                #self.update_attributes(:copied_to_s3 => true)
-                puts "Copied"
-              #rescue => e
-              #  puts "#{base_name} failed to copy"
-              #  puts "** #{e} **"
-              #end
+              local_file = self.tmp_directory + "/" + file_name
+              folder = self.asset_hash
+              date = Time.now+1.years
+              puts "Copying #{file_name} (#{local_file}) to #{S3::ClassMethods.s3_bucket_name}"
+              key = bucket.key(self.directory + "/" + file_name, true)
+              unless self.mime_type.blank?
+                key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822, "content-type" => self.mime_type})
+              else
+                key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822})
+              end
+              self.update_attributes(:copied_to_s3 => true)
+              puts "Copied"
             end
           end
 
@@ -209,8 +189,6 @@ module Gluttonberg
             end
           end
 
-          # def write_file_to_disc(src_file_path , )
-          # end
         end #InstanceMethods
       end #S3
     end #Storage

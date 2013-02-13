@@ -62,16 +62,12 @@ module Gluttonberg
           rescue
             image = QuickMagick::Image.read(asset.tmp_original_file_on_disk).first
           end
-          #begin
-            thumb_defined_width = asset.class.sizes[image_type.to_sym][:geometry].split('x').first#.to_i
-            scaling_percent = (thumb_defined_width.to_i/(w.to_i*1.0))*100
-            image.arguments << " -crop #{w}x#{h}+#{x}+#{y} +repage"
-            if scaling_percent != 1.0
-              image.arguments << " -resize #{scaling_percent}%"
-            end
-          #rescue => e
-          #  puts e
-          #end
+          thumb_defined_width = asset.class.sizes[image_type.to_sym][:geometry].split('x').first#.to_i
+          scaling_percent = (thumb_defined_width.to_i/(w.to_i*1.0))*100
+          image.arguments << " -crop #{w}x#{h}+#{x}+#{y} +repage"
+          if scaling_percent != 1.0
+            image.arguments << " -resize #{scaling_percent}%"
+          end
           image.save File.join(asset.tmp_directory, file_name)
           asset.move_tmp_file_to_actual_directory(file_name , true)
         end
@@ -79,67 +75,55 @@ module Gluttonberg
         # Create thumbnailed versions of image attachements.
         # TODO: generate thumbnails with the correct extension
         def generate_image_thumb
+          asset.class.sizes.each_pair do |name, config|
+            asset_thumb = asset.asset_thumbnails.find(:first , :conditions => {:thumbnail_type => name.to_s, :user_generated => true })
+            if asset_thumb.blank?
+              begin
+                image = QuickMagick::Image.read(asset.tmp_original_file_on_disk).first
+              rescue
+                image = QuickMagick::Image.read(asset.tmp_location_on_disk).first
+              end
 
-          #begin
+              file_name = "#{config[:filename]}.#{asset.file_extension}"
 
-            asset.class.sizes.each_pair do |name, config|
-              asset_thumb = asset.asset_thumbnails.find(:first , :conditions => {:thumbnail_type => name.to_s, :user_generated => true })
-              if asset_thumb.blank?
+              if config[:geometry].include?("#")
+                #todo
                 begin
-                  image = QuickMagick::Image.read(asset.tmp_original_file_on_disk).first
-                rescue
-                  image = QuickMagick::Image.read(asset.tmp_location_on_disk).first
+                  image.resize(suggested_measures(image, config[:geometry]))
+                  image.arguments << " -gravity Center  -crop #{config[:geometry].delete("#")}+0+0 +repage"
+                rescue => e
+                  puts e
                 end
+              else
+                image.resize config[:geometry]
+              end
+              image.save File.join(asset.tmp_directory, file_name)
+              asset.move_tmp_file_to_actual_directory(file_name, true)
+            end # asset_thumb.blank?
+          end # sizes loop
 
-                file_name = "#{config[:filename]}.#{asset.file_extension}"
-
-                if config[:geometry].include?("#")
-                  #todo
-                  begin
-                    image.resize(suggested_measures(image, config[:geometry]))
-                    image.arguments << " -gravity Center  -crop #{config[:geometry].delete("#")}+0+0 +repage"
-                  rescue => e
-                    puts e
-                  end
-                else
-                  image.resize config[:geometry]
-                end
-                image.save File.join(asset.tmp_directory, file_name)
-                asset.move_tmp_file_to_actual_directory(file_name, true)
-              end # asset_thumb.blank?
-            end # sizes loop
-
-            asset.update_attribute(:custom_thumbnail , true)
-          #rescue => e
-          #  asset.update_attribute(:custom_thumbnail , false)
-          #end
-
+          asset.update_attribute(:custom_thumbnail , true)
         end
 
         def generate_proper_resolution
-          #begin
-            asset.make_backup
-            begin
-              image = QuickMagick::Image.read(asset.tmp_original_file_on_disk).first
-            rescue => e
-              image = QuickMagick::Image.read(asset.tmp_location_on_disk).first
-            end
+          asset.make_backup
+          begin
+            image = QuickMagick::Image.read(asset.tmp_original_file_on_disk).first
+          rescue => e
+            image = QuickMagick::Image.read(asset.tmp_location_on_disk).first
+          end
 
-            actual_width = image.width.to_i
-            actual_height = image.height.to_i
+          actual_width = image.width.to_i
+          actual_height = image.height.to_i
 
-            asset.update_attributes( :width => actual_width ,:height => actual_height)
+          asset.update_attributes( :width => actual_width ,:height => actual_height)
 
-            image.resize asset.class.max_image_size
-            image.save File.join(asset.tmp_directory, asset.file_name)
-            asset.move_tmp_file_to_actual_directory(asset.file_name , true)
-            # remove mp3 info if any image have. it may happen in the case of updating asset from mp3 to image
-              audio = AudioAssetAttribute.find( :first , :conditions => {:asset_id => asset.id})
-              audio.destroy unless audio.blank?
-          #rescue #TypeError => error
-            # ignore TypeErrors, just means it wasn't a supported image
-          #  asset.update_attribute( :custom_thumbnail , false)
-          #end
+          image.resize asset.class.max_image_size
+          image.save File.join(asset.tmp_directory, asset.file_name)
+          asset.move_tmp_file_to_actual_directory(asset.file_name , true)
+          # remove mp3 info if any image have. it may happen in the case of updating asset from mp3 to image
+          audio = AudioAssetAttribute.find( :first , :conditions => {:asset_id => asset.id})
+          audio.destroy unless audio.blank?
         end
 
 

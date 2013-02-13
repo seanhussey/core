@@ -46,7 +46,7 @@ module Gluttonberg
           end
 
           def remove_file_from_tmp_storage
-            # just dummy method
+            # just dummy method. As we don't need to remove because tmp and actual folder is same for filesystem
           end
 
           def update_file_on_storage
