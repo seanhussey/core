@@ -56,7 +56,6 @@ namespace :gluttonberg do
           Dir.entries("public/user_assets/"+asset_folder).each do |asset_file|
             if !asset_file.include?(".DS_Store") && !File.directory?("public/user_assets/" + asset_folder+"/"+asset_file)
               begin
-                puts "#{asset_folder}   ===   #{asset_file}"
                 Gluttonberg::Library::Storage::S3::ClassMethods.migrate_file_to_s3(asset_folder , asset_file)
               rescue => e
                 puts "Error: #{e.message}"

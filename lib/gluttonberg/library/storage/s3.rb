@@ -50,17 +50,17 @@ module Gluttonberg
               local_file = "public/user_assets/" + asset_hash + "/" + file_name
               key_for_s3 = "user_assets/" + asset_hash + "/" + file_name
               date = Time.now+1.years
-              puts " Copying #{local_file} to #{S3::ClassMethods.s3_bucket_name}"
               key = bucket.key(key_for_s3, true)
               asset = Gluttonberg::Asset.where(:asset_hash => asset_hash).first
               unless asset.blank?
+                puts " Copying #{local_file} to #{S3::ClassMethods.s3_bucket_name}"
                 unless asset.mime_type.blank?
                   key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822, "content-type" => asset.mime_type})
                 else
                   key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822})
                 end
+                asset.update_attributes(:copied_to_s3 => true)
               end
-              self.update_attributes(:copied_to_s3 => true)
               puts "Copied"
             end
           end
