@@ -58,14 +58,11 @@ module Gluttonberg
       !values_list.blank?
     end
 
-
     def parsed_values_list_for_dropdown
       unless values_list.blank?
         values_list.split(";")
       end
     end
-
-
 
     def self.get_setting(key)
       if Gluttonberg::Setting.table_exists?

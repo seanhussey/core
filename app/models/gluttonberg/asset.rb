@@ -4,7 +4,7 @@ module Gluttonberg
       has_many :set_elements, :as => :element
       has_many :asset_thumbnails
 
-      after_save  :update_file
+      #after_save  :update_file
       before_validation  :set_category_and_type
 
       acts_as_taggable_on :locations , :characters , :themes, :photographers
@@ -167,9 +167,9 @@ module Gluttonberg
       private
 
       # make a new asset folder if not exist. then make backup of asset. generate thumbnails
-      def update_file
-        update_file_on_disk
-      end
+      # def update_file
+      #   update_file_on_disk
+      # end
 
 
   end

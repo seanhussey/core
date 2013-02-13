@@ -1,20 +1,23 @@
 module Gluttonberg
     module AssetLibrary
 
-       #  nice and clean public url of assets
-       def asset_url(asset , opts = {})
-         url = ""
-         if Rails.env=="development"
+      #  nice and clean public url of assets
+      def asset_url(asset , opts = {})
+        url = ""
+        if Rails.configuration.asset_storage == :s3
+          url = asset.url
+        else
+          if Rails.env=="development"
            url = "http://#{request.host}:#{request.port}/user_asset/#{asset.asset_hash[0..3]}/#{asset.id}"
-         else
+          else
            url = "http://#{request.host}/user_asset/#{asset.asset_hash[0..3]}/#{asset.id}"
-         end
+          end
 
-         if opts[:thumb_name]
+          if opts[:thumb_name]
            url << "/#{opts[:thumb_name]}"
-         end
-
-         url
+          end
+        end
+          url
        end
 
 
