@@ -36,8 +36,8 @@ module Gluttonberg
             s3_server_url = S3::ClassMethods.s3_server_url
             s3_bucket = S3::ClassMethods.s3_bucket_name
             if !key_id.blank? && !key_val.blank? && !s3_server_url.blank? && !s3_bucket.blank?
-              s3 = Aws::S3.new(key_id, key_val, {:server => s3_server_url})
-              bucket = s3.bucket(s3_bucket)
+              s3 = AWS::S3.new({ :access_key_id => key_id, :secret_access_key => key_val , :server => s3_server_url})
+              bucket = s3.buckets[s3_bucket]
             else
               nil
             end
@@ -50,16 +50,17 @@ module Gluttonberg
               local_file = "public/user_assets/" + asset_hash + "/" + file_name
               key_for_s3 = "user_assets/" + asset_hash + "/" + file_name
               date = Time.now+1.years
-              key = bucket.key(key_for_s3, true)
+              key = bucket.objects[key_for_s3]
               asset = Gluttonberg::Asset.where(:asset_hash => asset_hash).first
               unless asset.blank?
                 puts " Copying #{local_file} to #{S3::ClassMethods.s3_bucket_name}"
+
                 unless asset.mime_type.blank?
-                  key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822, "content-type" => asset.mime_type})
+                  key.write(File.open(local_file), {:expires => date.rfc2822, :content_type => asset.mime_type , :acl => :public_read })
                 else
-                  key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822})
+                  key.write(File.open(local_file) , {:expires => date.rfc2822 , :acl => :public_read })
                 end
-                Gluttonberg::Asset.update_attributes(:copied_to_s3 => true)
+                asset.update_attributes(:copied_to_s3 => true)
                 puts "Copied"
               end
             end
@@ -112,7 +113,7 @@ module Gluttonberg
 
           def remove_file_from_tmp_storage
             if File.exists?(tmp_directory)
-              puts "Remove assset folder from tmp storage (tmp_directory)"
+              puts "Remove assset folder from tmp storage (#{tmp_directory})"
               FileUtils.rm_r(tmp_directory)
             end
           end
@@ -146,11 +147,11 @@ module Gluttonberg
               folder = self.asset_hash
               date = Time.now+1.years
               puts "Copying #{file_name} (#{local_file}) to #{S3::ClassMethods.s3_bucket_name}"
-              key = bucket.key(self.directory + "/" + file_name, true)
+              key = bucket.objects[self.directory + "/" + file_name]
               unless self.mime_type.blank?
-                key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822, "content-type" => self.mime_type})
+                key.write(File.open(local_file), {:expires => date.rfc2822, :content_type => self.mime_type , :acl => :public_read })
               else
-                key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822})
+                key.write(File.open(local_file) , {:expires => date.rfc2822 , :acl => :public_read })
               end
               self.update_column(:copied_to_s3 , true)
               puts "Copied"
@@ -166,7 +167,7 @@ module Gluttonberg
           def remove_asset_folder_from_s3
             bucket = bucket_handle
             unless bucket.blank?
-              bucket.delete_folder(self.directory)
+              bucket.objects.with_prefix(self.directory).delete_all
             end
           end
 
@@ -177,14 +178,18 @@ module Gluttonberg
           def download_orginal_file_from_s3
             FileUtils.mkdir(self.tmp_directory) unless File.exists?(self.tmp_directory)
             bucket = bucket_handle
-            key = bucket.key(self.location_on_disk)
-            File.open(self.tmp_location_on_disk, "w") do |f|
-              f.write(key.get)
+            key = bucket.objects[self.location_on_disk]
+            File.open(self.tmp_location_on_disk, "w", encoding: "ASCII-8BIT") do |f|
+              key.read do |chunk|
+                f.write(chunk)
+              end
             end
-            key = bucket.key(self.original_file_on_disk)
+            key = bucket.objects[self.original_file_on_disk]
             if key.exists?
-              File.open(self.tmp_original_file_on_disk, "w") do |f|
-                f.write(key.get)
+              File.open(self.tmp_original_file_on_disk, "w", encoding: "ASCII-8BIT") do |f|
+                key.read do |chunk|
+                  f.write(chunk)
+                end
               end
             end
           end

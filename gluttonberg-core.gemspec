@@ -34,5 +34,6 @@ Gem::Specification.new do |s|
   s.add_dependency "sitemap_generator", '3.1.1'
   s.add_development_dependency "rspec-rails", "2.0.1"
   s.add_dependency 'domainatrix'
+  s.add_dependency 'aws-sdk' , '1.8.1.3'
 
 end
