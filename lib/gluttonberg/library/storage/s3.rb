@@ -60,8 +60,8 @@ module Gluttonberg
                   key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822})
                 end
                 asset.update_attributes(:copied_to_s3 => true)
+                puts "Copied"
               end
-              puts "Copied"
             end
           end
 
