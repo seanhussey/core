@@ -1,6 +1,6 @@
 content = Pathname(__FILE__).dirname.expand_path
 
-require File.join(content, 'content', 'slug_management')
+require File.join(content, "content", "slug_management")
 require File.join(content, "content", "block")
 require File.join(content, "content", "block_localization")
 require File.join(content, "content", "localization")

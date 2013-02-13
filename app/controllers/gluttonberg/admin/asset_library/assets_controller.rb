@@ -83,7 +83,10 @@ module Gluttonberg
         end
 
         def destroy_assets_in_bulk
-          @assets = Asset.delete_all(:id => params[:asset_ids].split(","))
+          @assets = Asset.where(:id => params[:asset_ids].split(",")).all
+          @assets.each do |asset|
+            asset.destroy
+          end
           redirect_to "/admin/browse/all/page/1"
         end
 

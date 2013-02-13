@@ -23,6 +23,7 @@ module Gluttonberg
     config.honeypot_field_name = "our_newly_weekly_series"
     config.custom_css_for_cms = false
     config.custom_js_for_cms = false
+    config.asset_storage = :filesystem
     #engines which depends on gluttonberg-core can
     #use this to provide additional processor for assets
     #in first stage I am going to use it with Tv
@@ -87,7 +88,7 @@ module Gluttonberg
     end
 
     initializer "setup gluttonberg asset library" do |app|
-      Gluttonberg::Library.setup
+      #Gluttonberg::Library.setup
       require "acts-as-taggable-on"
       if ::ActsAsTaggableOn::Tag.attribute_names.include?("slug") == true
         ::ActsAsTaggableOn::Tag.send(:include , Gluttonberg::Content::SlugManagement)
