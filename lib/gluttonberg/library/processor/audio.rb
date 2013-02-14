@@ -7,12 +7,12 @@ module Gluttonberg
 
         def self.process(asset_obj)
           if asset_obj.asset_type.asset_category.name == "audio"
-            collect_mp3_info(asset)
+            self.collect_mp3_info(asset_obj)
           end
         end
 
         # Collect mp3 files info using Mp3Info gem
-        def collect_mp3_info(asset)
+        def self.collect_mp3_info(asset)
           audio = AudioAssetAttribute.find( :first , :conditions => {:asset_id => asset.id})
 
           begin
