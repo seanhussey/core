@@ -11,13 +11,18 @@
       %i
         = @category_filter
       added as yet.
-  
+
 - else
   %ul#assetPanels.thumbnails
     - for asset in assets
       %li.span3
         .thumbnail
-          %img{:src => "#{asset.thumb_small_url}"}
+          - if asset.category == 'audio'
+            .ui360
+              %a{:href => "#{asset_url(asset)}", :target => "_blank" , :class => "no-ajax"}
+                = asset.name
+          - elsif asset.category == 'image'
+            %img{:src => "#{asset.thumb_small_url}"}
           .caption
             %h5
               = asset.name
@@ -26,8 +31,8 @@
             %p
               %a{:href => "#{admin_asset_url(asset)}", :rel => "#{asset.category}", :class => "assetLink btn btn-primary" , "data-title" => "#{asset.name}" , "data-thumb" => "#{asset.thumb_small_url}" , "data-jwysiwyg" => "#{(asset.category == "image" ? asset.url_for(:jwysiwyg_image) : asset.url)}" , "data-category" => "#{asset.category}"}
                 Select
-          
-          
-  
-  - if assets.respond_to? :total_pages          
+
+
+
+  - if assets.respond_to? :total_pages
     = will_paginate(assets)

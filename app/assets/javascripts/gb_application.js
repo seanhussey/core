@@ -28,6 +28,8 @@ $(document).ready(function() {
     $(this).parent("li").addClass('active')
   });
 
+  setUpAudio();
+
 });
 
 function initBetterSlugManagement() {
@@ -267,6 +269,8 @@ var AssetBrowser = {
       AssetBrowser.target = null;
     }
 
+    threeSixtyPlayer.init();
+
     // Grab the various nodes we need
     AssetBrowser.display = AssetBrowser.browser.find("#assetsDisplay");
     AssetBrowser.offsets = AssetBrowser.browser.find("> *:not(#assetsDisplay)");
@@ -382,6 +386,13 @@ var AssetBrowser = {
       display: "none"
     });
     AssetBrowser.browser.remove();
+
+    if(threeSixtyPlayer != null){
+      try{
+        threeSixtyPlayer.stopSound(threeSixtyPlayer.lastSound);
+      }catch(e){}
+    }
+
   },
   handleJSON: function(json) {
     if (json.backURL) {
@@ -859,4 +870,26 @@ Array.prototype.remove= function(){
         }
     }
     return this;
+}
+
+// Audio
+
+function setUpAudio(){
+  soundManager.setup({
+    useFlashBlock: true, // optional - if used, required flashblock.css
+    url: '/swf/', // required: path to directory containing SM2 SWF files
+    debugMode: false
+  });
+  // basicMP3Player = new BasicMP3Player();
+  // console.log(basicMP3Player)
+}
+
+function setUp360(){
+
+}
+
+function stopAudio(){
+  if(!blank(basicMP3Player) && basicMP3Player.lastSound !== null){
+    basicMP3Player.stopSound(basicMP3Player.lastSound);
+  }
 }
