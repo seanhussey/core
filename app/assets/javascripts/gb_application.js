@@ -449,12 +449,24 @@ var AssetBrowser = {
         insert_image_in_wysiwyg(image_url,file_type,file_title);
 
         AssetBrowser.nameDisplay.html(name);
-        if (AssetBrowser.link_parent.find("img").length > 0) {
-          AssetBrowser.link_parent.find("img").attr('src', image_src)
 
-        } else {
-          AssetBrowser.link_parent.prepend("<img src='" + image_src + "' />")
+        if(file_type == "image"){
+          if (AssetBrowser.link_parent.find("img").length > 0) {
+            AssetBrowser.link_parent.find("img").attr('src', image_src);
+          } else {
+            AssetBrowser.link_parent.prepend("<img src='" + image_src + "' />");
+          }
+        }else if(file_type == "audio"){
+          if (AssetBrowser.link_parent.find("div.ui360 a").length > 0) {
+            AssetBrowser.link_parent.find("div.ui360 a").attr('href', image_url);
+            AssetBrowser.link_parent.find("div.ui360 a").text(name);
+          } else {
+            AssetBrowser.link_parent.prepend("<div class='ui360'><a href='" + image_url + "' >"+name+"</a><div>");
+            threeSixtyPlayer.init();
+            AssetBrowser.nameDisplay.html('');
+          }
         }
+
 
         auto_save_asset(AssetBrowser.logo_setting_url, id); //auto save if it is required
       } else {
