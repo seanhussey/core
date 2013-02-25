@@ -18,9 +18,10 @@
       %li.span3
         .thumbnail
           - if asset.category == 'audio'
-            .ui360
-              %a{:href => "#{asset_url(asset)}", :target => "_blank" , :class => "no-ajax"}
-                = asset.name
+            .sm2-inline-list
+              .ui360
+                %a{:href => "#{asset_url(asset)}", :target => "_blank" , :class => "no-ajax"}
+                  = asset.name
           - elsif asset.category == 'image'
             %img{:src => "#{asset.thumb_small_url}"}
           .caption

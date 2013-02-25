@@ -224,7 +224,7 @@ module ActionView
 
           thumbnail_caption = ""
           if asset && asset.category == "audio"
-            thumbnail_caption << "<div class='ui360'><a href='#{asset.url}'>#{asset_name}</a></div>"
+            thumbnail_caption << "<div class='sm2-inline-list'><div class='ui360'><a href='#{asset.url}'>#{asset_name}</a></div></div>"
           else
             thumbnail_caption << asset_name unless asset_name.blank?
           end
