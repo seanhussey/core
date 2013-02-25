@@ -17,23 +17,23 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.test_files = ["spec"]
 
-  s.add_dependency "authlogic", '3.1.3'
-  s.add_dependency "will_paginate" , '3.0.3'
-  s.add_dependency "rubyzip", '0.9.9'
-  s.add_dependency "acts_as_tree", '1.1.0'
-  s.add_dependency "acts_as_list", '0.1.8'
-  s.add_dependency "acts-as-taggable-on", '2.3.3'
-  s.add_dependency "delayed_job", '2.1.4'         ###3.0.3
+  s.add_dependency 'authlogic', '3.1.3'
+  s.add_dependency 'will_paginate' , '3.0.3'
+  s.add_dependency 'rubyzip', '0.9.9'
+  s.add_dependency 'acts_as_tree', '1.1.0'
+  s.add_dependency 'acts_as_list', '0.1.8'
+  s.add_dependency 'acts-as-taggable-on', '2.3.3'
+  s.add_dependency 'delayed_job', '2.1.4'
   s.add_dependency 'jeditable-rails', '0.1.1'
   s.add_dependency 'cancan', '1.6.4'
   s.add_dependency 'active_link_to', '1.0.0'
   s.add_dependency 'texticle' , '1.0.4.20101004123327'
-  s.add_dependency 'ruby-mp3info', '0.6.14'       ####0.7.1
+  s.add_dependency 'ruby-mp3info', '0.8'
   s.add_dependency 'paperclip', '3.3.0'
   s.add_dependency 'acl9', '0.12.0'
-  s.add_dependency "sitemap_generator", '3.1.1'
-  s.add_development_dependency "rspec-rails", "2.0.1"
-  s.add_dependency 'domainatrix'
+  s.add_dependency 'sitemap_generator', '3.1.1'
+  s.add_dependency 'domainatrix', '0.0.11'
   s.add_dependency 'aws-sdk' , '1.8.1.3'
+  s.add_development_dependency 'rspec-rails', '2.0.1'
 
 end
