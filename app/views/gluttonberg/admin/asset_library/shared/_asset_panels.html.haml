@@ -2,8 +2,6 @@
 - if defined?(previous_page_title) && !previous_page_title.blank?
   - breadcrumbs_val = "?previous_page_title=#{previous_page_title}&return_url=#{sorter_url}"
 %table{:id => 'assets_table', :class => 'table table-bordered', :cellpadding => 0, :cellspacing => 0, :rel => "" , :summary => "Assets" }
-
-
   %thead
     %tr
       %th{:width => 20}
@@ -36,8 +34,15 @@
             - unless breadcrumbs_val.blank?
               = check_box_tag "select_asset_#{asset.id}" , nil, false, :rel => "#{asset.id}" , :class => "select_asset_checkbox"
           %td
-            %a{:href => admin_asset_url(asset), :class => "thumbnail"}
+
+            - if asset.category == 'audio'
+              .ui360
+                %a{:href => "#{asset_url(asset)}", :target => "_blank" , :class => ""}
+                  = asset.name
+            - elsif asset.category == 'image'
+              %a{:href => admin_asset_url(asset), :class => "thumbnail"}
               %img{:src => asset.thumb_small_url  }
+
           %td
             %a{:href => "#{admin_asset_url(asset)}#{breadcrumbs_val}", :class => "assetLink"}
               = asset.name

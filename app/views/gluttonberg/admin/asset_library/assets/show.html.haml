@@ -42,7 +42,12 @@
                     %p#description= @asset.description
                   %legend Asset URL
                   %p.publicpath
-                    %a{:href => "#{asset_url(@asset)}", :target => "_blank"}
+                    - if @asset.category == 'audio'
+                      .ui360
+                        %a{:href => "#{asset_url(@asset)}", :target => "_blank" , :class => ""}
+                          = @asset.title
+                    %br
+                    %a{:href => "#{asset_url(@asset)}", :target => "_blank" }
                       = asset_url(@asset)
                   %p#public-path-note
                     This address can be used to link to this asset.

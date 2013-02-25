@@ -28,6 +28,8 @@ $(document).ready(function() {
     $(this).parent("li").addClass('active')
   });
 
+  setUpAudio();
+
 });
 
 function initBetterSlugManagement() {
@@ -267,6 +269,8 @@ var AssetBrowser = {
       AssetBrowser.target = null;
     }
 
+    threeSixtyPlayer.init();
+
     // Grab the various nodes we need
     AssetBrowser.display = AssetBrowser.browser.find("#assetsDisplay");
     AssetBrowser.offsets = AssetBrowser.browser.find("> *:not(#assetsDisplay)");
@@ -382,6 +386,13 @@ var AssetBrowser = {
       display: "none"
     });
     AssetBrowser.browser.remove();
+
+    if(threeSixtyPlayer != null){
+      try{
+        threeSixtyPlayer.stopSound(threeSixtyPlayer.lastSound);
+      }catch(e){}
+    }
+
   },
   handleJSON: function(json) {
     if (json.backURL) {
@@ -438,12 +449,24 @@ var AssetBrowser = {
         insert_image_in_wysiwyg(image_url,file_type,file_title);
 
         AssetBrowser.nameDisplay.html(name);
-        if (AssetBrowser.link_parent.find("img").length > 0) {
-          AssetBrowser.link_parent.find("img").attr('src', image_src)
 
-        } else {
-          AssetBrowser.link_parent.prepend("<img src='" + image_src + "' />")
+        if(file_type == "image"){
+          if (AssetBrowser.link_parent.find("img").length > 0) {
+            AssetBrowser.link_parent.find("img").attr('src', image_src);
+          } else {
+            AssetBrowser.link_parent.prepend("<img src='" + image_src + "' />");
+          }
+        }else if(file_type == "audio"){
+          if (AssetBrowser.link_parent.find("div.ui360 a").length > 0) {
+            AssetBrowser.link_parent.find("div.ui360 a").attr('href', image_url);
+            AssetBrowser.link_parent.find("div.ui360 a").text(name);
+          } else {
+            AssetBrowser.link_parent.prepend("<div class='ui360'><a href='" + image_url + "' >"+name+"</a><div>");
+            threeSixtyPlayer.init();
+            AssetBrowser.nameDisplay.html('');
+          }
         }
+
 
         auto_save_asset(AssetBrowser.logo_setting_url, id); //auto save if it is required
       } else {
@@ -859,4 +882,26 @@ Array.prototype.remove= function(){
         }
     }
     return this;
+}
+
+// Audio
+
+function setUpAudio(){
+  soundManager.setup({
+    useFlashBlock: true, // optional - if used, required flashblock.css
+    url: '/swf/', // required: path to directory containing SM2 SWF files
+    debugMode: false
+  });
+  // basicMP3Player = new BasicMP3Player();
+  // console.log(basicMP3Player)
+}
+
+function setUp360(){
+
+}
+
+function stopAudio(){
+  if(!blank(basicMP3Player) && basicMP3Player.lastSound !== null){
+    basicMP3Player.stopSound(basicMP3Player.lastSound);
+  }
 }

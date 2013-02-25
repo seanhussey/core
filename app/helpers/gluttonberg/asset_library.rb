@@ -223,7 +223,11 @@ module ActionView
           thumbnail_contents << asset_info
 
           thumbnail_caption = ""
-          thumbnail_caption << asset_name unless asset_name.blank?
+          if asset && asset.category == "audio"
+            thumbnail_caption << "<div class='ui360'><a href='#{asset.url}'>#{asset_name}</a></div>"
+          else
+            thumbnail_caption << asset_name unless asset_name.blank?
+          end
           thumbnail_caption << hidden_field_tag("filter_#{html_id}"  , value=filter  )
           thumbnail_caption << self.hidden_field(field_id , { :id => html_id , :class => "choose_asset_hidden_field" } )
 
