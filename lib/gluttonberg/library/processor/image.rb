@@ -90,12 +90,13 @@ module Gluttonberg
                 #todo
                 begin
                   image.resize(suggested_measures(image, config[:geometry]))
-                  image.arguments << " -gravity Center  -crop #{config[:geometry].delete("#")}+0+0 +repage"
+                  image.arguments << " -gravity Center  -crop #{config[:geometry].delete("#")}+0+0 +repage #{config[:grayscale] && config[:grayscale] == true ? "-colorspace Gray":""}"
                 rescue => e
                   puts e
                 end
               else
                 image.resize config[:geometry]
+                image.arguments << "-colorspace Gray" if config[:grayscale] && config[:grayscale] == true
               end
               image.save File.join(asset.tmp_directory, file_name)
               asset.move_tmp_file_to_actual_directory(file_name, true)
