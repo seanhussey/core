@@ -2,20 +2,23 @@ module Gluttonberg
   module Public
     class MembersController < Gluttonberg::Public::BaseController
       before_filter :is_members_enabled
-      
+
       before_filter :require_member , :only => [ :edit, :update, :show ]
       layout 'public'
-      
+
       def new
         @page_title = "Register"
         @member = Member.new
+        respond_to do |format|
+          format.html
+        end
       end
-  
+
       def create
         @member = Member.new(params[:gluttonberg_member])
         if Member.does_email_verification_required
           @member.confirmation_key = Digest::SHA1.hexdigest(Time.now.to_s + rand(12341234).to_s)[1..24]
-        else  
+        else
           @member.profile_confirmed = true
         end
         if @member && @member.save
@@ -31,8 +34,8 @@ module Gluttonberg
           render :new
         end
       end
-  
-  
+
+
       def confirm
         @member = Member.where(:confirmation_key => params[:key]).first
         if @member
@@ -47,7 +50,7 @@ module Gluttonberg
           redirect_to root_url
         end
       end
-  
+
       def resend_confirmation
         if current_member.confirmation_key.blank?
           confirmation_key = Digest::SHA1.hexdigest(Time.now.to_s + rand(12341234).to_s)[1..24]
@@ -58,7 +61,7 @@ module Gluttonberg
         flash[:notice] = "Please check your email for a confirmation."
         redirect_to member_profile_url
       end
-  
+
       def update
         @member = current_member
         if @member.update_attributes(params[:gluttonberg_member])
@@ -70,19 +73,25 @@ module Gluttonberg
           end
         end
       end
-  
+
       def show
         @member = current_member
+        respond_to do |format|
+          format.html
+        end
       end
-  
+
       def edit
         @member = current_member
+        respond_to do |format|
+          format.html
+        end
       end
-  
-  
-  
+
+
+
       protected
-  
+
     end
   end
 end

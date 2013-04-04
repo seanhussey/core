@@ -2,6 +2,9 @@ class <%= plural_class_name %>Controller < Gluttonberg::Public::BaseController
 
   def index
     @<%= plural_name %> = <%= class_name %>.published<% if draggable? %>.order('position asc') <%end%>
+    respond_to do |format|
+      format.html
+    end
   end
 
   def show
@@ -13,6 +16,9 @@ class <%= plural_class_name %>Controller < Gluttonberg::Public::BaseController
       end
     end
     raise ActiveRecord::RecordNotFound.new if @<%= singular_name %>.blank?
+    respond_to do |format|
+       format.html
+    end
   end
 
 end
