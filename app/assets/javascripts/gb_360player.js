@@ -1023,7 +1023,7 @@ function ThreeSixtyPlayer() {
     for (i=0,j=oItems.length; i<j; i++) {
       oLinks.push(oItems[i].getElementsByTagName('a')[0]);
       // remove "fake" play button (unsupported case)
-      oItems[i].style.backgroundImage = 'none';
+      //oItems[i].style.backgroundImage = 'none';
     }
     // grab all links, look for .mp3
 

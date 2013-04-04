@@ -889,11 +889,9 @@ Array.prototype.remove= function(){
 function setUpAudio(){
   soundManager.setup({
     useFlashBlock: true, // optional - if used, required flashblock.css
-    url: '/swf/', // required: path to directory containing SM2 SWF files
-    debugMode: false
+    url: '/assets/gb_swf/', // required: path to directory containing SM2 SWF files
+    debugMode: true
   });
-  // basicMP3Player = new BasicMP3Player();
-  // console.log(basicMP3Player)
 }
 
 function setUp360(){

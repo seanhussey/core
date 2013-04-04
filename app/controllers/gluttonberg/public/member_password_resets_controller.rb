@@ -1,14 +1,17 @@
 module Gluttonberg
   module Public
-    class MemberPasswordResetsController < Gluttonberg::Public::BaseController  
+    class MemberPasswordResetsController < Gluttonberg::Public::BaseController
       skip_before_filter :require_member
       before_filter :load_member_using_perishable_token, :only => [:edit, :update]
-      
+
       layout 'public'
-      
+
       def new
+        respond_to do |format|
+          format.html
+        end
       end
-      
+
       def create
         @member = Member.find_by_email(params[:gluttonberg_member][:email])
         if @member
@@ -21,11 +24,13 @@ module Gluttonberg
           redirect_to root_path
         end
       end
-      
+
       def edit
-        
+        respond_to do |format|
+          format.html
+        end
       end
-      
+
       def update
         @member.password = params[:gluttonberg_member][:password]
         @member.password_confirmation = params[:gluttonberg_member][:password_confirmation]
@@ -36,9 +41,9 @@ module Gluttonberg
           render :edit
         end
       end
-      
+
       private
-      
+
         def load_member_using_perishable_token
           @member = Member.find_using_perishable_token(params[:id])
           unless @member
@@ -49,7 +54,7 @@ module Gluttonberg
             redirect_to root_path
           end
         end
-    
+
     end
   end
 end

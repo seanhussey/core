@@ -36,10 +36,10 @@
           %td
 
             - if asset.category == 'audio'
-              .sm2-inline-list
-                .ui360
-                  %a{:href => "#{asset_url(asset)}", :target => "_blank" , :class => ""}
-                    = asset.name
+              /.sm2-inline-block
+              .ui360
+                %a{:href => "#{asset_url(asset)}", :target => "_blank" , :class => ""}
+                  Play
             - elsif asset.category == 'image'
               %a{:href => admin_asset_url(asset), :class => "thumbnail"}
               %img{:src => asset.thumb_small_url  }

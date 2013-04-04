@@ -1,18 +1,20 @@
 module Gluttonberg
   module Public
     class FlagController <  Gluttonberg::Public::BaseController
-      
+
       def new
         model = nil
         if params[:flaggable_type].include?("Gluttonberg::")
           model = Gluttonberg.const_get(params[:flaggable_type][13..-1])
-        else  
+        else
           model = Kernel.const_get(params[:flaggable_type])
-        end  
+        end
         @flaggable = model.find(params[:flaggable_id])
-        
+        respond_to do |format|
+          format.html
+        end
       end
-  
+
       def create
         flag = current_user.flags.create params[:flag]
         flash[:notice] = if flag.new_record?
@@ -24,22 +26,21 @@ module Gluttonberg
 
         respond_to do |format|# note: you'll need to ensure that this route exists
           format.html {
-            url = "" 
+            url = ""
             begin
               if flag.flaggable.respond_to?(:commentable)
                 url = polymorphic_path(flag.flaggable.commentable)
               else
                 url = polymorphic_path(flag.flaggable)
-              end  
+              end
               flag.update_attributes(:url => url)
               redirect_to url
             rescue => e
             end
           }
-          # format.js # render some js trickery
         end
       end
-  
+
     end
   end
 end

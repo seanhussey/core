@@ -1,15 +1,18 @@
 module Gluttonberg
   module Public
     class MemberSessionsController < Gluttonberg::Public::BaseController
-      
+
       layout 'public'
       before_filter :is_members_enabled
       skip_before_filter :require_member, :only => [:new, :create]
-      
+
       def new
         @member_session = MemberSession.new
+        respond_to do |format|
+          format.html
+        end
       end
-  
+
       def create
         @member_session = MemberSession.new(params[:member_session])
         if @member_session.save
@@ -19,7 +22,7 @@ module Gluttonberg
           render :action => :new
         end
       end
-  
+
       def destroy
         current_member_session.destroy
         flash[:notice] = "Logout successful!"

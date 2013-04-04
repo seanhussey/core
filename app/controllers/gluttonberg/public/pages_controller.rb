@@ -2,23 +2,23 @@ module Gluttonberg
   module Public
     class PagesController < Gluttonberg::Public::BaseController
       before_filter :retrieve_page , :only => [ :show ]
-      
+
       # If localized template file exist then render that file otherwise render non-localized template
       def show
         if Gluttonberg::Member.enable_members == true && !@page.is_public?
           return unless require_member
           unless current_member.does_member_have_access_to_the_page?(page)
             raise CanCan::AccessDenied
-          end  
+          end
         end
-        
+
         template = page.view
         template_path = "pages/#{template}"
-        
+
         if locale && File.exists?(File.join(Rails.root,  "app/views/pages/#{template}.#{locale.slug}.html.haml" ) )
           template_path = "pages/#{template}.#{locale.slug}"
-        end  
-        
+        end
+
         # do not render layout for ajax requests
         if request.xhr?
           render :template => template_path, :layout => false
@@ -26,7 +26,7 @@ module Gluttonberg
           render :template => template_path, :layout => page.layout
         end
       end
-      
+
       def restrict_site_access
         setting = Gluttonberg::Setting.get_setting("restrict_site_access")
         if setting == params[:password]
@@ -34,11 +34,13 @@ module Gluttonberg
           redirect_to( params[:return_url] || "/")
           return
         else
-          cookies[:restrict_site_access] = ""  
+          cookies[:restrict_site_access] = ""
         end
-        render :layout => false
+        respond_to do |format|
+          format.html{ render :layout => false }
+        end
       end
-      
+
       def sitemap
         begin
           SitemapGenerator::Interpreter.respond_to?(:run)
@@ -46,26 +48,26 @@ module Gluttonberg
           render :layout => "bare" , :template => 'gluttonberg/public/exceptions/not_found.html.haml' , :status => 404
         end
       end
-      
+
       def stylesheets
         @stylesheet = Stylesheet.find(:first , :conditions => { :slug => params[:id] })
         unless params[:version].blank?
-          @version = params[:version]  
+          @version = params[:version]
           @stylesheet.revert_to(@version)
         end
         if @stylesheet.blank?
           render :text => ""
-        else  
+        else
           render :text => @stylesheet.value
-        end  
+        end
       end
-      
+
       def error_404
         render :layout => "bare" , :template => 'gluttonberg/public/exceptions/not_found.html.haml' , :status => 404
       end
-      
-      
-      private 
+
+
+      private
         def retrieve_page
           @page = env['gluttonberg.page']
           unless( current_user &&( authorize! :manage, Gluttonberg::Page) )
@@ -73,7 +75,7 @@ module Gluttonberg
           end
           raise ActiveRecord::RecordNotFound  if @page.blank?
         end
-      
+
     end
   end
 end

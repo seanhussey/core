@@ -7,7 +7,7 @@ module Gluttonberg
 
       def call(env)
         path = env['PATH_INFO']
-        unless path =~ /^#{Gluttonberg::Engine.config.admin_path}/ || path.start_with?("/stylesheets")  || path.start_with?("/javascripts")   || path.start_with?("/images") ||  path.start_with?("/gluttonberg")  || path.start_with?("/assets")  || path.start_with?("/user_asset") 
+        unless path =~ /^#{Gluttonberg::Engine.config.admin_path}/ || path.start_with?("/stylesheets")  || path.start_with?("/javascripts")   || path.start_with?("/images") ||  path.start_with?("/gluttonberg")  || path.start_with?("/assets")  || path.start_with?("/user_asset")
           case Gluttonberg::Engine.config.identify_locale
             when :subdomain
               # return the sub-domain
@@ -26,11 +26,12 @@ module Gluttonberg
               if result
                 env['PATH_INFO'].gsub!("/#{locale}", '')
                 env['gluttonberg.locale'] = result
+                env['GLUTTONBERG.LOCALE_INFO'] = locale
               end
             when :domain
               env['SERVER_NAME']
           end
-        end  
+        end
         @app.call(env)
       end
     end # Locales
