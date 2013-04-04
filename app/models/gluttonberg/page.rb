@@ -106,7 +106,7 @@ module Gluttonberg
           page.current_localization = page.localizations.where("locale_id = ? AND previous_path LIKE ? ", locale.id, path).first
         end
         page
-      else # default locale
+      elsif(!path.blank?) # default locale
          path = path[1]
          locale = Gluttonberg::Locale.first_default
          page = joins(:localizations).where("locale_id = ? AND gb_page_localizations.previous_path LIKE ? ", locale.id, path).first
