@@ -44,7 +44,7 @@ module Gluttonberg
           end
 
           #takes file from public/assets folder and upload to s3 if s3 info is given in CMS settings
-          def self.migrate_file_to_s3(asset_hash , file_name)
+          def self.migrate_file_to_s3(asset_hash , file_name, mime_type='')
             bucket = bucket_handle
             unless bucket.blank?
               local_file = "public/user_assets/" + asset_hash + "/" + file_name
@@ -55,8 +55,10 @@ module Gluttonberg
               unless asset.blank?
                 puts " Copying #{local_file} to #{S3::ClassMethods.s3_bucket_name}"
 
-                unless asset.mime_type.blank?
-                  key.write(File.open(local_file), {:expires => date.rfc2822, :content_type => asset.mime_type , :acl => :public_read })
+                mime_type = asset.mime_type if mime_type.blank?
+
+                unless mime_type.blank?
+                  key.write(File.open(local_file), {:expires => date.rfc2822, :content_type => mime_type , :acl => :public_read })
                 else
                   key.write(File.open(local_file) , {:expires => date.rfc2822 , :acl => :public_read })
                 end
