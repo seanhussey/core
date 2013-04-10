@@ -425,7 +425,6 @@ var AssetBrowser = {
     });
     var url = $("#assetsDialog form#asset_search_form").attr("action");
     url += ".json?" + $("#assetsDialog form#asset_search_form").serialize()
-    // $.getJSON(url, null, AssetBrowser.handleJSON);
     $.getJSON(url, null, function(json){
       $("#search_tab_results").html(json.markup);
       $("#search_tab_results").find("a").click(AssetBrowser.click);
@@ -486,7 +485,6 @@ var AssetBrowser = {
               AssetBrowser.close();
             }
           });
-          //auto_save_asset_for_gallery(AssetBrowser.actualLink.attr("data_url") , id )
         }
       }
 

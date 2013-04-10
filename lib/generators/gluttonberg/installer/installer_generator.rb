@@ -57,8 +57,8 @@ class Gluttonberg::InstallerGenerator < Rails::Generators::Base
     application %{
      # Gluttonberg Related config
 
-
      # config.cms_based_public_css = false
+     # config.custom_css_for_cms = false
      # config.custom_js_for_cms = false
      config.localize = false
      # By Default gluttonberg applications are localized. If you do not want localized application then uncomment following line.
@@ -74,7 +74,7 @@ class Gluttonberg::InstallerGenerator < Rails::Generators::Base
      config.thumbnails = {
        :jwysiwyg_image => {:label => "Thumb for jwysiwyg", :filename => "_jwysiwyg_image", :geometry => "250x200"}
      }
-
+     config.filter_parameters += [:password_confirmation]
 
     }
 

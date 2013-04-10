@@ -73,7 +73,6 @@ module Gluttonberg
       # controller/action. If there is it renders a link to the help
       # controller.
       def contextual_help
-
         if Help.help_available?(:controller => params[:controller], :page => params[:action])
           content_tag(
             :p,
@@ -399,8 +398,6 @@ module ActionView
           object.published_at = Time.zone.now if object.published_at.blank?
           html = "<fieldset id='publish_meta'><div class='publishing_block' > "
           html += select( :state, options_for_select(@@workflow_states , val), {} , :class => "publishing_state" )
-          # html += content_tag(:p , self.datetime_select("published_at" , {:prompt => {:day => 'Day', :month => 'Month', :year => 'Year'} , :order => [:day , :month , :year] }, :class => "span2") , :class => "published_at" )
-          #
           html += datetime_field("published_at")
           html += "</div></fieldset>"
 
@@ -433,10 +430,8 @@ module ActionView
             time = self.object.send(field_name).strftime("%I:%M %p")
           end
           html += text_field_tag("#{unique_field_name}_date" , date , date_field_html_opts )
-          # html += "<span class='date'>DD/MM/YYYY</span>"
           html += " "
           html += text_field_tag("#{unique_field_name}_time" , time , time_field_html_opts )
-          # html += "<span class='date time'>HH:MM AM/PM</span>"
           html += self.hidden_field("#{field_name}" ,  :class => "#{unique_field_name}")
           html += "<span class='help-block'><span class='span2'>DD/MM/YYYY</span> <span class='span2'>HH:MM AM/PM</span></span>"
           html += "<label class='error #{unique_field_name}_error'></label>"
