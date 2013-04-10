@@ -9,7 +9,7 @@ namespace :gluttonberg do
     task :create_thumbnails => :environment do
       category = Gluttonberg::AssetCategory.find( :first , :conditions =>{  :name => "image" } )
       if category
-        assets = category.assets #Asset.all
+        assets = category.assets
         assets.each do |asset|
           p "Generating thumbnails for #{asset.file_name}"
           if !File.exist?(asset.tmp_location_on_disk) && !File.exist?(asset.tmp_original_file_on_disk)
