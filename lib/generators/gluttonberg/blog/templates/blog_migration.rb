@@ -1,4 +1,4 @@
-class BlogMigration < ActiveRecord::Migration 
+class BlogMigration < ActiveRecord::Migration
   def self.up
     create_table :gb_blogs do |t|
       t.string :name, :null => false
@@ -15,19 +15,19 @@ class BlogMigration < ActiveRecord::Migration
       t.datetime :published_at
       t.timestamps
     end
-    
+
     create_table :gb_articles do |t|
       t.string :slug, :null => false
       t.integer :blog_id, :null => false
       t.integer :user_id, :null => false
-      t.integer :author_id, :null => false      
+      t.integer :author_id, :null => false
       t.column :state , :string #use for publishing
-      t.column :disable_comments , :boolean , :default => false 
-      t.datetime :published_at 
+      t.column :disable_comments , :boolean , :default => false
+      t.datetime :published_at
       t.string :previous_slug
       t.timestamps
     end
-    
+
     create_table :gb_comments do |t|
       t.text :body
       t.string :author_name
@@ -38,9 +38,11 @@ class BlogMigration < ActiveRecord::Migration
       t.boolean :moderation_required, :default => true
       t.boolean :approved, :default => false
       t.datetime :notification_sent_at
+      t.boolean :spam , :default =>  false
+      t.float   :spam_score
       t.timestamps
     end
-    
+
     create_table :gb_comment_subscriptions do |t|
       t.integer :article_id
       t.string :author_name
@@ -48,7 +50,7 @@ class BlogMigration < ActiveRecord::Migration
       t.string :reference_hash
       t.timestamps
     end
-    
+
     create_table :gb_article_localizations do |t|
       t.string :title, :null => false
       t.text :excerpt
@@ -63,19 +65,19 @@ class BlogMigration < ActiveRecord::Migration
       t.integer :fb_icon_id
       t.timestamps
     end
-    
+
     begin
       Gluttonberg::Blog.create_versioned_table
     rescue => e
       puts e
     end
-    
+
     begin
       Gluttonberg::ArticleLocalization.create_versioned_table
     rescue => e
       puts e
     end
-    
+
   end
 
   def self.down
