@@ -916,3 +916,22 @@ function stopAudio(){
     basicMP3Player.stopSound(basicMP3Player.lastSound);
   }
 }
+
+function initCollectionAccordion(){
+  $(".collapse").collapse({parent: "#accordion_for_collections"})
+  $(".accordion-heading a").click(function(e){
+    var target = $(this);
+    var accordionContent = $(target.attr('href'));
+      var accordionContentInner = accordionContent.find(".accordion-inner");
+      var collectionID = accordionContentInner.attr('data-id');
+
+      if(accordionContentInner.attr("content-loaded") == "false"){
+        accordionContentInner.prepend("<img src='/assets/gb_spinner.gif' class='gb_spinner'/>");
+        $.get("/admin/browser-collection/"+collectionID+".json", function(data){
+          $(".gb_spinner").remove();
+          accordionContentInner.prepend(data['markup']);
+        });
+        accordionContentInner.attr("content-loaded",true);
+      }
+    });
+}
