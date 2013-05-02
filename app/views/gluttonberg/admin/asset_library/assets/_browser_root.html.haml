@@ -39,22 +39,19 @@
   #collections.tab-pane
     - unless @collections.empty?
       .accordion#accordion_for_collections
-        - first_open = false
         - for collection in @collections
           - unless @category.blank? || @category.asset_type_ids.blank?
             - assets = collection.assets.where({:asset_type_id => @category.asset_type_ids })
           - else
             - assets = collection.assets
-          - if assets.length > 0
+          - if assets.count > 0
             .accordion-group
               .accordion-heading
                 %a{ :class=>"accordion-toggle no-ajax" , "data-toggle" => "collapse" , "data-parent" => "#accordion_for_collections" , "data-target" => "#collection-#{collection.id}", "href" => "#collection-#{collection.id}"}
-                  = "#{collection.name} ( #{pluralize(assets.length,'asset')} )"
-              .accordion-body{:id => "collection-#{collection.id}" , :class => "collapse #{first_open ? '' : 'in' } " }
-                .accordion-inner
-                  = render :partial => "gluttonberg/admin/shared/asset_panel.html" , :locals => {:assets => assets}
+                  = "#{collection.name} ( #{pluralize(assets.count,'asset')} )"
+              .accordion-body{:id => "collection-#{collection.id}" , :class => "collapse " }
+                .accordion-inner{"content-loaded" => "false" , "data-id" => collection.id}
                   .clear
-              - first_open = true
 
   #upload.tab-pane
     - @asset  = Gluttonberg::Asset.new

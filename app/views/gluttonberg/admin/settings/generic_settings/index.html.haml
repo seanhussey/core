@@ -1,6 +1,7 @@
 - @window_title = "Settings"
 - @page_title = "Configuration"
 
+- has_deletable_settings = Gluttonberg::Setting.has_deletable_settings?
 .row-fluid
   = render :partial => "/gluttonberg/admin/settings/main/sidebar"
   .span9
@@ -18,7 +19,7 @@
           %tr
             %th Name
             %th Value (Click to edit)
-            - if Gluttonberg::Setting.has_deletable_settings?
+            - if has_deletable_settings
               %th.controls Controls
         %tbody
           - i = 1
@@ -49,7 +50,7 @@
                   = gb_editable_field setting, :value , :update_url => admin_generic_setting_path( setting)
 
                 = image_tag("/assets/gb_spinner.gif" , :id => "progress_#{setting.id}" , :style => "display:none")
-              - if Gluttonberg::Setting.has_deletable_settings?
+              - if has_deletable_settings
                 %td.controls
                   - if setting.delete_able
                     = link_to 'Delete', delete_admin_generic_setting_path(setting)

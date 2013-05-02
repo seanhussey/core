@@ -493,6 +493,21 @@ var AssetBrowser = {
       if (target.attr("href") != '') {
         $.getJSON(target.attr("href"), null, AssetBrowser.handleJSON);
       }
+    } else if(target.is(".accordion-toggle")){
+      var accordionContent = $(target.attr('href'));
+      var accordionContentInner = accordionContent.find(".accordion-inner");
+      var collectionID = accordionContentInner.attr('data-id');
+
+      if(accordionContentInner.attr("content-loaded") == "false"){
+        accordionContentInner.prepend("<img src='/assets/gb_spinner.gif' class='gb_spinner'/>");
+        $.get("/admin/browser-collection/"+collectionID+".json", function(data){
+          $(".gb_spinner").remove();
+          accordionContentInner.prepend(data['markup']);
+        });
+        accordionContentInner.attr("content-loaded",true);
+      }
+
+      return true;
     } else if(target.is(".no-ajax")){
       return true;
     }
