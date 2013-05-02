@@ -58,6 +58,12 @@ module Gluttonberg
           end
         end
 
+        def browser_collection
+          @collection = AssetCollection.find(params[:id])
+          @assets = @collection.assets
+          render :layout => false
+        end
+
         # list assets page by page if user drill down into a category from category tab of home page
         def category
           params[:category] = params[:category].downcase.singularize unless params[:category].blank?
