@@ -22,11 +22,11 @@
                 - assets = collection.assets.where({:asset_type_id => @category.asset_type_ids })
               - else
                 - assets = collection.assets
-              - if assets.length > 0
+              - if assets.count > 0
                 .accordion-group
                   .accordion-heading
                     %a{ :class=>"accordion-toggle no-ajax" , "data-toggle" => "collapse" , "data-parent" => "#accordion_for_collections" , "data-target" => "#collection-#{collection.id}", "href" => "#collection-#{collection.id}"}
-                      = "#{collection.name} ( #{pluralize(assets.length,'asset')} )"
+                      = "#{collection.name} ( #{pluralize(assets.count,'asset')} )"
                   .accordion-body{:id => "collection-#{collection.id}" , :class => "collapse  in"}
                     .accordion-inner{"content-loaded" => "false" , "data-id" => collection.id}
 
