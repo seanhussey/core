@@ -28,11 +28,9 @@
                     %a{ :class=>"accordion-toggle no-ajax" , "data-toggle" => "collapse" , "data-parent" => "#accordion_for_collections" , "data-target" => "#collection-#{collection.id}", "href" => "#collection-#{collection.id}"}
                       = "#{collection.name} ( #{pluralize(assets.length,'asset')} )"
                   .accordion-body{:id => "collection-#{collection.id}" , :class => "collapse  in"}
-                    .accordion-inner
-                      = render :partial => "gluttonberg/admin/shared/asset_panel.html" , :locals => {:assets => assets}
-                      /%li= link_to("Edit", edit_admin_collection_url(collection)  )
-                      /%li= link_to("Delete", delete_admin_collection_url(collection) )
+                    .accordion-inner{"content-loaded" => "false" , "data-id" => collection.id}
+
 
 
 :javascript
-  $(".collapse").collapse({parent: "#accordion_for_collections"})
+  initCollectionAccordion();
