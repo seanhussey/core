@@ -334,8 +334,15 @@ var AssetBrowser = {
 
     $(window).resize(function(e) {
       $("#assetsDialog").css({
-        position: "absolute",
-        top: (($(window).scrollTop())) + "px"
+        height: ($(window).height()*0.9) + "px",
+        width: ($(window).width()*0.7) + "px",
+        "margin-top": "-" + (($(window).height()*0.9)/2) + "px",
+        "margin-left": "-" + (($(window).width()*0.7)/2) + "px"
+      })
+
+      $(".modal-body").css({
+        "max-height": (($(window).height()*0.9) - 135) + "px",
+        "height": (($(window).height()*0.9) - 135) + "px"
       })
 
     })
@@ -500,7 +507,7 @@ var AssetBrowser = {
 
       if(accordionContentInner.attr("content-loaded") == "false"){
         accordionContentInner.prepend("<img src='/assets/gb_spinner.gif' class='gb_spinner'/>");
-        $.get("/admin/browser-collection/"+collectionID+".json", function(data){
+        $.get("/admin/browser-collection/"+collectionID+".json?filter="+AssetBrowser.filter.val(), function(data){
           $(".gb_spinner").remove();
           accordionContentInner.prepend(data['markup']);
         });
