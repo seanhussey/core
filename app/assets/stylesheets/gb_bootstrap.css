@@ -2385,6 +2385,7 @@ input[type="submit"].btn.btn-mini {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
+  margin-left: -88px;
 }
 .btn-group.open .dropdown-toggle {
   background-image: none;
