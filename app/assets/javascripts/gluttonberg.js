@@ -26,3 +26,4 @@
 //= require ./gb_soundmanager2-jsmin
 //= require ./gb_360player
 //= require ./redactormin.js
+//= require ./gb_application
