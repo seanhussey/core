@@ -94,7 +94,10 @@ module Gluttonberg
         javascript_tag("enable_slug_management_on('#{html_class}')" )
       end
 
-
+      def enable_redactor(html_class)
+        content = "$('.#{html_class}').redactor();\n"
+        javascript_tag(content)
+      end
 
     end # Content
 end # Gluttonberg
