@@ -10,17 +10,14 @@
 // WARNING: THE FIRST BLANK LINE MARKS THE END OF WHAT'S TO BE PROCESSED, ANY BLANK LINE SHOULD
 // GO AFTER THE REQUIRES BELOW.
 //
-//= require ./jquery-1-7-1
+//= require ./jquery-1-10-1
 //= require ./gb_bootstrap
-//= require ./gb_bootstrap-datepicker
-//= require ./jquery-dimensions-min
-//= require ./jquery-ui-1-8-23-custom-min
+//= require ./jquery-ui-1-10-3.custom-min
 //= require ./jquery-validate
 //= require ./gb_jquery-dragTree
 //= require ./rails
-//= require ./gb_tags
-//= require ./gb_ajaxfileupload
-//= require ./gb_expander
+//= require ./gb_utils
+//= require ./gb_jeditable
 //= require ./jcrop/js/jquery-Jcrop-min
 //= require ./gb_berniecode-animator
 //= require ./gb_soundmanager2-jsmin
