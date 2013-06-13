@@ -1,21 +1,21 @@
 $(document).ready(function() {
-
   dragTreeManager.init();
   initClickEventsForAssetLinks($("body"));
   initSlugManagement();
   initBetterSlugManagement();
-  init_setting_dropdown_ajax();
+  initSettingDropdownAjax();
   initPublishedDateTime();
   initBulkDeleteAsset();
+  initGluttonbergUI();
+  initFormValidation();
+  setUpAudio();
+});
 
-  $("#wrapper p#contextualHelp a").click(Help.click);
 
+function initGluttonbergUI(){
   if ($('table').length > 0) {
     $('table').find('tr:last').css('background-image', 'none !important');
   }
-
-  $("form.validation").validate();
-
   if( $('.page_flash').length > 0){
     if($(".model-error").length > 0){
       $('.page_flash').remove();
@@ -27,153 +27,10 @@ $(document).ready(function() {
   $("ul.nav a.active").each(function(){
     $(this).parent("li").addClass('active')
   });
-
-  setUpAudio();
-
-});
-
-function initBetterSlugManagement() {
-  var str = $('#page_slug_holder .domain').html();
-  var pt = $('#page_title');
-  var pb = $('#page_slug .edit');
-  var ps = $('#page_slug span');
-  var hs = $('#page_hidden_slug');
-  var regex = /[\!\*'"″′‟‛„‚”“”˝\(\);:.@&=+$,\/?%#\[\]]/gim;
-  var doNotEdit = ps.attr('donotedit');
-  var editPage = false;
-  var slugLength = 0;
-  var slug = "";
-  var currentSlug = "";
-
-  if (typeof doNotEdit == 'string') {
-    doNotEdit = true;
-    editPage = true;
-  } else {
-    doNotEdit = false;
-  }
-
-  $('#page_slug_holder .domain').html($.trim(str));
-
-  pt.keyup(function(){
-    if (!doNotEdit) {
-      slug = pt.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, '')
-      ps.html(slug);
-      hs.attr('value', slug);
-    };
-  })
-
-  pb.click(function(){
-    hs.show();
-    ps.hide();
-    pb.hide();
-    hs.focus();
-    doNotEdit = true;
-    slugLength = hs.val().length;
-    currentSlug = hs.val();
-  })
-
-  hs.focusout(function(){
-    var len = hs.val().length;
-    if (doNotEdit) {
-      if (len == 0) {
-        hs.hide();
-        ps.show();
-        pb.show();
-        if (!editPage) {
-          doNotEdit = false;
-          slug = pt.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, '')
-          ps.html(slug);
-          hs.attr('value', slug);
-        } else {
-          hs.attr('value', currentSlug);
-        }
-      } else if(slugLength == len) {
-        hs.hide();
-        ps.show();
-        pb.show();
-        if (!editPage) {
-          doNotEdit = false;
-        }
-      } else {
-        hs.hide();
-        ps.show();
-        pb.show();
-        ps.html(hs.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, ''));
-        doNotEdit = true;
-      };
-    };
-  })
-
 }
 
-
-function enable_jwysiwyg_on(selector) {
-  $(document).ready(function() {
-    $(selector).tinymce({
-      // Location of TinyMCE script
-      script_url: '/assets/tiny_mce/tiny_mce.js',
-
-      // General options
-      theme: "advanced",
-      plugins: "autolink,lists,style,table,advhr,advlink,gb_assets,inlinepopups,insertdatetime,preview,paste,fullscreen,advlist,wordcount",
-
-      // Theme options
-      theme_advanced_buttons1: "gb_assets,newdocument,|,bold,italic,underline,|,justifyleft,justifyright,styleselect,formatselect,|,attribs,removeformat,cleanup,code",
-      theme_advanced_buttons2: "pastetext,pasteword,|,bullist,numlist,|,blockquote,|,undo,redo,|,link,unlink,anchor,|,insertdate,inserttime|,advhr,",
-      theme_advanced_buttons3: "tablecontrols,|,fullscreen,preview",
-      theme_advanced_toolbar_location: "top",
-      theme_advanced_toolbar_align: "left",
-      theme_advanced_statusbar_location: "bottom",
-      theme_advanced_resizing: true,
-      plugin_insertdate_dateFormat: "%d/%m/%Y",
-      plugin_insertdate_timeFormat: "%H:%M:%S",
-      theme_advanced_resizing_use_cookie: false,
-			width: get_wysiwyg_width(selector),
-
-      // Example content CSS (should be your site CSS)
-      content_css: "/stylesheets/user-styles.css"
-
-    });
-
-  });
-}
-
-function get_wysiwyg_width(selector){
-	if($(selector).attr('width')){
-		return $(selector).attr('width')
-	} else {
-		return null;
-	}
-}
-
-
-
-// This method initialize slug related event on a title text box.
-function initSlugManagement() {
-  try {
-    var pt = $('#page_title');
-    var ps = $('#page_slug');
-
-    var regex = /[\!\*'"″′‟‛„‚”“”˝\(\);:.@&=+$,\/?%#\[\]]/gim;
-
-    var pt_function = function() {
-      if (ps.attr('donotmodify') != 'true') ps.attr('value', pt.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, ''));
-    };
-
-    pt.bind("keyup", pt_function);
-    pt.bind("blur", pt_function);
-
-    ps.bind("blur", function() {
-      ps.attr('value', ps.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, ''));
-      ps.attr('donotmodify', 'true');
-    });
-  } catch(e) {
-    console.log(e)
-  }
-}
-
-function enable_slug_management_on(src_class){
-  $("."+src_class).attr('id','page_title')
+function initFormValidation(){
+  $("form.validation").validate();
 }
 
 
@@ -182,7 +39,6 @@ function enable_slug_management_on(src_class){
 function initClickEventsForAssetLinks(element) {
   element.find(".thumbnails a.choose_button").click(function(e) {
     var p = $(this).parent().parent().parent(".asset_selector_wrapper");
-
     var link = $(this);
     AssetBrowser.showOverlay()
     $.get(link.attr("href"), null, function(markup) {
@@ -193,35 +49,6 @@ function initClickEventsForAssetLinks(element) {
 
 }
 
-// Common utility functions shared between the different dialogs.
-var Dialog = {
-  center: function() {
-    var offset = $(document).scrollTop();
-    for (var i = 0; i < arguments.length; i++) {
-      arguments[i].css({
-        top: offset + "px"
-      });
-    };
-  },
-  PADDING_ATTRS: ["padding-top", "padding-bottom"],
-  resizeDisplay: function(object) {
-    // Get the display and the offsets if we don't have them
-    if (!object.display) object.display = object.frame.find(".display");
-    if (!object.offsets) object.offsets = object.frame.find("> *:not(.display)");
-    var offsetHeight = 0;
-    object.offsets.each(function(i, node) {
-      offsetHeight += $(node).outerHeight();
-    });
-    // Get the padding for the display
-    if (!object.displayPadding) {
-      object.displayPadding = 0
-      for (var i = 0; i < this.PADDING_ATTRS.length; i++) {
-        object.displayPadding += parseInt(object.display.css(this.PADDING_ATTRS[i]).match(/\d+/)[0]);
-      };
-    }
-    object.display.height(object.frame.innerHeight() - (offsetHeight + object.displayPadding));
-  }
-};
 
 var AssetBrowser = {
   overlay: null,
@@ -295,7 +122,7 @@ var AssetBrowser = {
 
     AssetBrowser.browser.find("#ajax_new_asset_form").submit(function(e) {
       if($("#asset_file").val() != null && $("#asset_name").val() != null && $("#asset_file").val() != "" && $("#asset_name").val() != ""){
-        ajaxFileUpload(link);
+        ajaxFileUploadForAssetLibrary(link);
       }
       e.preventDefault();
     });
@@ -311,41 +138,12 @@ var AssetBrowser = {
       console.log(e);
     }
 
-
-
-
-    $("#assetsDialog").css({
-      height: ($(window).height()*0.9) + "px",
-      width: ($(window).width()*0.7) + "px",
-      "margin-top": "-" + (($(window).height()*0.9)/2) + "px",
-      "margin-left": "-" + (($(window).width()*0.7)/2) + "px"
-    })
-
-    $(".modal-body").css({
-      "max-height": (($(window).height()*0.9) - 135) + "px",
-      "height": (($(window).height()*0.9) - 135) + "px"
-    })
-
     try {
       $("#assetsDialog form.validation").validate();
     } catch(e) {
       console.log(e)
     }
 
-    $(window).resize(function(e) {
-      $("#assetsDialog").css({
-        height: ($(window).height()*0.9) + "px",
-        width: ($(window).width()*0.7) + "px",
-        "margin-top": "-" + (($(window).height()*0.9)/2) + "px",
-        "margin-left": "-" + (($(window).width()*0.7)/2) + "px"
-      })
-
-      $(".modal-body").css({
-        "max-height": (($(window).height()*0.9) - 135) + "px",
-        "height": (($(window).height()*0.9) - 135) + "px"
-      })
-
-    })
   },
   sameHeightForAllElementsOfSameRow: function(parent_element){
 
@@ -368,8 +166,17 @@ var AssetBrowser = {
     });
   },
   resizeDisplay: function() {
-    // var newHeight = AssetBrowser.browser.innerHeight() - AssetBrowser.offsetHeight;
-    // AssetBrowser.display.height(newHeight);
+    $("#assetsDialog").css({
+      height: ($(window).height()*0.9) + "px",
+      width: ($(window).width()*0.7) + "px",
+      "margin-top": "-" + (($(window).height()*0.9)/2) + "px",
+      "margin-left": "-" + (($(window).width()*0.7)/2) + "px"
+    })
+
+    $(".modal-body").css({
+      "max-height": (($(window).height()*0.9) - 135) + "px",
+      "height": (($(window).height()*0.9) - 135) + "px"
+    })
   },
   showOverlay: function() {
     AssetBrowser.overlay = $("#assetsDialogOverlay");
@@ -452,7 +259,7 @@ var AssetBrowser = {
         image_url = target.attr("data-jwysiwyg");
         file_type = target.attr("data-category");
         file_title = name;
-        insert_image_in_wysiwyg(image_url,file_type,file_title);
+        insertImageInWysiwyg(image_url,file_type,file_title);
 
         AssetBrowser.nameDisplay.html(name);
 
@@ -474,7 +281,7 @@ var AssetBrowser = {
         }
 
 
-        auto_save_asset(AssetBrowser.logo_setting_url, id); //auto save if it is required
+        autoSaveAsset(AssetBrowser.logo_setting_url, id); //auto save if it is required
       } else {
         if (AssetBrowser.actualLink.hasClass("add_image_to_gallery")) {
 
@@ -556,31 +363,34 @@ var AssetBrowser = {
 };
 
 
-function insert_image_in_wysiwyg(image_url,file_type,title) {
+function insertImageInWysiwyg(image_url,file_type,title) {
   if (AssetBrowser.Wysiwyg != undefined && AssetBrowser.Wysiwyg !== null) {
     Wysiwyg = AssetBrowser.Wysiwyg;
-    if(file_type == undefined)
+    if(file_type == undefined){
       file_type = "";
-    if(title == undefined)
+    }
+    if(title == undefined){
       title = "";
-    if(Wysiwyg.selection.getContent() != "" && Wysiwyg.selection.getContent() != null)
-      title = Wysiwyg.selection.getContent();
+    }
+    if(!blank(Wysiwyg.getSelectionText())){
+      title = Wysiwyg.getSelectionText();
+    }
     description = "";
     style = "";
-    if(file_type == "image")
+    if(file_type == "image"){
       image = "<img src='" + image_url + "' title='" + title + "' alt='" + description + "'" + style + "/>";
-    else
+    }else{
       image = " <a href='"+image_url+"' >"+title+"</a> ";
-    Wysiwyg.execCommand('mceInsertContent', false, image);
-
+    }
+    Wysiwyg.insertHtml(image);
   }
+
 }
 
 
-function auto_save_asset(url, new_id) {
+function autoSaveAsset(url, new_id) {
   // HACK FOR LOGO SETTINGS
   if (AssetBrowser.logo_setting != undefined && AssetBrowser.logo_setting != null && AssetBrowser.logo_setting == true) {
-    //data_id = data_id;
     new_value = new_id;
 
     $.ajax({
@@ -592,56 +402,11 @@ function auto_save_asset(url, new_id) {
   }
 }
 
-// Help Browser
-// Displays the help in an overlayed box. Intended to be used for contextual
-// help initially.
-var Help = {
-  load: function(url) {
-    $.get(url, null, function(markup) {
-      Help.show(markup)
-    });
-  },
-  show: function(markup) {
-    this.buildFrames();
-    this.frame.html(markup)
-    this.frame.find("a#closeHelp").click(this.close);
-    var centerFunction = function() {
-      Dialog.center(Help.frame, Help.overlay);
-      Dialog.resizeDisplay(Help);
-    };
-    $(window).resize(centerFunction);
-    $(document).scroll(centerFunction);
-    centerFunction();
-  },
-  close: function() {
-    Help.display = null;
-    Help.offsets = null;
-    Help.displayPadding = null;
-    Help.frame.hide();
-    Help.overlay.hide();
-    return false;
-  },
-  click: function(e) {
-    Help.load(this.href);
-    return false;
-  },
-  buildFrames: function() {
-    if (!this.overlay) {
-      this.overlay = $('<div id="overlay">&nbsp</div>');
-      $("body").append(this.overlay);
-      this.frame = $('<div id="helpDialog">&nbsp</div>');
-      $("body").append(this.frame);
-    } else {
-      this.overlay.show();
-      this.frame.show();
-    }
-  }
-};
 
 
+/* Setup settings page */
 
-
-function init_setting_dropdown_ajax() {
+function initSettingDropdownAjax() {
   $(".setting_dropdown").change(function() {
     url = $(this).attr("rel");
     id = $(this).attr("data_id");
@@ -659,12 +424,11 @@ function init_setting_dropdown_ajax() {
     });
 
   });
-  init_home_page_setting_dropdown_ajax();
+  initHomePageSettingDropdownAjax();
 }
 
 
-
-function init_home_page_setting_dropdown_ajax() {
+function initHomePageSettingDropdownAjax() {
   $(".home_page_setting_dropdown").change(function() {
     url = $(this).attr("rel");
     id = "home_page"
@@ -686,8 +450,9 @@ function init_home_page_setting_dropdown_ajax() {
 }
 
 
+/* Setup Ajax file upload */
 
-function ajaxFileUpload(link) {
+function ajaxFileUploadForAssetLibrary(link) {
   //starting setting some animation when the ajax starts and completes
   $("#loading").ajaxStart(function() {
     $(this).show();
@@ -706,15 +471,15 @@ function ajaxFileUpload(link) {
   }
 
   /*
-        prepareing ajax file upload
-        url: the url of script file handling the uploaded files
-                    fileElementId: the file type of input element id and it will be the index of  $_FILES Array()
-        dataType: it support json, xml
-        secureuri:use secure protocol
-        success: call back function when the ajax complete
-        error: callback function when the ajax failed
+    prepareing ajax file upload
+    url: the url of script file handling the uploaded files
+                fileElementId: the file type of input element id and it will be the index of  $_FILES Array()
+    dataType: it support json, xml
+    secureuri:use secure protocol
+    success: call back function when the ajax complete
+    error: callback function when the ajax failed
 
-            */
+  */
   $.ajaxFileUpload({
     url: '/admin/add_asset_using_ajax',
     secureuri: false,
@@ -746,9 +511,9 @@ function ajaxFileUpload(link) {
         }
       }catch(e){}
       if(data["category"] == "image")
-        insert_image_in_wysiwyg(jwysiwyg_image,data["category"],data["title"]);
+        insertImageInWysiwyg(jwysiwyg_image,data["category"],data["title"]);
       else
-        insert_image_in_wysiwyg(file_path,data["category"],data["title"]);
+        insertImageInWysiwyg(file_path,data["category"],data["title"]);
 
       data_id = $(this).attr("data_id");
       url = AssetBrowser.logo_setting_url;
@@ -769,7 +534,6 @@ function ajaxFileUpload(link) {
         });
       }
 
-
       AssetBrowser.close();
     },
     error: function(data, status, e) {
@@ -782,7 +546,7 @@ function ajaxFileUpload(link) {
 
 }
 
-
+/* Setup jcrop - image cropping library for asset library */
 
 function initJcrop(image_type, w, h) {
   var ratio = w/(h*1.0);
@@ -801,42 +565,33 @@ function initJcrop(image_type, w, h) {
 
 
 
-function updateCoords(c) {
-
-};
-
-
-
-
-
+/* Setup publish date and time fields */
 
 function initPublishedDateTime() {
-
-
   $(".publishing_state").change(function(){
-    updatePublishedDateField()
+    updatePublishedDateField();
   })
 
   function updatePublishedDateField(){
     if($(".publishing_state").val()=="published"){
-      $(".published_at").show()
+      $(".published_at").show();
     }else{
-      $(".published_at").hide()
+      $(".published_at").hide();
     }
   }
-  updatePublishedDateField()
+  updatePublishedDateField();
 }
 
-
+/* Setup Gallery */
 
 function initEditGalleryList() {
-  $(".delete_gallery_item").click(delete_event_handler_for_gallery_list)
+  $(".delete_gallery_item").click(deleteEventHandlerForGalleryList)
 
 }
 
-function delete_event_handler_for_gallery_list() {
+function deleteEventHandlerForGalleryList() {
   id = $(this).attr("rel")
-  $("#progress_" + id).show("fast")
+  $("#progress_" + id).show("fast");
   $.ajax({
     url: $(this).attr("data-url"),
     type: "GET",
@@ -845,6 +600,8 @@ function delete_event_handler_for_gallery_list() {
     }
   });
 }
+
+/* Setup Bulk actions for asset library */
 
 var selected_assets_ids = [];
 function initBulkDeleteAsset(){
@@ -892,19 +649,7 @@ function initBulkDeleteAsset(){
 }
 
 
-
-Array.prototype.remove= function(){
-    var what, a= arguments, L= a.length, ax;
-    while(L && this.length){
-        what= a[--L];
-        while((ax= this.indexOf(what))!= -1){
-            this.splice(ax, 1);
-        }
-    }
-    return this;
-}
-
-// Audio
+/* Setup Audio */
 
 function setUpAudio(){
   soundManager.setup({
@@ -912,10 +657,6 @@ function setUpAudio(){
     url: '/assets/gb_swf/', // required: path to directory containing SM2 SWF files
     debugMode: true
   });
-}
-
-function setUp360(){
-
 }
 
 function stopAudio(){
@@ -942,3 +683,151 @@ function initCollectionAccordion(){
       }
     });
 }
+
+
+
+/* Redactor wysiwyg Setup and its plugins */
+
+function enable_redactor(selector) {
+  $(document).ready(function() {
+    $(selector).redactor({
+      buttons: ['html', '|', 'formatting', '|', 'bold',
+        'italic', 'deleted', '|', 'unorderedlist', 'orderedlist',
+        'outdent', 'indent', '|', 'video',
+        'table', 'link', '|', 'fontcolor', 'backcolor', '|',
+        'alignment'
+      ],
+      plugins: ['asset_library_image']
+    });
+
+  });
+}
+
+if (typeof RedactorPlugins === 'undefined') var RedactorPlugins = {};
+
+RedactorPlugins.asset_library_image = {
+
+  init: function()
+  {
+    this.buttonAddBefore('video', 'asset_library_image', 'Insert image from asset library', function()
+    {
+      var self = this;
+      var url = "/admin/browser";
+      var link = $("<img src='/admin/browser' />");
+      var p = $("<p> </p>");
+      AssetBrowser.showOverlay()
+      $.get(url, null,
+        function(markup) {
+          AssetBrowser.load(p, link, markup, self );
+        }
+      );
+    });
+  }
+}
+
+
+/* Setup Slug management */
+function initBetterSlugManagement() {
+  var str = $('#page_slug_holder .domain').html();
+  var pt = $('#page_title');
+  var pb = $('#page_slug .edit');
+  var ps = $('#page_slug span');
+  var hs = $('#page_hidden_slug');
+  var regex = /[\!\*'"″′‟‛„‚”“”˝\(\);:.@&=+$,\/?%#\[\]]/gim;
+  var doNotEdit = ps.attr('donotedit');
+  var editPage = false;
+  var slugLength = 0;
+  var slug = "";
+  var currentSlug = "";
+
+  if (typeof doNotEdit == 'string') {
+    doNotEdit = true;
+    editPage = true;
+  } else {
+    doNotEdit = false;
+  }
+
+  $('#page_slug_holder .domain').html($.trim(str));
+
+  pt.keyup(function(){
+    if (!doNotEdit) {
+      slug = pt.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, '')
+      ps.html(slug);
+      hs.attr('value', slug);
+    };
+  })
+
+  pb.click(function(){
+    hs.show();
+    ps.hide();
+    pb.hide();
+    hs.focus();
+    doNotEdit = true;
+    slugLength = hs.val().length;
+    currentSlug = hs.val();
+  })
+
+  hs.focusout(function(){
+    var len = hs.val().length;
+    if (doNotEdit) {
+      if (len == 0) {
+        hs.hide();
+        ps.show();
+        pb.show();
+        if (!editPage) {
+          doNotEdit = false;
+          slug = pt.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, '')
+          ps.html(slug);
+          hs.attr('value', slug);
+        } else {
+          hs.attr('value', currentSlug);
+        }
+      } else if(slugLength == len) {
+        hs.hide();
+        ps.show();
+        pb.show();
+        if (!editPage) {
+          doNotEdit = false;
+        }
+      } else {
+        hs.hide();
+        ps.show();
+        pb.show();
+        ps.html(hs.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, ''));
+        doNotEdit = true;
+      };
+    };
+  })
+
+}
+
+
+// This method initialize slug related event on a title text box.
+function initSlugManagement() {
+  try {
+    var pt = $('#page_title');
+    var ps = $('#page_slug');
+
+    var regex = /[\!\*'"″′‟‛„‚”“”˝\(\);:.@&=+$,\/?%#\[\]]/gim;
+
+    var pt_function = function() {
+      if (ps.attr('donotmodify') != 'true') ps.attr('value', pt.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, ''));
+    };
+
+    pt.bind("keyup", pt_function);
+    pt.bind("blur", pt_function);
+
+    ps.bind("blur", function() {
+      ps.attr('value', ps.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, ''));
+      ps.attr('donotmodify', 'true');
+    });
+  } catch(e) {
+    console.log(e)
+  }
+}
+
+function enable_slug_management_on(src_class){
+  $("."+src_class).attr('id','page_title')
+}
+
+
