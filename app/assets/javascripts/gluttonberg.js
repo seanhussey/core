@@ -14,13 +14,11 @@
 //= require ./gb_bootstrap
 //= require ./jquery-ui-1-10-3.custom-min
 //= require ./jquery-validate
-//= require ./gb_jquery-dragTree
+//= require ./redactormin.js
 //= require ./rails
 //= require ./gb_utils
 //= require ./gb_jeditable
 //= require ./jcrop/js/jquery-Jcrop-min
-//= require ./gb_berniecode-animator
 //= require ./gb_soundmanager2-jsmin
 //= require ./gb_360player
-//= require ./redactormin.js
 //= require ./gb_application
