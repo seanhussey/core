@@ -360,10 +360,8 @@ var dragTreeManager = {
         scroll: true,
         drag: function(e, ui){
           if (dragManager.dropSite) {
-            //var top = dragManager.dropSite.offset({padding: true, border: true, margin: true}).top;
             var top = dragManager.dropSite.offset().top ;
-            var height = dragManager.dropSite.outerHeight({padding: false, border: false, margin: true});
-
+            var height = dragManager.dropSite.height();
 
             var mouseTop = e.pageY;
             var topOffset = 10;
@@ -375,7 +373,6 @@ var dragTreeManager = {
             }
 
             $("#"+$(this).attr('rel')).addClass("ui-draggable-dragging")
-
 
             if( dragManager.dropSite.attr('id') != $(this).attr('rel')){
               if (mouseTop < (top + topOffset)){
@@ -409,7 +406,6 @@ var dragTreeManager = {
         $(this).parents("tr").droppable({
           accept: ".drag-node:not(selected)",
           drop: function(e, ui) {
-
 
             var sourceNode = $(ui.draggable).parents("tr")
             var targetNode = this;
