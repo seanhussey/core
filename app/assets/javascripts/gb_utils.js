@@ -1308,17 +1308,18 @@ var dragTreeManager = {
             url: dragTree.attr("rel"),
             data: "element_ids=" + ids,
             beforeSend: function(jqXHR, settings){
-              showOverlay()
+              showOverlay();
             },
             success: function(html){
-              hideOverlay()
+              window.setTimeout(function(){
+                hideOverlay();
+              },500)
             },
             error: function(html){
 
               $("#assetsDialogOverlay").html(html.responseText);
-              // window.location.reload();
               window.setTimeout(function(){
-                hideOverlay()
+                hideOverlay();
               },10000)
 
 
@@ -1476,22 +1477,21 @@ function get_sorted_element_ids(wrapper_id)
 
 
 function showOverlay() {
-    if ($("#assetsDialogOverlay").length == 0) {
-        var height = $('#wrapper').height() + 50;
-        AssetBrowser.overlay = $('<div id="assetsDialogOverlay">&nbsp <img class="dialogue_spinner" src="/assets/spinner_for_dialouge.gif" /> </div>');
-        $("body").append(AssetBrowser.overlay);
-    }
-    else {
-        $("#assetsDialogOverlay").css({
-            display: "block"
-        });
-    }
-    set_height = wrapper_height = $("body").height();
-    window_height = $(window).height() + $(window).scrollTop()
-    if(set_height < window_height)
-      set_height = window_height;
-    $("#assetsDialogOverlay").height(  set_height )
-
+  if ($("#assetsDialogOverlay").length == 0) {
+    var height = $('#wrapper').height() + 50;
+    AssetBrowser.overlay = $('<div id="assetsDialogOverlay" class="modal-backdrop"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div>');
+    $("body").append(AssetBrowser.overlay);
+  }
+  else {
+    $("#assetsDialogOverlay").css({
+        display: "block"
+    });
+  }
+  set_height = wrapper_height = $("body").height();
+  window_height = $(window).height() + $(window).scrollTop()
+  if(set_height < window_height)
+    set_height = window_height;
+  $("#assetsDialogOverlay").height(  set_height )
 }
 
 function hideOverlay(){
