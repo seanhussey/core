@@ -696,10 +696,10 @@ function enable_redactor(selector) {
       minHeight: 200,
       autoresize: false,
       buttons: ['html', '|', 'formatting', '|', 'bold',
-        'italic', 'underline', 'deleted', '|',
+        'italic', 'underline', '|',
         'unorderedlist', 'orderedlist',
         'outdent', 'indent', '|', 'video',
-        'table', 'link', '|', 'fontcolor', 'backcolor', '|',
+        'table',  '|', 'fontcolor', 'backcolor', '|',
         'alignment'
       ],
       plugins: ['asset_library_image', 'gluttonberg_pages']
@@ -734,37 +734,54 @@ RedactorPlugins.gluttonberg_pages = {
 
   init: function()
   {
-    this.buttonAddBefore('link', 'gluttonberg_pages', 'Link with Gluttonberg Page', function()
-    {
-      var self = this;
+    var self = this;
 
-      $.get("/admin/pages_list_for_tinymce", null,
-        function(response) {
-          var options = "<option> </option> " + response;
-          var modal_gluttonberg_link = String()
-          + '<section>'
-            + '<form id="redactorInsertLinkForm" method="post" action="">'
-              + '<div class="redactor_tab" id="redactor_tab1">'
-                + '<label>URL</label>'
-                + '<select  id="redactor_gluttonberg_link_url" class="redactor_input"  >'
-                + options
-                + '</select>'
-                + '<label>Text</label>'
-                + '<input type="text" class="redactor_input redactor_link_text" id="redactor_link_url_text" />'
-                + '<label><input type="checkbox" id="redactor_link_blank"> Open link in new tab</label>'
-              + '</div>'
-            + '</form>'
-          + '</section>'
-          + '<footer>'
-            + '<a href="#" class="redactor_modal_btn redactor_btn_modal_close">Cancel</a>'
-            + '<input type="button" class="redactor_modal_btn" id="redactor_insert_link_btn" value="Insert" />'
-          + '</footer>';
-          self.modalInit('Link Gluttonberg Page', modal_gluttonberg_link, 460, function(){self.gluttonbergLinkModalcallback(self); });
+    var dropdown = {
+      gluttonberg_pages : {
+        title: 'Insert Gluttonberg Page Link',
+        callback: function(){
+          self.showModal(self);
         }
-      );
-    });
+      },
+      link:{
+        title: 'Insert Link',
+        func: 'linkShow'
+      },
+      unlink:{
+        title: 'Unlink',
+        exec: 'unlink'
+      }
+    }; // gluttonberg_pages
+
+    this.buttonAddAfter('table', 'gb_link', 'Link', false, dropdown);
   },
-  gluttonbergLinkModalcallback : function(self)
+  showModal: function(self){
+    $.get("/admin/pages_list_for_tinymce", null,
+      function(response) {
+        var options = "<option> </option> " + response;
+        var modal_gluttonberg_link = String()
+        + '<section>'
+          + '<form id="redactorInsertLinkForm" method="post" action="">'
+            + '<div class="redactor_tab" id="redactor_tab1">'
+              + '<label>URL</label>'
+              + '<select  id="redactor_gluttonberg_link_url" class="redactor_input"  >'
+              + options
+              + '</select>'
+              + '<label>Text</label>'
+              + '<input type="text" class="redactor_input redactor_link_text" id="redactor_link_url_text" />'
+              + '<label><input type="checkbox" id="redactor_link_blank"> Open link in new tab</label>'
+            + '</div>'
+          + '</form>'
+        + '</section>'
+        + '<footer>'
+          + '<a href="#" class="redactor_modal_btn redactor_btn_modal_close">Cancel</a>'
+          + '<input type="button" class="redactor_modal_btn" id="redactor_insert_link_btn" value="Insert" />'
+        + '</footer>';
+        self.modalInit('Link Gluttonberg Page', modal_gluttonberg_link, 460, function(){self.gluttonbergLinkModalClickcallback(self); });
+      }
+    );
+  },
+  gluttonbergLinkModalClickcallback : function(self)
   {
     self.insert_link_node = false;
 
