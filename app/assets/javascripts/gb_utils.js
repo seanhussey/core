@@ -1295,7 +1295,6 @@ var dragTreeManager = {
       try{
         dragTree.treeTable({expandable: false});
       }catch(e){
-        console.log("---- exception --- ");
         console.log(e);
       }
 
@@ -1374,7 +1373,6 @@ var dragTreeManager = {
       });
 
     }catch(e){
-      console.log("---- exception2 --- ");
       console.log(e);
     }
 
@@ -1443,7 +1441,6 @@ var dragTreeManager = {
       });
 
     }catch(e){
-      console.log("---- exception 3--- ");
       console.log(e);
     }
 
