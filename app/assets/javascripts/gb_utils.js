@@ -1566,7 +1566,7 @@ RedactorPlugins.gluttonberg_pages = {
           + '<a href="#" class="redactor_modal_btn redactor_btn_modal_close">Cancel</a>'
           + '<input type="button" class="redactor_modal_btn" id="redactor_insert_link_btn" value="Insert" />'
         + '</footer>';
-        self.modalInit('Link Gluttonberg Page', modal_gluttonberg_link, 460, function(){self.gluttonbergLinkModalClickcallback(self); });
+        self.modalInit('Insert Gluttonberg Page Link', modal_gluttonberg_link, 460, function(){self.gluttonbergLinkModalClickcallback(self); });
       }
     );
   },
@@ -1596,16 +1596,16 @@ RedactorPlugins.gluttonberg_pages = {
       text = sel.toString();
     }
     $('.redactor_link_text').val(text);
-    $('#redactor_gluttonberg_link_url').val(url);
+    $('#redactor_gluttonberg_link_url').val($('<a>').prop('href',url).prop('pathname'));
     if (target === '_blank') $('#redactor_link_blank').prop('checked', true);
-    $('#redactor_insert_link_btn').click($.proxy(self.linkProcess, self));
+    $('#redactor_insert_link_btn').click($.proxy(self.gbLinkProcess, self));
     setTimeout(function()
     {
       $('#redactor_link_url').focus();
     }, 200);
 
   },
-  linkProcess : function()
+  gbLinkProcess : function()
   {
     var self = this;
     var link = '', text = '', target = '', targetBlank = '';
@@ -1630,10 +1630,10 @@ RedactorPlugins.gluttonberg_pages = {
       link = this.opts.linkProtocol + link;
     }
 
-    self.linkInsert('<a href="' + link + '"' + target + '>' + text + '</a>', $.trim(text), link, targetBlank);
+    self.gbLinkInsert('<a href="' + link + '"' + target + '>' + text + '</a>', $.trim(text), link, targetBlank);
 
   },
-  linkInsert : function (a, text, link, target)
+  gbLinkInsert : function (a, text, link, target)
   {
     var self = this;
     self.selectionRestore();
