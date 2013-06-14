@@ -78,7 +78,12 @@ module Gluttonberg
         end
 
         def pages_list_for_tinymce
-          @pages = Page.published.find(:all , :conditions => "not(description_name = 'top_level_page')"  , :order => 'position' )
+          @pages = Page.published.count
+          @pages = Page.published.where("not(description_name = 'top_level_page')").order('position' )
+
+          @articles_count = Article.published.count
+          @blogs = Blog.published.order("name ASC")
+
           render :layout => false
         end
 

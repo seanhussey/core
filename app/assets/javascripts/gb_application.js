@@ -695,12 +695,11 @@ function enable_redactor(selector) {
       linkAnchor: true,
       minHeight: 200,
       autoresize: false,
-      buttons: ['html', '|', 'formatting', '|', 'bold',
-        'italic', 'underline', '|',
+      buttons: ['formatting', '|', 'bold',
+        'italic', 'underline',  '|', 'alignment', '|',
         'unorderedlist', 'orderedlist',
         'outdent', 'indent', '|', 'video',
-        'table',  '|', 'fontcolor', 'backcolor', '|',
-        'alignment'
+        'table', '|',  'html'
       ],
       plugins: ['asset_library_image', 'gluttonberg_pages']
     });

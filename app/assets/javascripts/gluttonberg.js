@@ -13,6 +13,7 @@
 //= require ./jquery-1-10-1
 //= require ./gb_bootstrap
 //= require ./jquery-ui-1-10-3.custom-min
+//= require ./chosen-jquery-min
 //= require ./jquery-validate
 //= require ./redactormin.js
 //= require ./rails

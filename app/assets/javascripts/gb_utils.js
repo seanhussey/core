@@ -1503,7 +1503,7 @@ RedactorPlugins.asset_library_image = {
 
   init: function()
   {
-    this.buttonAddBefore('video', 'asset_library_image', 'Insert image from asset library', function()
+    this.buttonAddBefore('video', 'asset_library_image', 'Insert image', function()
     {
       var self = this;
       var url = "/admin/browser";
@@ -1525,22 +1525,24 @@ RedactorPlugins.gluttonberg_pages = {
   {
     var self = this;
 
-    var dropdown = {
-      gluttonberg_pages : {
-        title: 'Insert Gluttonberg Page Link',
-        callback: function(){
-          self.showModal(self);
-        }
-      },
-      link:{
-        title: 'Insert Link',
-        func: 'linkShow'
-      },
-      unlink:{
-        title: 'Unlink',
-        exec: 'unlink'
+    var dropdown = {};
+
+    dropdown["gluttonberg_pages"] = {
+      title: 'Insert internal link',
+      callback: function(){
+        self.showModal(self);
       }
-    }; // gluttonberg_pages
+    };
+
+    dropdown["link"] = {
+      title: 'Insert link',
+      func: 'linkShow'
+    };
+
+    dropdown["unlink"] = {
+      title: 'Unlink',
+      exec: 'unlink'
+    };
 
     this.buttonAddAfter('table', 'gb_link', 'Link', false, dropdown);
   },
@@ -1554,7 +1556,7 @@ RedactorPlugins.gluttonberg_pages = {
           + '<form id="redactorInsertLinkForm" method="post" action="">'
             + '<div class="redactor_tab" id="redactor_tab1">'
               + '<label>URL</label>'
-              + '<select  id="redactor_gluttonberg_link_url" class="redactor_input"  >'
+              + '<select  id="redactor_gluttonberg_link_url" class="redactor_input chzn-select" data-placeholder="Please select a link"  >'
               + options
               + '</select>'
               + '<label>Text</label>'
@@ -1607,6 +1609,8 @@ RedactorPlugins.gluttonberg_pages = {
       $('#redactor_gluttonberg_link_url').focus();
     }, 200);
 
+    $(".chzn-select").chosen();
+
   },
   gbLinkProcess : function()
   {
@@ -1645,7 +1649,6 @@ RedactorPlugins.gluttonberg_pages = {
     {
       if (self.insert_link_node)
       {
-        //console.log("path1")
         self.bufferSet();
         $(self.insert_link_node).text(text).attr('href', link);
 
