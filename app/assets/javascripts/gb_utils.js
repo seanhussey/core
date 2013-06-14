@@ -1545,6 +1545,7 @@ RedactorPlugins.gluttonberg_pages = {
     this.buttonAddAfter('table', 'gb_link', 'Link', false, dropdown);
   },
   showModal: function(self){
+    self.selectionSave();
     $.get("/admin/pages_list_for_tinymce", null,
       function(response) {
         var options = "<option> </option> " + response;
@@ -1557,14 +1558,14 @@ RedactorPlugins.gluttonberg_pages = {
               + options
               + '</select>'
               + '<label>Text</label>'
-              + '<input type="text" class="redactor_input redactor_link_text" id="redactor_link_url_text" />'
-              + '<label><input type="checkbox" id="redactor_link_blank"> Open link in new tab</label>'
+              + '<input type="text" class="redactor_input redactor_link_text" id="redactor_gluttonberg_link_url_text" />'
+              + '<label><input type="checkbox" id="redactor_gluttonberg_link_blank"> Open link in new tab</label>'
             + '</div>'
           + '</form>'
         + '</section>'
         + '<footer>'
           + '<a href="#" class="redactor_modal_btn redactor_btn_modal_close">Cancel</a>'
-          + '<input type="button" class="redactor_modal_btn" id="redactor_insert_link_btn" value="Insert" />'
+          + '<input type="button" class="redactor_modal_btn" id="redactor_insert_gluttonberg_link_btn" value="Insert" />'
         + '</footer>';
         self.modalInit('Insert Gluttonberg Page Link', modal_gluttonberg_link, 460, function(){self.gluttonbergLinkModalClickcallback(self); });
       }
@@ -1595,13 +1596,15 @@ RedactorPlugins.gluttonberg_pages = {
     else{
       text = sel.toString();
     }
-    $('.redactor_link_text').val(text);
+    $('#redactor_gluttonberg_link_url_text').val(text);
     $('#redactor_gluttonberg_link_url').val($('<a>').prop('href',url).prop('pathname'));
-    if (target === '_blank') $('#redactor_link_blank').prop('checked', true);
-    $('#redactor_insert_link_btn').click($.proxy(self.gbLinkProcess, self));
+    if (target === '_blank'){
+      $('#redactor_gluttonberg_link_blank').prop('checked', true);
+    }
+    $('#redactor_insert_gluttonberg_link_btn').click($.proxy(self.gbLinkProcess, self));
     setTimeout(function()
     {
-      $('#redactor_link_url').focus();
+      $('#redactor_gluttonberg_link_url').focus();
     }, 200);
 
   },
@@ -1612,9 +1615,9 @@ RedactorPlugins.gluttonberg_pages = {
 
     // url
     link = $('#redactor_gluttonberg_link_url').val();
-    text = $('#redactor_link_url_text').val();
+    text = $('#redactor_gluttonberg_link_url_text').val();
 
-    if ($('#redactor_link_blank').prop('checked'))
+    if ($('#redactor_gluttonberg_link_blank').prop('checked'))
     {
       target = ' target="_blank"';
       targetBlank = '_blank';
@@ -1625,9 +1628,9 @@ RedactorPlugins.gluttonberg_pages = {
     var re = new RegExp('^(http|ftp|https)://' + pattern, 'i');
     var re2 = new RegExp('^' + pattern, 'i');
 
-    if (link.search(re) == -1 && link.search(re2) == 0 && this.opts.linkProtocol)
+    if (link.search(re) == -1 && link.search(re2) == 0 && self.opts.linkProtocol)
     {
-      link = this.opts.linkProtocol + link;
+      link = self.opts.linkProtocol + link;
     }
 
     self.gbLinkInsert('<a href="' + link + '"' + target + '>' + text + '</a>', $.trim(text), link, targetBlank);
@@ -1642,6 +1645,7 @@ RedactorPlugins.gluttonberg_pages = {
     {
       if (self.insert_link_node)
       {
+        //console.log("path1")
         self.bufferSet();
         $(self.insert_link_node).text(text).attr('href', link);
 
