@@ -1527,12 +1527,15 @@ RedactorPlugins.gluttonberg_pages = {
 
     var dropdown = {};
 
-    dropdown["gluttonberg_pages"] = {
-      title: 'Insert internal link',
-      callback: function(){
-        self.showModal(self);
-      }
-    };
+    if(linkCount > 0){
+        dropdown["gluttonberg_pages"] = {
+        title: 'Insert internal link',
+        callback: function(){
+          self.showModal(self);
+        }
+      };
+    }
+
 
     dropdown["link"] = {
       title: 'Insert link',
@@ -1569,7 +1572,7 @@ RedactorPlugins.gluttonberg_pages = {
           + '<a href="#" class="redactor_modal_btn redactor_btn_modal_close">Cancel</a>'
           + '<input type="button" class="redactor_modal_btn" id="redactor_insert_gluttonberg_link_btn" value="Insert" />'
         + '</footer>';
-        self.modalInit('Insert Gluttonberg Page Link', modal_gluttonberg_link, 460, function(){self.gluttonbergLinkModalClickcallback(self); });
+        self.modalInit('Insert internal link', modal_gluttonberg_link, 460, function(){self.gluttonbergLinkModalClickcallback(self); });
       }
     );
   },

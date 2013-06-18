@@ -687,9 +687,10 @@ function initCollectionAccordion(){
 
 
 /* Redactor wysiwyg Setup and its plugins */
-
-function enable_redactor(selector) {
+var linkCount = 0;
+function enableRedactor(selector, _linkCount) {
   $(document).ready(function() {
+    linkCount = _linkCount;
     $(selector).redactor({
       linkEmail: true,
       linkAnchor: true,
