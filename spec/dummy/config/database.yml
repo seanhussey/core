@@ -1,0 +1,8 @@
+test:
+  adapter: postgresql
+  database: gluttonberg_core_test
+  username: abdul
+  password: ""
+  encoding: unicode
+  min_messages: warning
+  host: 127.0.0.1
