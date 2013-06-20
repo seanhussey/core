@@ -35,7 +35,7 @@ module Gluttonberg
           :name => "Australia English" ,
           :default => true ,
           :slug_type => Gluttonberg::Locale.prefix_slug_type
-        )
+        })
       end
     end
   end
