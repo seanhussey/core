@@ -3,7 +3,7 @@ module Gluttonberg
     include Content::SlugManagement
     self.table_name = "gb_locales"
 
-    has_many    :page_localizations,  :class_name => "Gluttonberg::PageLocalization" , :dependent => :destroy
+    has_many :page_localizations,  :class_name => "Gluttonberg::PageLocalization" , :dependent => :destroy
 
     validates_presence_of :name , :slug
     validates_uniqueness_of :slug , :name
@@ -11,9 +11,9 @@ module Gluttonberg
 
     SLUG_TYPES = ["prefix"]
 
-    def  self.first_default(opts={})
+    def self.first_default(opts={})
       opts[:default] = true
-      find(:first , :conditions => opts )
+      where(opts).first
     end
 
     def self.prefix_slug_type
@@ -25,12 +25,17 @@ module Gluttonberg
     end
 
     def self.find_by_locale(locale_slug)
-      find(:first , :conditions => { :slug => locale_slug } )
+      where(:slug => locale_slug).first
     end
 
     def self.generate_default_locale
-      if Gluttonberg::Locale.find(:first , :conditions => {:slug => "en-au"}).blank?
-        locale = Gluttonberg::Locale.create( :slug => "en-au" , :name => "Australia English" , :default => true , :slug_type => Gluttonberg::Locale.prefix_slug_type )
+      if Gluttonberg::Locale.where(:slug => "en-au").count == 0
+        locale = Gluttonberg::Locale.create({
+          :slug => "en-au" ,
+          :name => "Australia English" ,
+          :default => true ,
+          :slug_type => Gluttonberg::Locale.prefix_slug_type
+        )
       end
     end
   end
