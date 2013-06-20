@@ -13,11 +13,11 @@ module Gluttonberg
 
         # Collect mp3 files info using Mp3Info gem
         def self.collect_mp3_info(asset)
-          audio = AudioAssetAttribute.find( :first , :conditions => {:asset_id => asset.id})
+          audio = asset.audio_asset_attribute
 
           begin
             #open mp3 file
-            Mp3Info.open(location_on_disk) do |mp3|
+            Mp3Info.open(asset.location_on_disk) do |mp3|
               if audio.blank?
                 AudioAssetAttribute.create( :asset_id => asset.id , :length => mp3.length , :title => mp3.tag.title , :artist => mp3.tag.artist , :album => mp3.tag.album , :tracknum => mp3.tag.tracknum)
               else
