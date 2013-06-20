@@ -37,6 +37,11 @@ module Gluttonberg
       @asset = Asset.new( @param )
     end
 
+    after :all do
+      Gluttonberg::Library.flush_asset_types
+      Gluttonberg::AssetCategory.all.each{|asset_mime_type| asset_mime_type.destroy}
+    end
+
     it "should generate filename" do
       @asset.file_name.should_not be_nil
     end

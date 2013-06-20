@@ -7,6 +7,11 @@ module Gluttonberg
       Gluttonberg::Library.bootstrap
     end
 
+    after :all do
+      Gluttonberg::Library.flush_asset_types
+      Gluttonberg::AssetCategory.all.each{|asset_mime_type| asset_mime_type.destroy}
+    end
+
     it "should have 52 gluttonberg asset types" do
       AssetType.count.should == 52
     end

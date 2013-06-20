@@ -7,6 +7,11 @@ module Gluttonberg
       AssetCategory.build_defaults
     end
 
+    after :all do
+      Gluttonberg::Library.flush_asset_types
+      Gluttonberg::AssetCategory.all.each{|asset_mime_type| asset_mime_type.destroy}
+    end
+
     it "should have 5 categories" do
       @categories = AssetCategory.all
       @categories.count.should == 5
