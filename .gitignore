@@ -16,3 +16,10 @@ capybara-*.html
 .svn
 /spec/.DS_Store
 *.gem
+
+/public/test_assets/
+/spec/dummy/log/*
+/spec/dummy/public/test_assets/
+
+/spec/dummy/tmp/*
+*.1rb
