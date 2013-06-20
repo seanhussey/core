@@ -89,7 +89,6 @@ module Gluttonberg
         end
 
         def asset_folder_path
-          # "/user_assets/#{asset_hash}"
           directory
         end
 
@@ -134,7 +133,7 @@ module Gluttonberg
 
         def asset_processing
           asset_id_to_process = self.id
-          asset = Asset.find(:first , :conditions => { :id => asset_id_to_process } )
+          asset = Asset.where(:id => asset_id_to_process).first
           if asset
             asset_processors = [Library::Processor::Image , Library::Processor::Audio] #Core processors
             asset_processors << Rails.configuration.asset_processors unless Rails.configuration.asset_processors.blank? #additional processors
