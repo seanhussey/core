@@ -122,7 +122,6 @@ module Gluttonberg
           tmp_directory + "/original_" + file_name
         end
 
-
         def generate_cropped_image(x , y , w , h, image_type)
           if !File.exist?(self.tmp_location_on_disk) && !File.exist?(self.tmp_original_file_on_disk)
             self.download_asset_to_tmp_file
@@ -132,7 +131,6 @@ module Gluttonberg
           processor.generate_cropped_image(x , y , w , h, image_type)
           self.remove_file_from_tmp_storage
         end
-
 
         def asset_processing
           asset_id_to_process = self.id
