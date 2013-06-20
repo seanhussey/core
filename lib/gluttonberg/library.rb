@@ -38,7 +38,11 @@ module Gluttonberg
     end
 
     def self.tmp_root
-      @@tmp_assets_root
+      if ::Rails.env == "test"
+        @@test_assets_root
+      else
+        @@tmp_assets_root
+      end
     end
 
     # This method is mainly for administrative purposes. It will rebuild the
@@ -123,22 +127,22 @@ module Gluttonberg
 
     private
 
-    # Makes sure the specified type exists in the DB, if it doesn’t it creates
-    # a new record.
-    def self.ensure_type(name, mime_type, category)
-      asset_type = AssetType.where(:name => name).first
-      if asset_type then
-        asset_type.asset_category = category
-      else
-        asset_type = AssetType.new(:name => name, :asset_category => category)
+      # Makes sure the specified type exists in the DB, if it doesn’t it creates
+      # a new record.
+      def self.ensure_type(name, mime_type, category)
+        asset_type = AssetType.where(:name => name).first
+        if asset_type then
+          asset_type.asset_category = category
+        else
+          asset_type = AssetType.new(:name => name, :asset_category => category)
+        end
+        mime_type.split(' ').each do |this_mime_type|
+          asset_mime_type = AssetMimeType.new(:mime_type => this_mime_type)
+          asset_type.asset_mime_types << asset_mime_type
+          asset_mime_type.save
+        end
+        asset_type.save
       end
-      mime_type.split(' ').each do |this_mime_type|
-        asset_mime_type = AssetMimeType.new(:mime_type => this_mime_type)
-        asset_type.asset_mime_types << asset_mime_type
-        asset_mime_type.save
-      end
-      asset_type.save
-    end
 
   end # Library
 end # Gluttonberg
