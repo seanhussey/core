@@ -1,18 +1,6 @@
 require 'spec_helper'
 
-# # i have added some attributes to file class.
-# # because rails adds these attributes when file is uploaded through form.
-# class File
-#   attr_accessor :original_filename  , :content_type , :size
-
-#   def tempfile
-#     self
-#   end
-# end
-
-
 module Gluttonberg
-
   describe AssetBulkImport, "file upload" do
 
     before :all do
