@@ -17,10 +17,6 @@ module Gluttonberg
 
     before :all do
       @file = File.new(File.join(RSpec.configuration.fixture_path, "assets/assets_import.zip"))
-      # @file.original_filename = "gluttonberg_banner.jpg"
-      # @file.content_type = "image/jpeg"
-      # @file.size = 300
-
       @collection1 = AssetCollection.new(:name => "Collection1")
       @collection2 = AssetCollection.new(:name => "Collection2")
       @asset_collections = [ @collection1 , @collection2 ]
@@ -28,9 +24,7 @@ module Gluttonberg
         :asset_collections => @asset_collections,
         :file => @file
       }
-
       @current_user = User.new
-
       Gluttonberg::Library.bootstrap
     end
 
