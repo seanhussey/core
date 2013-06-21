@@ -14,7 +14,7 @@ module Gluttonberg
 
         # home page of asset library
         def index
-
+          redirect_to admin_asset_category_path(:category => 'all' , :page => 1 )
         end
 
 

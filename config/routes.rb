@@ -107,7 +107,7 @@ Rails.application.routes.draw do
           match "destroy_assets_in_bulk"  => "assets#destroy_assets_in_bulk" , :as => :destroy_assets_in_bulk
           match "browser"  => "assets#browser" , :as => :asset_browser
           match "browser-collection/:id"  => "assets#browser_collection" , :as => :asset_browser_collection
-          match "browse/:category/page/:page"  => "assets#category" , :as => :asset_category
+          match "assets/:category/page/:page"  => "assets#category" , :as => :asset_category
           match "collections/:id/page/:page"  => "collections#show" , :as => :asset_collection
           resources :collections  do
             get 'delete', :on => :member
