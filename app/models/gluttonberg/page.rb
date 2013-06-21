@@ -10,7 +10,7 @@ module Gluttonberg
     has_and_belongs_to_many :groups, :class_name => "Group" , :join_table => "gb_groups_pages"
 
     attr_protected :user_id , :state , :published_at
-    attr_accessible :parent_id, :name, :navigation_label, :slug, :description_name, :hide_in_nav, :group_ids, :home
+    attr_accessible :parent_id, :parent, :name, :navigation_label, :slug, :description_name, :hide_in_nav, :group_ids, :home
 
     # Generate the associations for the block/content classes
     Content::Block.classes.each do |klass|
@@ -262,7 +262,6 @@ module Gluttonberg
       pages = Page.all
 
       pages.each do |page|
-
         if page.description.blank?
           puts "Page description '#{page.description_name}' for '#{page.name}' page  does not exist in page descriptions file. #{page.id}"
         elsif !page.description.sections.blank?
@@ -279,22 +278,21 @@ module Gluttonberg
             end
           end
 
-
           page.description.sections.each do |name, section|
             # Create the content
-                association = page.send(section[:type].to_s.pluralize)
-                content = association.find(:first , :conditions => {:section_name => name})
-                if content.blank?
-                  content = association.create(:section_name => name)
-                end
-                # Create each localization
-                 if content.class.localized?
-                     page.localizations.all.each do |localization|
-                       if content.localizations.find(:first , :conditions => { "#{section[:type]}_id" => content.id, :page_localization_id => localization.id }).blank?
-                         content.localizations.create(:parent => content, :page_localization => localization)
-                       end
-                     end
-                end
+            association = page.send(section[:type].to_s.pluralize)
+            content = association.where(:section_name => name).first
+            if content.blank?
+              content = association.create(:section_name => name)
+            end
+            # Create each localization
+            if content.class.localized?
+              page.localizations.all.each do |localization|
+               if content.localizations.where("#{section[:type]}_id" => content.id, :page_localization_id => localization.id).count == 0
+                 content.localizations.create(:parent => content, :page_localization => localization)
+               end
+              end
+            end
           end
         end
       end # pages loop end
@@ -306,7 +304,8 @@ module Gluttonberg
     end
 
     def load_default_localizations
-      self.current_localization = Gluttonberg::PageLocalization.find(:first , :conditions => { :page_id => id , :locale_id => Gluttonberg::Locale.first_default.id } )
+      Gluttonberg::Locale.first_default.id
+      self.current_localization = Gluttonberg::PageLocalization.where(:page_id => id , :locale_id => Gluttonberg::Locale.first_default.id).first
     end
 
     def published?
@@ -355,12 +354,11 @@ module Gluttonberg
     private
 
 
-
       # Checks to see if this page has been set as the homepage. If it has, we
       # then go and
       def check_for_home_update
         if @home_updated && @home_updated == true
-          previous_home = Page.find( :first ,  :conditions => [ "home = ? AND id <> ? " , true ,self.id ] )
+          previous_home = Page.where([ "home = ? AND id <> ? " , true ,self.id ] ).first
           previous_home.update_attributes(:home => false) if previous_home
         end
       end
