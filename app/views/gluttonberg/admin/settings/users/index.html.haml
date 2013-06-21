@@ -41,7 +41,7 @@
             - for user in @users
               %tr
                 %td
-                  = user.full_name
+                  = link_to(user.full_name, edit_admin_user_path(user), :class => "")
                 %td
                   = mail_to user.email , user.email
                 - if can? :manage, User
