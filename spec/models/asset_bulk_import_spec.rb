@@ -19,7 +19,7 @@ module Gluttonberg
     after :all do
       Gluttonberg::Library.flush_asset_types
       Gluttonberg::AssetCategory.all.each{|asset_mime_type| asset_mime_type.destroy}
-      Gluttonberg::Asset.each{|asset| asset.destroy}
+      Gluttonberg::Asset.all.each{|asset| asset.destroy}
     end
 
     it "should generate all valid assets including subdirectories from zip file" do
