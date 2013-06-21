@@ -114,7 +114,7 @@ var AssetBrowser = {
     AssetBrowser.resizeDisplay();
     $(window).resize(AssetBrowser.resizeDisplay);
     // Cancel button
-    AssetBrowser.browser.find("#cancel").click(AssetBrowser.close);
+    AssetBrowser.browser.find(".cancel").click(AssetBrowser.close);
     // Capture anchor clicks
     AssetBrowser.display.find("a").click(AssetBrowser.click);
     $("#assetsDialog form#asset_search_form").submit(AssetBrowser.search_submit);
