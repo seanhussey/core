@@ -11,11 +11,6 @@ module Gluttonberg
         def is_drag_tree(options = {})
           options[:flat] = true unless options.has_key?(:flat)
           self.send(:include, Gluttonberg::DragTree::ActiveRecord::ModelHelpersClassMethods)
-          if options.has_key?(:scope)
-            acts_as_list :scope => options[:scope]
-          else
-            acts_as_list
-          end
           unless options[:flat]
             acts_as_tree options
           else
@@ -44,15 +39,12 @@ module Gluttonberg
           sorted_elements
         end
 
-
-
       end #module ClassMethods
 
       module ModelHelpersClassMethods
         def self.included(klass)
           klass.class_eval do
             cattr_accessor :is_flat_drag_tree
-            #@is_flat_drag_tree = false
             def klass.behaves_as_a_drag_tree
               true
             end

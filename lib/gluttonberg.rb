@@ -5,7 +5,6 @@ module Gluttonberg
   require 'will_paginate'
   require 'zip/zip'
   require 'acts_as_tree'
-  require 'acts_as_list'
   require 'acts_as_versioned'
   require 'delayed_job'
   require 'paperclip'

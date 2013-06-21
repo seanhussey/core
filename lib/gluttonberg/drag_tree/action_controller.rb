@@ -46,7 +46,7 @@ module Gluttonberg
               ids = params[:element_ids].split(",")
               elements = self.class.drag_class.find_by_sorted_ids(ids )
               elements.each_with_index do |element , index|
-                attr = {:position => index + 1  }
+                attr = {:position => index + 1}
                 element.update_attributes!( attr   )
               end
               render :json => {:success => true}
