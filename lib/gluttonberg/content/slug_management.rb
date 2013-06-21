@@ -42,11 +42,12 @@ module Gluttonberg
           #if you're changing this regex, make sure to change the one in /javascripts/slug_management.js too
           # utf-8 special chars are fixed for new ruby 1.9.2
           unless new_slug.blank?
-            new_slug = new_slug.to_s.downcase.gsub(/\s/, '_').gsub(/[\!\*'"″′‟‛„‚”“”˝\(\)\;\:\.\@\&\=\+\$\,\/?\%\#\[\]]/, '')
-            while new_slug.include?("__")
-              new_slug = new_slug.gsub('__','_') # remove consective underscores
+            new_slug = new_slug.to_s.downcase.gsub(/\s/, '-').gsub(/[\!\*'"″′‟‛„‚”“”˝\(\)\;\:\.\@\&\=\+\$\,\/?\%\#\[\]]/, '')
+            new_slug = new_slug.gsub(/_$/,'-') # replace underscores with hyphen
+            while new_slug.include?("--")
+              new_slug = new_slug.gsub('--','-') # remove consective hyphen
             end
-            new_slug = new_slug.gsub(/_$/,'') # remove trailing underscore
+            new_slug = new_slug.gsub(/-$/,'') # remove trailing hyphen
           end
           write_attribute(:slug, new_slug)
         end
@@ -78,7 +79,7 @@ module Gluttonberg
             already_exist = self.class.where(:slug => self.slug).all
             if !already_exist.blank?
               if already_exist.length > 1 || (already_exist.length == 1 && already_exist.first.id != self.id )
-                self.slug= "#{self.slug}_#{already_exist.length+1}"
+                self.slug= "#{self.slug}-#{already_exist.length+1}"
               end
             end
           end

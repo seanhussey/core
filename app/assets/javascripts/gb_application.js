@@ -735,7 +735,7 @@ function initBetterSlugManagement() {
 
   pt.keyup(function(){
     if (!doNotEdit) {
-      slug = pt.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, '')
+      slug = pt.attr('value').toLowerCase().replace(/\s/gim, '-').replace(regex, '')
       ps.html(slug);
       hs.attr('value', slug);
     };

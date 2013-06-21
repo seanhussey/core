@@ -83,10 +83,10 @@ module Gluttonberg
 
       page.valid?
       page.slug.blank?.should == false
-      page.slug.should == "page_slug_test"
+      page.slug.should == "page-slug-test"
 
       page.slug = "Page \t Slug ′‟‛„‚”“”˝\(\)\;\:\@\&\=\+\$\,\/?\%\#\[\]] Test"
-      page.slug.should == "page_slug_test"
+      page.slug.should == "page-slug-test"
     end
 
     it "should create versioned content" do
