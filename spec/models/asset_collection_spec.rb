@@ -1,4 +1,3 @@
-#require File.dirname(__FILE__) + '/../spec_helper'
 require 'spec_helper'
 
 module Gluttonberg
@@ -31,10 +30,6 @@ module Gluttonberg
       @collections = AssetCollection.where(:name => "Collection1")
       @collections.count.should == 1
     end
-
-    it "should clean its associations when collection is deleted"
-
-
   end
 
 end
