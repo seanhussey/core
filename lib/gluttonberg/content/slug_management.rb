@@ -43,7 +43,9 @@ module Gluttonberg
           # utf-8 special chars are fixed for new ruby 1.9.2
           unless new_slug.blank?
             new_slug = new_slug.to_s.downcase.gsub(/\s/, '_').gsub(/[\!\*'"″′‟‛„‚”“”˝\(\)\;\:\.\@\&\=\+\$\,\/?\%\#\[\]]/, '')
-            new_slug = new_slug.gsub('__','_') # remove consective underscores
+            while new_slug.include?("__")
+              new_slug = new_slug.gsub('__','_') # remove consective underscores
+            end
             new_slug = new_slug.gsub(/_$/,'') # remove trailing underscore
           end
           write_attribute(:slug, new_slug)
