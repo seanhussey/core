@@ -26,10 +26,10 @@ module Gluttonberg
       @collection3 = AssetCollection.new(:name => "Collection3")
 
       @param = {
-          :name=>"temp file",
-          :asset_collections => [ @collection1 , @collection3 ],
-          :file=> @file,
-          :description=>"<p>test</p>"
+        :name=>"temp file",
+        :asset_collections => [ @collection1 , @collection3 ],
+        :file=> @file,
+        :description=>"<p>test</p>"
       }
 
       Gluttonberg::Library.bootstrap
