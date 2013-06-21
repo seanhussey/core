@@ -17,14 +17,6 @@ module Gluttonberg
       Gluttonberg::Setting.all.each{|setting| setting.destroy}
     end
 
-    it "should load specified localization"
-
-    it "should load children with specified localization preloaded"
-
-    it "should return correct localization"
-
-    it "should raise error if localization is missing"
-
     it "should return correct layout name" do
       @page.layout.should == "public"
     end
@@ -97,28 +89,10 @@ module Gluttonberg
       page.slug.should == "page_slug_test"
     end
 
-
-    it "should position new page at bottom of the list"
-
-    it "should manage position properly when we are rearranging items"
-
-    it "should change parent if we are moving out"
-
-    it "should have nav_label"
-
-    it "should have path"
-
-    it "should have template_paths"
-
-    it "should remove its all depdendents if destroyed."
-
-
-
     it "should create versioned content" do
       p = Page.create! :name => '2nd name', :description_name => 'newsletter'
       p.new_record?.should == false
       p.reload
-      p.load_localization
       p.current_localization.localized_contents.each do |loc|
         loc.versions.size.should == 1
         loc.version.should == 1
@@ -128,7 +102,6 @@ module Gluttonberg
 
     it "should be able to save without revision" do
       p = Page.find_by_name('first name')
-      p.load_localization
       p.current_localization.localized_contents.each do |loc|
         loc.save_without_revision
         old_versions = loc.versions.count
@@ -141,7 +114,6 @@ module Gluttonberg
 
     it "should rollback with version number" do
       p = Page.find_by_name('first name')
-      p.load_localization
 
       p.current_localization.localized_contents.each do |loc|
         loc.version.should == 1
@@ -166,7 +138,6 @@ module Gluttonberg
 
     it "should not cross version limit" do
       p = Page.find_by_name('first name')
-      p.load_localization
 
       p.current_localization.localized_contents.each do |loc|
         loc.version.should == 1

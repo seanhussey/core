@@ -117,6 +117,13 @@ module Gluttonberg
       end
     end
 
+    def current_localization
+      if @current_localization.blank?
+        load_localization
+      end
+      @current_localization
+    end
+
     def redirect_required?
       self.description.redirect?
     end
