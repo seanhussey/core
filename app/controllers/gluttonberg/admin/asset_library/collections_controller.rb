@@ -30,7 +30,7 @@ module Gluttonberg
           @assets = @collection.assets
 
           if @category_filter != "all"
-            category = AssetCategory.find(:first , :conditions => { :name => @category_filter })
+            category = AssetCategory.where(:name => @category_filter).first
             @assets = @assets.where({:asset_type_id => category.asset_type_ids })   unless category.blank? || category.asset_type_ids.blank?
           end
 
@@ -81,7 +81,7 @@ module Gluttonberg
         private
 
         def find_collection
-          @collection = AssetCollection.find( :first , :conditions => [" id = ? " , params[:id] ] )
+          @collection = AssetCollection.where(:id => params[:id]).first
           raise ActiveRecord::RecordNotFound  if @collection.blank?
         end # find_collection
 
