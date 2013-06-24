@@ -41,7 +41,7 @@ module Gluttonberg
           if @page.save
             @page.create_default_template_file
             flash[:notice] = "The page was successfully created."
-            default_localization = Gluttonberg::PageLocalization.find(:first , :conditions => { :page_id => @page.id , :locale_id => Gluttonberg::Locale.first_default.id } )
+            default_localization = Gluttonberg::PageLocalization.where(:page_id => @page.id , :locale_id => Gluttonberg::Locale.first_default.id).first
             redirect_to edit_admin_page_page_localization_path( :page_id => @page.id, :id => default_localization.id)
           else
             prepare_to_edit
@@ -66,12 +66,12 @@ module Gluttonberg
         end
 
         def update_home
-          @new_home = Page.find(:first , :conditions => { :id => params[:home] })
+          @new_home = Page.where(:id => params[:home]).first
           unless @new_home.blank?
             @new_home.update_attributes(:home => true)
           else
-              @old_home = Page.find(:first , :conditions => { :home => true })
-              @old_home.update_attributes(:home => false)
+            @old_home = Page.where(:home => true).first
+            @old_home.update_attributes(:home => false)
           end
           Gluttonberg::Feed.log(current_user,@new_home,@new_home.name , "set as home")
           render :text => "Home page is changed"
@@ -104,10 +104,10 @@ module Gluttonberg
         private
 
         def prepare_to_edit
-          @pages  = params[:id] ? Page.find(:all , :conditions => [ "id  != ? " , params[:id] ] ) : Page.all
+          @pages  = params[:id] ? Page.where("id  != ? " , params[:id]).all : Page.all
           @descriptions = []
           Gluttonberg::PageDescription.all.each do |name, desc|
-              @descriptions << [desc[:description], name]
+            @descriptions << [desc[:description], name]
           end
         end
 
