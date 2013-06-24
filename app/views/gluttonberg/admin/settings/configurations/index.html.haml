@@ -12,7 +12,7 @@
       .subnav
         = sub_nav do
           - if can? :create_or_destroy, Gluttonberg::Setting
-            = nav_link('Add New Setting', new_admin_generic_setting_path)
+            = nav_link('Add New Setting', new_admin_configuration_path)
 
       %table{:cellspacing => 0, :cellpadding => 0, :summary => "List of Settings", :class => "table table-bordered"}
         %thead
@@ -40,19 +40,19 @@
                   %span{:style => "height: 10px; display: block;"}
 
                 - if setting.dropdown_required?
-                  = select_tag(:value , options_for_select( setting.parsed_values_list_for_dropdown , setting.value  ) , { :include_blank => true , :data_id => setting.id  , :rel => admin_generic_setting_path( setting) , :class => "setting_dropdown"   })
+                  = select_tag(:value , options_for_select( setting.parsed_values_list_for_dropdown , setting.value  ) , { :include_blank => true , :data_id => setting.id  , :rel => admin_configuration_path( setting) , :class => "setting_dropdown"   })
                 - elsif setting.name == "fb_icon"
-                  = asset_browser_tag( "gluttonberg_setting[value]" ,  opts = {:button_class => "logo_setting button" , :filter => "image" ,  :id => "gluttonberg_setting_fb_icon", :asset_id => setting.value  , :data_url => admin_generic_setting_path( setting) } )
+                  = asset_browser_tag( "gluttonberg_setting[value]" ,  opts = {:button_class => "logo_setting button" , :filter => "image" ,  :id => "gluttonberg_setting_fb_icon", :asset_id => setting.value  , :data_url => admin_configuration_path( setting) } )
                 - elsif setting.name == "backend_logo"
-                  = asset_browser_tag( "gluttonberg_setting[value]" ,  opts = {:button_class => "logo_setting button" , :filter => "image" ,  :id => "gluttonberg_setting_backend_logo", :asset_id => setting.value  , :data_url => admin_generic_setting_path( setting) } )
+                  = asset_browser_tag( "gluttonberg_setting[value]" ,  opts = {:button_class => "logo_setting button" , :filter => "image" ,  :id => "gluttonberg_setting_backend_logo", :asset_id => setting.value  , :data_url => admin_configuration_path( setting) } )
 
                 - else
-                  = gb_editable_field setting, :value , :update_url => admin_generic_setting_path( setting)
+                  = gb_editable_field setting, :value , :update_url => admin_configuration_path(setting)
 
                 = image_tag("/assets/gb_spinner.gif" , :id => "progress_#{setting.id}" , :style => "display:none")
               - if has_deletable_settings
                 %td.controls
                   - if setting.delete_able
-                    = link_to 'Delete', delete_admin_generic_setting_path(setting)
+                    = link_to 'Delete', delete_admin_configuration_path(setting)
 
 

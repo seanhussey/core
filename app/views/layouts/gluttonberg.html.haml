@@ -55,7 +55,7 @@
           %li
             = active_link_to("Members", admin_membership_members_path, :id => "membership_nav" , :title => "Members" , :active => /^\/admin\/membership/)
         %li
-          = active_link_to("Settings", admin_generic_settings_path, :id => "settings_nav" , :title => "Settings" , :active => params[:controller].include?('gluttonberg/admin/settings/')  )
+          = active_link_to("Settings", admin_configurations_path, :id => "settings_nav" , :title => "Settings" , :active => params[:controller].include?('gluttonberg/admin/settings/')  )
 
 
     .container-fluid

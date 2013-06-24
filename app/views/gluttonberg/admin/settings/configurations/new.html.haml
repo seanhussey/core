@@ -1,5 +1,5 @@
 - @window_title = "Settings"
-- @page_title = "#{link_to "Configuration", admin_generic_settings_path} > Add a new setting"
+- @page_title = "#{link_to "Configuration", admin_configurations_path} > Add a new setting"
 
 .row-fluid
   = render :partial => "/gluttonberg/admin/settings/main/sidebar"
@@ -9,4 +9,4 @@
         %h1
           = @page_title.html_safe
       .subnav
-      = render :partial => "form", :locals => { :url => admin_generic_settings_path }
+      = render :partial => "form", :locals => { :url => admin_configurations_path }

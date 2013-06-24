@@ -66,7 +66,7 @@ Rails.application.routes.draw do
           get 'delete', :on => :member
         end
 
-        resources :generic_settings do
+        resources :configurations do
           get 'delete', :on => :member
         end
 
