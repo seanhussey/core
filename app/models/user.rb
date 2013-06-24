@@ -15,9 +15,7 @@ class User < ActiveRecord::Base
   end
 
   def full_name
-    self.first_name = "" if self.first_name.blank?
-    self.last_name = "" if self.last_name.blank?
-    self.first_name + " " + self.last_name
+    "#{self.first_name} #{self.last_name}"
   end
 
   def deliver_password_reset_instructions!
@@ -54,6 +52,28 @@ class User < ActiveRecord::Base
 
   def self.all_super_admin_and_admins
     self.where(:role => ["super_admin" , "admin"]).all
+  end
+
+  def self.search_users(query, current_user, get_order)
+    users = User.order(get_order)
+    unless query.blank?
+      users = users.where("first_name LIKE :query OR last_name LIKE :query OR email LIKE :query OR bio LIKE :query ", :query => "%#{query}%")
+    end
+    unless current_user.super_admin?
+      users = users.where("role != ?" , "super_admin")
+    end
+    users
+  end
+
+  def self.find_user(id, current_user)
+    user = User.where(:id => id)
+    if current_user.super_admin?
+    elsif current_user.admin?
+      user = user.where("role != ?" , "super_admin")
+    else
+      user = user.where(:id => current_user.id)
+    end
+    user.first
   end
 
 end
