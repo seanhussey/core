@@ -7,7 +7,6 @@ class User < ActiveRecord::Base
   validates_presence_of :first_name , :email , :role
   validates_format_of :password, :with => /^(?=.*\d)(?=.*[a-zA-Z])(?!.*[^\w\S\s]).{6,}$/ , :if => :require_password?, :message => "must be a minimum of 6 characters in length, contain at least 1 letter and at least 1 number"
 
-
   clean_html [:bio]
 
   acts_as_authentic do |c|
@@ -41,8 +40,11 @@ class User < ActiveRecord::Base
     else
       roles = (["super_admin" , "admin" , "contributor"] << (Rails.configuration.user_roles) ).flatten
       roles.delete("super_admin") unless self.super_admin?
-      roles.delete("contributor") if !self.super_admin? && !self.admin?
-      roles
+      if !self.super_admin? && !self.admin?
+        [self.role]
+      else
+        roles
+      end
     end
   end
 
@@ -59,8 +61,11 @@ class User < ActiveRecord::Base
     unless query.blank?
       users = users.where("first_name LIKE :query OR last_name LIKE :query OR email LIKE :query OR bio LIKE :query ", :query => "%#{query}%")
     end
-    unless current_user.super_admin?
+    if current_user.super_admin?
+    elsif current_user.admin?
       users = users.where("role != ?" , "super_admin")
+    else
+      users = users.where("id = ?" , current_user.id)
     end
     users
   end

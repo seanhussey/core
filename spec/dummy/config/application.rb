@@ -10,6 +10,7 @@ module Dummy
     # Gluttonberg Related config
      # config.cms_based_public_css = false
      # config.custom_js_for_cms = false
+     config.user_roles = ["sales", "accounts"]
      config.localize = false
      # config.enable_members = {:email_verification => true}
      config.thumbnails = {
