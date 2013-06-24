@@ -85,11 +85,11 @@ module Gluttonberg
     end
 
     def public_path
-        if Gluttonberg.localized?
-          "/#{self.locale.slug}/#{self.path}"
-        else
-          "/#{self.path}"
-        end
+      if Gluttonberg.localized?
+        "/#{self.locale.slug}/#{self.path}"
+      else
+        "/#{self.path}"
+      end
     end
 
 
@@ -104,11 +104,7 @@ module Gluttonberg
       page.reload #forcing that do not take cached page object
       slug = nil if slug.blank?
       if page.parent_id && page.parent.home != true
-        localization = page.parent.localizations.find(:first,
-          :conditions => {
-            :locale_id  => locale_id
-          }
-        )
+        localization = page.parent.localizations.where(:locale_id  => locale_id).first
         new_path = "#{localization.path}/#{self.slug || page.slug}"
       else
         new_path = "#{self.slug || page.slug}"
@@ -136,7 +132,6 @@ module Gluttonberg
       def update_content_localizations
         contents.each { |c| c.save } if self.content_needs_saving
       end
-
 
   end
 end
