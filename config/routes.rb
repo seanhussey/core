@@ -94,24 +94,24 @@ Rails.application.routes.draw do
 
       scope :module => 'asset_library' do
         # asset library related routes
-          resources :assets do
-            get 'delete', :on => :member
-            get 'crop', :on => :member
-            post 'save_crop', :on => :member
-          end
-          match "library" => "assets#index" , :as => :library
-          match "search_assets" => "assets#search" , :as => :library_search
-          match "add_asset_using_ajax"  => "assets#ajax_new" , :as => :add_asset_using_ajax
-          match "add_assets_in_bulk"  => "assets#add_assets_in_bulk" , :as => :add_assets_in_bulk
-          match "create_assets_in_bulk"  => "assets#create_assets_in_bulk" , :as => :create_assets_in_bulk
-          match "destroy_assets_in_bulk"  => "assets#destroy_assets_in_bulk" , :as => :destroy_assets_in_bulk
-          match "browser"  => "assets#browser" , :as => :asset_browser
-          match "browser-collection/:id"  => "assets#browser_collection" , :as => :asset_browser_collection
-          match "assets/:category/page/:page"  => "assets#category" , :as => :asset_category
-          match "collections/:id/page/:page"  => "collections#show" , :as => :asset_collection
-          resources :collections  do
-            get 'delete', :on => :member
-          end
+        resources :assets do
+          get 'delete', :on => :member
+          get 'crop', :on => :member
+          post 'save_crop', :on => :member
+        end
+        match "library" => "assets#index" , :as => :library
+        match "search_assets" => "assets#search" , :as => :library_search
+        match "add_asset_using_ajax"  => "assets#ajax_new" , :as => :add_asset_using_ajax
+        match "add_assets_in_bulk"  => "assets#add_assets_in_bulk" , :as => :add_assets_in_bulk
+        match "create_assets_in_bulk"  => "assets#create_assets_in_bulk" , :as => :create_assets_in_bulk
+        match "destroy_assets_in_bulk"  => "assets#destroy_assets_in_bulk" , :as => :destroy_assets_in_bulk
+        match "browser"  => "assets#browser" , :as => :asset_browser
+        match "browser-collection/:id"  => "assets#browser_collection" , :as => :asset_browser_collection
+        match "assets/:category/page/:page"  => "assets#category" , :as => :asset_category
+        match "collections/:id/page/:page"  => "collections#show" , :as => :asset_collection
+        resources :collections  do
+          get 'delete', :on => :member
+        end
       end
 
       resources :password_resets
