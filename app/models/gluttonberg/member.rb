@@ -7,9 +7,9 @@ module Gluttonberg
     has_and_belongs_to_many :groups, :class_name => "Group" , :join_table => "gb_groups_members"
     has_attached_file :image, :styles => { :profile => ["600x600"], :thumb => ["142x95#"] , :thumb_for_backend => ["100x75#"]}
 
-    validates_format_of :password, :with => /^(?=.*\d)(?=.*[a-zA-Z])(?!.*[^\w\S\s]).{6,}$/ , :if => :require_password?, :message => "must be a minimum of 6 characters in length, contain at least 1 letter and at least 1 number"
-
+    validates_format_of :password, :with => Rails.configuration.password_pattern , :if => :require_password?, :message => Rails.configuration.password_validation_message
     validates_presence_of :first_name , :email
+
     attr_accessor :return_url , :term_and_conditions
     attr_accessor :image_delete
 

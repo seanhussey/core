@@ -5,7 +5,7 @@ class User < ActiveRecord::Base
   belongs_to :images , :foreign_key => "image_id" , :class_name => "Gluttonberg::Asset"
 
   validates_presence_of :first_name , :email , :role
-  validates_format_of :password, :with => /^(?=.*\d)(?=.*[a-zA-Z])(?!.*[^\w\S\s]).{6,}$/ , :if => :require_password?, :message => "must be a minimum of 6 characters in length, contain at least 1 letter and at least 1 number"
+  validates_format_of :password, :with => Rails.configuration.password_pattern , :if => :require_password?, :message => Rails.configuration.password_validation_message
 
   clean_html [:bio]
 
