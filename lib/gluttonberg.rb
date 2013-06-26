@@ -26,11 +26,9 @@ module Gluttonberg
   require 'gluttonberg/can_flag'
   require 'gluttonberg/record_history'
 
-
   # These should likely move into one of the initializers inside of the
   # engine config. This will ensure they only run after Rails and the app
   # has been loaded.
-  #Helpers.setup
   DragTree.setup
   RecordHistory.setup
 
