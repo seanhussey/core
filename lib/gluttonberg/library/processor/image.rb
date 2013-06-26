@@ -87,7 +87,6 @@ module Gluttonberg
               file_name = "#{config[:filename]}.#{asset.file_extension}"
 
               if config[:geometry].include?("#")
-                #todo
                 begin
                   image.resize(suggested_measures(image, config[:geometry]))
                   image.arguments << " -gravity Center  -crop #{config[:geometry].delete("#")}+0+0 +repage #{config[:grayscale] && config[:grayscale] == true ? "-colorspace Gray":""}"
@@ -117,13 +116,13 @@ module Gluttonberg
           actual_width = image.width.to_i
           actual_height = image.height.to_i
 
-          asset.update_attributes( :width => actual_width ,:height => actual_height)
+          asset.update_attributes( :width => actual_width, :height => actual_height)
 
           image.resize asset.class.max_image_size
           image.save File.join(asset.tmp_directory, asset.file_name)
           asset.move_tmp_file_to_actual_directory(asset.file_name , true)
           # remove mp3 info if any image have. it may happen in the case of updating asset from mp3 to image
-          audio = AudioAssetAttribute.find( :first , :conditions => {:asset_id => asset.id})
+          audio = AudioAssetAttribute.where(:asset_id => asset.id).first
           audio.destroy unless audio.blank?
         end
 
