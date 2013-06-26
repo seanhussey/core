@@ -29,6 +29,8 @@
             %td.second_column
               = select_tag :home , options_from_collection_for_select(@pages, "id", "name" , selected = @current_home_page_id.to_s )  ,  { :include_blank => true , :class => "home_page_setting_dropdown"  , :rel => admin_page_update_home_path(1)  }
               = image_tag("/assets/gb_spinner.gif" , :id => "progress_home_page" , :style => "display:none")
+            - if has_deletable_settings
+              %td.controls
           - for setting in @settings
             - i += 1
             %tr{ :class => "#{cycle("even", "odd")}"}
