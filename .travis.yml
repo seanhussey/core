@@ -3,4 +3,4 @@ rvm:
   - 1.9.3
 
 before_script:
-  - psql -c 'create database gluttonberg_core_test;' -U postgres
+  - RAILS_ENV=test rake db:create db:schema:load --trace
