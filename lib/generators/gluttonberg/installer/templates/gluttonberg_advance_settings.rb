@@ -49,7 +49,6 @@
 
   # Localization Config
     Rails.configuration.localize = false
-    Rails.configuration.identify_locale = :prefix # currently thats the only option
 
   # Membership Config
     # Import Meta Data
