@@ -121,8 +121,8 @@ module Gluttonberg
       asset.destroy
     end
 
-    # actual image should be resized if large than 2000x2000
-    it "should resize actual image if larger than 2000x2000>" do
+    # actual image should be resized if large than 1600x1200
+    it "should resize actual image if larger than 1600x1200>" do
       file = File.new(File.join(RSpec.configuration.fixture_path, "assets/high_res_photo.jpg"))
       file.original_filename = "high_res_photo.jpg"
       file.content_type = "image/jpeg"
