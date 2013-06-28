@@ -1,7 +1,7 @@
 test:
   adapter: postgresql
   database: gluttonberg_core_test
-  username: abdul
+  username: postgres
   password: ""
   encoding: unicode
   min_messages: warning
