@@ -92,6 +92,7 @@ module Gluttonberg
 
       Gluttonberg::CanFlag.setup
       Time::DATE_FORMATS[:default] = "%d/%m/%Y %I:%M %p"
+      Components.init_main_nav
     end
 
     initializer "setup acts-as-taggable-on" do |app|
