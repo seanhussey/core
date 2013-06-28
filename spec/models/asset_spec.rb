@@ -165,27 +165,6 @@ module Gluttonberg
       asset.destroy
     end
 
-    it "should generate fixed size image 1000x1000# even if image is smaller than required size" do
-      file = File.new(File.join(RSpec.configuration.fixture_path, "assets/gb_logo.png"))
-      file.original_filename = "gb_logo.png"
-      file.content_type = "image/png"
-      file.size = 1024
-
-      asset = Asset.new( @param.merge(:file =>  file) )
-      status = asset.save
-      status.should == true
-      File.exist?(asset.location_on_disk).should == true
-      thumb_path = File.join(asset.directory, "fixed_image.png")
-      File.exists?(thumb_path).should == true
-
-      image = Library::QuickMagick::Image.read(thumb_path).first
-      image.width.to_i.should == 1000
-      image.height.to_i.should == 1000
-
-      asset.destroy
-    end
-
-
     # audio
     it "should obtain and save mp3 title" do
       file = File.new(File.join(RSpec.configuration.fixture_path, "assets/audio.mp3"))
