@@ -37,26 +37,30 @@
 
     .navbar-main
       %ul.nav
-        %li
-          = active_link_to("Dashboard", admin_root_path, :id => "dashboard_nav" , :title => "Dashboard", :active => params[:controller].include?('gluttonberg/admin/main'))
-        %li
-          = active_link_to("Content", admin_pages_path, :id => "content_nav" , :title => "Content", :active => (params[:controller].include?('gluttonberg/admin/content') || (( Gluttonberg::Components.nav_entries.collect{|c| c[1]}).include?(controller_name.to_sym) )))
 
         - for entry in Gluttonberg::Components.main_nav_entries
-          -if entry[2].blank? || entry[2]==false || (entry[2]==true && session.user.is_super_admin)
-            %li{:class => "custom"}
-              = active_link_to(entry[0], url_for(entry[1]), :id => (entry[0].to_s.underscore).gsub(/\s/, '_') + "Nav" , :title => entry[0]  )
+          - if entry[2][:enabled].blank? || entry[2][:enabled] == true || (eval(entry[2][:enabled]) != false)
+            - if entry[2][:only_for_super_admin].blank? || entry[2][:only_for_super_admin]==false || (entry[2][:only_for_super_admin]==true && session.user.is_super_admin)
+              %li{:class => "mainNavLi"}
+                - active = nil
+                - enabled = true
+                - case entry[1]
+                  - when "/admin/"
+                    - active = params[:controller].include?('gluttonberg/admin/main')
+                  - when "/admin/pages"
+                    - active = (params[:controller].include?('gluttonberg/admin/content') || (( Gluttonberg::Components.nav_entries.collect{|c| c[1]}).include?(controller_name.to_sym) ))
+                  - when "/admin/assets/all/page/1"
+                    - active = params[:controller].include?('gluttonberg/admin/asset_library')
+                  - when "/admin/membership/members"
+                    - active  = /^\/admin\/membership/
+                    - enabled = Rails.configuration.enable_members
+                  - when "/admin/configurations"
+                    - active = params[:controller].include?('gluttonberg/admin/settings/')
+                  - else
+                    - active = (( Gluttonberg::Components.nav_entries(entry[0]).collect{|c| c[1]}).include?(controller_name.to_sym) )
 
-        %li
-          = active_link_to("Library", admin_asset_category_path(:category => 'all' , :page => 1 ), :id => "library_nav" , :title => "Library" , :active => params[:controller].include?('gluttonberg/admin/asset_library')  )
-
-
-        - if Gluttonberg::Member.enable_members == true
-          %li
-            = active_link_to("Members", admin_membership_members_path, :id => "membership_nav" , :title => "Members" , :active => /^\/admin\/membership/)
-        %li
-          = active_link_to("Settings", admin_configurations_path, :id => "settings_nav" , :title => "Settings" , :active => params[:controller].include?('gluttonberg/admin/settings/')  )
-
+                - if enabled
+                  = active_link_to(entry[0], url_for(entry[1]), {:id => (entry[0].to_s.underscore).gsub(/\s/, '_') + "Nav" , :title => entry[0]}.merge( ( active ) ? {} : {:active => active } )  )
 
     .container-fluid
       = render "/layouts/flash_messages"
