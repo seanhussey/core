@@ -52,7 +52,7 @@ class Gluttonberg::InstallerGenerator < Rails::Generators::Base
     rake("gluttonberg:generate_or_update_default_settings")
   end
 
-  def create_initializer_file
+  def create_setting_initializer_files
     copy_file "gluttonberg_basic_settings.rb", "config/initializers/gluttonberg_basic_settings.rb"
     copy_file "gluttonberg_advance_settings.rb", "config/initializers/gluttonberg_advance_settings.rb"
   end
