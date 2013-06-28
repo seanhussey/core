@@ -53,7 +53,7 @@ class Gluttonberg::ResourceGenerator < Rails::Generators::Base
         get 'delete'
         get 'duplicate'
       end
-    end 
+    end
   end
 )
       )
@@ -65,10 +65,10 @@ class Gluttonberg::ResourceGenerator < Rails::Generators::Base
     match \"/#{plural_name}/export(.:format)\" => \"#{plural_name}#export\" , :as=> :#{plural_name}_export
     resources :#{plural_name} do
       member do
-        get 'delete' 
+        get 'delete'
         get 'duplicate'
       end
-    end 
+    end
   end
 )
       )
@@ -77,7 +77,9 @@ class Gluttonberg::ResourceGenerator < Rails::Generators::Base
   end
 
   def add_config
-    application "Gluttonberg::Components.register(:#{plural_name}, :label => '#{plural_class_name}', :admin_url => :admin_#{plural_name})"
+    menu_config_filename = "config/initializers/gluttonberg_menu_settings.rb"
+    code =  "Gluttonberg::Components.register(:#{plural_name}, :label => '#{plural_class_name}', :admin_url => :admin_#{plural_name})\n"
+    File.open(menu_config_filename, "a+") { |file| file.write(code) }
   end
 
   protected
