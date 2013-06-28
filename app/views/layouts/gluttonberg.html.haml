@@ -5,30 +5,16 @@
       %title
         = "#{website_title} #{@window_title.blank? ? '' : ' : ' + @window_title}"
       %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}
-      %meta{:content => "", :name => "description"}
-      %meta{:content => "", :name => "author"}
+      %meta{:content => "Updating your site is a piece of cake", :name => "description"}
+      %meta{:content => "Freerange Future", :name => "author"}
       = csrf_meta_tag
-      / Le styles
-      %link{:href => "/assets/gb_bootstrap.css", :rel => "stylesheet"}
-      %link{:href => "/assets/jcrop/css/gb_jquery-Jcrop.css", :rel => "stylesheet"}
-      %link{:href => "/assets/gb_360player.css", :rel => "stylesheet"}
-      %link{:href => "/assets/gb_admin-override.css", :rel => "stylesheet"}
 
-      = javascript_include_tag "jquery-1-7-1", "gb_bootstrap", "gb_bootstrap-datepicker", "jquery-dimensions-min" , "jquery-ui-1-8-23-custom-min" , "jquery-validate" , "gb_jquery-dragTree" , "rails" , "gb_tags" , "gb_jeditable" , "gb_ajaxfileupload" , "gb_expander" , "/assets/jcrop/js/jquery-Jcrop-min", "gb_berniecode-animator" , "gb_soundmanager2-jsmin", "gb_360player"
+      = stylesheet_link_tag "gluttonberg", :media => "all"
+      = javascript_include_tag "gluttonberg",  :charset => "utf-8"
 
-      = wysiwyg_js_css_link_tag
-      = javascript_include_tag "gb_application" ,  :charset => "utf-8"
       = custom_javascript_include_tag
       = custom_stylesheet_link_tag
 
-      :css
-        body {
-          padding-top: 60px;
-          padding-bottom: 40px;
-        }
-        .sidebar-nav {
-          padding: 9px 0;
-        }
       /[if lt IE 9]
         <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
 
@@ -51,26 +37,30 @@
 
     .navbar-main
       %ul.nav
-        %li
-          = active_link_to("Dashboard", admin_root_path, :id => "dashboard_nav" , :title => "Dashboard", :active => params[:controller].include?('gluttonberg/admin/main'))
-        %li
-          = active_link_to("Content", admin_pages_path, :id => "content_nav" , :title => "Content", :active => (params[:controller].include?('gluttonberg/admin/content') || (( Gluttonberg::Components.nav_entries.collect{|c| c[1]}).include?(controller_name.to_sym) )))
 
         - for entry in Gluttonberg::Components.main_nav_entries
-          -if entry[2].blank? || entry[2]==false || (entry[2]==true && session.user.is_super_admin)
-            %li{:class => "custom"}
-              = active_link_to(entry[0], url_for(entry[1]), :id => (entry[0].to_s.underscore).gsub(/\s/, '_') + "Nav" , :title => entry[0]  )
+          - if entry[2][:enabled].blank? || entry[2][:enabled] == true || (eval(entry[2][:enabled]) != false)
+            - if entry[2][:only_for_super_admin].blank? || entry[2][:only_for_super_admin]==false || (entry[2][:only_for_super_admin]==true && session.user.is_super_admin)
+              %li{:class => "mainNavLi"}
+                - active = nil
+                - enabled = true
+                - case entry[1]
+                  - when "/admin/"
+                    - active = params[:controller].include?('gluttonberg/admin/main')
+                  - when "/admin/pages"
+                    - active = (params[:controller].include?('gluttonberg/admin/content') || (( Gluttonberg::Components.nav_entries.collect{|c| c[1]}).include?(controller_name.to_sym) ))
+                  - when "/admin/assets/all/page/1"
+                    - active = params[:controller].include?('gluttonberg/admin/asset_library')
+                  - when "/admin/membership/members"
+                    - active  = /^\/admin\/membership/
+                    - enabled = Rails.configuration.enable_members
+                  - when "/admin/configurations"
+                    - active = params[:controller].include?('gluttonberg/admin/settings/')
+                  - else
+                    - active = (( Gluttonberg::Components.nav_entries(entry[0]).collect{|c| c[1]}).include?(controller_name.to_sym) )
 
-        %li
-          = active_link_to("Library", admin_asset_category_path(:category => 'all' , :page => 1 ), :id => "library_nav" , :title => "Library" , :active => params[:controller].include?('gluttonberg/admin/asset_library')  )
-
-
-        - if Gluttonberg::Member.enable_members == true
-          %li
-            = active_link_to("Members", admin_membership_members_path, :id => "membership_nav" , :title => "Members" , :active => /^\/admin\/membership/)
-        %li
-          = active_link_to("Settings", admin_generic_settings_path, :id => "settings_nav" , :title => "Settings" , :active => params[:controller].include?('gluttonberg/admin/settings/')  )
-
+                - if enabled
+                  = active_link_to(entry[0], url_for(entry[1]), {:id => (entry[0].to_s.underscore).gsub(/\s/, '_') + "Nav" , :title => entry[0]}.merge( ( active ) ? {} : {:active => active } )  )
 
     .container-fluid
       = render "/layouts/flash_messages"

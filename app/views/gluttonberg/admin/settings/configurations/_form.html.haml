@@ -1,0 +1,26 @@
+
+= form_for(@setting, :url => url) do  |f|
+  = gb_error_messages_for(@setting)
+
+  = block("Setting") do
+    - if @setting.delete_able
+      = f.label :name ,  "Setting Name"
+      = f.text_field(:name)
+      %br
+      = f.label :value ,  "Setting Value"
+      = render :partial => "value_tag" , :locals => { :f => f}
+      %br
+      = f.label :values_list ,  "Setting Value List (; seperated) (optional)"
+      = f.text_area(:values_list , :class => "large tall")
+      %br
+      = f.label :help
+      = f.text_area(:help , :class => "large tall")
+    - else
+      = f.label :value , @setting.user_friendly_name
+      = render :partial => "value_tag" , :locals => { :f => f}
+    %br
+    %small= @setting.help
+
+    %br
+
+  = form_controls(admin_configurations_path)

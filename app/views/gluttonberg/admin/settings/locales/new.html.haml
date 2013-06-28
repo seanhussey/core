@@ -1,4 +1,13 @@
 - @window_title = "Settings"
 - @page_title = "#{link_to "Settings", admin_settings_path} > #{link_to('Locales', admin_locales_path)} > Add a new locale"
 
-= render :partial => "form", :locals => { :url => admin_locales_path }
+.row-fluid
+  = render :partial => "/gluttonberg/admin/settings/main/sidebar"
+  .span9
+    .row-fluid
+      .page-header
+        %h1
+          = @page_title.html_safe
+      .subnav
+
+      = render :partial => "form", :locals => { :url => admin_locales_path }

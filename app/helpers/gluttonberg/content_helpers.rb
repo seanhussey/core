@@ -82,19 +82,17 @@ module Gluttonberg
       end
 
       # generate javascript code to enable tinymce on it. textArea need to have class = jwysiwyg
-      def enable_jwysiwyg_on_class(html_class)
-        if Gluttonberg::Setting.get_setting("enable_WYSIWYG") == "Yes"
-          content = "enable_jwysiwyg_on('.#{html_class}'); \n"
-          javascript_tag(content)
-        end
-      end
-
-      # generate javascript code to enable tinymce on it. textArea need to have class = jwysiwyg
       def enable_slug_management_on(html_class)
         javascript_tag("enable_slug_management_on('#{html_class}')" )
       end
 
-
+      def enable_redactor(html_class)
+        if Gluttonberg::Setting.get_setting("enable_WYSIWYG") == "Yes"
+          link_count = Page.published.count + Article.published.count
+          content = "enableRedactor('.#{html_class}', #{link_count}); \n"
+          javascript_tag(content)
+        end
+      end
 
     end # Content
 end # Gluttonberg

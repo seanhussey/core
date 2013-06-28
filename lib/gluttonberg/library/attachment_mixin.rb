@@ -89,7 +89,6 @@ module Gluttonberg
         end
 
         def asset_folder_path
-          # "/user_assets/#{asset_hash}"
           directory
         end
 
@@ -122,7 +121,6 @@ module Gluttonberg
           tmp_directory + "/original_" + file_name
         end
 
-
         def generate_cropped_image(x , y , w , h, image_type)
           if !File.exist?(self.tmp_location_on_disk) && !File.exist?(self.tmp_original_file_on_disk)
             self.download_asset_to_tmp_file
@@ -133,10 +131,9 @@ module Gluttonberg
           self.remove_file_from_tmp_storage
         end
 
-
         def asset_processing
           asset_id_to_process = self.id
-          asset = Asset.find(:first , :conditions => { :id => asset_id_to_process } )
+          asset = Asset.where(:id => asset_id_to_process).first
           if asset
             asset_processors = [Library::Processor::Image , Library::Processor::Audio] #Core processors
             asset_processors << Rails.configuration.asset_processors unless Rails.configuration.asset_processors.blank? #additional processors

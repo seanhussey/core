@@ -43,6 +43,30 @@ module Gluttonberg
       @contents
     end
 
+    # Returns an array of content localizations
+    def localized_contents
+      @localized_contents ||= begin
+        # First collect the localized content
+        contents_data = Gluttonberg::Content.localization_associations.inject([]) do |memo, assoc|
+          memo += send(assoc).all
+        end
+        contents_data = contents_data.sort{|a,b| a.section_position <=> b.section_position}
+      end
+      @localized_contents
+    end
+
+    # Returns an array of content localizations
+    def non_localized_contents
+      @non_localized_contents ||= begin
+        # grab the content that belongs directly to the page
+        Gluttonberg::Content.non_localized_associations.inject(contents_data) do |memo, assoc|
+          contents_data += page.send(assoc).all
+        end
+        contents_data = contents_data.sort{|a,b| a.section_position <=> b.section_position}
+      end
+      @non_localized_contents
+    end
+
     # Updates each localized content record and checks their validity
     def contents=(params)
       self.content_needs_saving = true
@@ -61,11 +85,11 @@ module Gluttonberg
     end
 
     def public_path
-        if Gluttonberg.localized?
-          "/#{self.locale.slug}/#{self.path}"
-        else
-          "/#{self.path}"
-        end
+      if Gluttonberg.localized?
+        "/#{self.locale.slug}/#{self.path}"
+      else
+        "/#{self.path}"
+      end
     end
 
 
@@ -80,11 +104,7 @@ module Gluttonberg
       page.reload #forcing that do not take cached page object
       slug = nil if slug.blank?
       if page.parent_id && page.parent.home != true
-        localization = page.parent.localizations.find(:first,
-          :conditions => {
-            :locale_id  => locale_id
-          }
-        )
+        localization = page.parent.localizations.where(:locale_id  => locale_id).first
         new_path = "#{localization.path}/#{self.slug || page.slug}"
       else
         new_path = "#{self.slug || page.slug}"
@@ -112,7 +132,6 @@ module Gluttonberg
       def update_content_localizations
         contents.each { |c| c.save } if self.content_needs_saving
       end
-
 
   end
 end

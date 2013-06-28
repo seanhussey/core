@@ -12,20 +12,7 @@ module Gluttonberg
           unless current_user.super_admin? || current_user.admin?
             redirect_to :action => "edit" , :id => current_user.id
           end
-          if current_user.super_admin?
-            unless params[:query].blank?
-              @users = User.order(get_order).where("first_name LIKE '%#{params[:query]}%' OR last_name LIKE '%#{params[:query]}%' OR email LIKE '%#{params[:query]}%' OR bio LIKE '%#{params[:query]}%' " )
-            else
-              @users = User.order(get_order)
-            end
-          else
-            unless params[:query].blank?
-              @users = User.order(get_order).where("role != 'super_admin' AND (first_name LIKE '%#{params[:query]}%' OR last_name LIKE '%#{params[:query]}%' OR email LIKE '%#{params[:query]}%' OR bio LIKE '%#{params[:query]}%' )" )
-            else
-              @users = User.order(get_order).where( ["role != ?" , "super_admin"])
-            end
-          end
-
+          @users = User.search_users(params[:query], current_user, get_order)
           @users = @users.paginate(:page => params[:page] , :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items") )
         end
 
@@ -84,19 +71,7 @@ module Gluttonberg
 
        private
           def find_user
-            if current_user.super_admin?
-             @user = User.find(params[:id])
-            elsif current_user.admin?
-              @user = User.find(params[:id])
-              if @user.super_admin?
-                @user = nil
-              end
-            else
-              @user = User.find(params[:id])
-              unless @user.id == current_user.id
-                @user =  nil
-              end
-            end
+            @user = User.find_user(params[:id], current_user)
             raise ActiveRecord::RecordNotFound  unless @user
           end
 

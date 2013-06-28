@@ -14,7 +14,7 @@ module Gluttonberg
 
         # home page of asset library
         def index
-
+          redirect_to admin_asset_category_path(:category => 'all' , :page => 1 )
         end
 
 
@@ -115,7 +115,7 @@ module Gluttonberg
             process_new_collection_and_merge(params)
             @asset = Asset.new(params[:asset])
             if @asset.valid?
-              open_zip_file_and_make_assets()
+              @new_assets = AssetBulkImport.open_zip_file_and_make_assets(params[:asset], current_user)
               if @new_assets.blank?
                 flash[:error] = "The zip file you uploaded does not have any valid files."
                 prepare_to_edit
@@ -283,7 +283,7 @@ module Gluttonberg
                        options = {:name => param_hash['new_collection_name'] }
 
                        # Retireve the existing AssetCollection if it matches or create a new one
-                       the_collection = AssetCollection.find(:first , :conditions => options)
+                       the_collection = AssetCollection.where(options).first
                        unless the_collection
                          the_collection = AssetCollection.new(options)
                          the_collection.user_id = current_user.id
@@ -295,57 +295,6 @@ module Gluttonberg
                    end # new_collection_name key
                  end # param_hash
              end # find_or_create_asset_collection_from_hash
-
-
-            # makes a new folder (name of the folder is current time stamp) inside tmp folder
-            # open zip folder
-            # iterate on opened zip folder and make assets for each entry using  make_asset_for_entry method
-            # removes directory which we made inside tmp folder
-            # also removes zip tmp file
-            def open_zip_file_and_make_assets
-              zip = params[:asset][:file]
-              dir = File.join(Rails.root,"tmp")
-              dir = File.join(dir,Time.now.to_i.to_s)
-
-              FileUtils.mkdir_p(dir)
-
-              begin
-                Zip::ZipFile.open(zip.tempfile.path).each do |entry|
-                  make_asset_for_entry(entry , dir)
-                end
-                zip.tempfile.close
-              rescue => e
-                Rails.logger.info e
-              end
-              FileUtils.rm_r(dir)
-              FileUtils.remove_file(zip.tempfile.path)
-            end
-
-            # taskes zip_entry and dir path. makes assets if its valid then also add it to @new_assets list
-            # its responsible of extracting entry and its deleting it.
-            # it use file name for making asset.
-            def make_asset_for_entry(entry , dir)
-              begin
-                filename = File.join(dir,entry.name)
-
-                unless entry.name.starts_with?("._") || entry.name.starts_with?("__") || entry.directory?
-                  entry.extract(filename)
-                  file = MyFile.init(filename , entry)
-                  asset_name_with_extention = entry.name.split(".").first
-                  asset_name_with_extention = asset_name_with_extention.humanize
-                  asset_name_with_extention = asset_name_with_extention.gsub('-',' ')
-                  asset = Asset.new(params[:asset].merge( :name => asset_name_with_extention ,  :file => file ) )
-                  asset.user_id = current_user.id
-                  @new_assets << asset if asset.save
-                  file.close
-                  FileUtils.remove_file(filename)
-                end
-              rescue => e
-                  Rails.logger.info e
-              end
-            end
-
-
       end # controller
     end
   end

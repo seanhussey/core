@@ -2,14 +2,14 @@ module Gluttonberg
   class Member < ActiveRecord::Base
     self.table_name = "gb_members"
 
-    attr_accessible :first_name , :last_name , :email , :password , :password_confirmation , :bio , :image , :image_delete , :term_and_conditions, :group_ids
+    attr_accessible :first_name , :last_name , :email , :password , :password_confirmation , :bio , :image , :image_delete , :term_and_conditions, :group_ids, :groups
 
     has_and_belongs_to_many :groups, :class_name => "Group" , :join_table => "gb_groups_members"
     has_attached_file :image, :styles => { :profile => ["600x600"], :thumb => ["142x95#"] , :thumb_for_backend => ["100x75#"]}
 
-    validates_format_of :password, :with => /^(?=.*\d)(?=.*[a-zA-Z])(?!.*[^\w\S\s]).{6,}$/ , :if => :require_password?, :message => "must be a minimum of 6 characters in length, contain at least 1 letter and at least 1 number"
-
+    validates_format_of :password, :with => Rails.configuration.password_pattern , :if => :require_password?, :message => Rails.configuration.password_validation_message
     validates_presence_of :first_name , :email
+
     attr_accessor :return_url , :term_and_conditions
     attr_accessor :image_delete
 
@@ -28,9 +28,7 @@ module Gluttonberg
     end
 
     def full_name
-      self.first_name = "" if self.first_name.blank?
-      self.last_name = "" if self.last_name.blank?
-      self.first_name + " " + self.last_name
+      "#{self.first_name} #{self.last_name}"
     end
 
     def deliver_password_reset_instructions!(current_localization_slug = "")
@@ -151,12 +149,12 @@ module Gluttonberg
                 end
               end
 
-              #attach user to an industry if its valid
+              #attach user to an group if its valid
               unless groups_column_num.blank? || row[groups_column_num].blank?
                 group_names = row[groups_column_num].split(";")
                 temp_group_ids = []
                 group_names.each do |group_name|
-                  group = Group.find(:first,:conditions=>{:name => group_name.strip})
+                  group = Group.where(:name => group_name.strip).first
                   temp_group_ids << group.id unless group.blank?
                 end
                 user_info[:group_ids] = temp_group_ids
@@ -170,7 +168,7 @@ module Gluttonberg
                 end
               end
 
-              user = self.find(:first , :conditions => { :email => row[email_column_num] } )
+              user = self.where(:email => row[email_column_num]).first
               if user.blank?
                 # generate random password
                 temp_password = self.generateRandomString
@@ -195,11 +193,11 @@ module Gluttonberg
                 end
               else
                 if  !self.contains_user?(user , successfull_users) and !self.contains_user?(user , updated_users)
-                    if user.update_attributes(user_info)
-                      updated_users << user
-                    else
-                      failed_users << user
-                    end
+                  if user.update_attributes(user_info)
+                    updated_users << user
+                  else
+                    failed_users << user
+                  end
                 end
               end
             end # if csv row index > 0
@@ -233,7 +231,6 @@ module Gluttonberg
       end
     end
 
-    #############################
     #export to a csv
     def self.exportCSV
       all_records = self.all

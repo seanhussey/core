@@ -52,32 +52,9 @@ class Gluttonberg::InstallerGenerator < Rails::Generators::Base
     rake("gluttonberg:generate_or_update_default_settings")
   end
 
-  def localization_config
-
-    application %{
-     # Gluttonberg Related config
-
-     # config.cms_based_public_css = false
-     # config.custom_css_for_cms = false
-     # config.custom_js_for_cms = false
-     config.localize = false
-     # By Default gluttonberg applications are localized. If you do not want localized application then uncomment following line.
-
-     # By default membership system is disabled. uncommenting following line make it enabled.
-     # if email_verification is true then newly registered members have to verify their email address
-     # config.enable_members = {:email_verification => true}
-
-     # By default photo gallery is not visible in backend.
-     # config.enable_gallery = true
-
-     # You can customize your thumbnails. For geometry values please read ImageMagick documentation
-     config.thumbnails = {
-       :jwysiwyg_image => {:label => "Thumb for jwysiwyg", :filename => "_jwysiwyg_image", :geometry => "250x200"}
-     }
-     config.filter_parameters += [:password_confirmation]
-
-    }
-
+  def create_setting_initializer_files
+    copy_file "gluttonberg_basic_settings.rb", "config/initializers/gluttonberg_basic_settings.rb"
+    copy_file "gluttonberg_advance_settings.rb", "config/initializers/gluttonberg_advance_settings.rb"
   end
 
   def add_memory_store_config_in_production

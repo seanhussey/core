@@ -1,18 +1,32 @@
 module Gluttonberg
  class Setting  < ActiveRecord::Base
-   self.table_name = "gb_settings"
-   after_save  :update_settings_in_config
+    self.table_name = "gb_settings"
+    after_save :update_settings_in_config
 
-   before_destroy :destroy_cache
-   attr_accessible :name, :value, :values_list, :help, :category, :row , :delete_able , :enabled
+    before_destroy :destroy_cache
+    attr_accessible :name, :value, :values_list, :help, :category
+    attr_accessible :row, :delete_able, :enabled
+
     def self.generate_or_update_settings(settings={})
       settings.each do |key , val |
-        obj = self.find(:first , :conditions => {:name => key })
+        obj = self.where(:name => key).first
         if obj.blank?
-          obj = self.new(:name=> key , :value => val[0] , :row => val[1] , :delete_able => false , :help => val[2] , :values_list => val[3])
+          obj = self.new({
+            :name=> key,
+            :value => val[0],
+            :row => val[1],
+            :delete_able => false,
+            :help => val[2],
+            :values_list => val[3]
+          })
           obj.save!
         else
-          obj.update_attributes(:name=> key  , :row => val[1] , :delete_able => false , :help => val[2])
+          obj.update_attributes({
+            :name=> key,
+            :row => val[1],
+            :delete_able => false,
+            :help => val[2]
+          })
         end
       end
     end
@@ -72,7 +86,7 @@ module Gluttonberg
         rescue
         end
         if data.blank?
-          setting = Setting.find(:first , :conditions => { :name => key })
+          setting = Setting.where(:name => key).first
           data = ( (!setting.blank? && !setting.value.blank?) ? setting.value : "" )
            Rails.cache.write("setting_#{key}" , (data.blank? ? "~" : data))
            data
@@ -87,8 +101,10 @@ module Gluttonberg
     def self.update_settings(settings={})
       settings.each do |key , val |
         obj = self.where(:name=> key).first
-        obj.value = val
-        obj.save!
+        unless obj.blank?
+          obj.value = val
+          obj.save!
+        end
       end
     end
 
@@ -104,7 +120,5 @@ module Gluttonberg
     def destroy_cache
       Rails.cache.write("setting_#{self.name}" , "")
     end
-
-
   end
 end

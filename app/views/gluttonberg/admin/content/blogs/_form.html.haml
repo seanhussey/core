@@ -4,10 +4,10 @@
 = form_for(@blog, :url => url , :html => {:class => "validation"}) do  |f|
   = gb_error_messages_for(@blog)
   = f.hidden_field(:user_id, :value => current_user.id) if @blog.user_id.blank?
-  
+
   .span5
     .tabbable
-    
+
       %ul.nav.nav-tabs
         %li.active
           %a{:href => "#blog", "data-toggle" => "tab" }
@@ -26,7 +26,7 @@
               = f.text_field(:slug, :id => 'page_slug' , :donotmodify => (action_name == "edit"  || action_name == "update"))
             %p
               = f.label :description,:class =>"block_label"
-              = f.text_area(:description , :class => "jwysiwyg", :width => "490", :height => "200")    
+              = f.text_area(:description , :class => "jwysiwyg", :width => "490", :height => "200")
             %p
               = f.label :moderation_required , "Moderation required?"
               = f.check_box :moderation_required
@@ -44,13 +44,13 @@
             %p
               = f.label :fb_icon_id , "Facebook Icon"
               = f.asset_browser :fb_icon_id , :class => "" , :filter => "image"
-  
-  
+
+
   .span4
     %legend Publish
-    - if can? :publish , Gluttonberg::Blog  
+    - if can? :publish , Gluttonberg::Blog
       = f.publisable_dropdown
     = form_controls(admin_blogs_path)
 
 
-= enable_jwysiwyg_on_class("jwysiwyg")
+= enable_redactor("jwysiwyg")

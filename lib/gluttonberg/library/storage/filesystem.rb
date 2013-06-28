@@ -9,7 +9,7 @@ module Gluttonberg
           # they are missing. It also stores the various paths so they can be
           # retreived using the assets_dir method.
           def self.storage_setup
-            Library.set_asset_root("public/user_assets", "public/user_assets", "public/test_assets")
+            Library.set_asset_root(File.join(Rails.root, "public/user_assets"), File.join(Rails.root, "public/user_assets"), File.join(Rails.root, "public/test_assets"))
             FileUtils.mkdir(Library.root) unless File.exists?(Library.root) || File.symlink?(Library.root)
           end
         end

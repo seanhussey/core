@@ -2,7 +2,7 @@ class <%= class_name %> < ActiveRecord::Base
   include Gluttonberg::Content::Publishable
   include Gluttonberg::Content::SlugManagement
   #self.slug_source_field_name = :name  #uncomment this line and provide your source for slug. by default it looks for name or title or id
-  attr_accessible <%= attributes.collect{|attr| ":#{attr_db_name_wrapper(attr)}"}.join(",") %>, :slug, :seo_title, :seo_keywords, :seo_description, :fb_icon_id, :state, :published_at
+  attr_accessible <%= attributes.collect{|attr| ":#{attr_db_name_wrapper(attr)}"}.join(",") %>, :slug, :seo_title, :seo_keywords, :seo_description, :fb_icon_id, :state, :position , :published_at
   <% if localized? %>include Gluttonberg::Content::Localization
   delegate :fb_icon , :to =>  :current_localization
   <% attributes.find_all{|attr| ['asset', 'image','video','document','audio'].include?(attr.type.to_s) }.each do |attr| %>

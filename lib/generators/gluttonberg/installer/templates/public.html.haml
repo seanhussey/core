@@ -16,7 +16,7 @@
       %meta{:content=>"#{page_fb_icon_path}",:property=>"og:image"}
     - unless page_title.blank?
       %meta{:content=>"#{page_title}",:property=>"og:title"}
-    %link{ :rel=>"shortcut icon", :href=>"/images/favicon.png"}
+    %link{ :rel=>"shortcut icon", :href=>"/assets/favicon.png"}
   %body{:class=>body_class(@page)}
     - @pages = Gluttonberg::Page.find(:all , :conditions => { :home => true } )
     - slug = @locale ? @locale.slug : ""

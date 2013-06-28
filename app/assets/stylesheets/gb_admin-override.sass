@@ -32,6 +32,7 @@ a.brand-img
 body
   :padding
     :top 160px !important
+    :bottom 40px
   background: url(/assets/gb_bg.png) repeat
 
 .navbar-fixed-top
@@ -77,7 +78,7 @@ body
       height: 80px
 
       a
-        display:block
+        display: block
         color: #fff
         font-size: 14px
         font-weight: bold
@@ -92,19 +93,19 @@ body
         background-position: 50% 0
         background-repeat: no-repeat
 
-      a#dashboard_nav
+      a#dashboard_nav, a#dashboardNav
         background-image: url('/assets/gb_icon_dashboard.png')
 
-      a#content_nav
+      a#content_nav, a#contentNav
         background-image: url('/assets/gb_icon_content.png')
 
-      a#library_nav
+      a#library_nav, a#libraryNav
         background-image: url('/assets/gb_icon_library.png')
 
-      a#membership_nav
+      a#membership_nav, a#membersNav
         background-image: url('/assets/gb_icon_members.png')
 
-      a#settings_nav
+      a#settings_nav, a#settingsNav
         background-image: url('/assets/gb_icon_settings.png')
 
 .dash-left
@@ -120,6 +121,9 @@ body
   background: white
   border: 1px solid #DDD
   box-shadow: none
+
+.sidebar-nav
+  padding: 9px 0
 
 .nav-list > .active > a, .nav-list > .active > a:hover
   color: white
@@ -171,7 +175,7 @@ body
 
 .nav-list a.active
   background-position: 15px -32px
-  background-repeat:no-repeat
+  background-repeat: no-repeat
 
 .dashboard.well
   background-color: #fff
@@ -514,10 +518,10 @@ table
         display: inline-block
         &:hover, &.desc:hover, &.current.asc
           :padding-right 25px
-          background: url("/assets/library/gb_sort_by_asc.png") right no-repeat
+          background: url("/assets/gb_sort_by_asc.png") right no-repeat
         &:hover, &.asc:hover, &.current.desc
           :padding-right 25px
-          background: url("/assets/library/gb_sort_by_desc.png") right no-repeat
+          background: url("/assets/gb_sort_by_desc.png") right no-repeat
 
 #page_slug_holder
   .domain
@@ -593,3 +597,13 @@ form .span5 input.span2, form .span5 textarea.span2, form .span5 .uneditable-inp
   :background url('/assets/gb_icon_blog.png') no-repeat
   &:hover
     :cursor pointer
+
+.redactor_span5
+  :float none
+
+
+body .redactor_toolbar li a.redactor_btn_asset_library_image
+  :background-position -200px
+
+body .redactor_toolbar li a.redactor_btn_gb_link
+  :background-position -300px

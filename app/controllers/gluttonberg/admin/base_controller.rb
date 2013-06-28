@@ -3,20 +3,20 @@ class Gluttonberg::Admin::BaseController < ActionController::Base
    before_filter :require_user
    before_filter :require_backend_access
 
-   
+
    if Rails.env == "production"
      rescue_from ActionView::MissingTemplate, :with => :not_found
      rescue_from ActiveRecord::RecordNotFound, :with => :not_found
      rescue_from ActionController::RoutingError, :with => :not_found
      rescue_from CanCan::AccessDenied, :with => :access_denied
-   end   
-   
+   end
+
    layout 'gluttonberg'
 
    unloadable
-  
-  
-  protected 
+
+
+  protected
 
 
 
@@ -29,59 +29,59 @@ class Gluttonberg::Admin::BaseController < ActionController::Base
       when 'first_name'
         "first_name #{order_type}"
       when 'email'
-        "email #{order_type}" 
+        "email #{order_type}"
       when 'role'
-        "role #{order_type}"   
+        "role #{order_type}"
       when 'member_groups'
-        "name #{order_type}"  
+        "name #{order_type}"
       when 'name'
-        "name #{order_type}"  
+        "name #{order_type}"
       when 'date-updated'
         "updated_at #{order_type}"
       when 'created_at'
-        "created_at #{order_type}"  
+        "created_at #{order_type}"
       else
         "created_at #{order_type}"
       end
     end
-    
-    
-    # This is to be called from within a controller — i.e. the delete action — 
-    # and it will display a dialog which allows users to either confirm 
+
+
+    # This is to be called from within a controller — i.e. the delete action —
+    # and it will display a dialog which allows users to either confirm
     # deleting a record or cancelling the action.
     def display_delete_confirmation(opts)
-      @options = opts      
+      @options = opts
       @do_not_delete = (@options[:do_not_delete].blank?)? false : @options[:do_not_delete]
-      
+
       unless @do_not_delete
         @options[:title]    ||= "Delete Record?"
         @options[:message]  ||= "If you delete this record, it will be gone permanently. There is no undo."
       else
         @options[:title]    = "Sorry you cannot delete this record!"
         @options[:message]  ||= "It is been used by some other records."
-      end  
+      end
       render :template => "gluttonberg/admin/shared/delete", :layout => false
     end
-    
-    # This is to be called from within a controller — i.e. the publish/unpublish action — 
-    # and it will display a dialog which allows users to either confirm 
+
+    # This is to be called from within a controller — i.e. the publish/unpublish action —
+    # and it will display a dialog which allows users to either confirm
     # publish/unpublish a record or cancelling the action.
     def display_generic_confirmation(name , opts)
       @options = opts
       @do_not_do = (@options[:do_not_do].blank?)? false : @options[:do_not_do]
       @name = name
-      
+
       unless @do_not_do
         @options[:title]    ||= "#{@name.capitalize} Record?"
         @options[:message]  ||= "If you #{@name.downcase} this record, it will be #{@name}"
       else
         @options[:title]    = "Sorry you cannot #{@name.capitalize} this record!"
         @options[:message]  ||= "It's parent record is not #{@name.capitalize}."
-      end  
+      end
       render :template => "shared/generic", :layout => false
-      
+
     end
-    
+
     # A helper for finding shortcutting the steps in finding a model ensuring
     # it has a localization and raising a NotFound if it’s missing.
     # TODO Fixme
@@ -91,7 +91,7 @@ class Gluttonberg::Admin::BaseController < ActionController::Base
       result.ensure_localization!
       result
     end
-    
+
     # Returns a hash with the locale and dialect ids extracted from the params
     # or where they're missing, it will grab the defaults.
     # TODO Do we need it anymore?
@@ -108,7 +108,7 @@ class Gluttonberg::Admin::BaseController < ActionController::Base
         end
       end
     end
-    
+
     # Below is all the required methods for authentication
     def current_user_session
       return @current_user_session if defined?(@current_user_session)
@@ -129,9 +129,9 @@ class Gluttonberg::Admin::BaseController < ActionController::Base
       end
       true
     end
-    
-    
-    
+
+
+
     def require_backend_access
       return false unless require_user
       unless current_user.have_backend_access?
@@ -141,11 +141,11 @@ class Gluttonberg::Admin::BaseController < ActionController::Base
         return false
       end
     end
-    
-    
+
+
     def require_super_admin_user
       return false unless require_user
-      
+
       unless current_user.super_admin?
         store_location
         flash[:notice] = "You dont have privilege to access this page"
@@ -153,7 +153,7 @@ class Gluttonberg::Admin::BaseController < ActionController::Base
         return false
       end
     end
-    
+
     def store_location
       session[:return_to] = request.url
     end
@@ -162,24 +162,24 @@ class Gluttonberg::Admin::BaseController < ActionController::Base
       redirect_to(session[:return_to] || default)
       session[:return_to] = nil
     end
-    
-    
+
+
     # Exception handlers
     def not_found
-        render :layout => "bare" , :template => 'gluttonberg/admin/exceptions/not_found.html.haml' , :status => 404
+      render :layout => "bare" , :template => 'gluttonberg/public/exceptions/not_found' , :status => 404, :handlers => [:haml], :formats => [:html]
     end
-    
+
     def access_denied
-      render :layout => "bare" , :template => 'gluttonberg/admin/exceptions/access_denied.html.haml'
+      render :layout => "bare" , :template => 'gluttonberg/admin/exceptions/access_denied', :handlers => [:haml], :formats => [:html]
     end
 
     # handle NotAcceptable exceptions (406)
     def not_acceptable
-      render :layout => "bare" , :template => 'gluttonberg/admin/exceptions/not_acceptable.html.haml'
+      render :layout => "bare" , :template => 'gluttonberg/admin/exceptions/not_acceptable', :handlers => [:haml], :formats => [:html]
     end
     def internal_server_error
-      render :layout => "bare" , :template => 'gluttonberg/admin/exceptions/internal_server_error.html.haml'
+      render :layout => "bare" , :template => 'gluttonberg/admin/exceptions/internal_server_error', :handlers => [:haml], :formats => [:html]
     end
-    
-  
+
+
 end

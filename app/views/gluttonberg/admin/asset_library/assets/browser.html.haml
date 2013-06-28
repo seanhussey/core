@@ -1,14 +1,14 @@
 #assetsDialog.modal
   .modal-header
-  
-    %a.close#cancel.button
+
+    %a.close.cancel.button
       ×
     %h3
       Asset Library
-      
+
   .modal-body
     = render :partial => "browser_root"
-    
+
   .modal-footer
-    %a#cancel.btn.btn-danger
+    %a.cancel.btn.btn-danger
       Close

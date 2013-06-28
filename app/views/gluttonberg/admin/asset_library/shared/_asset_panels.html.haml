@@ -42,7 +42,7 @@
                   Play
             - elsif asset.category == 'image'
               %a{:href => admin_asset_url(asset), :class => "thumbnail"}
-              %img{:src => asset.thumb_small_url  }
+                %img{:src => asset.thumb_small_url  }
 
           %td
             %a{:href => "#{admin_asset_url(asset)}#{breadcrumbs_val}", :class => "assetLink"}

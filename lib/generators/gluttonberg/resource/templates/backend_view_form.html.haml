@@ -39,5 +39,5 @@
     %a{:href => admin_<%= plural_name %>_path}
       Cancel
 
-= enable_jwysiwyg_on_class("jwysiwyg")
+= enable_redactor("jwysiwyg")
 = enable_slug_management_on("attr_#{f.object.get_slug_source}")

@@ -1,3 +1,14 @@
-- @pages.each do |page|
-  - default_localization = Gluttonberg::PageLocalization.find(:first , :conditions => { :page_id => page.id , :locale_id => Gluttonberg::Locale.first_default.id } )
-  %option{ :value => default_localization.public_path }= page.name
+- unless @pages.blank?
+  %optgroup{:label => "Pages"}
+    - @pages.each do |page|
+      - default_localization = Gluttonberg::PageLocalization.find(:first , :conditions => { :page_id => page.id , :locale_id => Gluttonberg::Locale.first_default.id } )
+      %option{ :value => default_localization.public_path }= page.name
+
+- if @articles_count > 0
+  - @blogs.each do |blog|
+    %optgroup{:label => blog.name}
+      %option{ :value => blog_path(Gluttonberg::Locale.first_default.slug, blog.slug) }
+        #{blog.name} (Index)
+      - blog.articles.each do |article|
+        %option{ :value => blog_article_path(Gluttonberg::Locale.first_default.slug, blog.slug, article.slug) }
+          = article.title

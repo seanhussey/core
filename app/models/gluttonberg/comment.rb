@@ -27,18 +27,18 @@ module Gluttonberg
     clean_html [:body]
 
     def moderate(params)
-        if params == "approve"
-          self.moderation_required = false
-          self.approved = true
-          self.spam = false
-          self.save
-        elsif params == "disapprove"
-          self.moderation_required = false
-          self.approved = false
-          self.save
-        else
-          #error
-        end
+      if params == "approve"
+        self.moderation_required = false
+        self.approved = true
+        self.spam = false
+        self.save
+      elsif params == "disapprove"
+        self.moderation_required = false
+        self.approved = false
+        self.save
+      else
+        #error
+      end
     end
 
     def self.all_comments_count

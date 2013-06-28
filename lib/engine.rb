@@ -13,29 +13,35 @@ module Gluttonberg
     config.flagged_content = false
     config.active_record.observers = ['gluttonberg/page_observer' , 'gluttonberg/page_localization_observer' , 'gluttonberg/locale_observer' ]
 
-    config.thumbnails = {   }
+    config.thumbnails = {}
     config.max_image_size = "1600x1200>"
     config.encoding = "utf-8"
-    #config.gluttonberg = {}
     config.identify_locale = :prefix
     config.host_name = "localhost:3000"
-    config.user_roles = [] # User model always concat following two roles ["superadmin" , "admin"]
+    # User model always concat following three roles
+    # ["super_admin" , "admin" , "contributor"]
+    config.user_roles = []
+    config.password_pattern = /^(?=.*\d)(?=.*[a-zA-Z])(?!.*[^\w\S\s]).{6,}$/
+    config.password_validation_message = "must be a minimum of 6 characters in length, contain at least 1 letter and at least 1 number"
+
     config.honeypot_field_name = "our_newly_weekly_series"
     config.custom_css_for_cms = false
     config.custom_js_for_cms = false
     config.asset_storage = :filesystem
+
     #engines which depends on gluttonberg-core can
     #use this to provide additional processor for assets
     #in first stage I am going to use it with Tv
     config.asset_processors = []
+
     config.asset_mixins = []
     config.member_mixins = []
     config.search_models = {
-        "Gluttonberg::Page" => [:name],
-        "Gluttonberg::Blog" => [:name , :description],
-        "Gluttonberg::ArticleLocalization" => [:title , :body],
-        "Gluttonberg::PlainTextContentLocalization" => [:text] ,
-        "Gluttonberg::HtmlContentLocalization" => [:text]
+      "Gluttonberg::Page" => [:name],
+      "Gluttonberg::Blog" => [:name , :description],
+      "Gluttonberg::ArticleLocalization" => [:title , :body],
+      "Gluttonberg::PlainTextContentLocalization" => [:text] ,
+      "Gluttonberg::HtmlContentLocalization" => [:text]
     }
     config.multisite = false
 
@@ -76,7 +82,8 @@ module Gluttonberg
       Gluttonberg::Content::CleanHtml.setup
       Gluttonberg::PageDescription.setup
 
-      # register content class here. It is required for lazyloading environments.
+      # register content class here.
+      # It is required for lazyloading environments.
       Gluttonberg::Content::Block.register(Gluttonberg::PlainTextContent)
       Gluttonberg::Content::Block.register(Gluttonberg::HtmlContent)
       Gluttonberg::Content::Block.register(Gluttonberg::ImageContent)
@@ -85,20 +92,22 @@ module Gluttonberg
 
       Gluttonberg::CanFlag.setup
       Time::DATE_FORMATS[:default] = "%d/%m/%Y %I:%M %p"
+      Components.init_main_nav
     end
 
-    initializer "setup gluttonberg asset library" do |app|
-      #Gluttonberg::Library.setup
+    initializer "setup acts-as-taggable-on" do |app|
       require "acts-as-taggable-on"
       if ::ActsAsTaggableOn::Tag.attribute_names.include?("slug") == true
         ::ActsAsTaggableOn::Tag.send(:include , Gluttonberg::Content::SlugManagement)
       end
+    end
+
+    initializer "setup active_link_to" do |app|
       require 'active_link_to'
     end
 
     initializer "setup delayed job" do |app|
       Delayed::Job.attr_accessible :priority, :payload_object, :handler, :run_at, :failed_at
     end
-
   end
 end

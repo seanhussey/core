@@ -5,8 +5,7 @@ class User < ActiveRecord::Base
   belongs_to :images , :foreign_key => "image_id" , :class_name => "Gluttonberg::Asset"
 
   validates_presence_of :first_name , :email , :role
-  validates_format_of :password, :with => /^(?=.*\d)(?=.*[a-zA-Z])(?!.*[^\w\S\s]).{6,}$/ , :if => :require_password?, :message => "must be a minimum of 6 characters in length, contain at least 1 letter and at least 1 number"
-
+  validates_format_of :password, :with => Rails.configuration.password_pattern , :if => :require_password?, :message => Rails.configuration.password_validation_message
 
   clean_html [:bio]
 
@@ -15,9 +14,7 @@ class User < ActiveRecord::Base
   end
 
   def full_name
-    self.first_name = "" if self.first_name.blank?
-    self.last_name = "" if self.last_name.blank?
-    self.first_name + " " + self.last_name
+    "#{self.first_name} #{self.last_name}"
   end
 
   def deliver_password_reset_instructions!
@@ -43,8 +40,11 @@ class User < ActiveRecord::Base
     else
       roles = (["super_admin" , "admin" , "contributor"] << (Rails.configuration.user_roles) ).flatten
       roles.delete("super_admin") unless self.super_admin?
-      roles.delete("contributor") if !self.super_admin? && !self.admin?
-      roles
+      if !self.super_admin? && !self.admin?
+        [self.role]
+      else
+        roles
+      end
     end
   end
 
@@ -54,6 +54,31 @@ class User < ActiveRecord::Base
 
   def self.all_super_admin_and_admins
     self.where(:role => ["super_admin" , "admin"]).all
+  end
+
+  def self.search_users(query, current_user, get_order)
+    users = User.order(get_order)
+    unless query.blank?
+      users = users.where("first_name LIKE :query OR last_name LIKE :query OR email LIKE :query OR bio LIKE :query ", :query => "%#{query}%")
+    end
+    if current_user.super_admin?
+    elsif current_user.admin?
+      users = users.where("role != ?" , "super_admin")
+    else
+      users = users.where("id = ?" , current_user.id)
+    end
+    users
+  end
+
+  def self.find_user(id, current_user)
+    user = User.where(:id => id)
+    if current_user.super_admin?
+    elsif current_user.admin?
+      user = user.where("role != ?" , "super_admin")
+    else
+      user = user.where(:id => current_user.id)
+    end
+    user.first
   end
 
 end

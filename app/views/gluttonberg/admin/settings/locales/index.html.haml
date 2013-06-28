@@ -27,7 +27,8 @@
             - for locale in @locales
               - i += 1
               %tr{ :class => "#{i % 2 == 0? "even" : ""}"}
-                %td= locale.name
+                %td
+                  = link_to(locale.name, edit_admin_locale_path(locale), :class => "")
                 %td= locale.slug
                 %td= locale.slug_type.humanize
                 %td.controls
