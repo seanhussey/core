@@ -70,12 +70,9 @@ module Gluttonberg
               end
             end
 
-            #---------TODO cleaning html code
-            #@localized_model.clean_html([:text])#(@localized_fields.map{|c|c.to_sym})
-
             # Associate the model and it’s localization
             has_many  :localizations, :class_name => self.localized_model.name.to_s, :foreign_key => :parent_id, :dependent => :destroy
-            has_one  :default_localization, :class_name => self.localized_model.name.to_s, :foreign_key => :parent_id , :conditions => ["locale_id = ?", Locale.first_default.id]
+            has_one  :default_localization, :class_name => self.localized_model.name.to_s, :foreign_key => :parent_id, :conditions =>  lambda { where("locale_id = ?", Locale.first_default.id) }
             self.localized_model.belongs_to(:parent, :class_name => self.name, :foreign_key => :parent_id)
 
             # Set up validations for when we update in the presence of a localization
