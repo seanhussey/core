@@ -9,6 +9,34 @@ module Gluttonberg
     @@registered  = nil
     Component     = Struct.new(:name, :label , :admin_url, :only_for_super_admin )
 
+    def self.clear_main_nav
+      @@main_nav_entries = []
+    end
+
+    def self.init_main_nav
+      Gluttonberg::Components.register_for_main_nav("Dashboard", "/admin")
+      Gluttonberg::Components.register_for_main_nav("Content", "/admin/pages")
+      Gluttonberg::Components.register_for_main_nav("Library", "/admin/assets/all/page/1")
+      Gluttonberg::Components.register_for_main_nav("Members", "/admin/membership/members")
+      Gluttonberg::Components.register_for_main_nav("Settings", "/admin/configurations")
+    end
+
+
+    def self.register_for_main_nav(name , url, opts = {})
+      opts[:enabled] = true if opts[:enabled].blank?
+      opts[:only_for_super_admin] = false if opts[:only_for_super_admin].blank?
+      if @@main_nav_entries.index{|entry| entry[0] == name}.blank?
+        @@main_nav_entries << [name , url, opts]
+      end
+    end
+
+    # Returns an array of components that have been given a nav_label —
+    # the label implicitly registers them as nav entries. Components without
+    # a label won’t turn up.
+    def self.main_nav_entries
+      @@main_nav_entries
+    end
+
     # Registers a controller
     def self.register(name, opts = {})
       @@components[name] = opts
@@ -41,34 +69,6 @@ module Gluttonberg
       component = @@components[controllername.to_sym]
       component.blank? ? nil : component[:section_name]
     end
-
-    def self.clear_main_nav
-      @@main_nav_entries = []
-    end
-
-    def self.init_main_nav
-      Gluttonberg::Components.register_for_main_nav("Dashboard", "/admin")
-      Gluttonberg::Components.register_for_main_nav("Content", "/admin/pages")
-      Gluttonberg::Components.register_for_main_nav("Library", "/admin/assets/all/page/1")
-      Gluttonberg::Components.register_for_main_nav("Members", "/admin/membership/members")
-      Gluttonberg::Components.register_for_main_nav("Settings", "/admin/configurations")
-    end
-
-    def self.register_for_main_nav(name , url, opts = {})
-      opts[:enabled] = true if opts[:enabled].blank?
-      opts[:only_for_super_admin] = false if opts[:only_for_super_admin].blank?
-      if @@main_nav_entries.index{|entry| entry[0] == name}.blank?
-        @@main_nav_entries << [name , url, opts]
-      end
-    end
-
-    # Returns an array of components that have been given a nav_label —
-    # the label implicitly registers them as nav entries. Components without
-    # a label won’t turn up.
-    def self.main_nav_entries
-      @@main_nav_entries
-    end
-
 
   end
 end
