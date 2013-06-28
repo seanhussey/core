@@ -247,19 +247,13 @@ module Gluttonberg
 
       def custom_stylesheet_link_tag
         if Rails.configuration.custom_css_for_cms == true
-          stylesheet_link_tag "custom"
+          stylesheet_link_tag "gb_custom"
         end
       end
 
       def custom_javascript_include_tag
         if Rails.configuration.custom_js_for_cms == true
-          javascript_include_tag "custom"
-        end
-      end
-
-      def wysiwyg_js_css_link_tag
-        if Gluttonberg::Setting.get_setting("enable_WYSIWYG") == "Yes"
-          javascript_include_tag("/assets/tiny_mce/jquery.tinymce.js")
+          javascript_include_tag "gb_custom"
         end
       end
 
@@ -306,8 +300,8 @@ module Gluttonberg
           html = ""
           ["notice", "warning", "error"].each do |type|
               unless flash[type.intern].nil?
-                  html << content_tag("div", flash[type.intern].to_s.html_safe,
-                      :id => "alert alert-#{type}", :class => "flash").html_safe
+                html << content_tag("div", flash[type.intern].to_s.html_safe,
+                    :id => "alert alert-#{type}", :class => "flash").html_safe
               end
           end
 
