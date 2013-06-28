@@ -37,6 +37,11 @@ module Gluttonberg
       end
     end
 
+    def self.section_name_for_controller(controllername)
+      component = @@components[controllername.to_sym]
+      component.blank? ? nil : component[:section_name]
+    end
+
     def self.clear_main_nav
       @@main_nav_entries = []
     end
