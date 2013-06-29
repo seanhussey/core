@@ -13,337 +13,396 @@
 
 ActiveRecord::Schema.define(:version => 20130403011606) do
 
-  create_table :gb_plain_text_content_localizations do |t|
-    t.column :created_at, :timestamp
-    t.column :updated_at, :timestamp
-    t.column :page_localization_id, :integer
-    t.column :text, :string, :limit => 255
-    t.column :plain_text_content_id, :integer
-    t.column :version, :integer
+  create_table "delayed_jobs", :force => true do |t|
+    t.integer  "priority",   :default => 0
+    t.integer  "attempts",   :default => 0
+    t.text     "handler"
+    t.text     "last_error"
+    t.datetime "run_at"
+    t.datetime "locked_at"
+    t.datetime "failed_at"
+    t.string   "locked_by"
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
+    t.string   "queue",                     :null => false
   end
 
-  create_table :gb_html_contents do |t|
-    t.column :orphaned, :boolean, :default => false
-    t.column :section_name, :string, :limit => 50
-    t.column :created_at, :timestamp
-    t.column :updated_at, :timestamp
-    t.column :page_id, :integer
+  add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
+
+  create_table "flags", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "flaggable_id"
+    t.string   "flaggable_type"
+    t.integer  "flaggable_user_id"
+    t.string   "reason"
+    t.string   "url"
+    t.text     "description"
+    t.boolean  "approved"
+    t.boolean  "moderation_required"
+    t.datetime "created_at",          :null => false
+    t.datetime "updated_at",          :null => false
   end
 
-  create_table :gb_html_content_localizations do |t|
-    t.column :created_at, :timestamp
-    t.column :updated_at, :timestamp
-    t.column :text, :text
-    t.column :html_content_id, :integer
-    t.column :page_localization_id, :integer
-    t.column :version, :integer
+  create_table "gb_asset_categories", :force => true do |t|
+    t.string  "name",    :null => false
+    t.boolean "unknown"
   end
 
-  create_table :gb_image_contents do |t|
-    t.column :orphaned, :boolean, :default => false
-    t.column :section_name, :string, :limit => 50
-    t.column :created_at, :timestamp
-    t.column :updated_at, :timestamp
-    t.column :asset_id, :integer
-    t.column :page_id, :integer
-    t.column :version, :integer
+  create_table "gb_asset_collections", :force => true do |t|
+    t.string   "name",       :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "created_by"
+    t.integer  "updated_by"
+    t.integer  "user_id"
   end
 
-  create_table :gb_locales do |t|
-    t.column :name, :string, :limit => 70, :null => false
-    t.column :slug, :string, :limit => 70, :null => false
-    t.column :slug_type, :string, :limit => 70, :null => false # prefix , subdomain
-    t.column :default, :boolean, :default => false
+  create_table "gb_asset_collections_assets", :id => false, :force => true do |t|
+    t.integer "asset_collection_id", :null => false
+    t.integer "asset_id",            :null => false
   end
 
-  create_table :gb_settings do |t|
-    t.column :name, :string, :limit => 50, :null => false
-    t.column :value, :text
-    t.column :category, :integer, :default => 1
-    t.column :row, :integer
-    t.column :delete_able, :boolean, :default => true
-    t.column :enabled, :boolean, :default => true
-    t.column :help, :text
-    t.column :values_list, :text
+  create_table "gb_asset_mime_types", :force => true do |t|
+    t.string  "mime_type",                    :null => false
+    t.integer "asset_type_id", :default => 0
   end
 
-  create_table :gb_page_localizations do |t|
-    t.column :name, :string, :limit => 150
-    t.column :navigation_label, :string, :limit => 100
-    t.column :slug, :string, :limit => 50
-    t.column :path, :string, :limit => 255
-    t.column :created_at, :timestamp
-    t.column :updated_at, :timestamp
-    t.column :locale_id, :integer
-    t.column :page_id, :integer
-    t.column :seo_title , :string , :limit => 255
-    t.column :seo_keywords , :text
-    t.column :seo_description , :text
-    t.column :fb_icon_id , :integer
-    t.column :previous_path , :string
+  create_table "gb_asset_thumbnails", :force => true do |t|
+    t.integer  "asset_id"
+    t.string   "thumbnail_type", :limit => 100
+    t.boolean  "user_generated"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
-  create_table :gb_pages do |t|
-    t.column :parent_id, :integer
-    t.column :name, :string, :limit => 100
-    t.column :navigation_label, :string, :limit => 100
-    t.column :slug, :string, :limit => 100
-    t.column :description_name, :string, :limit => 100
-    t.column :home, :boolean, :default => false
-    t.column :created_at, :timestamp
-    t.column :updated_at, :timestamp
-    t.column :position, :integer
-    t.column :user_id, :integer
-    t.column :state, :string
-    t.column :hide_in_nav, :boolean
-    t.datetime :published_at
+  create_table "gb_asset_types", :force => true do |t|
+    t.string  "name",                             :null => false
+    t.integer "asset_category_id", :default => 0
   end
 
-  create_table :gb_plain_text_contents do |t|
-    t.column :orphaned, :boolean, :default => false
-    t.column :section_name, :string, :limit => 50
-    t.column :created_at, :timestamp
-    t.column :updated_at, :timestamp
-    t.column :page_id, :integer
+  create_table "gb_assets", :force => true do |t|
+    t.string   "mime_type"
+    t.integer  "asset_type_id"
+    t.string   "name",               :null => false
+    t.text     "description"
+    t.string   "file_name"
+    t.string   "asset_hash"
+    t.integer  "size"
+    t.boolean  "custom_thumbnail"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "synopsis"
+    t.text     "copyrights"
+    t.integer  "year_of_production"
+    t.integer  "created_by"
+    t.integer  "updated_by"
+    t.string   "duration"
+    t.integer  "user_id"
+    t.integer  "width"
+    t.integer  "height"
+    t.string   "alt"
+    t.boolean  "processed"
+    t.boolean  "copied_to_s3"
+    t.string   "artist_name"
+    t.string   "link"
   end
 
-  create_table :gb_asset_categories do |t|
-    t.column :name, :string, :null => false
-    t.column :unknown, :boolean
+  create_table "gb_audio_asset_attributes", :force => true do |t|
+    t.integer  "asset_id",   :null => false
+    t.float    "length"
+    t.string   "title"
+    t.string   "artist"
+    t.string   "album"
+    t.string   "tracknum"
+    t.string   "genre"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
-  create_table :gb_asset_types do |t|
-    t.column :name, :string, :null => false
-    t.column :asset_category_id, :integer, :default => 0
+  create_table "gb_feeds", :force => true do |t|
+    t.integer  "feedable_id"
+    t.string   "feedable_type"
+    t.string   "title"
+    t.string   "action_type"
+    t.integer  "user_id"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
   end
 
-  create_table :gb_asset_mime_types do |t|
-    t.column :mime_type, :string, :null => false
-    t.column :asset_type_id, :integer, :default => 0
+  create_table "gb_galleries", :force => true do |t|
+    t.string   "title"
+    t.text     "description"
+    t.integer  "user_id",                                :null => false
+    t.string   "slug"
+    t.string   "state"
+    t.datetime "published_at"
+    t.boolean  "collection_imported", :default => false
+    t.datetime "created_at",                             :null => false
+    t.datetime "updated_at",                             :null => false
   end
 
-  create_table :gb_asset_collections do |t|
-    t.column :name, :string, :null => false
-    t.column :created_at, :datetime
-    t.column :updated_at, :datetime
-    t.column :created_by, :integer
-    t.column :updated_by, :integer
-    t.column :user_id, :integer
+  create_table "gb_gallery_images", :force => true do |t|
+    t.integer  "gallery_id", :null => false
+    t.integer  "asset_id",   :null => false
+    t.integer  "position",   :null => false
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
-  create_table :gb_assets do |t|
-    t.column :mime_type, :string
-    t.column :asset_type_id, :integer
-    t.column :name, :string, :null => false
-    t.column :description, :text
-    t.column :file_name, :string
-    t.column :asset_hash, :string
-    t.column :size, :integer
-    t.column :custom_thumbnail, :boolean
-    t.column :created_at, :datetime
-    t.column :updated_at, :datetime
-    t.column :synopsis, :text
-    t.column :copyrights, :text
-    t.column :year_of_production, :integer
-    t.column :created_by, :integer
-    t.column :updated_by, :integer
-    t.column :duration, :string
-    t.column :user_id, :integer
-    t.column :width, :integer
-    t.column :height, :integer
-    t.column :alt, :string
-    t.column :processed , :boolean
-    t.column :copied_to_s3 , :boolean
+  create_table "gb_groups", :force => true do |t|
+    t.string   "name",                           :null => false
+    t.string   "description"
+    t.integer  "position"
+    t.boolean  "default",     :default => false
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
   end
 
-  create_table :gb_audio_asset_attributes do |t|
-    t.integer :asset_id , :null => false
-    t.float   :length
-    t.string  :title
-    t.string  :artist
-    t.string  :album
-    t.string  :tracknum
-    t.string  :genre
-    t.timestamps
+  create_table "gb_groups_members", :id => false, :force => true do |t|
+    t.integer "member_id", :null => false
+    t.integer "group_id",  :null => false
   end
 
-  create_table :gb_asset_collections_assets , :id => false do |t|
-    t.column :asset_collection_id, :integer, :null => false
-    t.column :asset_id, :integer, :null => false
+  create_table "gb_groups_pages", :id => false, :force => true do |t|
+    t.integer "page_id",  :null => false
+    t.integer "group_id", :null => false
   end
 
-  create_table :gb_users do |t|
-    t.string :first_name, :null => false
-    t.string :last_name
-    t.string :email, :null => false
-    t.string :crypted_password, :null => false
-    t.string :password_salt, :null => false
-    t.string :persistence_token, :null => false
-    t.string :single_access_token, :null => false
-    t.string :perishable_token, :null => false
-    t.integer :login_count, :null => false, :default => 0
-    t.string :role, :null => false
-    t.text :bio
-    t.integer :image_id
-    t.integer :position
-    t.timestamps
+  create_table "gb_html_content_localizations", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "text"
+    t.integer  "html_content_id"
+    t.integer  "page_localization_id"
+    t.integer  "version"
   end
 
-
-  begin
-    Gluttonberg::PlainTextContentLocalization.create_versioned_table
-  rescue => e
-    puts e
-  end
-  begin
-    Gluttonberg::HtmlContentLocalization.create_versioned_table
-  rescue => e
-    puts e
+  create_table "gb_html_contents", :force => true do |t|
+    t.boolean  "orphaned",                   :default => false
+    t.string   "section_name", :limit => 50
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "page_id"
   end
 
-  begin
-    Gluttonberg::ImageContent.create_versioned_table
-  rescue => e
-    puts e
+  create_table "gb_image_contents", :force => true do |t|
+    t.boolean  "orphaned",                   :default => false
+    t.string   "section_name", :limit => 50
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "asset_id"
+    t.integer  "page_id"
+    t.integer  "version"
   end
 
-  create_table :tags do |t|
+  create_table "gb_locales", :force => true do |t|
+    t.string  "name",      :limit => 70,                    :null => false
+    t.string  "slug",      :limit => 70,                    :null => false
+    t.string  "slug_type", :limit => 70,                    :null => false
+    t.boolean "default",                 :default => false
+  end
+
+  create_table "gb_members", :force => true do |t|
+    t.string   "first_name",                             :null => false
+    t.string   "last_name"
+    t.string   "email",                                  :null => false
+    t.string   "crypted_password",                       :null => false
+    t.string   "password_salt",                          :null => false
+    t.string   "persistence_token",                      :null => false
+    t.string   "single_access_token",                    :null => false
+    t.string   "perishable_token",                       :null => false
+    t.integer  "login_count",         :default => 0,     :null => false
+    t.text     "bio"
+    t.string   "image_file_name"
+    t.string   "image_content_type"
+    t.integer  "image_file_size"
+    t.boolean  "profile_confirmed",   :default => false
+    t.boolean  "welcome_email_sent",  :default => false
+    t.string   "confirmation_key"
+    t.boolean  "can_login",           :default => true
+    t.datetime "created_at",                             :null => false
+    t.datetime "updated_at",                             :null => false
+  end
+
+  create_table "gb_page_localizations", :force => true do |t|
+    t.string   "name",             :limit => 150
+    t.string   "navigation_label", :limit => 100
+    t.string   "slug",             :limit => 50
+    t.string   "path"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "locale_id"
+    t.integer  "page_id"
+    t.string   "seo_title"
+    t.text     "seo_keywords"
+    t.text     "seo_description"
+    t.integer  "fb_icon_id"
+    t.string   "previous_path"
+  end
+
+  create_table "gb_pages", :force => true do |t|
+    t.integer  "parent_id"
+    t.string   "name",             :limit => 100
+    t.string   "navigation_label", :limit => 100
+    t.string   "slug",             :limit => 100
+    t.string   "description_name", :limit => 100
+    t.boolean  "home",                            :default => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "position"
+    t.integer  "user_id"
+    t.string   "state"
+    t.boolean  "hide_in_nav"
+    t.datetime "published_at"
+  end
+
+  create_table "gb_plain_text_content_localizations", :force => true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "page_localization_id"
+    t.string   "text"
+    t.integer  "plain_text_content_id"
+    t.integer  "version"
+  end
+
+  create_table "gb_plain_text_contents", :force => true do |t|
+    t.boolean  "orphaned",                   :default => false
+    t.string   "section_name", :limit => 50
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "page_id"
+  end
+
+  create_table "gb_settings", :force => true do |t|
+    t.string  "name",        :limit => 50,                   :null => false
+    t.text    "value"
+    t.integer "category",                  :default => 1
+    t.integer "row"
+    t.boolean "delete_able",               :default => true
+    t.boolean "enabled",                   :default => true
+    t.text    "help"
+    t.text    "values_list"
+  end
+
+  create_table "gb_stylesheets", :force => true do |t|
+    t.string   "name"
+    t.string   "slug"
+    t.text     "value"
+    t.string   "css_prefix"
+    t.string   "css_postfix"
+    t.integer  "position"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.integer  "version"
+  end
+
+  create_table "gb_users", :force => true do |t|
+    t.string   "first_name",                         :null => false
+    t.string   "last_name"
+    t.string   "email",                              :null => false
+    t.string   "crypted_password",                   :null => false
+    t.string   "password_salt",                      :null => false
+    t.string   "persistence_token",                  :null => false
+    t.string   "single_access_token",                :null => false
+    t.string   "perishable_token",                   :null => false
+    t.integer  "login_count",         :default => 0, :null => false
+    t.string   "role",                               :null => false
+    t.text     "bio"
+    t.integer  "image_id"
+    t.integer  "position"
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
+  end
+
+  create_table "html_content_localization_versions", :force => true do |t|
+    t.integer  "html_content_localization_id"
+    t.integer  "version"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "text"
+    t.integer  "html_content_id"
+    t.integer  "page_localization_id"
+  end
+
+  create_table "image_content_versions", :force => true do |t|
+    t.integer  "image_content_id"
+    t.integer  "version"
+    t.boolean  "orphaned",                       :default => false
+    t.string   "section_name",     :limit => 50
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "asset_id"
+    t.integer  "page_id"
+  end
+
+  add_index "image_content_versions", ["image_content_id"], :name => "index_image_content_versions_on_image_content_id"
+
+  create_table "plain_text_content_localization_versions", :force => true do |t|
+    t.integer  "plain_text_content_localization_id"
+    t.integer  "version"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "page_localization_id"
+    t.string   "text"
+    t.integer  "plain_text_content_id"
+  end
+
+  create_table "stylesheet_versions", :force => true do |t|
+    t.integer  "stylesheet_id"
+    t.integer  "version"
+    t.string   "name"
+    t.string   "slug"
+    t.text     "value"
+    t.string   "css_prefix"
+    t.string   "css_postfix"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "stylesheet_versions", ["stylesheet_id"], :name => "index_stylesheet_versions_on_stylesheet_id"
+
+  create_table "taggings", :force => true do |t|
+    t.integer  "tag_id"
+    t.integer  "taggable_id"
+    t.string   "taggable_type"
+    t.integer  "tagger_id"
+    t.string   "tagger_type"
+    t.string   "context"
+    t.datetime "created_at"
+  end
+
+  add_index "taggings", ["tag_id"], :name => "index_taggings_on_tag_id"
+  add_index "taggings", ["taggable_id", "taggable_type", "context"], :name => "index_taggings_on_taggable_id_and_taggable_type_and_context"
+
+  create_table "tags", :force => true do |t|
+    t.string "name"
+    t.string "slug"
+  end
+
+  create_table :staff_profiles do |t|
     t.string :name
+    t.integer :face_id
+
     t.string :slug
-  end
-
-  create_table :taggings do |t|
-    t.references :tag
-
-    # You should make sure that the column created is
-    # long enough to store the required class names.
-    t.references :taggable, :polymorphic => true
-    t.references :tagger, :polymorphic => true
-
-    t.string :context
-
-    t.datetime :created_at
-  end
-
-  add_index :taggings, :tag_id
-  add_index :taggings, [:taggable_id, :taggable_type, :context]
-
-  create_table :delayed_jobs, :force => true do |table|
-    table.integer  :priority, :default => 0
-    table.integer  :attempts, :default => 0
-    table.text     :handler
-    table.text     :last_error
-    table.datetime :run_at
-    table.datetime :locked_at
-    table.datetime :failed_at
-    table.string   :locked_by
-    table.timestamps
-  end
-  add_index :delayed_jobs, [:priority, :run_at], :name => 'delayed_jobs_priority'
-
-  create_table :flags, :force => true do |t|
-    t.integer :user_id
-    t.integer :flaggable_id
-    t.string  :flaggable_type
-    t.integer :flaggable_user_id
-    t.string  :reason
-    t.string  :url
-    t.text    :description
-    t.boolean :approved
-    t.boolean :moderation_required
-    t.timestamps
-  end
-
-  create_table :gb_asset_thumbnails do |t|
-    t.column :asset_id, :integer
-    t.column :thumbnail_type, :string, :limit => 100
-    t.column :user_generated , :boolean
-    t.column :created_at, :datetime
-    t.column :updated_at, :datetime
-  end
-
-  create_table :gb_stylesheets do |t|
-    t.column :name , :string , :limit => 255
-    t.column :slug , :string , :limit => 255
-    t.column :value, :text
-    t.column :css_prefix , :string , :limit => 255
-    t.column :css_postfix , :string , :limit => 255
-    t.column :position , :integer
-    t.timestamps
-  end
-
-  begin
-    Gluttonberg::Stylesheet.create_versioned_table
-  rescue => e
-    puts e
-  end
-
-  create_table :gb_members do |t|
-    t.string :first_name, :null => false
-    t.string :last_name
-    t.string :email, :null => false
-    t.string :crypted_password, :null => false
-    t.string :password_salt, :null => false
-    t.string :persistence_token, :null => false
-    t.string :single_access_token, :null => false
-    t.string :perishable_token, :null => false
-    t.integer :login_count, :null => false, :default => 0
-    t.text :bio
-    t.string :image_file_name
-    t.string :image_content_type
-    t.integer :image_file_size
-    t.boolean :profile_confirmed,  :default => false
-    t.boolean :welcome_email_sent,  :default => false
-    t.string :confirmation_key
-    t.boolean :can_login , :default => true
-    t.timestamps
-  end
-
-  create_table :gb_groups do |t|
-    t.string :name, :null => false
-    t.string :description
+    t.string :previous_slug
     t.integer :position
-    t.boolean :default,  :default => false
-    t.timestamps
-  end
-
-  create_table :gb_groups_members , :id => false do |t|
-    t.integer :member_id, :null => false
-    t.integer :group_id , :null => false
-  end
-
-  create_table :gb_groups_pages , :id => false do |t|
-    t.integer :page_id, :null => false
-    t.integer :group_id , :null => false
-  end
-
-  create_table :gb_galleries do |t|
-    t.column :title , :string , :limit => 255
-    t.column :description, :text
-    t.integer :user_id, :null => false
-    t.column :slug , :string
-    t.column :state , :string
+    t.column :state , :string #use for publishing
     t.datetime :published_at
-    t.boolean :collection_imported , :default => false
+
     t.timestamps
   end
 
-  create_table :gb_gallery_images do |t|
-    t.integer :gallery_id, :null => false
-    t.integer :asset_id, :null => false
-    t.integer :position, :null => false
+  create_table :staff_profile_localizations do |t|
+    t.text :bio
+    t.integer :handwritting_id
+
+    t.string :seo_title
+    t.text :seo_keywords
+    t.text :seo_description
+    t.integer :fb_icon_id
+    t.integer :parent_id
+    t.integer :locale_id
     t.timestamps
   end
 
-  create_table :gb_feeds do |t|
-    t.integer :feedable_id
-    t.string  :feedable_type
-    t.string  :title
-    t.string  :action_type
-    t.integer :user_id
-    t.timestamps
-  end
-
-  add_column :gb_assets , :artist_name , :string
-  add_column :gb_assets , :link , :string
 end
