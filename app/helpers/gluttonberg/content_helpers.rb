@@ -88,7 +88,8 @@ module Gluttonberg
 
       def enable_redactor(html_class)
         if Gluttonberg::Setting.get_setting("enable_WYSIWYG") == "Yes"
-          link_count = Page.published.count + Article.published.count
+          link_count = Page.published.count
+          link_count += Article.published.count if Gluttonberg::Comment.table_exists?
           content = "enableRedactor('.#{html_class}', #{link_count}); \n"
           javascript_tag(content)
         end
