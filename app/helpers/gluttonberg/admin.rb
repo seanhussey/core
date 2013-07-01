@@ -177,12 +177,17 @@ module Gluttonberg
       def page_table_rows(pages, output = "", inset = 0 , row = 0)
         pages.each do |page|
           row += 1
-          output << render( :partial => "gluttonberg/admin/content/pages/row", :locals => { :page => page, :inset => inset , :row => row })
-          page_table_rows(page.children, output, inset + 1 , row)
+          output << "<li class='dd-item' data-id='#{page.id}'>"
+            output << render( :partial => "gluttonberg/admin/content/pages/row", :locals => { :page => page, :inset => inset , :row => row })
+            if page.children.length > 0
+              output << "<ol class='dd-list'>"
+                page_table_rows(page.children, output, inset + 1 , row)
+              output << "</ol>"
+            end
+          output << "</li>"
         end
         output.html_safe
       end
-
 
       def publisable_dropdown(form ,object)
         val = object.state

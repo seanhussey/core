@@ -13,19 +13,39 @@
         = sub_nav do
           - if can?(:manage, Gluttonberg::Page)
             = nav_link('Add New Page', new_admin_page_path)
-    
+
       - if @pages.empty?
         %p.empty No Pages
       - else
-        %table{:id => 'pages_table', :class => "table table-bordered #{(can?(:reorder , Gluttonberg::Page) ? drag_tree_table_class : "" )}", :cellpadding => 0, :cellspacing => 0, :rel => "" , :summary => "Pages" , :rel => drag_tree_url }
-          %thead
-            %tr
-              %th
-                Page
-              %th.author
-                Author     
-              %th.published_state
-                Status
-              %th
-          %tbody
+        .nestable_dragtree.dd
+          %ol.dd-list
             = page_table_rows(@pages)
+
+        :javascript
+          $(document).ready(function(){
+            $('.dd').nestable({ /* config options */
+            }).on('change', function(e) {
+              /* on change event */
+              var list   = e.length ? e : $(e.target),
+              output = list.data('output');
+              if (window.JSON) {
+                  console.log(window.JSON.stringify(list.nestable('serialize')));//, null, 2));
+              } else {
+                  console.log('JSON browser support required for this demo.');
+              }
+            });
+          });
+
+
+        / %table{:id => 'pages_table', :class => "table table-bordered #{(can?(:reorder , Gluttonberg::Page) ? drag_tree_table_class : "" )}", :cellpadding => 0, :cellspacing => 0, :rel => "" , :summary => "Pages" , :rel => drag_tree_url }
+        /   %thead
+        /     %tr
+        /       %th
+        /         Page
+        /       %th.author
+        /         Author
+        /       %th.published_state
+        /         Status
+        /       %th
+        /   %tbody
+        /     = page_table_rows(@pages)
