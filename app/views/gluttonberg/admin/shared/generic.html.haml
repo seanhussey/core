@@ -1,20 +1,21 @@
-!!! Strict
-%html{:xmlns => "http://www.w3.org/1999/xhtml", "xml:lang" => "en", :lang => "en"}
-  %head
-    %title Gluttonberg
-    %meta{"http-equiv" => "Content-Type", :content => "text/html;charset=utf-8" }/
-    = stylesheet_link_tag "/gluttonberg/stylesheets/admin"
-    = javascript_include_tag "/assets/jquery-1.4.2.min.js", "/assets/rails"
-  %body{:id => "delete"}
-    = form_tag(@options[:url], :method => "delete") do
-      %h1= @options[:title]
-      %p.message= @options[:message]
-      %p.warning= @options[:warning] unless @options[:warning].blank?
+.container-fluid
+  .row
+    .span5.offset4
+      %div#form.well
+        = form_tag(@options[:url]) do
+          %h1
+            = @options[:title]
+          - unless @options[:message].blank?
+            %p.message
+              = @options[:message].html_safe
+          - unless @options[:warning].blank?
+            %p.warning
+              = @options[:warning].html_safe
 
-      %p.controls
-        - unless @do_not_do
-          = submit_tag(@name.capitalize)
-          or 
-          = link_to("<strong>Cancel</strong>".html_safe, @options[:return_url])
-        - else
-          = link_to("<strong>Ok</strong>".html_safe, @options[:return_url])        
+          %p.controls
+            - unless @do_not_do
+              = submit_tag(@name.capitalize)
+              or
+              = link_to("<strong>Cancel</strong>".html_safe, @options[:return_url])
+            - else
+              = link_to("<strong>Ok</strong>".html_safe, @options[:return_url])
