@@ -83,6 +83,11 @@
 
     %p
       - if @page.published?
+        - unless @page.published_at.blank?
+          %p
+            %span.date
+              Published on
+              = @page.published_at.strftime("%d/%m/%Y")
         = submit_tag "Update", :class => "btn btn-success"
         = submit_tag "Unpublish", :class => "btn btn-danger"
       - else

@@ -9,10 +9,6 @@
     = page.user.full_name
   .dd-column.published_state{:class=>"#{page.publishing_status.downcase}"}
     = page.publishing_status
-    - unless page.published_at.blank?
-      %br
-      %span.date
-        = page.published_at.strftime("%d/%m/%Y")
   .dd-column.actions
     .btn-group
       %a{ :class => "btn dropdown-toggle" , "data-toggle" => "dropdown" , :href => "#"}
