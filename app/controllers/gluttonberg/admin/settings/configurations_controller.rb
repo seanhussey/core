@@ -72,17 +72,18 @@ module Gluttonberg
 
         private
 
-        def find_setting
-          @setting = Setting.find(params[:id])
-          raise ActiveRecord::RecordNotFound  unless @setting
-        end
+          def find_setting
+            @setting = Setting.find(params[:id])
+            raise ActiveRecord::RecordNotFound  unless @setting
+          end
 
-        def authorize_user
-          authorize! :manage, Gluttonberg::Setting
-        end
-        def authorize_user_for_create_or_destroy
-          authorize! :create_or_destroy, Gluttonberg::Setting
-        end
+          def authorize_user
+            authorize! :manage, Gluttonberg::Setting
+          end
+
+          def authorize_user_for_create_or_destroy
+            authorize! :create_or_destroy, Gluttonberg::Setting
+          end
 
       end # ConfigurationsController
     end # Settings
