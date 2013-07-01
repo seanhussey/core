@@ -60,7 +60,7 @@ class Gluttonberg::Admin::BaseController < ActionController::Base
         @options[:title]    = "Sorry you cannot delete this record!"
         @options[:message]  ||= "It is been used by some other records."
       end
-      render :template => "gluttonberg/admin/shared/delete", :layout => false
+      render :template => "gluttonberg/admin/shared/delete", :layout => "/layouts/bare"
     end
 
     # This is to be called from within a controller — i.e. the publish/unpublish action —
@@ -78,7 +78,7 @@ class Gluttonberg::Admin::BaseController < ActionController::Base
         @options[:title]    = "Sorry you cannot #{@name.capitalize} this record!"
         @options[:message]  ||= "It's parent record is not #{@name.capitalize}."
       end
-      render :template => "shared/generic", :layout => false
+      render :template => "shared/generic", :layout => "/layouts/bare"
 
     end
 
