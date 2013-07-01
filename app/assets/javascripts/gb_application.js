@@ -1,5 +1,6 @@
 $(document).ready(function() {
   dragTreeManager.init();
+  initNestable();
   initClickEventsForAssetLinks($("body"));
   initSlugManagement();
   initBetterSlugManagement();
@@ -812,6 +813,45 @@ function initSlugManagement() {
 
 function enable_slug_management_on(src_class){
   $("."+src_class).attr('id','page_title')
+}
+
+function initNestable(){
+  $('.dd').nestable({ /* config options */
+  }).on('change', function(e) {
+    /* on change event */
+    var list   = e.length ? e : $(e.target),
+    output = list.data('output'),
+    url = list.attr('data-url');
+    if (window.JSON) {
+      var data = window.JSON.stringify(list.nestable('serialize'));
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: "nestable_serialized_data=" + data,
+        beforeSend: function(jqXHR, settings){
+          showOverlay();
+        },
+        success: function(html){
+          window.setTimeout(function(){
+            hideOverlay();
+          },500)
+        },
+        error: function(html){
+
+          $("#assetsDialogOverlay").html(html.responseText);
+          window.setTimeout(function(){
+            hideOverlay();
+          },10000)
+
+
+        }
+      });
+    } else {
+        console.log('JSON browser support required for this demo.');
+    }
+
+
+  });
 }
 
 

@@ -1,19 +1,20 @@
 - default_localization = Gluttonberg::PageLocalization.find(:first , :conditions => { :page_id => page.id , :locale_id => Gluttonberg::Locale.first_default.id } )
 
-
-.dd-handle.dd3-handle
-.dd3-content
-  .dd-column.title
-    = link_to("#{page.home ? "#{default_localization.name} (Home page)" : default_localization.name}", edit_admin_page_page_localization_path( :page_id => page.id, :id => default_localization.id))
-  .dd-column.author
+%tr{:class => "#{inset > 0 ? "child-#{inset}": ""}"}
+  %td{:style => "width:40%"}
+    %span.pagetitle
+      = link_to("#{page.home ? "#{default_localization.name} (Home page)" : default_localization.name}", edit_admin_page_page_localization_path( :page_id => page.id, :id => default_localization.id))
+  %td.author{:style => "width:15%"}
     = page.user.full_name
-  .dd-column.published_state{:class=>"#{page.publishing_status.downcase}"}
+
+  %td.published_state{:class=>"#{page.publishing_status.downcase}", :style => "width:15%"}
     = page.publishing_status
     - unless page.published_at.blank?
       %br
       %span.date
         = page.published_at.strftime("%d/%m/%Y")
-  .dd-column.actions
+
+  %td{:style => 'width:35%'}
     .btn-group
       %a{ :class => "btn dropdown-toggle" , "data-toggle" => "dropdown" , :href => "#"}
         Actions

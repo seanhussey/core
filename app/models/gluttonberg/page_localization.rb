@@ -5,7 +5,7 @@ module Gluttonberg
     self.table_name = "gb_page_localizations"
     belongs_to :fb_icon , :class_name => "Gluttonberg::Asset" , :foreign_key => "fb_icon_id"
 
-    attr_accessible :name, :slug, :navigation_label, :seo_title, :seo_keywords, :seo_description, :fb_icon_id, :contents, :locale_id
+    attr_accessible :name, :path , :slug, :navigation_label, :seo_title, :seo_keywords, :seo_description, :fb_icon_id, :contents, :locale_id
 
     attr_accessor :current_path
 

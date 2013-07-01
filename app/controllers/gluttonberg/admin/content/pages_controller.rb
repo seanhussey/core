@@ -11,7 +11,7 @@ module Gluttonberg
         record_history :@page
 
         def index
-          @pages = Page.find(:all , :conditions => { :parent_id => nil } , :order => 'position' )
+          @pages = Page.where(:parent_id => nil).order('position').all
         end
 
         def show

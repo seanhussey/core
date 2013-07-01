@@ -626,11 +626,8 @@ body .redactor_toolbar li a.redactor_btn_gb_link
   position: relative
   display: block
   margin: 0
-  padding: 0
-  max-width: 600px
+  min-width: 700px
   list-style: none
-  font-size: 13px
-  line-height: 20px
 
 .dd-list
   display: block
@@ -655,7 +652,7 @@ body .redactor_toolbar li a.redactor_btn_gb_link
 
 .dd-handle
   display: block
-  height: 30px
+  height: 40px
   margin: 5px 0
   padding: 5px 10px
   color: #333
@@ -676,32 +673,34 @@ body .redactor_toolbar li a.redactor_btn_gb_link
 
 .dd-item
   button
-    display: block
-    position: relative
-    cursor: pointer
-    float: left
-    width: 25px
-    height: 20px
-    margin: 5px 0
-    padding: 0
-    text-indent: 100%
-    white-space: nowrap
-    overflow: hidden
-    border: 0
-    background: transparent
-    font-size: 12px
-    line-height: 1
-    text-align: center
-    font-weight: bold
-    &:before
-      content: '+'
+    display: none
+    //
       display: block
-      position: absolute
-      width: 100%
+      position: relative
+      cursor: pointer
+      float: left
+      width: 25px
+      height: 20px
+      margin: 5px 0
+      padding: 0
+      text-indent: 100%
+      white-space: nowrap
+      overflow: hidden
+      border: 0
+      background: transparent
+      font-size: 12px
+      line-height: 1
       text-align: center
-      text-indent: 0
-    &[data-action="collapse"]:before
-      content: '-'
+      font-weight: bold
+      &:before
+        content: '+'
+        display: block
+        position: absolute
+        width: 100%
+        text-align: center
+        text-indent: 0
+      &[data-action="collapse"]:before
+        content: '-'
 
 .dd-placeholder
   margin: 5px 0
@@ -755,15 +754,6 @@ body .redactor_toolbar li a.redactor_btn_gb_link
   padding: 0
   margin: 20px 0
 
-#nestable-output, #nestable2-output
-  width: 100%
-  height: 7em
-  font-size: 0.75em
-  line-height: 1.333333em
-  font-family: Consolas, monospace
-  padding: 5px
-  box-sizing: border-box
-  -moz-box-sizing: border-box
 
 #nestable2
   .dd-handle
@@ -778,13 +768,6 @@ body .redactor_toolbar li a.redactor_btn_gb_link
   .dd-item > button:before
     color: #fff
 
-@media only screen and (min-width: 700px)
-  .dd
-    float: left
-    width: 48%
-    + .dd
-      margin-left: 2%
-
 .dd-hover > .dd-handle
   background: #2ea8e5 !important
 
@@ -793,30 +776,26 @@ body .redactor_toolbar li a.redactor_btn_gb_link
 
 .dd3-content
   display: block
-  height: 30px
+  height: 40px
   margin: 5px 0
   padding: 5px 10px 5px 40px
   color: #333
   text-decoration: none
-  font-weight: bold
   border: 1px solid #ccc
-  background: #fafafa
-  background: -webkit-linear-gradient(top, #fafafa 0%, #eeeeee 100%)
-  background: -moz-linear-gradient(top, #fafafa 0%, #eeeeee 100%)
-  background: linear-gradient(top, #fafafa 0%, #eeeeee 100%)
+  background: #fff
   -webkit-border-radius: 3px
   border-radius: 3px
   box-sizing: border-box
   -moz-box-sizing: border-box
   &:hover
     color: #2ea8e5
-    background: #fff
+    background: #f5f5f5
 
 .dd-dragel > .dd3-item > .dd3-content
   margin: 0
 
 .dd3-item > button
-  margin-left: 30px
+  //margin-left: 30px
 
 .dd3-handle
   position: absolute
@@ -840,7 +819,7 @@ body .redactor_toolbar li a.redactor_btn_gb_link
     display: block
     position: absolute
     left: 0
-    top: 3px
+    top: 9px
     width: 100%
     text-align: center
     text-indent: 0
@@ -850,10 +829,32 @@ body .redactor_toolbar li a.redactor_btn_gb_link
   &:hover
     background: #ddd
 
-/**
- * Socialite
+.nestable_dragtree, .dd-dragel
+  .header
+    :padding-bottom 10px
+    :font-weight bold
+    :background #eeeeee
+    :border 1px solid #dddddd
+    li
+      padding-left: 5px
 
-.socialite
-  display: block
-  float: left
-  height: 35px
+  .dd-column
+    :position absolute
+    :line-height 1em
+    :padding-top 8px
+    :width 150px
+
+    &.title
+      :width auto
+    &.author
+      :right 200px
+      :width 180px
+    &.published_state
+      :right 100px
+      :width 100px
+    &.published
+      :padding-top 0px
+    &.actions
+      :padding-top 0px
+      :right 0px
+      :width 86px

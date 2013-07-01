@@ -17,24 +17,21 @@
       - if @pages.empty?
         %p.empty No Pages
       - else
-        .nestable_dragtree.dd
-          %ol.dd-list
-            = page_table_rows(@pages)
+        .nestable_dragtree
+          %ol.header.dd-list
+            %li.dd-item
+              .dd-column.title
+                Page
+              .dd-column.author
+                Author
+              .dd-column.published_state
+                Status
+              .dd-column.actions
+                &nbsp;
 
-        :javascript
-          $(document).ready(function(){
-            $('.dd').nestable({ /* config options */
-            }).on('change', function(e) {
-              /* on change event */
-              var list   = e.length ? e : $(e.target),
-              output = list.data('output');
-              if (window.JSON) {
-                  console.log(window.JSON.stringify(list.nestable('serialize')));//, null, 2));
-              } else {
-                  console.log('JSON browser support required for this demo.');
-              }
-            });
-          });
+          .dd{"data-url" => drag_tree_url }
+            %ol.dd-list
+              = page_table_rows(@pages)
 
 
         / %table{:id => 'pages_table', :class => "table table-bordered #{(can?(:reorder , Gluttonberg::Page) ? drag_tree_table_class : "" )}", :cellpadding => 0, :cellspacing => 0, :rel => "" , :summary => "Pages" , :rel => drag_tree_url }
