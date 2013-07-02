@@ -7,12 +7,12 @@ Rails.application.routes.draw do
       root :to => "main#index"
 
       # Help
-      match("/help/:module_and_controller/:page" => "help#show", :module_and_controller => %r{\S+} , :as => :help)
+      get "/help/:module_and_controller/:page" => "help#show", :module_and_controller => %r{\S+} , :as => :help
 
       scope :module => 'content' do
-        match "/flagged_contents" => "flag#index" , :as => :flagged_contents
+        get "/flagged_contents" => "flag#index" , :as => :flagged_contents
         get '/flagged_contents/moderation/:id/:moderation' => "flag#moderation", :as => :flagged_contents_moderation
-        match 'content' => "main#index",      :as => :content
+        #match 'content' => "pages#index",      :as => :content
         resources :pages do
           get 'delete', :on => :member
           get 'duplicate', :on => :member
@@ -44,20 +44,20 @@ Rails.application.routes.draw do
           end
         end
 
-        match "/pages/move(.:format)" => "pages#move_node" , :as=> :page_move
+        post "/pages/move(.:format)" => "pages#move_node" , :as=> :page_move
         resources :galleries do
           get 'delete', :on => :member
           get 'add_image', :on => :member
           get 'remove_image' , :on => :member
         end
-        match "/galleries/move(.:format)" => "galleries#move_node" , :as=> :gallery_move
+        post "/galleries/move(.:format)" => "galleries#move_node" , :as=> :gallery_move
 
       end
 
       # Settings
       scope :module => 'settings' do
-        match 'settings' => "main#index",      :as => :settings
-        match 'history' => "global_history#index",      :as => :global_history
+        get 'settings' => "main#index",      :as => :settings
+        get 'history' => "global_history#index",      :as => :global_history
         resources :locales do
           get 'delete', :on => :member
         end
@@ -99,16 +99,16 @@ Rails.application.routes.draw do
           get 'crop', :on => :member
           post 'save_crop', :on => :member
         end
-        match "library" => "assets#index" , :as => :library
-        match "search_assets" => "assets#search" , :as => :library_search
-        match "add_asset_using_ajax"  => "assets#ajax_new" , :as => :add_asset_using_ajax
-        match "add_assets_in_bulk"  => "assets#add_assets_in_bulk" , :as => :add_assets_in_bulk
-        match "create_assets_in_bulk"  => "assets#create_assets_in_bulk" , :as => :create_assets_in_bulk
-        match "destroy_assets_in_bulk"  => "assets#destroy_assets_in_bulk" , :as => :destroy_assets_in_bulk
-        match "browser"  => "assets#browser" , :as => :asset_browser
-        match "browser-collection/:id"  => "assets#browser_collection" , :as => :asset_browser_collection
-        match "assets/:category/page/:page"  => "assets#category" , :as => :asset_category
-        match "collections/:id/page/:page"  => "collections#show" , :as => :asset_collection
+        get "library" => "assets#index" , :as => :library
+        get "search_assets" => "assets#search" , :as => :library_search
+        post "add_asset_using_ajax"  => "assets#ajax_new" , :as => :add_asset_using_ajax#, :via => [:post]
+        get "add_assets_in_bulk"  => "assets#add_assets_in_bulk" , :as => :add_assets_in_bulk
+        post "create_assets_in_bulk"  => "assets#create_assets_in_bulk" , :as => :create_assets_in_bulk
+        post "destroy_assets_in_bulk"  => "assets#destroy_assets_in_bulk" , :as => :destroy_assets_in_bulk
+        get "browser"  => "assets#browser" , :as => :asset_browser
+        get "browser-collection/:id"  => "assets#browser_collection" , :as => :asset_browser_collection
+        get "assets/:category/page/:page"  => "assets#category" , :as => :asset_category
+        get "collections/:id/page/:page"  => "collections#show" , :as => :asset_collection
         resources :collections  do
           get 'delete', :on => :member
         end
@@ -118,7 +118,7 @@ Rails.application.routes.draw do
 
       get "login" => "user_sessions#new"
       post "login" => "user_sessions#create"
-      match "logout" => "user_sessions#destroy"
+      get "logout" => "user_sessions#destroy"
     end
 
     scope :module => 'public' do
