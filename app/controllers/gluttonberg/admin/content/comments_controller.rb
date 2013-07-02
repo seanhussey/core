@@ -5,7 +5,7 @@ module Gluttonberg
     module Content
       class CommentsController < Gluttonberg::Admin::BaseController
         include ActionView::Helpers::TextHelper
-
+        before_filter :is_blog_enabled
         before_filter :find_blog , :except => [:all , :approved, :rejected , :pending , :spam , :moderation , :delete , :destroy , :spam_detection_for_all_pending , :block_comment_author]
         before_filter :find_article ,  :except => [:index, :all , :approved , :rejected , :pending , :spam , :moderation , :delete , :destroy , :spam_detection_for_all_pending , :block_comment_author]
         before_filter :authorize_user ,  :except => [:moderation]

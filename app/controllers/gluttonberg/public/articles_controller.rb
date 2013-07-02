@@ -1,6 +1,7 @@
 module Gluttonberg
   module Public
     class ArticlesController <   Gluttonberg::Public::BaseController
+      before_filter :is_blog_enabled
 
       def index
         @blog = Gluttonberg::Blog.published.first(:conditions => {:slug => params[:blog_id]}, :include => [:articles])

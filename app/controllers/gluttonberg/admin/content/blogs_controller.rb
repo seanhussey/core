@@ -2,12 +2,12 @@
 
 module Gluttonberg
   module Admin
-    module Content    
+    module Content
       class BlogsController < Gluttonberg::Admin::BaseController
-        
+        before_filter :is_blog_enabled
         before_filter :find_blog, :only => [:edit, :update, :delete, :destroy]
         before_filter :require_super_admin_user , :except => [:index]
-        before_filter :authorize_user , :except => [:destroy , :delete]  
+        before_filter :authorize_user , :except => [:destroy , :delete]
         before_filter :authorize_user_for_destroy , :only => [:destroy , :delete]
         record_history :@blog
 
@@ -17,7 +17,7 @@ module Gluttonberg
             redirect_to admin_blog_articles_path(@blogs.first)
           end
         end
-        
+
         def show
           @blog = Blog.find(params[:id])
           if @blog
@@ -26,11 +26,11 @@ module Gluttonberg
             redirect_to admin_blog_path
           end
         end
-        
+
         def new
           @blog = Blog.new
         end
-        
+
         def create
           @blog = Blog.new(params[:gluttonberg_blog])
           if @blog.save
@@ -40,14 +40,14 @@ module Gluttonberg
             render :edit
           end
         end
-        
+
         def edit
           unless params[:version].blank?
-            @version = params[:version]  
+            @version = params[:version]
             @blog.revert_to(@version)
           end
         end
-        
+
         def update
           @blog.current_slug = @blog.slug
           @blog.assign_attributes(params[:gluttonberg_blog])
@@ -60,16 +60,16 @@ module Gluttonberg
             render :edit
           end
         end
-                
+
         def delete
           display_delete_confirmation(
             :title      => "Delete Blog '#{@blog.name}'?",
             :url        => admin_blog_path(@blog),
-            :return_url => admin_blogs_path, 
+            :return_url => admin_blogs_path,
             :warning    => "This will delete all the articles that belong to this blog"
           )
         end
-        
+
         def destroy
           if @blog.delete
             flash[:notice] = "The blog was successfully deleted."
@@ -79,14 +79,14 @@ module Gluttonberg
             redirect_to admin_blogs_path
           end
         end
-        
-                
+
+
         protected
-        
+
           def find_blog
             @blog = Blog.find(params[:id])
           end
-          
+
           def authorize_user
             authorize! :manage, Gluttonberg::Blog
           end
@@ -94,7 +94,7 @@ module Gluttonberg
           def authorize_user_for_destroy
             authorize! :destroy, Gluttonberg::Blog
           end
-          
+
       end
     end
   end

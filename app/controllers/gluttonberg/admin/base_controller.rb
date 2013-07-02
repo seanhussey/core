@@ -130,8 +130,6 @@ class Gluttonberg::Admin::BaseController < ActionController::Base
       true
     end
 
-
-
     def require_backend_access
       return false unless require_user
       unless current_user.have_backend_access?
@@ -141,7 +139,6 @@ class Gluttonberg::Admin::BaseController < ActionController::Base
         return false
       end
     end
-
 
     def require_super_admin_user
       return false unless require_user
@@ -154,6 +151,12 @@ class Gluttonberg::Admin::BaseController < ActionController::Base
       end
     end
 
+    def is_blog_enabled
+      unless Gluttonberg::Comment.table_exists? == true
+        raise CanCan::AccessDenied
+      end
+    end
+
     def store_location
       session[:return_to] = request.url
     end
@@ -162,7 +165,6 @@ class Gluttonberg::Admin::BaseController < ActionController::Base
       redirect_to(session[:return_to] || default)
       session[:return_to] = nil
     end
-
 
     # Exception handlers
     def not_found

@@ -1,6 +1,7 @@
 module Gluttonberg
   module Public
     class CommentsController <  Gluttonberg::Public::BaseController
+      before_filter :is_blog_enabled
 
       def create
         @blog = Gluttonberg::Blog.first(:conditions => {:slug => params[:blog_id]})

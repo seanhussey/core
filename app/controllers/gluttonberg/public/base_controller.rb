@@ -107,6 +107,12 @@ class Gluttonberg::Public::BaseController < ActionController::Base
       end
     end
 
+    def is_blog_enabled
+      unless Gluttonberg::Comment.table_exists? == true
+        raise ActiveRecord::RecordNotFound
+      end
+    end
+
     def require_super_admin_user
       return false unless require_user
 

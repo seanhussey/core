@@ -4,7 +4,7 @@ module Gluttonberg
   module Admin
     module Content
       class ArticlesController < Gluttonberg::Admin::BaseController
-
+        before_filter :is_blog_enabled
         before_filter :find_blog , :except => [:create]
         before_filter :find_article, :only => [:show, :edit, :update, :delete, :destroy , :duplicate]
         before_filter :authorize_user , :except => [:destroy , :delete]
