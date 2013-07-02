@@ -13,7 +13,7 @@ module Gluttonberg
     SLUG_TYPES = ["prefix"]
 
     def self.first_default(opts={})
-      @first_default ||= self.where(opts.merge(:default => true)).first
+      @@first_default ||= self.where(opts.merge(:default => true)).first
     end
 
     def self.prefix_slug_type
@@ -31,9 +31,9 @@ module Gluttonberg
     def self.generate_default_locale
       if Gluttonberg::Locale.where(:slug => "en-au").count == 0
         locale = Gluttonberg::Locale.create({
-          :slug => "en-au" ,
-          :name => "Australia English" ,
-          :default => true ,
+          :slug => "en-au",
+          :name => "Australia English",
+          :default => true,
           :slug_type => Gluttonberg::Locale.prefix_slug_type
         })
       end
@@ -41,7 +41,7 @@ module Gluttonberg
 
     private
       def clear_cache
-        @first_default = nil
+        @@first_default = nil
       end
   end
 end
