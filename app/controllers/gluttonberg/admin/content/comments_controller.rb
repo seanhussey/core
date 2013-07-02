@@ -106,7 +106,7 @@ module Gluttonberg
         protected
 
           def find_blog
-            @blog = Blog.find(params[:blog_id])
+            @blog = Blog.where(:id => params[:blog_id]).first
             raise ActiveRecord::RecordNotFound unless @blog
           end
 
