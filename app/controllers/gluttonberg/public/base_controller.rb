@@ -36,8 +36,7 @@ class Gluttonberg::Public::BaseController < ActionController::Base
           if env['gluttonberg.page'].blank?
             redirect_to restrict_site_access_path(:return_url => request.url)
           else
-            default_localization = Gluttonberg::PageLocalization.find(:first , :conditions => { :page_id => env['gluttonberg.page'].id , :locale_id => Gluttonberg::Locale.first_default.id } )
-            redirect_to restrict_site_access_path(:return_url => default_localization.public_path)
+            redirect_to restrict_site_access_path(:return_url => env['gluttonberg.page'].current_localization.public_path)
           end
         end
       end
