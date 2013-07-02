@@ -44,13 +44,13 @@ class Flag < ActiveRecord::Base
   scope :all_rejected, :conditions => { :approved => false , :moderation_required => false }
 
   def moderate(params)
-      if params == "approve"
-        update_attributes(:moderation_required => false, :approved => true)
-      elsif params == "disapprove"
-        update_attributes(:moderation_required => false, :approved => false)
-      else
-        #error
-      end
+    if params == "approve"
+      update_attributes(:moderation_required => false, :approved => true)
+    elsif params == "disapprove"
+      update_attributes(:moderation_required => false, :approved => false)
+    else
+      #error
+    end
   end
 
 end
