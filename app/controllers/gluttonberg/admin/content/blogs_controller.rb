@@ -5,7 +5,7 @@ module Gluttonberg
     module Content
       class BlogsController < Gluttonberg::Admin::BaseController
         before_filter :is_blog_enabled
-        before_filter :find_blog, :only => [:edit, :update, :delete, :destroy]
+        before_filter :find_blog, :only => [:show, :edit, :update, :delete, :destroy]
         before_filter :require_super_admin_user , :except => [:index]
         before_filter :authorize_user , :except => [:destroy , :delete]
         before_filter :authorize_user_for_destroy , :only => [:destroy , :delete]
@@ -19,7 +19,6 @@ module Gluttonberg
         end
 
         def show
-          @blog = Blog.find(params[:id])
           if @blog
             redirect_to admin_blog_articles_path(@blog)
           else
@@ -84,7 +83,7 @@ module Gluttonberg
         protected
 
           def find_blog
-            @blog = Blog.find(params[:id])
+            @blog = Blog.where(:id => params[:id]).first
           end
 
           def authorize_user
