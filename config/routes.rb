@@ -73,7 +73,7 @@ Rails.application.routes.draw do
         resources :stylesheets do
           get 'delete', :on => :member
         end
-        match "/stylesheets/move(.:format)" => "stylesheets#move_node" , :as=> :stylesheet_move
+        post "/stylesheets/move(.:format)" => "stylesheets#move_node" , :as=> :stylesheet_move
       end
 
       namespace :membership do
