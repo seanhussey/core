@@ -281,7 +281,6 @@ var AssetBrowser = {
           }
         }
 
-
         autoSaveAsset(AssetBrowser.logo_setting_url, id); //auto save if it is required
       } else {
         if (AssetBrowser.actualLink.hasClass("add_image_to_gallery")) {
@@ -518,7 +517,7 @@ function ajaxFileUploadForAssetLibrary(link) {
 
       data_id = $(this).attr("data_id");
       url = AssetBrowser.logo_setting_url;
-      auto_save_asset(url, new_id); // only if autosave is required
+      autoSaveAsset(url, new_id); // only if autosave is required
 
       if (AssetBrowser.actualLink.hasClass("add_image_to_gallery")) {
         $.ajax({
