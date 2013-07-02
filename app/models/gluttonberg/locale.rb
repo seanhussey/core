@@ -8,12 +8,12 @@ module Gluttonberg
     validates_presence_of :name , :slug
     validates_uniqueness_of :slug , :name
     attr_accessible :name, :slug, :slug_type, :default
+    after_save :clear_cache
 
     SLUG_TYPES = ["prefix"]
 
     def self.first_default(opts={})
-      opts[:default] = true
-      where(opts).first
+      @first_default ||= self.where(opts.merge(:default => true)).first
     end
 
     def self.prefix_slug_type
@@ -38,5 +38,10 @@ module Gluttonberg
         })
       end
     end
+
+    private
+      def clear_cache
+        @first_default = nil
+      end
   end
 end
