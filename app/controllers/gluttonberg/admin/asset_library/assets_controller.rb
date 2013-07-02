@@ -47,7 +47,7 @@ module Gluttonberg
           @category_filter = ( params[:filter].blank? ? "all" : params[:filter] )
           if @category_filter == "all"
           else
-            @category = AssetCategory.find(:first , :conditions => { :name => @category_filter })
+            @category = AssetCategory.where(:name => @category_filter).first
             @assets = @assets.where({:asset_type_id => @category.asset_type_ids }) unless @category.blank? || @category.asset_type_ids.blank?
           end
 
@@ -59,7 +59,7 @@ module Gluttonberg
         end
 
         def browser_collection
-          @collection = AssetCollection.find(params[:id])
+          @collection = AssetCollection.where(:id => params[:id]).first
           @category_filter = ( params[:filter].blank? ? "all" : params[:filter] )
           if @category_filter == "all"
             @assets = @collection.assets
@@ -78,7 +78,7 @@ module Gluttonberg
             # ignore asset category if user selects 'all' from category
             @assets = Asset.includes(:asset_type)
           else
-            req_category = AssetCategory.first(:conditions => "name = '#{params[:category]}'" )
+            req_category = AssetCategory.where(:name => params[:category]).first
             # if category is not found then raise exception
             if req_category.blank?
               raise ActiveRecord::RecordNotFound
@@ -234,8 +234,7 @@ module Gluttonberg
 
         private
             def find_asset
-              conditions = { :id => params[:id] }
-              @asset = Asset.find(:first , :conditions => conditions )
+              @asset = Asset.where(:id => params[:id]).first
               raise ActiveRecord::RecordNotFound  if @asset.blank?
             end
 

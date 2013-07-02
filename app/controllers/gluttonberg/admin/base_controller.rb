@@ -3,7 +3,6 @@ class Gluttonberg::Admin::BaseController < ActionController::Base
    before_filter :require_user
    before_filter :require_backend_access
 
-
    if Rails.env == "production"
      rescue_from ActionView::MissingTemplate, :with => :not_found
      rescue_from ActiveRecord::RecordNotFound, :with => :not_found
@@ -17,7 +16,6 @@ class Gluttonberg::Admin::BaseController < ActionController::Base
 
 
   protected
-
 
 
     # this method is used by sorter on asset listing by category and by collection
@@ -101,7 +99,7 @@ class Gluttonberg::Admin::BaseController < ActionController::Base
           ids = params[:localization].split("-")
           {:locale => ids[0]}
         else
-          locale = Gluttonberg::Locale.find(:first , :conditions => { :default => true })
+          locale = Gluttonberg::Locale.first_default
           # Inject the ids into the params so our form fields behave
           params[:localization] = "#{locale.id}"
           {:locale => locale.id}
