@@ -45,7 +45,7 @@ class Gluttonberg::ResourceGenerator < Rails::Generators::Base
       route(
 %Q(
   namespace :admin do
-    match \"/#{plural_name}/move(.:format)\" => \"#{plural_name}#move_node\" , :as=> :#{singular_name}_move
+    post \"/#{plural_name}/move(.:format)\" => \"#{plural_name}#move_node\" , :as=> :#{singular_name}_move
     match \"/#{plural_name}/import(.:format)\" => \"#{plural_name}#import\" , :as=> :#{plural_name}_import
     match \"/#{plural_name}/export(.:format)\" => \"#{plural_name}#export\" , :as=> :#{plural_name}_export
     resources :#{plural_name} do
