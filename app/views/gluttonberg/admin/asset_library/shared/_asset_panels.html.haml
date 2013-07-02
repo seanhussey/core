@@ -62,7 +62,7 @@
                   Delete
 
 %a{:href => "#",  :class => "delete_selected_assets btn btn-danger"} Delete Selected Assets
-%form#delete_selected_assets_form{ :action => admin_destroy_assets_in_bulk_path}
+%form#delete_selected_assets_form{ :action =>admin_destroy_assets_in_bulk_path , :method => "POST" }
   %input{ :type => "hidden" , :value =>"", :name => "asset_ids"}
 - if @assets.respond_to?(:total_pages)
   = will_paginate(@assets)
