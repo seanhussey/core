@@ -179,9 +179,9 @@ module Gluttonberg
           row += 1
           output << "<li class='dd-item' data-id='#{page.id}'>"
             output << render( :partial => "gluttonberg/admin/content/pages/row", :locals => { :page => page, :inset => inset , :row => row })
-            if page.children.length > 0
+            if page.children.count > 0
               output << "<ol class='dd-list'>"
-                page_table_rows(page.children, output, inset + 1 , row)
+                page_table_rows(page.children.includes(:user, :localizations), output, inset + 1 , row)
               output << "</ol>"
             end
           output << "</li>"
