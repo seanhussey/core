@@ -99,7 +99,7 @@ module Gluttonberg
           @assets.each do |asset|
             asset.destroy
           end
-          redirect_to "/admin/browse/all/page/1"
+          redirect_to admin_asset_category_path(:category => 'all' , :page => 1 )
         end
 
         # add assets from zip folder
@@ -152,7 +152,7 @@ module Gluttonberg
 
         # delete asset
         def delete
-          return_url = "/admin/browse/all/page/1"
+          return_url = admin_asset_category_path(:category => 'all' , :page => 1 )
           return_url =  request.referrer unless request.referrer.blank?
           display_delete_confirmation(
             :title      => "Delete “#{@asset.name}” asset?",
@@ -202,7 +202,7 @@ module Gluttonberg
           if !params[:return_url].blank? && !params[:return_url].include?(admin_asset_path(params[:id]))
             redirect_to params[:return_url]
           else
-            redirect_to "/admin/browse/all/page/1"
+            redirect_to admin_asset_category_path(:category => 'all' , :page => 1 )
           end
         end
 
