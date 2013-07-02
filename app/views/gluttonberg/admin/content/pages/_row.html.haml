@@ -1,10 +1,7 @@
-- default_localization = Gluttonberg::PageLocalization.find(:first , :conditions => { :page_id => page.id , :locale_id => Gluttonberg::Locale.first_default.id } )
-
-
 .dd-handle.dd3-handle
 .dd3-content
   .dd-column.title
-    = link_to("#{page.home ? "#{default_localization.name} (Home page)" : default_localization.name}", edit_admin_page_page_localization_path( :page_id => page.id, :id => default_localization.id))
+    = link_to("#{page.home ? "#{page.current_localization.name} (Home page)" : page.current_localization.name}", edit_admin_page_page_localization_path( :page_id => page.id, :id => page.current_localization.id))
   .dd-column.author
     = page.user.full_name
   .dd-column.published_state{:class=>"#{page.publishing_status.downcase}"}
@@ -20,8 +17,8 @@
             - localization = Gluttonberg::PageLocalization.find(:first , :conditions => { :page_id => page.id , :locale_id => locale.id } )
             %li= link_to("Edit #{locale.name} Content", edit_admin_page_page_localization_path( :page_id => page.id, :id => localization.id), :class => "")
         - else
-          %li= link_to("Edit", edit_admin_page_page_localization_path( :page_id => page.id, :id => default_localization.id), :class => "")
-          %li= link_to("Preview", default_localization.public_path, :class => "", :target => "_blank")
+          %li= link_to("Edit", edit_admin_page_page_localization_path( :page_id => page.id, :id => page.current_localization.id), :class => "")
+          %li= link_to("Preview", page.current_localization.public_path, :class => "", :target => "_blank")
 
         %li.divider
         %li= link_to("Duplicate", duplicate_admin_page_path( :id => page.id), :class => "")
