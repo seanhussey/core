@@ -10,7 +10,7 @@ module Gluttonberg
         record_history :@setting
 
         def index
-          @settings = Setting.find(:all , :order => "row asc")
+          @settings = Setting.order("row asc").all
           @current_home_page_id  = Page.home_page.id unless Page.home_page.blank?
           @pages = Page.all
         end
@@ -73,7 +73,7 @@ module Gluttonberg
         private
 
           def find_setting
-            @setting = Setting.find(params[:id])
+            @setting = Setting.where(:id => params[:id]).first
             raise ActiveRecord::RecordNotFound  unless @setting
           end
 

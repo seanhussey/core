@@ -4,7 +4,7 @@ module Gluttonberg
       before_filter :is_blog_enabled
 
       def index
-        @blog = Gluttonberg::Blog.published.first(:conditions => {:slug => params[:blog_id]}, :include => [:articles])
+        @blog = Gluttonberg::Blog.published.where(:slug => params[:blog_id]).includes([:articles]).first
         raise ActiveRecord::RecordNotFound.new if @blog.blank?
         @articles = @blog.articles.published
 
@@ -15,11 +15,10 @@ module Gluttonberg
       end
 
       def show
-
-        @blog = Gluttonberg::Blog.published.first(:conditions => {:slug => params[:blog_id]})
+        @blog = Gluttonberg::Blog.published.where(:slug => params[:blog_id]).first
 
         if @blog.blank?
-          @blog = Gluttonberg::Blog.published.first(:conditions => {:previous_slug => params[:blog_id]})
+          @blog = Gluttonberg::Blog.published.where(:previous_slug => params[:blog_id]).first
 
           unless @blog.blank?
              redirect_to blog_article_path(:blog_id => @blog.slug , :id => params[:id]) , :status => 301
@@ -28,9 +27,9 @@ module Gluttonberg
         end
 
         raise ActiveRecord::RecordNotFound.new if @blog.blank?
-        @article = Gluttonberg::Article.published.first(:conditions => {:slug => params[:id], :blog_id => @blog.id})
+        @article = Gluttonberg::Article.published.where(:slug => params[:id], :blog_id => @blog.id).first
         if @article.blank?
-          @article = Gluttonberg::Article.published.first(:conditions => {:previous_slug => params[:id], :blog_id => @blog.id})
+          @article = Gluttonberg::Article.published.where(:previous_slug => params[:id], :blog_id => @blog.id).first
           unless @article.blank?
              redirect_to blog_article_path(:blog_id => @blog.slug , :id => @article.slug) , :status => 301
              return
@@ -55,7 +54,7 @@ module Gluttonberg
       end
 
       def unsubscribe
-        @subscription = CommentSubscription.find(:first , :conditions => {:reference_hash => params[:reference] })
+        @subscription = CommentSubscription.where(:reference_hash => params[:reference]).first
         unless @subscription.blank?
           @subscription.destroy
           flash[:notice] = "You are successfully unsubscribe from comments of \"#{@subscription.article.title}\""
@@ -67,9 +66,9 @@ module Gluttonberg
       end
 
       def preview
-        @blog = Gluttonberg::Blog.first(:conditions => {:slug => params[:blog_id]})
+        @blog = Gluttonberg::Blog.published.where(:slug => params[:blog_id]).first
         raise ActiveRecord::RecordNotFound.new if @blog.blank?
-        @article = Gluttonberg::Article.first(:conditions => {:slug => params[:article_id], :blog_id => @blog.id})
+        @article = Gluttonberg::Article.where(:slug => params[:article_id], :blog_id => @blog.id).first
         @article.load_localization(Locale.where(params[:locale_id]).first)
         raise ActiveRecord::RecordNotFound.new if @article.blank?
         render :show
