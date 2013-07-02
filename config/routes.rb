@@ -78,10 +78,10 @@ Rails.application.routes.draw do
 
       namespace :membership do
         root :to =>  "main#index"
-        match "/groups/move(.:format)" => "groups#move_node" , :as=> :group_move
-        match "members/export" => "members#export" , :as => :members_export
-        match 'members/new_bulk'  => "members#new_bulk" , :as => :members_import
-        match 'members/create_bulk' => "members#create_bulk" , :as => :members_bulk_create
+        post "/groups/move(.:format)" => "groups#move_node" , :as=> :group_move
+        get "members/export" => "members#export" , :as => :members_export
+        get 'members/new_bulk'  => "members#new_bulk" , :as => :members_import
+        post 'members/create_bulk' => "members#create_bulk" , :as => :members_bulk_create
         resources :members do
           get 'delete', :on => :member
           get 'welcome' , :on => :member
