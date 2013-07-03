@@ -364,20 +364,28 @@ module Gluttonberg
         self.localizations.each do |localization|
           dup_loc = duplicated_page.localizations.where(:locale_id => localization.locale_id).first
           unless dup_loc.blank?
-            _duplicate_localization_content(duplicated_page, localization, dup_loc)
+            _duplicate_localization_contents(duplicated_page, localization, dup_loc)
           end
         end
       end
 
-      def _duplicate_localization_content(duplicated_page, localization, dup_loc)
+      def _duplicate_localization_contents(duplicated_page, localization, dup_loc)
         dup_loc_contents = dup_loc.contents
         localization.contents.each do |content|
           if content.respond_to?(:parent) && content.parent.localized
-            dup_content = dup_loc_contents.find{|c| c.respond_to?(:page_localization_id) &&  c.page_localization_id == dup_loc.id && c.parent.section_name ==  content.parent.section_name}
+            dup_content = dup_loc_contents.find do |c|
+              c.respond_to?(:page_localization_id) &&
+              c.page_localization_id == dup_loc.id &&
+              c.parent.section_name ==  content.parent.section_name
+            end
             dup_content.update_attributes(:text => content.text)
             dup_content = nil
           else
-            dup_content = dup_loc_contents.find{|c| c.respond_to?(:page_id) && c.page_id == duplicated_page.id && c.section_name ==  content.section_name}
+            dup_content = dup_loc_contents.find do |c|
+              c.respond_to?(:page_id) &&
+              c.page_id == duplicated_page.id &&
+              c.section_name ==  content.section_name
+            end
             dup_content.update_attributes(:asset_id => content.asset_id)
             dup_content = nil
           end
