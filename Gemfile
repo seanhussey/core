@@ -13,6 +13,8 @@ gem 'haml' , '4.0.3'
 gem 'sass' , '3.2.9'
 gem 'jquery-rails', '3.0.0'
 
+gem 'simplecov', :require => false, :group => :test
+
 group :assets do
   gem 'sass-rails',   '3.2.6'
   # gem 'coffee-rails', '~> 3.2.2'
