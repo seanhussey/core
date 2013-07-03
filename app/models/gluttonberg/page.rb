@@ -267,44 +267,7 @@ module Gluttonberg
     end
 
     def self.repair_pages_structure
-      pages = Page.all
-
-      pages.each do |page|
-        if page.description.blank?
-          puts "Page description '#{page.description_name}' for '#{page.name}' page  does not exist in page descriptions file. #{page.id}"
-        elsif !page.description.sections.blank?
-          puts("Generating stubbed content for new page #{page.id}")
-
-          [PlainTextContent , HtmlContent , ImageContent].each do |klass|
-            list = klass.find(:all , :conditions => { :page_id => page.id})
-            list.each do |item|
-              found = page.description.contains_section?(item.section_name , item.class.to_s.demodulize.underscore)
-              puts found
-              if(!found)
-                  item.destroy
-              end
-            end
-          end
-
-          page.description.sections.each do |name, section|
-            # Create the content
-            association = page.send(section[:type].to_s.pluralize)
-            content = association.where(:section_name => name).first
-            if content.blank?
-              content = association.create(:section_name => name)
-            end
-            # Create each localization
-            if content.class.localized?
-              page.localizations.all.each do |localization|
-               if content.localizations.where("#{section[:type]}_id" => content.id, :page_localization_id => localization.id).count == 0
-                 content.localizations.create(:parent => content, :page_localization => localization)
-               end
-              end
-            end
-          end
-        end
-      end # pages loop end
-      puts "completed"
+      PageRepairer.repair_pages_structure
     end
 
     def is_public?
