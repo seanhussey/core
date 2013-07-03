@@ -325,38 +325,17 @@ module Gluttonberg
 
     def duplicate
       ActiveRecord::Base.transaction do
-        duplicated_page = self.dup
-        duplicated_page.state = "draft"
-        duplicated_page.created_at = Time.now
-        duplicated_page.published_at = nil
-        duplicated_page.position = nil
-
+        duplicated_page = _duplicate_page_object
         if duplicated_page.save
-          self.localizations.each do |localization|
-            dup_loc = duplicated_page.localizations.where(:locale_id => localization.locale_id).first
-            dup_loc_contents = dup_loc.contents
-            unless dup_loc.blank?
-              localization.contents.each do |content|
-                 if content.respond_to?(:parent) && content.parent.localized
-                    dup_content = dup_loc_contents.find{|c| c.respond_to?(:page_localization_id) &&  c.page_localization_id == dup_loc.id && c.parent.section_name ==  content.parent.section_name}
-                    dup_content.update_attributes(:text => content.text)
-                    dup_content = nil
-                 else
-                    dup_content = dup_loc_contents.find{|c| c.respond_to?(:page_id) && c.page_id == duplicated_page.id && c.section_name ==  content.section_name}
-                    dup_content.update_attributes(:asset_id => content.asset_id)
-                    dup_content = nil
-                 end
-              end
-
-            end
-          end
-
+          _duplicate_page_localizations(duplicated_page)
           duplicated_page
         else
           nil
         end
-      end
+      end #transaction end
     end
+
+
 
     private
 
@@ -367,6 +346,36 @@ module Gluttonberg
         if @home_updated && @home_updated == true
           previous_home = Page.where([ "home = ? AND id <> ? " , true ,self.id ] ).first
           previous_home.update_attributes(:home => false) if previous_home
+        end
+      end
+
+      #duplicate page helper
+      def _duplicate_page_object
+        duplicated_page = self.dup
+        duplicated_page.state = "draft"
+        duplicated_page.created_at = Time.now
+        duplicated_page.published_at = nil
+        duplicated_page.position = nil
+        duplicated_page
+      end
+
+      def _duplicate_page_localizations(duplicated_page)
+        self.localizations.each do |localization|
+          dup_loc = duplicated_page.localizations.where(:locale_id => localization.locale_id).first
+          dup_loc_contents = dup_loc.contents
+          unless dup_loc.blank?
+            localization.contents.each do |content|
+              if content.respond_to?(:parent) && content.parent.localized
+                dup_content = dup_loc_contents.find{|c| c.respond_to?(:page_localization_id) &&  c.page_localization_id == dup_loc.id && c.parent.section_name ==  content.parent.section_name}
+                dup_content.update_attributes(:text => content.text)
+                dup_content = nil
+              else
+                dup_content = dup_loc_contents.find{|c| c.respond_to?(:page_id) && c.page_id == duplicated_page.id && c.section_name ==  content.section_name}
+                dup_content.update_attributes(:asset_id => content.asset_id)
+                dup_content = nil
+              end
+            end
+          end
         end
       end
 
