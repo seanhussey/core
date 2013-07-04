@@ -57,41 +57,20 @@ module Gluttonberg
     # default.
     def self.find_by_path(path, locale = nil , domain_name=nil)
       path = path.match(/^\/(\S+)/)
+      locale = Gluttonberg::Locale.first_default if locale.blank?
+      page = nil
       if( !locale.blank? && !path.blank?)
         path = path[1]
-        page = joins(:localizations).where("locale_id = ? AND gb_page_localizations.path LIKE ? ", locale.id, path).first
-        unless page.blank?
-          page.current_localization = page.localizations.where("locale_id = ? AND path LIKE ? ", locale.id, path).first
-        end
-        page
+        page = joins(:localizations).where("locale_id = ? AND ( gb_page_localizations.path LIKE ? OR path LIKE ? ) ", locale.id, path, path).first
       elsif path.blank? #looking for home
-        locale = Gluttonberg::Locale.first_default if locale.blank?
-        if !Rails.configuration.multisite.blank?
-          page_desc = PageDescription.all.find{|key , val|  val.home_for_domain?(domain_name) }
-          page_desc = page_desc.last unless page_desc.blank?
-          unless page_desc.blank?
-            pages = joins(:localizations).where("locale_id = ? AND description_name = ?", locale.id, page_desc.name)
-          end
+        unless Rails.configuration.multisite.blank?
+          page_desc = PageDescriptionfind_home_page_description_for_domain?(domain_name)
+          page = joins(:localizations).where("locale_id = ? AND description_name = ?", locale.id, page_desc.name).first unless page_desc.blank?
         end
-
-        if pages.blank?
-          pages = joins(:localizations).where("locale_id = ? AND home = ?", locale.id, true)
-        end
-
-        page = pages.first unless pages.blank?
-        unless page.blank?
-          page.current_localization = page.localizations.where("locale_id = ? ", locale.id).first
-        end
-        page
-      else # default locale
-         path = path[1]
-         locale = Gluttonberg::Locale.first_default
-         page = joins(:localizations).where("locale_id = ? AND gb_page_localizations.path LIKE ? ", locale.id, path).first
-         unless page.blank?
-           page.current_localization = page.localizations.where("locale_id = ? AND path LIKE ? ", locale.id, path).first
-         end
-         page
+        page = joins(:localizations).where("locale_id = ? AND home = ?", locale.id, true).first if page.blank?
       end
+      page.load_localization(locale) unless page.blank?
+      page
     end
 
     # A custom finder used to find a page + locale combination which most
