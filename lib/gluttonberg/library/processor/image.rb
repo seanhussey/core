@@ -51,13 +51,10 @@ module Gluttonberg
           asset_thumb = asset.asset_thumbnails.find_or_initialize_by_thumbnail_type(image_type.to_s)
           asset_thumb.user_generated = true
           asset_thumb.save
-
-          file_name = "#{asset.class.sizes[image_type.to_sym][:filename]}.#{asset.file_extension}"
+          config = asset.class.sizes[image_type.to_sym]
+          file_name = "#{config[:filename]}.#{asset.file_extension}"
           image = read_image_file(asset)
-          thumb_defined_width = asset.class.sizes[image_type.to_sym][:geometry].split('x').first
-          scaling_percent = (thumb_defined_width.to_i/(w.to_i*1.0))*100
-          aurgments_str = " -crop #{w}x#{h}+#{x}+#{y} +repage"
-          aurgments_str << " -resize #{scaling_percent}%" if scaling_percent != 1.0
+          aurgments_str = _prepare_image_crop_arguments(x , y , w , h, config)
           _resize_and_save(asset, image, nil, aurgments_str, file_name)
         end
 
@@ -87,6 +84,14 @@ module Gluttonberg
         end
 
         private
+          def _prepare_image_crop_arguments(config)
+            thumb_defined_width = config[:geometry].split('x').first
+            scaling_percent = (thumb_defined_width.to_i/(w.to_i*1.0))*100
+            aurgments_str = " -crop #{w}x#{h}+#{x}+#{y} +repage"
+            aurgments_str << " -resize #{scaling_percent}%" if scaling_percent != 1.0
+            aurgments_str
+          end
+
           def _generate_image_thumbnail(name, config)
             image = read_image_file(asset)
             file_name = "#{config[:filename]}.#{asset.file_extension}"
