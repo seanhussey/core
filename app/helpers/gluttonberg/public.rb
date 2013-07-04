@@ -7,6 +7,7 @@ module Gluttonberg
       include MetaTags
       include NavTree
       include HtmlTruncate
+      include Assets
 
       # Returns the code for google analytics
       def google_analytics_js_tag
