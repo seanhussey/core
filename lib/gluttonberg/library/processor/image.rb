@@ -107,17 +107,21 @@ module Gluttonberg
 
           def _generate_image_thumbnail_resize(name, config, image, asset, file_name)
             if config[:geometry].include?("#")
-              begin
-                image.resize(suggested_measures(image, config[:geometry]))
-                image.arguments << " -gravity Center  -crop #{config[:geometry].delete("#")}+0+0 +repage #{config[:grayscale] && config[:grayscale] == true ? "-colorspace Gray":""}"
-              rescue => e
-                puts e
-              end
+              self._prepare_resize_aurguments_for_fixed_size(config, image)
             else
               image.resize config[:geometry]
               image.arguments << "-colorspace Gray" if config[:grayscale] && config[:grayscale] == true
             end
             image.save File.join(asset.tmp_directory, file_name)
+          end
+
+          def self._prepare_resize_aurguments_for_fixed_size(config, image)
+            begin
+              image.resize(suggested_measures(image, config[:geometry]))
+              image.arguments << " -gravity Center  -crop #{config[:geometry].delete("#")}+0+0 +repage #{config[:grayscale] && config[:grayscale] == true ? "-colorspace Gray":""}"
+            rescue => e
+              puts e
+            end
           end
 
           def read_image_file(asset)
