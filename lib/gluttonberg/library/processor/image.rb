@@ -54,7 +54,7 @@ module Gluttonberg
 
           file_name = "#{asset.class.sizes[image_type.to_sym][:filename]}.#{asset.file_extension}"
           image = read_image_file(asset)
-          thumb_defined_width = asset.class.sizes[image_type.to_sym][:geometry].split('x').first#.to_i
+          thumb_defined_width = asset.class.sizes[image_type.to_sym][:geometry].split('x').first
           scaling_percent = (thumb_defined_width.to_i/(w.to_i*1.0))*100
           image.arguments << " -crop #{w}x#{h}+#{x}+#{y} +repage"
           if scaling_percent != 1.0
@@ -82,18 +82,13 @@ module Gluttonberg
         def generate_proper_resolution
           asset.make_backup
           image = read_image_file(asset)
-
-          actual_width = image.width.to_i
-          actual_height = image.height.to_i
-
-          asset.update_attributes( :width => actual_width, :height => actual_height)
-
+          asset.update_attributes( :width => image.width.to_i, :height => image.height.to_i)
           image.resize asset.class.max_image_size
           image.save File.join(asset.tmp_directory, asset.file_name)
           asset.move_tmp_file_to_actual_directory(asset.file_name , true)
-          # remove mp3 info if any image have. it may happen in the case of updating asset from mp3 to image
-          audio = AudioAssetAttribute.where(:asset_id => asset.id).first
-          audio.destroy unless audio.blank?
+          # remove mp3 info if any image have.
+          # it may happen in the case of updating asset from mp3 to image
+          AudioAssetAttribute.where(:asset_id => asset.id).delete_all
         end
 
         private
@@ -132,8 +127,6 @@ module Gluttonberg
             end
             image
           end
-
-
       end
     end
   end
