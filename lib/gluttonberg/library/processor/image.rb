@@ -56,12 +56,9 @@ module Gluttonberg
           image = read_image_file(asset)
           thumb_defined_width = asset.class.sizes[image_type.to_sym][:geometry].split('x').first
           scaling_percent = (thumb_defined_width.to_i/(w.to_i*1.0))*100
-          image.arguments << " -crop #{w}x#{h}+#{x}+#{y} +repage"
-          if scaling_percent != 1.0
-            image.arguments << " -resize #{scaling_percent}%"
-          end
-          image.save File.join(asset.tmp_directory, file_name)
-          asset.move_tmp_file_to_actual_directory(file_name , true)
+          aurgments_str = " -crop #{w}x#{h}+#{x}+#{y} +repage"
+          aurgments_str << " -resize #{scaling_percent}%" if scaling_percent != 1.0
+          _resize_and_save(asset, image, nil, aurgments_str, file_name)
         end
 
         # Create thumbnailed versions of image attachements.
@@ -83,9 +80,7 @@ module Gluttonberg
           asset.make_backup
           image = read_image_file(asset)
           asset.update_attributes( :width => image.width.to_i, :height => image.height.to_i)
-          image.resize asset.class.max_image_size
-          image.save File.join(asset.tmp_directory, asset.file_name)
-          asset.move_tmp_file_to_actual_directory(asset.file_name , true)
+          _resize_and_save(asset, image, asset.class.max_image_size, nil, asset.file_name)
           # remove mp3 info if any image have.
           # it may happen in the case of updating asset from mp3 to image
           AudioAssetAttribute.where(:asset_id => asset.id).delete_all
@@ -94,29 +89,20 @@ module Gluttonberg
         private
           def _generate_image_thumbnail(name, config)
             image = read_image_file(asset)
-
             file_name = "#{config[:filename]}.#{asset.file_extension}"
-            _generate_image_thumbnail_resize(name, config, image, asset, file_name)
-            asset.move_tmp_file_to_actual_directory(file_name, true)
+            _resize_image_thumbnail(name, config, image, asset, file_name)
           end
 
-          def _generate_image_thumbnail_resize(name, config, image, asset, file_name)
+          def _resize_image_thumbnail(name, config, image, asset, file_name)
+            aurgments_str = (config[:grayscale] == true ?  "-colorspace Gray" : "" )
+            resize_str = config[:geometry]
+
+            #fixed size thumbnail
             if config[:geometry].include?("#")
-              _prepare_resize_aurguments_for_fixed_size(config, image)
-            else
-              image.resize config[:geometry]
-              image.arguments << "-colorspace Gray" if config[:grayscale] && config[:grayscale] == true
+              resize_str = suggested_measures(image, config[:geometry])
+              aurgments_str << " -gravity Center  -crop #{config[:geometry].delete("#")}+0+0 +repage"
             end
-            image.save File.join(asset.tmp_directory, file_name)
-          end
-
-          def _prepare_resize_aurguments_for_fixed_size(config, image)
-            begin
-              image.resize(suggested_measures(image, config[:geometry]))
-              image.arguments << " -gravity Center  -crop #{config[:geometry].delete("#")}+0+0 +repage #{config[:grayscale] && config[:grayscale] == true ? "-colorspace Gray":""}"
-            rescue => e
-              puts e
-            end
+            _resize_and_save(asset, image, resize_str, aurgments_str, file_name)
           end
 
           def read_image_file(asset)
@@ -126,6 +112,13 @@ module Gluttonberg
               image = QuickMagick::Image.read(asset.tmp_location_on_disk).first
             end
             image
+          end
+
+          def _resize_and_save(asset, image, resize_str, aurgments_str, file_name)
+            image.resize resize_str unless resize_str.blank?
+            image.arguments << aurgments_str unless aurgments_str.blank?
+            image.save File.join(asset.tmp_directory, file_name)
+            asset.move_tmp_file_to_actual_directory(file_name , true)
           end
       end
     end
