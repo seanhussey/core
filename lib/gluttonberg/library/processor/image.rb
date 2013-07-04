@@ -17,12 +17,11 @@ module Gluttonberg
         # if the uploaded image exceeds the specified maximum, in which case it will resize it down.
         def generate_thumb_and_proper_resolution
           generate_proper_resolution
-          generate_image_thumb
+          generate_image_thumbnails
         end
 
         def suggested_measures(object , required_geometry)
-          required_geometry = required_geometry.delete("#")
-          required_geometry_tokens = required_geometry.split("x")
+          required_geometry_tokens = required_geometry.delete("#").split("x")
           actual_width = object.width.to_i
           actual_height = object.height.to_i
           required_width = required_geometry_tokens.first.to_i
@@ -73,37 +72,19 @@ module Gluttonberg
         end
 
         # Create thumbnailed versions of image attachements.
-        # TODO: generate thumbnails with the correct extension
-        def generate_image_thumb
+        def generate_image_thumbnails
           asset.class.sizes.each_pair do |name, config|
-            asset_thumb = asset.asset_thumbnails.find(:first , :conditions => {:thumbnail_type => name.to_s, :user_generated => true })
-            if asset_thumb.blank?
-              begin
-                image = QuickMagick::Image.read(asset.tmp_original_file_on_disk).first
-              rescue
-                image = QuickMagick::Image.read(asset.tmp_location_on_disk).first
-              end
-
-              file_name = "#{config[:filename]}.#{asset.file_extension}"
-
-              if config[:geometry].include?("#")
-                begin
-                  image.resize(suggested_measures(image, config[:geometry]))
-                  image.arguments << " -gravity Center  -crop #{config[:geometry].delete("#")}+0+0 +repage #{config[:grayscale] && config[:grayscale] == true ? "-colorspace Gray":""}"
-                rescue => e
-                  puts e
-                end
-              else
-                image.resize config[:geometry]
-                image.arguments << "-colorspace Gray" if config[:grayscale] && config[:grayscale] == true
-              end
-              image.save File.join(asset.tmp_directory, file_name)
-              asset.move_tmp_file_to_actual_directory(file_name, true)
-            end # asset_thumb.blank?
+            asset_thumb = asset.asset_thumbnails.where({
+              :thumbnail_type => name.to_s,
+              :user_generated => true
+            }).first
+            _generate_image_thumbnail(name, config) if asset_thumb.blank?
           end # sizes loop
 
           asset.update_attribute(:custom_thumbnail , true)
         end
+
+
 
         def generate_proper_resolution
           asset.make_backup
@@ -126,6 +107,33 @@ module Gluttonberg
           audio.destroy unless audio.blank?
         end
 
+        private
+          def _generate_image_thumbnail(name, config)
+            begin
+              image = QuickMagick::Image.read(asset.tmp_original_file_on_disk).first
+            rescue
+              image = QuickMagick::Image.read(asset.tmp_location_on_disk).first
+            end
+
+            file_name = "#{config[:filename]}.#{asset.file_extension}"
+            _generate_image_thumbnail_resize(name, config, image, asset, file_name)
+            asset.move_tmp_file_to_actual_directory(file_name, true)
+          end
+
+          def _generate_image_thumbnail_resize(name, config, image, asset, file_name)
+            if config[:geometry].include?("#")
+              begin
+                image.resize(suggested_measures(image, config[:geometry]))
+                image.arguments << " -gravity Center  -crop #{config[:geometry].delete("#")}+0+0 +repage #{config[:grayscale] && config[:grayscale] == true ? "-colorspace Gray":""}"
+              rescue => e
+                puts e
+              end
+            else
+              image.resize config[:geometry]
+              image.arguments << "-colorspace Gray" if config[:grayscale] && config[:grayscale] == true
+            end
+            image.save File.join(asset.tmp_directory, file_name)
+          end
 
 
       end
