@@ -35,17 +35,13 @@ module Gluttonberg
         section_name = section_name.to_sym
         load_localization
         content = localized_contents.pluck {|c| c.section[:name] == section_name}
-        case content.class.name
+        prepared_content = case content.class.name
           when "Gluttonberg::ImageContent"
-            prepared_content = if opts[:url_for].blank?
-              content.asset.url
-            else
-              content.asset.url_for(opts[:url_for].to_sym)
-            end
+            content.asset.url_for opts[:url_for]
           when "Gluttonberg::HtmlContent"
-            prepared_content = content.current_localization.text.html_safe
+            content.current_localization.text.html_safe
           when "Gluttonberg::PlainTextContent"
-            prepared_content = content.current_localization.text
+            content.current_localization.text
         end
       rescue
       end
