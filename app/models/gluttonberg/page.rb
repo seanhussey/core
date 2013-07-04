@@ -31,26 +31,25 @@ module Gluttonberg
 
     def easy_contents(section_name, opts = {})
       begin
+        prepared_content = nil
         section_name = section_name.to_sym
         load_localization
         content = localized_contents.pluck {|c| c.section[:name] == section_name}
         case content.class.name
           when "Gluttonberg::ImageContent"
-            if opts[:url_for].blank?
+            prepared_content = if opts[:url_for].blank?
               content.asset.url
             else
               content.asset.url_for(opts[:url_for].to_sym)
             end
           when "Gluttonberg::HtmlContent"
-            content.current_localization.text.html_safe
+            prepared_content = content.current_localization.text.html_safe
           when "Gluttonberg::PlainTextContent"
-            content.current_localization.text
-          else
-            nil
+            prepared_content = content.current_localization.text
         end
       rescue
-        nil
       end
+      prepared_content
     end
 
     # A custom finder used to find a page + locale combination which most
@@ -106,6 +105,7 @@ module Gluttonberg
     def redirect_required?
       self.description.redirect?
     end
+
     def redirect_url
       self.description.redirect_url(self,{})
     end
