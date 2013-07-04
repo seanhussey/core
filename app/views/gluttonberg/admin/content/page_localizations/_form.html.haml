@@ -15,7 +15,7 @@
               %span.caret
             %ul.dropdown-menu
               - for locale in Gluttonberg::Locale.all
-                - localization = Gluttonberg::PageLocalization.find(:first , :conditions => { :page_id => @page.id , :locale_id => locale.id } )
+                - localization = Gluttonberg::PageLocalization.where(:page_id => @page.id , :locale_id => locale.id).first
                 %li= link_to("Edit #{locale.name} Content", edit_admin_page_page_localization_path( :page_id => @page.id, :id => localization.id), :class => "")
         - unless @page_localization.contents.blank?
           = version_listing(@page_localization.contents.first.versions , @version )
