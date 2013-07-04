@@ -70,6 +70,10 @@ module Gluttonberg
           ensure_type('V-Card Document (vcf)', 'text/x-vcard', AssetCategory.document_category)
           ensure_type('Apple Macintosh Document (hqx)', 'application/mac-binhex40', AssetCategory.document_category)
           ensure_type('Adobe Acrobat Document (pdf)', 'application/pdf', AssetCategory.document_category)
+          self.buid_microsoft_office_types
+        end
+
+        def self.buid_microsoft_office_types
           ensure_type('Microsoft Word Document (doc,dot,docx)', 'application/msword application/word', AssetCategory.document_category)
           ensure_type('Microsoft Powerpoint Document (ppt,pps,pot,pptx)', 'application/vnd.ms-powerpoint application/powerpoint', AssetCategory.document_category)
           ensure_type('Microsoft Excel Document (xls,xlt,xlsx)', 'application/vnd.ms-excel application/excel', AssetCategory.document_category)
