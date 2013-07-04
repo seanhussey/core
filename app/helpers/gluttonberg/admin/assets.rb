@@ -97,7 +97,21 @@ module Gluttonberg
 
       def asset_panel(assets, name_or_id , type )
         render :partial => "/gluttonberg/admin/shared/asset_panel" , :locals => {:assets => assets , :name_or_id => name_or_id , :type => type} , :formats => [:html]
-       end
+      end
+
+      def backend_logo(default_logo_image_path , html_opts={}, thumbnail_type = :backend_logo)
+        backend_logo = Gluttonberg::Setting.get_setting("backend_logo")
+        if !backend_logo.blank? && backend_logo.to_i > 0
+          asset = Asset.where(:id => backend_logo).first
+          unless asset.blank?
+            path = thumbnail_type.blank? ? asset.url : asset.url_for(thumbnail_type)
+            content_tag(:img , "" , html_opts.merge( :alt => asset.name , :src => path ) )
+          else
+            image_tag(default_logo_image_path)
+          end
+        end
+      end
+
     end
   end #Assets
 end

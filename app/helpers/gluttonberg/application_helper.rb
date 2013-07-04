@@ -9,15 +9,16 @@ module Gluttonberg
     include Gluttonberg::DragTree::ActionView::Helpers
 
     def current_localization_slug
-       if @locale
-         @locale.slug
-       else
-         Gluttonberg::Locale.first_default.slug
-       end
+      if @locale
+       @locale.slug
+      else
+       Gluttonberg::Locale.first_default.slug
+      end
     end
 
-    def localized_text(english , chineese)
-      (current_localization_slug == "cn" ? chineese : english )
+    def current_domain
+      domain = "#{request.protocol}#{request.host_with_port}/"
+      domain.strip
     end
   end
 end

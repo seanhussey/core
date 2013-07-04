@@ -26,17 +26,6 @@ module Gluttonberg
         link_to(name, url + "?" + route_opts.to_param , opts)
       end
 
-      # If it's passed a label this method will return a fieldset, otherwise it
-      # will just return the contents wrapped in a block.
-      def block(label = nil, opts = {}, &blk)
-        if label
-          field_set_tag(label) do
-            content_tag(:fieldset, opts, &blk)
-          end
-        else
-          content_tag(:fieldset, opts, &blk)
-        end
-      end
 
       # Writes out a nicely styled subnav with an entry for each of the
       # specified links.
@@ -90,12 +79,8 @@ module Gluttonberg
           from tags inner join taggings on tags.id = taggings.tag_id
           where context = '#{tag_type}'
         })
-        output = ""
-        @themes.each do |theme|
-          output << "," unless output.blank?
-          output << theme.name
-        end
-        output
+        @themes = @themes.collect{|theme| theme.name}
+        @themes.joins(",")
       end
 
       def date_format(date_time)
@@ -103,19 +88,6 @@ module Gluttonberg
           date_time.strftime("%d/%m/%Y")
         else
           time_ago_in_words(date_time)
-        end
-      end
-
-      def backend_logo(default_logo_image_path , html_opts={}, thumbnail_type = :backend_logo)
-        backend_logo = Gluttonberg::Setting.get_setting("backend_logo")
-        if !backend_logo.blank? && backend_logo.to_i > 0
-          asset = Asset.where(:id => backend_logo).first
-          unless asset.blank?
-            path = thumbnail_type.blank? ? asset.url : asset.url_for(thumbnail_type)
-            content_tag(:img , "" , html_opts.merge( :alt => asset.name , :src => path ) )
-          else
-            image_tag(default_logo_image_path)
-          end
         end
       end
 
@@ -129,11 +101,6 @@ module Gluttonberg
 
       def slug_donotmodify_val
         action_name == "edit"  || action_name == "update"
-      end
-
-      def current_domain
-        domain = "#{request.protocol}#{request.host_with_port}/"
-        domain.strip
       end
 
     end # Admin
