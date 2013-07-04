@@ -100,21 +100,10 @@ module Gluttonberg
     # default.
     def self.find_by_previous_path(path, locale = nil , domain_name=nil)
       path = path.match(/^\/(\S+)/)
-      if( !locale.blank? && !path.blank?)
+      locale = Gluttonberg::Locale.first_default if locale.blank?
+      unless path.blank?
         path = path[1]
-        page = joins(:localizations).where("locale_id = ? AND gb_page_localizations.previous_path LIKE ? ", locale.id, path).first
-        unless page.blank?
-          page.current_localization = page.localizations.where("locale_id = ? AND previous_path LIKE ? ", locale.id, path).first
-        end
-        page
-      elsif(!path.blank?) # default locale
-         path = path[1]
-         locale = Gluttonberg::Locale.first_default
-         page = joins(:localizations).where("locale_id = ? AND gb_page_localizations.previous_path LIKE ? ", locale.id, path).first
-         unless page.blank?
-           page.current_localization = page.localizations.where("locale_id = ? AND previous_path LIKE ? ", locale.id, path).first
-         end
-         page
+        joins(:localizations).where("locale_id = ? AND ( gb_page_localizations.previous_path LIKE ?  OR previous_path LIKE ? ) ", locale.id, path, path).first
       end
     end
 
