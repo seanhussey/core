@@ -10,7 +10,9 @@ module Gluttonberg
     has_and_belongs_to_many :groups, :class_name => "Group" , :join_table => "gb_groups_pages"
 
     attr_protected :user_id , :state , :published_at
-    attr_accessible :parent_id, :parent, :position, :name, :navigation_label, :slug, :description_name, :hide_in_nav, :group_ids, :home
+    attr_accessible :parent_id, :parent, :position, :name
+    attr_accessible :navigation_label, :slug, :description_name
+    attr_accessible :hide_in_nav, :group_ids, :home
 
     # Generate the associations for the block/content classes
     Content::Block.classes.each do |klass|
@@ -143,41 +145,25 @@ module Gluttonberg
     # Returns the localized navigation label, or falls back to the page for a
     # the default.
     def nav_label
-      if current_localization.blank?
-        if navigation_label.blank?
-          name
-        else
-          navigation_label
-        end
+      if current_localization.navigation_label.blank?
+        current_localization.name
       else
-        if current_localization.navigation_label.blank?
-          current_localization.name
-        else
-          current_localization.navigation_label
-        end
+        current_localization.navigation_label
       end
     end
 
     # Returns the localized title for the page or a default
     def title
-      (current_localization.blank? || current_localization.name.blank?) ? self.name : current_localization.name
+      current_localization.name
     end
 
     # Delegates to the current_localization
     def path
-      unless current_localization.blank?
-        current_localization.path
-      else
-        localizations.first.path
-      end
+      current_localization.path
     end
 
     def public_path
-      unless current_localization.blank?
-        current_localization.public_path
-      else
-        localizations.first.public_path
-      end
+      current_localization.public_path
     end
 
 
@@ -205,22 +191,23 @@ module Gluttonberg
       end
     end
 
+    def load_default_localizations
+      Gluttonberg::Locale.first_default.id
+      self.current_localization = Gluttonberg::PageLocalization.where(:page_id => id , :locale_id => Gluttonberg::Locale.first_default.id).first
+    end
+
     def home=(state)
       write_attribute(:home, state)
       @home_updated = state
     end
 
     def self.home_page
-      Page.find( :first ,  :conditions => [ "home = ? " , true ] )
+      self.where(:home => true).first
     end
 
     def self.home_page_name
       home_temp = self.home_page
-      if home_temp.blank?
-        "Not Selected"
-      else
-        home_temp.name
-      end
+      home_temp.blank? ? "Not Selected" : home_temp.name
     end
 
     # if page type is not redirection.
@@ -250,27 +237,12 @@ module Gluttonberg
       groups.blank?
     end
 
-    def load_default_localizations
-      Gluttonberg::Locale.first_default.id
-      self.current_localization = Gluttonberg::PageLocalization.where(:page_id => id , :locale_id => Gluttonberg::Locale.first_default.id).first
-    end
-
-    def published?
-      if publishing_status == "Published"
-        return true
-      else
-        return false
-      end
-    end
-
     def duplicate
       PageDuplicate.duplicate(self)
     end
 
 
-
     private
-
 
       # Checks to see if this page has been set as the homepage. If it has, we
       # then go and
