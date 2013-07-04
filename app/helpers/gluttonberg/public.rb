@@ -57,24 +57,20 @@ module Gluttonberg
       # Returns the code for google analytics
       def google_analytics_js_tag
         code = Gluttonberg::Setting.get_setting("google_analytics")
-        output = ""
         unless code.blank?
-          output += "<script type='text/javascript'>\n"
-          output += "//<![CDATA[\n"
-          output += "var gaJsHost = ((\"https:\" == document.location.protocol) ? \"https://ssl.\" : \"http://www.\");\n"
-          output += "document.write(unescape(\"%3Cscript src='\" + gaJsHost + \"google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E\"));\n"
-          output += "//]]>\n"
-          output += "</script>\n"
-          output += "<script type='text/javascript'>\n"
-          output += "//<![CDATA[\n"
-          output += "try {\n"
-          output += "var pageTracker = _gat._getTracker(\"#{code}\");\n"
-          output += "pageTracker._trackPageview();\n"
-          output += "} catch(err) {}\n"
-          output += "//]]>\n"
-          output += "</script>\n"
+          javascript_tag do
+            %{
+              var _gaq = _gaq || [];
+              _gaq.push(['_setAccount', '#{code}']);
+              _gaq.push(['_trackPageview']);
+              (function() {
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+              })();
+            }.html_safe
+          end
         end
-        output.html_safe
       end
 
       def keywords_meta_tag
@@ -130,7 +126,7 @@ module Gluttonberg
               truncate_length -= str.length
             end
           else
-            # now stick the next tag with a  that matches the previous
+            # now stick the next tag with that matches the previous
             # open tag on the end of the result
             while previous_tags.length > 0
               previous_tag = previous_tags.pop()
@@ -185,91 +181,71 @@ module Gluttonberg
       end
 
       def page_title
-        wt = website_title
-        pt = ""
-        if !@page.blank?
-          pt = @page.current_localization.seo_title if @page.current_localization.respond_to?(:seo_title)
-          pt = @page.title if pt.blank?
-        elsif !@article.blank?
-          pt = @article.current_localization.seo_title if @article.current_localization.respond_to?(:seo_title)
-          pt = @article.current_localization.title if pt.blank?
-        elsif !@blog.blank?
-          pt = @blog.seo_title if @blog.respond_to?(:seo_title)
-          pt = @blog.name if pt.blank?
-        elsif !@custom_model_object.blank?
-          pt = @custom_model_object.seo_title if @custom_model_object.respond_to?(:seo_title)
-          pt = @custom_model_object.title_or_name? if pt.blank?
+        object = find_current_object_for_meta_tags
+        title_setting = website_title
+
+        page_title = if !object.blank? && object.respond_to?(:seo_title)
+          object.seo_title
         end
-        if pt.blank?
-          wt
-        elsif wt.blank?
-          pt
+
+        page_title = @page.title if page_title.blank? && !@page.blank?
+        page_title = @blog.name if page_title.blank? && !@blog.blank?
+        page_title = @custom_model_object.title_or_name? if page_title.blank? && !@custom_model_object.blank?
+
+        if page_title.blank?
+          title_setting
+        elsif title_setting.blank?
+          page_title
         else
-          "#{pt} | #{wt}"
+          "#{page_title} | #{title_setting}"
         end
       end
 
       def page_description
-        wd = Gluttonberg::Setting.get_setting("description")
-        pd = ""
-        if !@page.blank?
-          pd = @page.current_localization.seo_description if @page.current_localization.respond_to?(:seo_description)
-        elsif !@article.blank?
-          pd = @article.current_localization.seo_description if @article.current_localization.respond_to?(:seo_description)
-        elsif !@blog.blank?
-          pd = @blog.seo_description if @blog.respond_to?(:seo_description)
-        elsif !@custom_model_object.blank?
-          pd = @custom_model_object.seo_description if @custom_model_object.respond_to?(:seo_description)
+        object = find_current_object_for_meta_tags
+        description_settings = Gluttonberg::Setting.get_setting("description")
+        page_description = if !object.blank? && object.respond_to?(:seo_description)
+          object.seo_description
         end
 
-        if !pd.blank?
-          pd
-        else !wd.blank?
-          wd
+        if !page_description.blank?
+          page_description
+        else !description_settings.blank?
+          description_settings
         end
       end
 
       def page_keywords
-        wk = Gluttonberg::Setting.get_setting("keywords")
-        pk = ""
-        if !@page.blank?
-          pk = @page.current_localization.seo_keywords if @page.current_localization.respond_to?(:seo_keywords)
-        elsif !@article.blank?
-          pk = @article.current_localization.seo_keywords if @article.current_localization.respond_to?(:seo_keywords)
-        elsif !@blog.blank?
-          pk = @blog.seo_keywords if @blog.respond_to?(:seo_keywords)
-        elsif !@custom_model_object.blank?
-          pk = @custom_model_object.seo_keywords if @custom_model_object.respond_to?(:seo_keywords)
+        object = find_current_object_for_meta_tags
+        keywords_settings = Gluttonberg::Setting.get_setting("keywords")
+        page_keywords = if !object.blank? && object.respond_to?(:seo_keywords)
+          object.seo_keywords
         end
 
-        if !pk.blank?
-          pk
-        elsif !wk.blank?
-          wk
+        if !page_keywords.blank?
+          page_keywords
+        elsif !keywords_settings.blank?
+          keywords_settings
         end
       end
 
       def page_fb_icon_path
-        wk = Gluttonberg::Setting.get_setting("fb_icon")
-        pk = ""
-        if !@page.blank?
-          pk = @page.current_localization.fb_icon if @page.current_localization.respond_to?(:fb_icon)
-        elsif !@article.blank?
-          pk = @article.current_localization.fb_icon if @article.current_localization.respond_to?(:fb_icon)
-        elsif !@blog.blank?
-          pk = @blog.fb_icon if @blog.respond_to?(:fb_icon)
-        elsif !@custom_model_object.blank?
-          pk = @custom_model_object.fb_icon if @custom_model_object.respond_to?(:fb_icon)
+        path = nil
+        object = find_current_object_for_meta_tags
+        fb_icon_settings = Gluttonberg::Setting.get_setting("fb_icon")
+
+        page_fb_icon = if !object.blank? && object.respond_to?(:fb_icon)
+          object.fb_icon
         end
 
-        if !pk.blank?
-          asset = pk
-        else !wk.blank?
-          asset = Asset.find(:first , :conditions => { :id => wk } )
+        if !page_fb_icon.blank?
+          asset = page_fb_icon
+        elsif !fb_icon_settings.blank?
+          asset = Asset.where(:id => fb_icon_settings).first
         end
-        unless asset.blank?
-          path = asset.url
-        end
+
+        path = asset.url unless asset.blank?
+        path
       end
 
       def clean_public_query(string)
@@ -291,6 +267,20 @@ module Gluttonberg
           string
         end
       end
+
+      private
+
+        def find_current_object_for_meta_tags
+          if !@page.blank?
+            @page.current_localization
+          elsif !@article.blank?
+            @article.current_localization
+          elsif !@blog.blank?
+            @blog
+          elsif !@custom_model_object.blank?
+            @custom_model_object
+          end
+        end
 
 
     end # Public
