@@ -14,9 +14,9 @@ module Gluttonberg
         opts = {}
         route_opts = { :order => param , :order_type => "asc" }
         if param == params[:order] || (!params[:order] && param == 'date-added')
-          opts[:class] = "current"
+          opts[:class] = "current #{route_opts[:order_type]}"
+          #reverse
           route_opts[:order_type] = (params[:order_type] == "asc" ? "desc" : "asc" )
-          opts[:class] << (route_opts[:order_type] == "asc" ? " desc" : " asc" )
         end
         link_to(name, url + "?" + route_opts.to_param , opts)
       end
