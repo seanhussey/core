@@ -62,13 +62,21 @@ module Gluttonberg
       if( !locale.blank? && !path.blank?)
         path = path[1]
         page = joins(:localizations).where("locale_id = ? AND ( gb_page_localizations.path LIKE ? OR path LIKE ? ) ", locale.id, path, path).first
+        page.load_localization(locale) unless page.blank?
       elsif path.blank? #looking for home
-        unless Rails.configuration.multisite.blank?
-          page_desc = PageDescriptionfind_home_page_description_for_domain?(domain_name)
-          page = joins(:localizations).where("locale_id = ? AND description_name = ?", locale.id, page_desc.name).first unless page_desc.blank?
-        end
-        page = joins(:localizations).where("locale_id = ? AND home = ?", locale.id, true).first if page.blank?
+        page = self.find_home(locale, domain_name)
       end
+      page
+    end
+
+    # find home page
+    # if multisite then pass domain_name to find right home page
+    def self.find_home(locale, domain_name=nil)
+      unless Rails.configuration.multisite.blank?
+        page_desc = PageDescriptionfind_home_page_description_for_domain?(domain_name)
+        page = joins(:localizations).where("locale_id = ? AND description_name = ?", locale.id, page_desc.name).first unless page_desc.blank?
+      end
+      page = joins(:localizations).where("locale_id = ? AND home = ?", locale.id, true).first if page.blank?
       page.load_localization(locale) unless page.blank?
       page
     end
