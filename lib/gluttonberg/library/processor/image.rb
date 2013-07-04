@@ -48,19 +48,12 @@ module Gluttonberg
         end
 
         def generate_cropped_image(x , y , w , h, image_type)
-          asset_thumb = asset.asset_thumbnails.find(:first , :conditions => {:thumbnail_type => image_type.to_s })
-          if asset_thumb.blank?
-            asset_thumb = asset.asset_thumbnails.create({:thumbnail_type => image_type.to_s , :user_generated => true })
-          else
-            asset_thumb.update_attributes(:user_generated => true)
-          end
+          asset_thumb = asset.asset_thumbnails.find_or_initialize_by_thumbnail_type(image_type.to_s)
+          asset_thumb.user_generated = true
+          asset_thumb.save
 
           file_name = "#{asset.class.sizes[image_type.to_sym][:filename]}.#{asset.file_extension}"
-          begin
-            image = QuickMagick::Image.read(asset.tmp_original_file_on_disk).first
-          rescue
-            image = QuickMagick::Image.read(asset.tmp_original_file_on_disk).first
-          end
+          image = read_image_file(asset)
           thumb_defined_width = asset.class.sizes[image_type.to_sym][:geometry].split('x').first#.to_i
           scaling_percent = (thumb_defined_width.to_i/(w.to_i*1.0))*100
           image.arguments << " -crop #{w}x#{h}+#{x}+#{y} +repage"
@@ -88,11 +81,7 @@ module Gluttonberg
 
         def generate_proper_resolution
           asset.make_backup
-          begin
-            image = QuickMagick::Image.read(asset.tmp_original_file_on_disk).first
-          rescue => e
-            image = QuickMagick::Image.read(asset.tmp_location_on_disk).first
-          end
+          image = read_image_file(asset)
 
           actual_width = image.width.to_i
           actual_height = image.height.to_i
@@ -109,11 +98,7 @@ module Gluttonberg
 
         private
           def _generate_image_thumbnail(name, config)
-            begin
-              image = QuickMagick::Image.read(asset.tmp_original_file_on_disk).first
-            rescue
-              image = QuickMagick::Image.read(asset.tmp_location_on_disk).first
-            end
+            image = read_image_file(asset)
 
             file_name = "#{config[:filename]}.#{asset.file_extension}"
             _generate_image_thumbnail_resize(name, config, image, asset, file_name)
@@ -133,6 +118,15 @@ module Gluttonberg
               image.arguments << "-colorspace Gray" if config[:grayscale] && config[:grayscale] == true
             end
             image.save File.join(asset.tmp_directory, file_name)
+          end
+
+          def read_image_file(asset)
+            begin
+              image = QuickMagick::Image.read(asset.tmp_original_file_on_disk).first
+            rescue => e
+              image = QuickMagick::Image.read(asset.tmp_location_on_disk).first
+            end
+            image
           end
 
 
