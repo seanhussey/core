@@ -107,7 +107,8 @@ module Gluttonberg
           @pseudo_image = pseudo_image
           if info_line
             @image_infoline = info_line.split
-            @image_infoline[0..1] = @image_infoline[0..1].join(' ') while @image_infoline.size > 1 && !@image_infoline[0].start_with?(image_filename)
+            process_info_line
+            #@image_infoline[0..1] = @image_infoline[0..1].join(' ') while @image_infoline.size > 1 && !@image_infoline[0].start_with?(image_filename)
           end
           @arguments = ""
         end
@@ -122,7 +123,8 @@ module Gluttonberg
           return nil if @pseudo_image
           unless @image_infoline
             @image_infoline = QuickMagick::Image::identify(command_line).split
-            @image_infoline[0..1] = @image_infoline[0..1].join(' ') while @image_infoline.size > 1 && !@image_infoline[0].start_with?(image_filename)
+            process_info_line
+            #@image_infoline[0..1] = @image_infoline[0..1].join(' ') while @image_infoline.size > 1 && !@image_infoline[0].start_with?(image_filename)
           end
           @image_infoline
         end
@@ -213,6 +215,11 @@ module Gluttonberg
         def display
           `display #{command_line}`
         end
+
+        private
+          def process_info_line
+            @image_infoline[0..1] = @image_infoline[0..1].join(' ') while @image_infoline.size > 1 && !@image_infoline[0].start_with?(image_filename)
+          end
       end
     end
   end # Assetlibrary
