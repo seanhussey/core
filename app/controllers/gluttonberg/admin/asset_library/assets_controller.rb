@@ -20,23 +20,19 @@ module Gluttonberg
 
         def search
           unless params[:asset_query].blank?
-            command = "like"
-            if ActiveRecord::Base.configurations[Rails.env]["adapter"] == "postgresql"
-              command = "ilike"
-            end
+            command = Gluttonberg.like_or_ilike
             query = clean_public_query(params[:asset_query])
             @search_assets = Asset.where(["name #{command} ? OR description LIKE ? ", "%#{query}%" , "%#{query}%" ] ).order("name ASC")
             respond_to do |format|
-              format.html{
-                page = params[:page].blank? ? 1 : params[:page].to_i
-                @search_assets = @search_assets.paginate(:per_page => 15 , :page => page )
-              }
-              format.json {
-
-              }
+              format.html do
+                @search_assets = @search_assets.paginate({
+                  :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"),
+                  :page => params[:page].blank? ? 1 : params[:page].to_i
+                })
+              end
+              format.json
             end
           end
-
         end
 
         # if filter param is provided then it will only show filtered type

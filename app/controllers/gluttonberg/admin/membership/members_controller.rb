@@ -13,11 +13,7 @@ module Gluttonberg
           @members = Member.order(get_order).includes(:groups)
           unless params[:query].blank?
             query = clean_public_query(params[:query])
-            command = "like"
-
-            if ActiveRecord::Base.configurations[Rails.env]["adapter"] == "postgresql"
-              command = "ilike"
-            end
+            command = Gluttonberg.like_or_ilike
             @members = @members.where(["first_name #{command} :query OR last_name #{command} :query OR email #{command} :query OR bio #{command} :query " , :query => "%#{query}%" ])
           end
           @members = @members.paginate(:page => params[:page] , :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items") )

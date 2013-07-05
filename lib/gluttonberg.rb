@@ -38,6 +38,16 @@ module Gluttonberg
     Engine.config.localize
   end
 
+  def self.dbms_name
+    if ActiveRecord::Base.configurations[Rails.env]
+      ActiveRecord::Base.configurations[Rails.env]["adapter"]
+    end
+  end
+
+  def self.like_or_ilike
+    Gluttonberg.dbms_name == "postgresql" ? "ilike" : "like"
+  end
+
   require 'jeditable-rails'
 end
 
