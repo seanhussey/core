@@ -162,6 +162,11 @@ module Gluttonberg
       end
     end
 
+    def self.search_assets(query)
+      command = Gluttonberg.like_or_ilike
+      self.where(["name #{command} ? OR description LIKE ? ", "%#{query}%" , "%#{query}%" ] ).order("name ASC")
+    end
+
   end
 
 

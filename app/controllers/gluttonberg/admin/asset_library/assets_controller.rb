@@ -20,9 +20,7 @@ module Gluttonberg
 
         def search
           unless params[:asset_query].blank?
-            command = Gluttonberg.like_or_ilike
-            query = clean_public_query(params[:asset_query])
-            @search_assets = Asset.where(["name #{command} ? OR description LIKE ? ", "%#{query}%" , "%#{query}%" ] ).order("name ASC")
+            @search_assets = Asset.search_assets(clean_public_query(params[:asset_query]))
             respond_to do |format|
               format.html do
                 @search_assets = @search_assets.paginate({
