@@ -25,7 +25,7 @@ module Gluttonberg
               format.html do
                 @search_assets = @search_assets.paginate({
                   :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"),
-                  :page => params[:page].blank? ? 1 : params[:page].to_i
+                  :page => params[:page]
                 })
               end
               format.json
@@ -80,8 +80,7 @@ module Gluttonberg
               @assets = req_category.assets.includes(:asset_type)
             end
           end # category#all
-          page = params[:page].blank? ? 1 : params[:page].to_i
-          @assets = @assets.paginate( :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items") , :page => page ).order(get_order)
+          @assets = @assets.paginate( :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items") , :page => params[:page] ).order(get_order)
         end
 
 
