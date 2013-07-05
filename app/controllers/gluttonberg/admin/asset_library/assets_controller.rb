@@ -221,11 +221,17 @@ module Gluttonberg
             @asset.name = @asset.file_name.humanize
           end
           if @asset.save
+            json = {
+              "asset_id" => @asset.id,
+              "title" => @asset.name,
+              "category" => @asset.category,
+              "url" => @asset.url
+            }
             if @asset.category == "image"
-              render :text => { "asset_id" => @asset.id , "url" => @asset.thumb_small_url , "jwysiwyg_image" => @asset.url_for(:jwysiwyg_image) , "title" => @asset.name , "category" => @asset.category }.to_json.to_s
-            else
-              render :text => { "asset_id" => @asset.id , "url" => @asset.url , "jwysiwyg_image" => @asset.url_for(:jwysiwyg_image) , "title" => @asset.name , "category" => @asset.category }.to_json.to_s
+              json["url"] = @asset.thumb_small_url
+              json["jwysiwyg_image"] = @asset.url_for(:jwysiwyg_image)
             end
+            render :text  => json.to_json.to_s
           else
             prepare_to_edit
             render :new
