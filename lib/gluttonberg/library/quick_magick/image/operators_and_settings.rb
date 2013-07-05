@@ -52,22 +52,6 @@ module Gluttonberg
           SPECIAL_COMMANDS =
             %w{floodfill antialias draw}
 
-          IMAGE_OPERATORS_METHODS.each do |method|
-            if WITH_EQUAL_METHODS.include?(method)
-              define_method((method+'=').to_sym) do |arg|
-                append_to_operators(method, arg )
-              end
-            elsif WITH_GEOMETRY_METHODS.include?(method)
-              define_method((method).to_sym) do |*args|
-                append_to_operators(method, QuickMagick::geometry(*args) )
-              end
-            else
-              define_method(method.to_sym) do |*args|
-                append_to_operators(method, args.join(" "))
-              end
-            end
-          end
-
           # Image settings supported by ImageMagick
           IMAGE_SETTINGS_METHODS = %w{
             adjoin affine alpha authenticate attenuate background bias black-point-compensation
@@ -81,7 +65,7 @@ module Gluttonberg
             density page sampling-factor size tile-offset
           }
 
-          IMAGE_SETTINGS_METHODS.each do |method|
+          (IMAGE_OPERATORS_METHODS + IMAGE_SETTINGS_METHODS).flatten.each do |method|
             if WITH_EQUAL_METHODS.include?(method)
               define_method((method+'=').to_sym) do |arg|
                 append_to_settings(method, arg)
