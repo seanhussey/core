@@ -22,19 +22,19 @@ module Gluttonberg
           # of integer coordinates, x,y.
           # (As it involves only a single pixel, a point primitive is not affected by -stroke or -strokewidth.)
           def draw_point(x, y, options={})
-            append_to_operators("draw", "#{options_to_str(options)} point #{x},#{y}")
+            _draw(options, "point #{x},#{y}")
           end
 
           # draws a line between the given two points
           # A line primitive requires a start point and end point.
           def draw_line(x0, y0, x1, y1, options={})
-            append_to_operators("draw", "#{options_to_str(options)} line #{x0},#{y0} #{x1},#{y1}")
+            _draw(options, "line #{x0},#{y0} #{x1},#{y1}")
           end
 
           # draw a rectangle with the given two corners
           # A rectangle primitive is specified by the pair of points at the upper left and lower right corners.
           def draw_rectangle(x0, y0, x1, y1, options={})
-            append_to_operators("draw", "#{options_to_str(options)} rectangle #{x0},#{y0} #{x1},#{y1}")
+            _draw(options, "rectangle #{x0},#{y0} #{x1},#{y1}")
           end
 
           # draw a rounded rectangle with the given two corners
@@ -42,7 +42,7 @@ module Gluttonberg
           # A roundRectangle primitive takes the same corner points as a rectangle
           # followed by the width and height of the rounded corners to be removed.
           def draw_round_rectangle(x0, y0, x1, y1, wc, hc, options={})
-            append_to_operators("draw", "#{options_to_str(options)} roundRectangle #{x0},#{y0} #{x1},#{y1} #{wc},#{hc}")
+            _draw(options, "roundRectangle #{x0},#{y0} #{x1},#{y1} #{wc},#{hc}")
           end
 
           # The arc primitive is used to inscribe an elliptical segment in to a given rectangle.
@@ -50,19 +50,19 @@ module Gluttonberg
           # the start and end angles of the arc of the segment segment (e.g. 130,30 200,100 45,90).
           # The start and end points produced are then joined with a line segment and the resulting segment of an ellipse is filled.
           def draw_arc(x0, y0, x1, y1, a0, a1, options={})
-            append_to_operators("draw", "#{options_to_str(options)} arc #{x0},#{y0} #{x1},#{y1} #{a0},#{a1}")
+            _draw(options, "arc #{x0},#{y0} #{x1},#{y1} #{a0},#{a1}")
           end
 
           # Use ellipse to draw a partial (or whole) ellipse.
           # Give the center point, the horizontal and vertical "radii"
           # (the semi-axes of the ellipse) and start and end angles in degrees (e.g. 100,100 100,150 0,360).
           def draw_ellipse(x0, y0, rx, ry, a0, a1, options={})
-            append_to_operators("draw", "#{options_to_str(options)} ellipse #{x0},#{y0} #{rx},#{ry} #{a0},#{a1}")
+            _draw(options, "ellipse #{x0},#{y0} #{rx},#{ry} #{a0},#{a1}")
           end
 
           # The circle primitive makes a disk (filled) or circle (unfilled). Give the center and any point on the perimeter (boundary).
           def draw_circle(x0, y0, x1, y1, options={})
-            append_to_operators("draw", "#{options_to_str(options)} circle #{x0},#{y0} #{x1},#{y1}")
+            _draw(options, "circle #{x0},#{y0} #{x1},#{y1}")
           end
 
           # The polyline primitive requires three or more points to define their perimeters.
@@ -71,7 +71,7 @@ module Gluttonberg
           #  points - A single array with each pair forming a coordinate in the form (x, y).
           # e.g. [0,0,100,100,100,0] will draw a polyline between points (0,0)-(100,100)-(100,0)
           def draw_polyline(points, options={})
-            append_to_operators("draw", "#{options_to_str(options)} polyline #{points_to_str(points)}")
+            _draw(options, "polyline #{points_to_str(points)}")
           end
 
           # The polygon primitive requires three or more points to define their perimeters.
@@ -80,7 +80,7 @@ module Gluttonberg
           #  points - A single array with each pair forming a coordinate in the form (x, y).
           # e.g. [0,0,100,100,100,0] will draw a polygon between points (0,0)-(100,100)-(100,0)
           def draw_polygon(points, options={})
-            append_to_operators("draw", "#{options_to_str(options)} polygon #{points_to_str(points)}")
+            _draw(options, "polygon #{points_to_str(points)}")
           end
 
           # The Bezier primitive creates a spline curve and requires three or points to define its shape.
@@ -95,7 +95,7 @@ module Gluttonberg
           # In order to draw complex curves, it is highly recommended either to use the path primitive
           # or to draw multiple four-point bezier segments with the start and end knots of each successive segment repeated.
           def draw_bezier(points, options={})
-            append_to_operators("draw", "#{options_to_str(options)} bezier #{points_to_str(points)}")
+            _draw(options, "bezier #{points_to_str(points)}")
           end
 
           # A path represents an outline of an object, defined in terms of moveto
@@ -106,7 +106,7 @@ module Gluttonberg
           # one or more line or curve operations) are possible to allow effects such as donut holes in objects.
           # (See http://www.w3.org/TR/SVG/paths.html)
           def draw_path(path_spec, options={})
-            append_to_operators("draw", "#{options_to_str(options)} path #{path_spec}")
+            _draw(options, "path #{path_spec}")
           end
 
           # Use image to composite an image with another image. Follow the image keyword
@@ -114,13 +114,18 @@ module Gluttonberg
           # You can use 0,0 for the image size, which means to use the actual dimensions found in the image header.
           # Otherwise, it is scaled to the given dimensions. See -compose for a description of the composite operators.
           def draw_image(operator, x0, y0, w, h, image_filename, options={})
-            append_to_operators("draw", "#{options_to_str(options)} image #{operator} #{x0},#{y0} #{w},#{h} \"#{image_filename}\"")
+            _draw(options, "image #{operator} #{x0},#{y0} #{w},#{h} \"#{image_filename}\"")
           end
 
           # Use text to annotate an image with text. Follow the text coordinates with a string.
           def draw_text(x0, y0, text, options={})
-            append_to_operators("draw", "#{options_to_str(options)} text #{x0},#{y0} '#{text}'")
+            _draw(options, "text #{x0},#{y0} '#{text}'")
           end
+
+          private
+            def _draw(options, draw_command_postfix)
+              append_to_operators("draw", "#{options_to_str(options)} #{draw_command_postfix}")
+            end
         end #InstanceMethods
       end #Draw
     end
