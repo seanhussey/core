@@ -25,6 +25,7 @@ module Gluttonberg
   require 'gluttonberg/middleware'
   require 'gluttonberg/can_flag'
   require 'gluttonberg/record_history'
+  require 'gluttonberg/gb_file'
 
   # These should likely move into one of the initializers inside of the
   # engine config. This will ensure they only run after Rails and the app
