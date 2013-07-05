@@ -78,9 +78,7 @@ module Gluttonberg
           image = read_image_file(asset)
           asset.update_attributes( :width => image.width.to_i, :height => image.height.to_i)
           _resize_and_save(asset, image, asset.class.max_image_size, nil, asset.file_name)
-          # remove mp3 info if any image have.
-          # it may happen in the case of updating asset from mp3 to image
-          AudioAssetAttribute.where(:asset_id => asset.id).delete_all
+          clean_audio_attributes_for_images(asset)
         end
 
         private
@@ -124,6 +122,12 @@ module Gluttonberg
             image.arguments << aurgments_str unless aurgments_str.blank?
             image.save File.join(asset.tmp_directory, file_name)
             asset.move_tmp_file_to_actual_directory(file_name , true)
+          end
+
+          def clean_audio_attributes_for_images(asset)
+            # remove mp3 info if any image have.
+            # it may happen in the case of updating asset from mp3 to image
+            AudioAssetAttribute.where(:asset_id => asset.id).delete_all
           end
       end
     end
