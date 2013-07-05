@@ -1,4 +1,8 @@
 require "tempfile"
+image = Pathname(__FILE__).dirname.expand_path
+require File.join(image, "image", "draw")
+require File.join(image, "image", "operators_and_settings")
+require File.join(image, "image", "serialization")
 
 module Gluttonberg
   module Library
@@ -6,30 +10,11 @@ module Gluttonberg
     module QuickMagick
 
       class Image
+        include Draw
+        include OperatorsAndSettings
+        include Serialization
+
         class << self
-
-          # create an array of images from the given blob data
-          def from_blob(blob, &proc)
-            file = Tempfile.new(QuickMagick::random_string)
-            file.binmode
-            file.write(blob)
-            file.close
-            self.read(file.path, &proc)
-          end
-
-          # create an array of images from the given file
-          def read(filename, &proc)
-            info = identify(%Q<"#{filename}">)
-            info_lines = info.split(/[\r\n]/)
-            images = []
-            info_lines.each_with_index do |info_line, i|
-              images << Image.new("#{filename}", i, info_line)
-            end
-            images.each(&proc) if block_given?
-            return images
-          end
-
-          alias open read
 
           # Creates a new image initially set to gradient
           # Default gradient is linear gradient from black to white
@@ -68,7 +53,7 @@ module Gluttonberg
             QuickMagick.exec3 "identify #{QuickMagick.c filename}"
           end
 
-        end
+        end # self
 
         # append the given option, value pair to the settings of the current image
         def append_to_settings(arg, value=nil)
@@ -81,19 +66,6 @@ module Gluttonberg
         def append_basic(arg)
           @arguments << arg << ' '
         end
-
-        # Image settings supported by ImageMagick
-        IMAGE_SETTINGS_METHODS = %w{
-          adjoin affine alpha authenticate attenuate background bias black-point-compensation
-          blue-primary bordercolor caption channel colors colorspace comment compose compress define
-          delay depth display dispose dither encoding endian family fill filter font format fuzz gravity
-          green-primary intent interlace interpolate interword-spacing kerning label limit loop mask
-          mattecolor monitor orient ping pointsize preview quality quiet red-primary regard-warnings
-          remap respect-parentheses scene seed stretch stroke strokewidth style taint texture treedepth
-          transparent-color undercolor units verbose view virtual-pixel weight white-point
-
-          density page sampling-factor size tile-offset
-        }
 
         # append the given option, value pair to the args for the current image
         def append_to_operators(arg, value=nil)
@@ -112,77 +84,6 @@ module Gluttonberg
         def revert!
           raise QuickMagick::QuickMagickError, "Cannot revert a pseudo image" if @pseudo_image
           @arguments = ""
-        end
-
-        # Image operators supported by ImageMagick
-        IMAGE_OPERATORS_METHODS = %w{
-          alpha auto-orient bench black-threshold bordercolor charcoal clip clip-mask clip-path colorize
-          contrast convolve cycle decipher deskew despeckle distort edge encipher emboss enhance equalize
-          evaluate flip flop function gamma identify implode layers level level-colors median modulate monochrome
-          negate noise normalize opaque ordered-dither NxN paint polaroid posterize print profile quantize
-          radial-blur Raise random-threshold recolor render rotate segment sepia-tone set shade solarize
-          sparse-color spread strip swirl threshold tile tint transform transparent transpose transverse trim
-          type unique-colors white-threshold
-
-          adaptive-blur adaptive-resize adaptive-sharpen annotate blur border chop contrast-stretch extent
-          extract frame gaussian-blur geometry lat linear-stretch liquid-rescale motion-blur region repage
-          resample resize roll sample scale selective-blur shadow sharpen shave shear sigmoidal-contrast
-          sketch splice thumbnail unsharp vignette wave
-
-          append average clut coalesce combine composite deconstruct flatten fx hald-clut morph mosaic process reverse separate write
-          crop
-          }
-
-        # methods that are called with (=)
-        WITH_EQUAL_METHODS =
-          %w{alpha background bias black-point-compensation blue-primary border bordercolor caption
-            cahnnel colors colorspace comment compose compress depth density encoding endian family fill filter
-            font format frame fuzz geometry gravity label mattecolor page pointsize quality stroke strokewidth
-            undercolor units weight
-            brodercolor transparent type size}
-
-        # methods that takes geometry options
-        WITH_GEOMETRY_METHODS =
-          %w{density page sampling-factor size tile-offset adaptive-blur adaptive-resize adaptive-sharpen
-            annotate blur border chop contrast-stretch extent extract frame gaussian-blur
-            geometry lat linear-stretch liquid-rescale motion-blur region repage resample resize roll
-            sample scale selective-blur shadow sharpen shave shear sigmoidal-contrast sketch
-            splice thumbnail unsharp vignette wave crop}
-
-        # Methods that need special treatment. This array is used just to keep track of them.
-        SPECIAL_COMMANDS =
-          %w{floodfill antialias draw}
-
-        IMAGE_SETTINGS_METHODS.each do |method|
-          if WITH_EQUAL_METHODS.include?(method)
-            define_method((method+'=').to_sym) do |arg|
-              append_to_settings(method, arg)
-            end
-          elsif WITH_GEOMETRY_METHODS.include?(method)
-            define_method((method).to_sym) do |*args|
-              append_to_settings(method, QuickMagick::geometry(*args) )
-            end
-          else
-            define_method(method.to_sym) do |*args|
-              append_to_settings(method, args.join(" "))
-            end
-          end
-        end
-
-        IMAGE_OPERATORS_METHODS.each do |method|
-          if WITH_EQUAL_METHODS.include?(method)
-            define_method((method+'=').to_sym) do |arg|
-              append_to_operators(method, arg )
-            end
-          elsif WITH_GEOMETRY_METHODS.include?(method)
-            define_method((method).to_sym) do |*args|
-              append_to_operators(method, QuickMagick::geometry(*args) )
-            end
-          else
-            define_method(method.to_sym) do |*args|
-              append_to_operators(method, args.join(" "))
-            end
-          end
         end
 
         # Fills a rectangle with a solid color
@@ -255,50 +156,6 @@ module Gluttonberg
             points_str << point.join(",") << " "
           end
           points_str
-        end
-
-        # saves the current image to the given filename
-        def save(output_filename)
-          result = QuickMagick.exec3 "convert #{command_line} #{QuickMagick.c output_filename} "#-quality 92"
-        	if @pseudo_image
-        		# since it's been saved, convert it to normal image (not pseudo)
-        		initialize(output_filename)
-    	    	revert!
-        	end
-          return result
-        end
-
-        alias write save
-        alias convert save
-
-        # saves the current image overwriting the original image file
-        def save!
-          raise QuickMagick::QuickMagickError, "Cannot mogrify a pseudo image" if @pseudo_image
-          result = QuickMagick.exec3 "mogrify #{command_line}"
-          # remove all operations to avoid duplicate operations
-          revert!
-          return result
-        end
-
-        alias write! save!
-        alias mogrify! save!
-
-        def to_blob
-        	tmp_file = Tempfile.new(QuickMagick::random_string)
-        	if command_line =~ /-format\s(\S+)\s/
-        		# use format set up by user
-        		blob_format = $1
-        	elsif !@pseudo_image
-        		# use original image format
-        		blob_format = self.format
-        	else
-    		  	# default format is jpg
-    		  	blob_format = 'jpg'
-        	end
-        	save "#{blob_format}:#{tmp_file.path}"
-        	blob = nil
-        	File.open(tmp_file.path, 'rb') { |f| blob = f.read}
-        	blob
         end
 
         def arguments
