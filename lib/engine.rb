@@ -13,6 +13,12 @@ module Gluttonberg
     config.flagged_content = false
     config.active_record.observers = ['gluttonberg/page_observer' , 'gluttonberg/page_localization_observer' , 'gluttonberg/locale_observer' ]
 
+    if Rails.version > "3.1"
+      initializer "Gluttonberg precompile hook", :group => :all do |app|
+        app.config.assets.precompile += ["*.js", "*.css"]
+      end
+    end
+
     config.thumbnails = {}
     config.max_image_size = "1600x1200>"
     config.encoding = "utf-8"

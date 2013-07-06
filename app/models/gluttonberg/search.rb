@@ -4,23 +4,23 @@ module Gluttonberg
   class Search
 
     # Iterate block/content classes to just load these constants before setting up association with their localization. This is kind of hack for lazyloading
-    Gluttonberg::Content::Block.classes.uniq.each do |klass|     
+    Gluttonberg::Content::Block.classes.uniq.each do |klass|
       Gluttonberg.const_get klass.name.demodulize
     end
 
     # if postgresql and their is not special search engine then index data using texticle for postgresql
-    if ActiveRecord::Base.configurations[Rails.env]["adapter"] == "postgresql"
+    if ActiveRecord::Base.configurations[Rails.env] && ActiveRecord::Base.configurations[Rails.env]["adapter"] == "postgresql"
       Rails.configuration.search_models.each do |model , columns|
         model =  eval(model)
         model.index do
           columns.each do |column|
-            send(column) 
+            send(column)
           end
-        end        
+        end
       end
-    end  
-    
-  
+    end
+
+
     # if search engine is provided the use its custom methods
     # otherwise use texticle for postgresql and like queries for mysql
     # opts = {
@@ -33,7 +33,7 @@ module Gluttonberg
       query= query.gsub(/[\\\!\*″′‟‛„‚”“”˝\(\)\;\:\.\@\&\=\+\$\,\/?\%\#\[\]]/, '')
       query = query.gsub(/'/, "\\\\'")
       query = query.gsub(/"/, "\\\"")
-            
+
       models = {}
       sources = opts[:sources]
       published_only = opts[:published_only].blank? ? true : opts[:published_only]
@@ -47,7 +47,7 @@ module Gluttonberg
           models[src] = Rails.configuration.search_models[src]
         end
       end
-      
+
       case self.dbms_name
         when "mysql"
           find_in_mysql(query, page_num , per_page , models , published_only)
@@ -55,10 +55,10 @@ module Gluttonberg
           find_in_postgresql(query, page_num , per_page, models , published_only)
       end
     end
-  
+
     def self.find_in_mysql(query, page_num , per_page , models , published_only)
       results = []
-      
+
       prepared_query = "'%#{query}%'"
       models.each do |model , columns|
         conditions = ""
@@ -69,7 +69,7 @@ module Gluttonberg
         model =  eval(model) #convert class name from sting to a constant
         if published_only == true && model.respond_to?(:published)
           results << model.published.find(:all , :conditions => conditions )
-        else  
+        else
           results << model.find(:all , :conditions => conditions )
         end
       end
@@ -77,14 +77,14 @@ module Gluttonberg
       results.uniq!
       replace_contents_with_page(results).paginate(:per_page => per_page , :page => page_num )
     end
-  
+
     def self.find_in_postgresql(query, page_num , per_page , models , published_only)
       results = []
       models.each do |model , columns|
         model =  eval(model) #convert class name from sting to a constant
         if published_only == true && model.respond_to?(:published)
           results << model.published.search(query)
-        else  
+        else
           results << model.search(query)
         end
       end
@@ -92,11 +92,11 @@ module Gluttonberg
       results.uniq!
       replace_contents_with_page(results).paginate(:per_page => per_page , :page => page_num )
     end
-  
-    
-    
-    private 
-      
+
+
+
+    private
+
       def self.dbms_name
         adapter_name = ActiveRecord::Base.configurations[Rails.env]["adapter"]
         if ["mysql2" , "mysql"].include?(adapter_name)
@@ -107,7 +107,7 @@ module Gluttonberg
           adapter_name.to_s
         end
       end
-      
+
       def self.replace_contents_with_page(results)
         # if it is localized or non locaized class then take return its parent page
         results.each_with_index do |result , index|
@@ -120,6 +120,6 @@ module Gluttonberg
 
         results.uniq
       end
-  
+
   end
-end  
+end
