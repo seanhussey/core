@@ -39,17 +39,12 @@ module Gluttonberg
           @assets = Asset.order("created_at DESC").includes(:asset_type).limit(20)
 
           @category_filter = ( params[:filter].blank? ? "all" : params[:filter] )
-          if @category_filter == "all"
-          else
+          unless @category_filter == "all"
             @category = AssetCategory.where(:name => @category_filter).first
             @assets = @assets.where({:asset_type_id => @category.asset_type_ids }) unless @category.blank? || @category.asset_type_ids.blank?
           end
 
-          if params["no_frame"]
-            render :partial => "browser_root"
-          else
-            render :layout => false
-          end
+          render(params["no_frame"] ? {:partial => "browser_root"} : {:layout => false})
         end
 
         def browser_collection
@@ -102,25 +97,21 @@ module Gluttonberg
 
         # create assets from zip
         def create_assets_in_bulk
-          @new_assets = []
-          if request.post?
-            # process new asset_collection and merge into existing collections
-            process_new_collection_and_merge(params)
-            @asset = Asset.new(params[:asset])
-            if @asset.valid?
-              @new_assets = AssetBulkImport.open_zip_file_and_make_assets(params[:asset], current_user)
-              if @new_assets.blank?
-                flash[:error] = "The zip file you uploaded does not have any valid files."
-                prepare_to_edit
-                render :action => :add_assets_in_bulk
-              else
-                flash[:notice] = "All valid assets have been successfully saved."
-              end
-            else
+          # process new asset_collection and merge into existing collections
+          AssetCollection.process_new_collection_and_merge(params)
+          if Asset.new(params[:asset]).valid?
+            @new_assets = AssetBulkImport.open_zip_file_and_make_assets(params[:asset], current_user)
+            if @new_assets.blank?
+              flash[:error] = "The zip file you uploaded does not have any valid files."
               prepare_to_edit
-              flash[:error] = "The zip file you uploaded is not valid."
               render :action => :add_assets_in_bulk
+            else
+              flash[:notice] = "All valid assets have been successfully saved."
             end
+          else
+            prepare_to_edit
+            flash[:error] = "The zip file you uploaded is not valid."
+            render :action => :add_assets_in_bulk
           end
         end
 
@@ -157,7 +148,7 @@ module Gluttonberg
         # create individual asset
         def create
           # process new asset_collection and merge into existing collections
-          process_new_collection_and_merge(params)
+          AssetCollection.process_new_collection_and_merge(params)
 
           @asset = Asset.new(params[:asset])
           @asset.user_id = current_user.id
@@ -173,7 +164,7 @@ module Gluttonberg
         # update asset
         def update
           # process new asset_collection and merge into existing collections
-          process_new_collection_and_merge(params)
+          AssetCollection.process_new_collection_and_merge(params)
 
           if @asset.update_attributes(params[:asset])
             flash[:notice] = "The asset was successfully updated."
@@ -192,7 +183,7 @@ module Gluttonberg
           else
             flash[:error] = "There was an error deleting the asset."
           end
-          if !params[:return_url].blank? && !params[:return_url].include?(admin_asset_path(params[:id]))
+          if params[:return_url].blank? && !params[:return_url].include?(admin_asset_path(params[:id]))
             redirect_to params[:return_url]
           else
             redirect_to admin_asset_category_path(:category => 'all' , :page => 1 )
@@ -206,7 +197,7 @@ module Gluttonberg
             empty_file_name = true
           end
           # process new asset_collection and merge into existing collections
-          process_new_collection_and_merge(params)
+          AssetCollection.process_new_collection_and_merge(params)
 
           @asset = Asset.new(params[:asset])
           @asset.user_id = current_user.id
@@ -232,67 +223,28 @@ module Gluttonberg
         end
 
         private
-            def find_asset
-              @asset = Asset.where(:id => params[:id]).first
-              raise ActiveRecord::RecordNotFound  if @asset.blank?
-            end
+          def find_asset
+            @asset = Asset.where(:id => params[:id]).first
+            raise ActiveRecord::RecordNotFound  if @asset.blank?
+          end
 
-            def find_categories
-              @categories = AssetCategory.all
-            end
+          def find_categories
+            @categories = AssetCategory.all
+          end
 
-            def prepare_to_edit
-              @collections = AssetCollection.order("name")
-            end
+          def prepare_to_edit
+            @collections = AssetCollection.order("name")
+          end
 
-            def authorize_user
-              authorize! :manage, Gluttonberg::Asset
-            end
+          def authorize_user
+            authorize! :manage, Gluttonberg::Asset
+          end
 
-            def authorize_user_for_destroy
-              authorize! :destroy, Gluttonberg::Asset
-            end
+          def authorize_user_for_destroy
+            authorize! :destroy, Gluttonberg::Asset
+          end
 
-            # if new collection is provided it will create the object for that
-            # then it will add new collection id into other existing collection ids
-            def process_new_collection_and_merge(params)
-              params[:asset][:asset_collection_ids] = "" if params[:asset][:asset_collection_ids].blank? || params[:asset][:asset_collection_ids] == "null"  || params[:asset][:asset_collection_ids] == "undefined"
-              params[:asset][:asset_collection_ids] = params[:asset][:asset_collection_ids].split(",") if params[:asset][:asset_collection_ids].kind_of?(String)
 
-              the_collection = find_or_create_asset_collection_from_hash(params["new_collection"])
-               unless the_collection.blank?
-                 params[:asset][:asset_collection_ids] = params[:asset][:asset_collection_ids] || []
-                 unless params[:asset][:asset_collection_ids].include?(the_collection.id.to_s)
-                   params[:asset][:asset_collection_ids] <<  the_collection.id
-                 end
-               end
-            end
-
-             # Returns an AssetCollection (either by finding a matching existing one or creating a new one)
-             # requires a hash with the following keys
-             #   do_new_collection: If not present the method returns nil and does nothing
-             #   new_collection_name: The name for the collection to return.
-             def find_or_create_asset_collection_from_hash(param_hash)
-               # Create new AssetCollection if requested by the user
-               if param_hash
-                   if param_hash.has_key?('new_collection_name')
-                     unless param_hash['new_collection_name'].blank?
-                       #create options for first or create
-                       options = {:name => param_hash['new_collection_name'] }
-
-                       # Retireve the existing AssetCollection if it matches or create a new one
-                       the_collection = AssetCollection.where(options).first
-                       unless the_collection
-                         the_collection = AssetCollection.new(options)
-                         the_collection.user_id = current_user.id
-                         the_collection.save
-                       end
-
-                       the_collection
-                     end # new_collection_name value
-                   end # new_collection_name key
-                 end # param_hash
-             end # find_or_create_asset_collection_from_hash
       end # controller
     end
   end

@@ -80,10 +80,10 @@ module Gluttonberg
 
         private
 
-        def find_collection
-          @collection = AssetCollection.where(:id => params[:id]).first
-          raise ActiveRecord::RecordNotFound  if @collection.blank?
-        end # find_collection
+          def find_collection
+            @collection = AssetCollection.where(:id => params[:id]).first
+            raise ActiveRecord::RecordNotFound  if @collection.blank?
+          end # find_collection
 
       end # class
     end #asset_library
