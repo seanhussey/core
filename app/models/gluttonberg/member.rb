@@ -71,15 +71,7 @@ module Gluttonberg
     end
 
     def self.generateRandomString(length=10)
-      chars = ("A".."Z").to_a + ("0".."9").to_a
-      numbers = ("0".."9").to_a
-      similar_chars = %w{ i I 1 0 O o 5 S s }
-      chars.delete_if {|x| similar_chars.include? x}
-      numbers.delete_if {|x| similar_chars.include? x}
-      newpass = ""
-      1.upto(length-1) { |i| newpass << chars[rand(chars.size-1)] }
-      1.upto(1) { |i| newpass << numbers[rand(numbers.size-1)] }
-      newpass
+      RandomStringGenerator.generate(length)
     end
 
     def does_member_have_access_to_the_page?( page)
@@ -225,10 +217,8 @@ module Gluttonberg
         csv_table.first.each_with_index do |table_col , index|
           return index if table_col.to_s.upcase == col_name.to_s.upcase
         end
-        nil
-      else
-        nil
       end
+      nil
     end
 
     #export to a csv

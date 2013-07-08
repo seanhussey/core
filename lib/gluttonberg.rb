@@ -27,6 +27,7 @@ module Gluttonberg
   require 'gluttonberg/record_history'
   require 'gluttonberg/gb_file'
   require 'gluttonberg/gb_bulk_file'
+  require 'gluttonberg/random_string_generator'
 
   # These should likely move into one of the initializers inside of the
   # engine config. This will ensure they only run after Rails and the app
