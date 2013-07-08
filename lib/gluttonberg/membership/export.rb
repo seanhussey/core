@@ -1,6 +1,6 @@
 module Gluttonberg
   module Membership
-    module Import
+    module Export
       def self.included(klass)
         klass.class_eval do
           extend ClassMethods
