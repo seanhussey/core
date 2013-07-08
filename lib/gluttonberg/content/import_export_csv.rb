@@ -14,7 +14,6 @@ module Gluttonberg
         klass.class_eval do
           extend  ClassMethods
           cattr_accessor :import_export_columns , :wysiwyg_columns
-
         end
       end
 
@@ -45,61 +44,60 @@ module Gluttonberg
         end
 
         class GlosentryHelper
-            include ActionView::Helpers::TagHelper
-            include ActionView::Helpers::TextHelper
+          include ActionView::Helpers::TagHelper
+          include ActionView::Helpers::TextHelper
         end
 
         def helper
           @h ||= GlosentryHelper.new
         end
 
-        # csv_table is two dimentional array
-        # col_name is a string.
-        # if structure is proper and column name found it returns column index from 0 to n-1
-        # otherwise nil
-        def find_column_position(csv_table  , col_name)
-          if csv_table.instance_of?(Array) && csv_table.count > 0 && csv_table.first.count > 0
-            csv_table.first.each_with_index do |table_col , index|
-              return index if table_col.to_s.upcase == col_name.to_s.upcase
-            end
-          end
-          nil
-        end
-
         def exportCSV(all_records , local_options = {})
-          export_column_names = ExportUtils.prepare_export_column_names(self, local_options)
-          require 'csv'
-
-          csv_string = CSV.generate do |csv|
-            csv << export_column_names
-            all_records.each do |record|
-              csv << ExportUtils.prepare_row(record, export_column_names)
-            end
-          end
-          csv_string
+          ExportUtils.export(all_records, local_options, self)
         end
 
       end #ClassMethods
 
       class ExportUtils
-        def self.prepare_export_column_names(klass, local_options)
-          export_column_names = klass.import_export_columns
-          if local_options && local_options.has_key?(:export_columns)
-            export_column_names = local_options[:export_columns]
+        attr_accessor :all_records, :local_options, :klass, :export_column_names
+        def initialize(all_records, local_options, klass)
+          self.all_records = all_records
+          self.local_options = local_options
+          self.klass = klass
+        end
+
+        def self.export(all_records, local_options, klass)
+          export_utils = ExportUtils.new(all_records, local_options, klass)
+          export_utils.prepare_export_column_names
+          require 'csv'
+
+          csv_string = CSV.generate do |csv|
+            csv << export_utils.export_column_names
+            export_utils.all_records.each do |record|
+              csv << export_utils.prepare_row(record)
+            end
+          end
+          csv_string
+        end
+
+        def prepare_export_column_names
+          self.export_column_names = klass.import_export_columns
+          if self.local_options && self.local_options.has_key?(:export_columns)
+            self.export_column_names = self.local_options[:export_columns]
           end
 
-          if export_column_names.blank?
+          if self.export_column_names.blank?
             raise "Please define export_column_names property"
           end
 
-          export_column_names << "published_at"
-          export_column_names << "updated_at"
-          export_column_names
+          self.export_column_names << "published_at"
+          self.export_column_names << "updated_at"
+          self.export_column_names
         end
 
-        def self.prepare_row(record, export_column_names)
+        def prepare_row(record)
           row = []
-          export_column_names.each do |column|
+          self.export_column_names.each do |column|
             row << record.send(column)
           end
           row
@@ -135,6 +133,19 @@ module Gluttonberg
           import_utils.all_valid ? true : import_utils.feedback
         end
 
+        # csv_table is two dimentional array
+        # col_name is a string.
+        # if structure is proper and column name found it returns column index from 0 to n-1
+        # otherwise nil
+        def find_column_position(col_name)
+          if csv_table.instance_of?(Array) && csv_table.count > 0 && csv_table.first.count > 0
+            csv_table.first.each_with_index do |table_col , index|
+              return index if table_col.to_s.upcase == col_name.to_s.upcase
+            end
+          end
+          nil
+        end
+
         def prepare_import_columns
           self.import_column_names = klass.import_export_columns
           if local_options && local_options.has_key?(:import_columns)
@@ -154,7 +165,7 @@ module Gluttonberg
           self.import_columns = {}
 
           self.import_column_names.each do |key|
-            self.import_columns[key] = klass.find_column_position(csv_table , key )
+            self.import_columns[key] = find_column_position(key)
           end
         end
 
