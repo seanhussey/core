@@ -31,6 +31,21 @@ module Gluttonberg
       ensure_exists(Library::UNCATEGORISED_CATEGORY, true)
     end
 
+    def self.find_assets_by_category(category_name)
+      if category_name == "all" then
+        # ignore asset category if user selects 'all' from category
+        Asset.includes(:asset_type)
+      else
+        req_category = AssetCategory.where(:name => category_name).first
+        # if category is not found then raise exception
+        if req_category.blank?
+          raise ActiveRecord::RecordNotFound
+        else
+          req_category.assets.includes(:asset_type)
+        end
+      end # category#all
+    end
+
     private
 
       def self.ensure_exists(name, unknown)

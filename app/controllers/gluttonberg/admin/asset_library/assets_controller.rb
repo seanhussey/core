@@ -63,18 +63,7 @@ module Gluttonberg
         def category
           params[:category] = params[:category].downcase.singularize unless params[:category].blank?
           params[:order_type] = (params[:order_type].blank? ? "desc" : params[:order_type])
-          if params[:category] == "all" then
-            # ignore asset category if user selects 'all' from category
-            @assets = Asset.includes(:asset_type)
-          else
-            req_category = AssetCategory.where(:name => params[:category]).first
-            # if category is not found then raise exception
-            if req_category.blank?
-              raise ActiveRecord::RecordNotFound
-            else
-              @assets = req_category.assets.includes(:asset_type)
-            end
-          end # category#all
+          @assets = AssetCategory.find_assets_by_category(params[:category])
           @assets = @assets.paginate( :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items") , :page => params[:page] ).order(get_order)
         end
 
