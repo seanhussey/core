@@ -11,40 +11,57 @@ module Gluttonberg
         #export to a csv
         def exportCSV
           all_records = self.all
-          csv_class = nil
-          if RUBY_VERSION >= "1.9"
-            require 'csv'
-            csv_class = CSV
-          else
-            csv_class = FasterCSV
-          end
+          require 'csv'
           other_columns = {}
-          csv_string = csv_class.generate do |csv|
-              header_row = ["DATABASE ID",Rails.configuration.member_csv_metadata[:first_name],Rails.configuration.member_csv_metadata[:last_name], Rails.configuration.member_csv_metadata[:email], Rails.configuration.member_csv_metadata[:groups]]
+          CSV.generate do |csv|
+            other_columns = find_other_columns
+            csv << prepare_header_row
+            all_records.each do |record|
+              csv << prepare_row(record, other_columns)
+            end
+          end
+        end
 
-              index = 0
-              Rails.configuration.member_csv_metadata.each do |key , val|
-                if ![:first_name, :last_name , :email , :groups].include?(key)
-                  other_columns[key] = index + 5
-                  header_row << val
-                  index += 1
-                end
-              end
-              csv << header_row
+        private
 
-              all_records.each do |record|
-                data_row = [record.id, record.first_name, record.last_name , record.email , record.groups_name("; ")]
-                other_columns.each do |key , val|
-                  if !val.blank? && val >= 0
-                    data_row[val] = record.send(key)
-                  end
-                end
-                csv << data_row
+          def find_other_columns
+            other_columns = {}
+            index = 0
+            Rails.configuration.member_csv_metadata.each do |key , val|
+              if ![:first_name, :last_name , :email , :groups].include?(key)
+                other_columns[key] = index + 5
+                index += 1
               end
+            end
+            other_columns
           end
 
-          csv_string
-        end
+          def prepare_header_row
+            header_row = [
+              "DATABASE ID",
+              Rails.configuration.member_csv_metadata[:first_name],
+              Rails.configuration.member_csv_metadata[:last_name],
+              Rails.configuration.member_csv_metadata[:email],
+              Rails.configuration.member_csv_metadata[:groups]
+            ]
+
+            Rails.configuration.member_csv_metadata.each do |key , val|
+              if ![:first_name, :last_name , :email , :groups].include?(key)
+                header_row << val
+              end
+            end
+            header_row
+          end
+
+          def prepare_row(record, other_columns)
+            data_row = [record.id, record.first_name, record.last_name , record.email , record.groups_name("; ")]
+            other_columns.each do |key , val|
+              if !val.blank? && val >= 0
+                data_row[val] = record.send(key)
+              end
+            end
+            data_row
+          end
 
       end #ClassMethods
     end
