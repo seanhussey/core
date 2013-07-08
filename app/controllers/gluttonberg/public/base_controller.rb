@@ -34,10 +34,11 @@ class Gluttonberg::Public::BaseController < ActionController::Base
         setting = Gluttonberg::Setting.get_setting("restrict_site_access")
         if !setting.blank? && cookies[:restrict_site_access] != "allowed"
           if env['gluttonberg.page'].blank?
-            redirect_to restrict_site_access_path(:return_url => request.url)
+            return_url = {:return_url => request.url}
           else
-            redirect_to restrict_site_access_path(:return_url => env['gluttonberg.page'].current_localization.public_path)
+            return_url = {:return_url => env['gluttonberg.page'].current_localization.public_path)}
           end
+          redirect_to restrict_site_access_path(:return_url => return_url)
         end
       end
     end
