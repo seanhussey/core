@@ -77,6 +77,22 @@ module Gluttonberg
       RandomStringGenerator.generate(length)
     end
 
+    def self.generate_password_hash
+      password = self.generateRandomString
+      password_hash = {
+          :password => password ,
+          :password_confirmation => password
+      }
+    end
+
+    def assign_groups(group_ids)
+      if !group_ids.blank? && group_ids.kind_of?(String)
+        self.group_ids = [group_ids]
+      else
+        self.group_ids = group_ids
+      end
+    end
+
     def does_member_have_access_to_the_page?( page)
       self.have_group?(page.groups)
     end

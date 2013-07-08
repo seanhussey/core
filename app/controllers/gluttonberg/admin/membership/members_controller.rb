@@ -26,18 +26,10 @@ module Gluttonberg
         end
 
         def create
-          @password = Gluttonberg::Member.generateRandomString
-          password_hash = {
-              :password => @password ,
-              :password_confirmation => @password
-          }
+          password_hash = Gluttonberg::Member.generate_password_hash
 
           @member = Member.new(params[:gluttonberg_member].merge(password_hash))
-          if !params[:gluttonberg_member][:group_ids].blank? && params[:gluttonberg_member][:group_ids].kind_of?(String)
-            @member.group_ids = [params[:gluttonberg_member][:group_ids]]
-          else
-            @member.group_ids = params[:gluttonberg_member][:group_ids]
-          end
+          @member.assign_groups(params[:gluttonberg_member][:group_ids])
           @member.profile_confirmed = true
 
           if @member.save
@@ -58,11 +50,7 @@ module Gluttonberg
             params[:gluttonberg_member][:image] = nil
           end
 
-          if !params[:gluttonberg_member][:group_ids].blank? && params[:gluttonberg_member][:group_ids].kind_of?(String)
-            @member.group_ids = [params[:gluttonberg_member][:group_ids]]
-          else
-            @member.group_ids = params[:gluttonberg_member][:group_ids]
-          end
+          @member.assign_groups(params[:gluttonberg_member][:group_ids])
           @member.assign_attributes(params[:gluttonberg_member])
           if @member.save
             flash[:notice] = "Member account updated!"
@@ -84,11 +72,10 @@ module Gluttonberg
         def destroy
           if @member.destroy
             flash[:notice] = "Member deleted!"
-            redirect_to :action => :index
           else
             flash[:error] = "There was an error deleting the member."
-            redirect_to :action => :index
           end
+          redirect_to :action => :index
         end
 
         def export
