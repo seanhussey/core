@@ -35,7 +35,7 @@ module Gluttonberg
           if @member.save
             flash[:notice] = "Member account registered and welcome email is also sent to the member"
             MemberNotifier.welcome(@member.id).deliver
-            redirect_to :action => :index
+            redirect_to admin_membership_members_path
           else
             render :action => :new
           end
@@ -46,15 +46,12 @@ module Gluttonberg
         end
 
         def update
-          if params[:gluttonberg_member] && params[:gluttonberg_member]["image_delete"] == "1"
-            params[:gluttonberg_member][:image] = nil
-          end
-
+          mark_image_delete
           @member.assign_groups(params[:gluttonberg_member][:group_ids])
           @member.assign_attributes(params[:gluttonberg_member])
           if @member.save
             flash[:notice] = "Member account updated!"
-            redirect_to  :action => :index
+            redirect_to  admin_membership_members_path
           else
             flash[:notice] = "Failed to save account changes!"
             render :action => :edit
@@ -75,7 +72,7 @@ module Gluttonberg
           else
             flash[:error] = "There was an error deleting the member."
           end
-          redirect_to :action => :index
+          redirect_to admin_membership_members_path
         end
 
         def export
@@ -97,7 +94,6 @@ module Gluttonberg
             if @successfull.kind_of? String
               flash[:error] = @successfull
               redirect_to :action => new_bulk
-              return
             end
           end
         end
@@ -105,7 +101,7 @@ module Gluttonberg
         def welcome
            MemberNotifier.welcome( @member ).deliver
            flash[:notice] = "Welcome email is successfully sent to the member."
-           redirect_to :action => :index
+           redirect_to admin_membership_members_path
         end
 
        private
@@ -116,6 +112,12 @@ module Gluttonberg
 
           def authorize_user
             authorize! :manage, Member
+          end
+
+          def mark_image_delete
+            if params[:gluttonberg_member] && params[:gluttonberg_member]["image_delete"] == "1"
+              params[:gluttonberg_member][:image] = nil
+            end
           end
 
       end
