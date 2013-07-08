@@ -167,6 +167,20 @@ module Gluttonberg
       self.where(["name #{command} ? OR description LIKE ? ", "%#{query}%" , "%#{query}%" ] ).order("name ASC")
     end
 
+    def to_json_for_ajax_new
+      json = {
+        "asset_id" => self.id,
+        "title" => self.name,
+        "category" => self.category,
+        "url" => self.url
+      }
+      if self.category == "image"
+        json["url"] = self.thumb_small_url
+        json["jwysiwyg_image"] = self.url_for(:jwysiwyg_image)
+      end
+      json.to_json
+    end
+
   end
 
 

@@ -36,14 +36,14 @@ module Gluttonberg
         # if filter param is provided then it will only show filtered type
         def browser
           # Get the latest assets
-          @category_filter = ( params[:filter].blank? ? "all" : params[:filter] )
+          @category_filter = params[:filter] || "all"
           @assets = AssetCategory.find_assets_by_category(@category_filter).order("created_at DESC").limit(20)
           render(params["no_frame"] ? {:partial => "browser_root"} : {:layout => false})
         end
 
         def browser_collection
           @collection = AssetCollection.where(:id => params[:id]).first
-          @category_filter = ( params[:filter].blank? ? "all" : params[:filter] )
+          @category_filter =  params[:filter] || "all"
           @assets = AssetCategory.find_assets_by_category_and_collection(@category_filter, @collection)
           render :layout => false
         end
@@ -51,7 +51,7 @@ module Gluttonberg
         # list assets page by page if user drill down into a category from category tab of home page
         def category
           params[:category] = params[:category].downcase.singularize unless params[:category].blank?
-          params[:order_type] = (params[:order_type].blank? ? "desc" : params[:order_type])
+          params[:order_type] = params[:order_type] || "desc"
           @assets = AssetCategory.find_assets_by_category(params[:category])
           @assets = @assets.paginate( :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items") , :page => params[:page] ).order(get_order)
         end
@@ -169,31 +169,19 @@ module Gluttonberg
         end
 
         def ajax_new
-          empty_file_name = false
-          if(params[:asset][:name].blank?)
+          blank_asset_name = false
+          if params[:asset][:name].blank?
             params[:asset][:name] = "Asset #{Time.now.to_i}"
-            empty_file_name = true
+            blank_asset_name = true
           end
           # process new asset_collection and merge into existing collections
           AssetCollection.process_new_collection_and_merge(params)
 
           @asset = Asset.new(params[:asset])
           @asset.user_id = current_user.id
-          if empty_file_name
-            @asset.name = @asset.file_name.humanize
-          end
+          @asset.name = @asset.file_name.humanize if blank_asset_name
           if @asset.save
-            json = {
-              "asset_id" => @asset.id,
-              "title" => @asset.name,
-              "category" => @asset.category,
-              "url" => @asset.url
-            }
-            if @asset.category == "image"
-              json["url"] = @asset.thumb_small_url
-              json["jwysiwyg_image"] = @asset.url_for(:jwysiwyg_image)
-            end
-            render :text  => json.to_json.to_s
+            render :text  => @asset.to_json_for_ajax_new.to_s
           else
             prepare_to_edit
             render :new
