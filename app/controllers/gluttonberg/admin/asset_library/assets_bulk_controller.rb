@@ -3,7 +3,7 @@
 module Gluttonberg
   module Admin
     module AssetLibrary
-      class AssetsBulkController < BaseController
+      class AssetsBulkController < Gluttonberg::Admin::AssetLibrary::BaseController
         record_history :@asset
 
         def destroy_assets_in_bulk

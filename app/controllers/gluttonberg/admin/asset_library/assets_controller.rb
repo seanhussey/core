@@ -3,7 +3,7 @@
 module Gluttonberg
   module Admin
     module AssetLibrary
-      class AssetsController < BaseController
+      class AssetsController < Gluttonberg::Admin::AssetLibrary::BaseController
         before_filter :find_asset , :only => [:crop , :save_crop , :delete , :edit , :show , :update , :destroy  ]
         record_history :@asset
         include Gluttonberg::ApplicationHelper
@@ -31,6 +31,7 @@ module Gluttonberg
 
         # if filter param is provided then it will only show filtered type
         def browser
+          prepare_to_edit
           # Get the latest assets
           @category_filter = params[:filter] || "all"
           @assets = AssetCategory.find_assets_by_category(@category_filter).order("created_at DESC").limit(20)
@@ -128,26 +129,6 @@ module Gluttonberg
             redirect_to params[:return_url]
           else
             redirect_to admin_asset_category_path(:category => 'all' , :page => 1 )
-          end
-        end
-
-        def ajax_new
-          blank_asset_name = false
-          if params[:asset][:name].blank?
-            params[:asset][:name] = "Asset #{Time.now.to_i}"
-            blank_asset_name = true
-          end
-          # process new asset_collection and merge into existing collections
-          AssetCollection.process_new_collection_and_merge(params, current_user)
-
-          @asset = Asset.new(params[:asset])
-          @asset.user_id = current_user.id
-          @asset.name = @asset.file_name.humanize if blank_asset_name
-          if @asset.save
-            render :text  => @asset.to_json_for_ajax_new.to_s
-          else
-            prepare_to_edit
-            render :new
           end
         end
 

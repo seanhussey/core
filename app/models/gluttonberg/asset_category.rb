@@ -48,10 +48,10 @@ module Gluttonberg
 
     def self.find_assets_by_category_and_collection(category_name, collection)
       if category_name == "all"
-        assets = collection.assets
+        collection.assets
       else
         category = AssetCategory.where(:name => category_name).first
-        assets = collection.assets.where({:asset_type_id => category.asset_type_ids }) unless category.blank? || category.asset_type_ids.blank?
+        collection.assets.where({:asset_type_id => category.asset_type_ids }) unless category.blank? || category.asset_type_ids.blank?
       end
     end
 
