@@ -23,6 +23,7 @@ module Gluttonberg
   require 'gluttonberg/page_description'
   require 'gluttonberg/templates'
   require 'gluttonberg/middleware'
+  require 'gluttonberg/membership'
   require 'gluttonberg/can_flag'
   require 'gluttonberg/record_history'
   require 'gluttonberg/gb_file'
