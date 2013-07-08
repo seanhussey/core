@@ -3,12 +3,8 @@
 module Gluttonberg
   module Admin
     module AssetLibrary
-      class AssetsController < Gluttonberg::Admin::BaseController
-        before_filter :find_categories, :except => [:delete, :destroy]
+      class AssetsController < BaseController
         before_filter :find_asset , :only => [:crop , :save_crop , :delete , :edit , :show , :update , :destroy  ]
-        before_filter :prepare_to_edit  , :except => [:category , :show , :delete , :create , :update  ]
-        before_filter :authorize_user
-        before_filter :authorize_user_for_destroy , :except => [:destroy , :delete]
         record_history :@asset
         include Gluttonberg::ApplicationHelper
 
@@ -60,39 +56,6 @@ module Gluttonberg
         def show
         end
 
-        def destroy_assets_in_bulk
-          @assets = Asset.where(:id => params[:asset_ids].split(",")).all
-          @assets.each do |asset|
-            asset.destroy
-          end
-          redirect_to admin_asset_category_path(:category => 'all' , :page => 1 )
-        end
-
-        # add assets from zip folder
-        def add_assets_in_bulk
-          @asset = Asset.new
-        end
-
-        # create assets from zip
-        def create_assets_in_bulk
-          # process new asset_collection and merge into existing collections
-          AssetCollection.process_new_collection_and_merge(params)
-          if Asset.new(params[:asset]).valid?
-            @new_assets = AssetBulkImport.open_zip_file_and_make_assets(params[:asset], current_user)
-            if @new_assets.blank?
-              flash[:error] = "The zip file you uploaded does not have any valid files."
-              prepare_to_edit
-              render :action => :add_assets_in_bulk
-            else
-              flash[:notice] = "All valid assets have been successfully saved."
-            end
-          else
-            prepare_to_edit
-            flash[:error] = "The zip file you uploaded is not valid."
-            render :action => :add_assets_in_bulk
-          end
-        end
-
         # new asset
         def new
           @asset = Asset.new
@@ -126,7 +89,7 @@ module Gluttonberg
         # create individual asset
         def create
           # process new asset_collection and merge into existing collections
-          AssetCollection.process_new_collection_and_merge(params)
+          AssetCollection.process_new_collection_and_merge(params, current_user)
 
           @asset = Asset.new(params[:asset])
           @asset.user_id = current_user.id
@@ -142,7 +105,7 @@ module Gluttonberg
         # update asset
         def update
           # process new asset_collection and merge into existing collections
-          AssetCollection.process_new_collection_and_merge(params)
+          AssetCollection.process_new_collection_and_merge(params, current_user)
 
           if @asset.update_attributes(params[:asset])
             flash[:notice] = "The asset was successfully updated."
@@ -175,7 +138,7 @@ module Gluttonberg
             blank_asset_name = true
           end
           # process new asset_collection and merge into existing collections
-          AssetCollection.process_new_collection_and_merge(params)
+          AssetCollection.process_new_collection_and_merge(params, current_user)
 
           @asset = Asset.new(params[:asset])
           @asset.user_id = current_user.id
@@ -193,23 +156,6 @@ module Gluttonberg
             @asset = Asset.where(:id => params[:id]).first
             raise ActiveRecord::RecordNotFound  if @asset.blank?
           end
-
-          def find_categories
-            @categories = AssetCategory.all
-          end
-
-          def prepare_to_edit
-            @collections = AssetCollection.order("name")
-          end
-
-          def authorize_user
-            authorize! :manage, Gluttonberg::Asset
-          end
-
-          def authorize_user_for_destroy
-            authorize! :destroy, Gluttonberg::Asset
-          end
-
 
       end # controller
     end

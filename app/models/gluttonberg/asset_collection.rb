@@ -17,7 +17,7 @@ module Gluttonberg
 
     # if new collection is provided it will create the object for that
     # then it will add new collection id into other existing collection ids
-    def self.process_new_collection_and_merge(params)
+    def self.process_new_collection_and_merge(params, current_user)
       collection_ids = params[:asset][:asset_collection_ids]
       if collection_ids.blank? || ["null", "undefined"].include?(collection_ids)
         collection_ids = []
@@ -25,7 +25,7 @@ module Gluttonberg
       if collection_ids.kind_of?(String)
         collection_ids = collection_ids.split(",")
       end
-      the_collection = find_or_create_asset_collection_from_hash(params["new_collection"])
+      the_collection = find_or_create_asset_collection_from_hash(params["new_collection"], current_user)
       unless the_collection.blank?
         collection_ids <<  the_collection.id
       end
@@ -36,7 +36,7 @@ module Gluttonberg
       # requires a hash with the following keys
       #   do_new_collection: If not present the method returns nil and does nothing
       #   new_collection_name: The name for the collection to return.
-      def self.find_or_create_asset_collection_from_hash(param_hash)
+      def self.find_or_create_asset_collection_from_hash(param_hash, current_user)
        # Create new AssetCollection if requested by the user
        if param_hash
            if param_hash.has_key?('new_collection_name')

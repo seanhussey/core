@@ -101,9 +101,9 @@ Rails.application.routes.draw do
         get "library" => "assets#index" , :as => :library
         get "search_assets" => "assets#search" , :as => :library_search
         post "add_asset_using_ajax"  => "assets#ajax_new" , :as => :add_asset_using_ajax#, :via => [:post]
-        get "add_assets_in_bulk"  => "assets#add_assets_in_bulk" , :as => :add_assets_in_bulk
-        post "create_assets_in_bulk"  => "assets#create_assets_in_bulk" , :as => :create_assets_in_bulk
-        post "destroy_assets_in_bulk"  => "assets#destroy_assets_in_bulk" , :as => :destroy_assets_in_bulk
+        get "add_assets_in_bulk"  => "assets_bulk#add_assets_in_bulk" , :as => :add_assets_in_bulk
+        post "create_assets_in_bulk"  => "assets_bulk#create_assets_in_bulk" , :as => :create_assets_in_bulk
+        post "destroy_assets_in_bulk"  => "assets_bulk#destroy_assets_in_bulk" , :as => :destroy_assets_in_bulk
         get "browser"  => "assets#browser" , :as => :asset_browser
         get "browser-collection/:id"  => "assets#browser_collection" , :as => :asset_browser_collection
         get "assets/:category/page/:page"  => "assets#category" , :as => :asset_category

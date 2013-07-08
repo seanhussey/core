@@ -26,7 +26,7 @@
             = form_for( @asset , :as => :asset , :url => { :action => :create_assets_in_bulk } ,  :html => { :multipart=>true  , :method => "post", :id => 'asset_bulk',  :class => "nosubnav validation"} ) do |asset_form|
               = gb_error_messages_for(@asset)
 
-              = render :partial => "collection_select_form" , :locals => {:asset_form => asset_form }
+              = render :partial => "/gluttonberg/admin/asset_library/assets/collection_select_form" , :locals => {:asset_form => asset_form }
 
               %legend
                 File
