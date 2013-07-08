@@ -44,12 +44,7 @@ module Gluttonberg
         def browser_collection
           @collection = AssetCollection.where(:id => params[:id]).first
           @category_filter = ( params[:filter].blank? ? "all" : params[:filter] )
-          if @category_filter == "all"
-            @assets = @collection.assets
-          else
-            @category = AssetCategory.where({ :name => @category_filter }).first
-            @assets = @collection.assets.where({:asset_type_id => @category.asset_type_ids }) unless @category.blank? || @category.asset_type_ids.blank?
-          end
+          @assets = AssetCategory.find_assets_by_category_and_collection(@category_filter, @collection)
           render :layout => false
         end
 
