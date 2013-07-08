@@ -64,14 +64,13 @@ module Gluttonberg
     end
 
     def formatted_file_size
-      precision = 2
       unless size.blank?
         case
           when size == 1 then "1 Byte"
           when size < KILO_SIZE then "%d Bytes" % size
-          when size < MEGA_SIZE then "%.#{precision}f KB" % (size / KILO_SIZE)
-          when size < GIGA_SIZE then "%.#{precision}f MB" % (size / MEGA_SIZE)
-          else "%.#{precision}f GB" % (size / GIGA_SIZE)
+          when size < MEGA_SIZE then "%.2f KB" % (size / KILO_SIZE)
+          when size < GIGA_SIZE then "%.2f MB" % (size / MEGA_SIZE)
+          else "%.2f GB" % (size / GIGA_SIZE)
         end
       end
     end
@@ -130,34 +129,6 @@ module Gluttonberg
 
           asset_params = {:name => asset_name_with_extention  , :file => file  }
           @asset = Asset.create(asset_params.merge({:asset_collection_ids => collection.id.to_s}))
-        end
-      end
-    end
-
-
-
-    def copy_audios_to_s3
-      puts "--------copy_audios_to_s3"
-      key_id = Gluttonberg::Setting.get_setting("s3_key_id")
-      key_val = Gluttonberg::Setting.get_setting("s3_access_key")
-      s3_server_url = Gluttonberg::Setting.get_setting("s3_server_url")
-      s3_bucket = Gluttonberg::Setting.get_setting("s3_bucket")
-      if !key_id.blank? && !key_val.blank? && !s3_server_url.blank? && !s3_bucket.blank?
-        s3 = Aws::S3.new(key_id, key_val, {:server => s3_server_url})
-        bucket = s3.bucket(s3_bucket)
-        begin
-          local_file = Pathname.new(location_on_disk)
-          base_name = File.basename(local_file)
-          folder = self.asset_hash
-          date = Time.now+1.years
-          puts "Copying #{base_name} to #{s3_bucket}"
-          key = bucket.key("user_assets/" + folder + "/" + base_name, true)
-          key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822, "content-type" => "audio/mp3"})
-          self.update_attributes(:copied_to_s3 => true)
-          puts "Copied"
-        rescue => e
-          puts "#{base_name} failed to copy"
-          puts "** #{e} **"
         end
       end
     end
