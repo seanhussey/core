@@ -22,73 +22,25 @@ module Gluttonberg
           rescue => e
             return "Please provide a valid CSV file with correct column names."
           end
-          first_name_column_num =   self.find_column_position(csv_table , Rails.configuration.member_csv_metadata[:first_name] )
-          last_name_column_num =   self.find_column_position(csv_table ,  Rails.configuration.member_csv_metadata[:last_name]  )
-          email_column_num =   self.find_column_position(csv_table , Rails.configuration.member_csv_metadata[:email] )
-          groups_column_num =   self.find_column_position(csv_table , Rails.configuration.member_csv_metadata[:groups] )
-          other_columns = {}
 
-          Rails.configuration.member_csv_metadata.each do |key , val|
-            if ![:first_name, :last_name , :email, :groups].include?(key)
-              other_columns[key] = self.find_column_position(csv_table , val )
-            end
-          end
+          known_columns = PrivateMethods.find_known_columns(csv_table)
+          other_columns = PrivateMethods.find_other_columns(csv_table)
 
           successfull_users = []
           failed_users = []
           updated_users = []
 
-
-          if first_name_column_num && last_name_column_num  && email_column_num
+          if PrivateMethods.known_columns_valid?(known_columns)
             csv_table.each_with_index do |row , index |
                 if index > 0 # ignore first row because its meta data row
-                  #user information hash
-                  user_info = {
-                    :first_name => row[first_name_column_num] ,
-                    :last_name => row[last_name_column_num] ,
-                    :email => row[email_column_num],
-                    :group_ids => []
-                  }
-                  other_columns.each do |key , val|
-                    if !val.blank? && val >= 0
-                      if row[val].blank? || !user_info[key].kind_of?(String)
-                        user_info[key] = row[val]
-                      else
-                        user_info[key] = row[val].force_encoding("UTF-8")
-                      end
-                    end
-                  end
+                  user_info = PrivateMethods.read_data_row(row, known_columns, other_columns)
 
                   #attach user to an group if its valid
-                  unless groups_column_num.blank? || row[groups_column_num].blank?
-                    group_names = row[groups_column_num].split(";")
-                    temp_group_ids = []
-                    group_names.each do |group_name|
-                      group = Gluttonberg::Group.where(:name => group_name.strip).first
-                      temp_group_ids << group.id unless group.blank?
-                    end
-                    user_info[:group_ids] = temp_group_ids
-                  end
+                  PrivateMethods.attach_user_to_group(user_info, row, known_columns, other_columns, group_ids)
 
-                  unless group_ids.blank?
-                    if user_info[:group_ids].blank?
-                      user_info[:group_ids] = group_ids
-                    else
-                      user_info[:group_ids] << group_ids
-                    end
-                  end
-
-                  user = self.where(:email => row[email_column_num]).first
+                  user = where(:email => row[known_columns[:email]]).first
                   if user.blank?
-                    # generate random password
-                    temp_password = self.generateRandomString
-                    password_hash = {
-                      :password => temp_password ,
-                      :password_confirmation => temp_password
-                    }
-
-                    # make user object
-                    user = self.new(user_info.merge(password_hash))
+                    user = PrivateMethods.prepare_user_record(user_info, row)
 
                     #if its valid then save it send an email and also add it to successfull_users array
                     if user.valid?
@@ -102,7 +54,7 @@ module Gluttonberg
                       failed_users << user
                     end
                   else
-                    if  !self.contains_user?(user , successfull_users) and !self.contains_user?(user , updated_users)
+                    if  !contains_user?(user , successfull_users) and !contains_user?(user , updated_users)
                       if user.update_attributes(user_info)
                         updated_users << user
                       else
@@ -126,11 +78,15 @@ module Gluttonberg
           false
         end
 
+      end #ClassMethods
+
+      module PrivateMethods
+
         # csv_table is two dimentional array
         # col_name is a string.
         # if structure is proper and column name found it returns column index from 0 to n-1
         # otherwise nil
-        def find_column_position(csv_table  , col_name)
+        def self.find_column_position(csv_table  , col_name)
           if csv_table.instance_of?(Array) && csv_table.count > 0 && csv_table.first.count > 0
             csv_table.first.each_with_index do |table_col , index|
               return index if table_col.to_s.upcase == col_name.to_s.upcase
@@ -138,7 +94,85 @@ module Gluttonberg
           end
           nil
         end
-      end
-    end
+
+        def self.find_known_columns(csv_table)
+          known_columns = {}
+          known_columns[:first_name]  = find_column_position(csv_table , Rails.configuration.member_csv_metadata[:first_name] )
+          known_columns[:last_name]   = find_column_position(csv_table ,  Rails.configuration.member_csv_metadata[:last_name]  )
+          known_columns[:email]       = find_column_position(csv_table , Rails.configuration.member_csv_metadata[:email] )
+          known_columns[:groups]      = find_column_position(csv_table , Rails.configuration.member_csv_metadata[:groups] )
+          known_columns
+        end
+
+        def self.find_other_columns(csv_table)
+          other_columns = {}
+          Rails.configuration.member_csv_metadata.each do |key , val|
+            if ![:first_name, :last_name , :email, :groups].include?(key)
+              other_columns[key] = find_column_position(csv_table , val )
+            end
+          end
+          other_columns
+        end
+
+        def self.read_data_row(row, known_columns, other_columns)
+          user_info = {
+            :first_name => row[known_columns[:first_name]],
+            :last_name => row[known_columns[:last_name]],
+            :email => row[known_columns[:email]],
+            :group_ids => []
+          }
+          other_columns.each do |key , val|
+            if !val.blank? && val >= 0
+              if row[val].blank? || !user_info[key].kind_of?(String)
+                user_info[key] = row[val]
+              else
+                user_info[key] = row[val].force_encoding("UTF-8")
+              end
+            end
+          end
+          user_info
+        end
+
+        def self.known_columns_valid?(known_columns)
+          known_columns[:first_name] &&
+          known_columns[:last_name]  &&
+          known_columns[:email]
+        end
+
+        def self.attach_user_to_group(user_info, row, known_columns, other_columns, group_ids)
+          unless known_columns[:groups].blank? || row[known_columns[:groups]].blank?
+            group_names = row[known_columns[:groups]].split(";")
+            temp_group_ids = []
+            # group_names.each do |group_name|
+            #   group = Gluttonberg::Group.where(:name => group_name.strip).first
+            #   temp_group_ids << group.id unless group.blank?
+            # end
+            user_info[:group_ids] = temp_group_ids
+          end
+
+          unless group_ids.blank?
+            if user_info[:group_ids].blank?
+              user_info[:group_ids] = group_ids
+            else
+              user_info[:group_ids] << group_ids
+            end
+          end
+          user_info
+        end #attr_user_to_group
+
+        def self.prepare_user_record
+          # generate random password
+          temp_password = generateRandomString
+          password_hash = {
+            :password => temp_password ,
+            :password_confirmation => temp_password
+          }
+
+          # make user object
+          new(user_info.merge(password_hash))
+        end
+
+      end #PrivateMethods
+    end #Import
   end
 end
