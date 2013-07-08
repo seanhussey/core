@@ -21,7 +21,7 @@ module Gluttonberg
     end
 
     include Membership::Import
-    include Membership::Import
+    include Membership::Export
 
     clean_html [:bio]
 
