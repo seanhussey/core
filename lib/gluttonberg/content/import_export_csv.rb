@@ -13,7 +13,6 @@ module Gluttonberg
       def self.included(klass)
         klass.class_eval do
           extend  ClassMethods
-          include InstanceMethods
           cattr_accessor :import_export_columns , :wysiwyg_columns
 
         end
@@ -154,7 +153,23 @@ module Gluttonberg
         end
 
         def exportCSV(all_records , local_options = {})
-          export_column_names = self.import_export_columns
+          export_column_names = ExportUtils.prepare_export_column_names(self, local_options)
+          require 'csv'
+
+          csv_string = CSV.generate do |csv|
+            csv << export_column_names
+            all_records.each do |record|
+              csv << ExportUtils.prepare_row(record, export_column_names)
+            end
+          end
+          csv_string
+        end
+
+      end #ClassMethods
+
+      class ExportUtils
+        def self.prepare_export_column_names(klass, local_options)
+          export_column_names = klass.import_export_columns
           if local_options && local_options.has_key?(:export_columns)
             export_column_names = local_options[:export_columns]
           end
@@ -165,37 +180,19 @@ module Gluttonberg
 
           export_column_names << "published_at"
           export_column_names << "updated_at"
-
-          csv_class_name = nil
-          if RUBY_VERSION >= "1.9"
-            require 'csv'
-            csv_class_name = CSV
-          else
-            csv_class_name = FasterCSV
-          end
-
-          csv_string = csv_class_name.generate do |csv|
-              csv << export_column_names
-
-              all_records.each do |record|
-                  row = []
-                  export_column_names.each do |column|
-                    row << record.send(column)
-                  end
-                  csv << row
-              end
-          end
-
-          csv_string
+          export_column_names
         end
 
+        def self.prepare_row(record, export_column_names)
+          row = []
+          export_column_names.each do |column|
+            row << record.send(column)
+          end
+          row
+        end
       end
 
-      module InstanceMethods
-
-      end
-
-    end
+    end #ImportExportCSV
   end
 end
 
