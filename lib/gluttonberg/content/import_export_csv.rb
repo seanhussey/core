@@ -147,25 +147,30 @@ module Gluttonberg
         end
 
         def prepare_import_columns
-          self.import_column_names = klass.import_export_columns
-          if local_options && local_options.has_key?(:import_columns)
-            self.import_column_names = local_options[:import_columns]
-          end
-
-          self.wysiwyg_columns_names = klass.wysiwyg_columns
-          if local_options && local_options.has_key?(:wysiwyg_columns)
-            self.wysiwyg_columns_names = local_options[:wysiwyg_columns]
-          end
-
-
-          if import_column_names.blank?
-            raise "Please define import_export_columns property"
-          end
+          _prepare_import_column_names
+          _prepare_wysiwyg_column_names
 
           self.import_columns = {}
 
           self.import_column_names.each do |key|
             self.import_columns[key] = find_column_position(key)
+          end
+        end
+
+        def _prepare_import_column_names
+          self.import_column_names = klass.import_export_columns
+          if local_options && local_options.has_key?(:import_columns)
+            self.import_column_names = local_options[:import_columns]
+          end
+          if import_column_names.blank?
+            raise "Please define import_export_columns property"
+          end
+        end
+
+        def _prepare_wysiwyg_column_names
+          self.wysiwyg_columns_names = klass.wysiwyg_columns
+          if local_options && local_options.has_key?(:wysiwyg_columns)
+            self.wysiwyg_columns_names = local_options[:wysiwyg_columns]
           end
         end
 
@@ -185,11 +190,8 @@ module Gluttonberg
           record_info = {}
           self.import_columns.each do |key , val|
             if !val.blank? && val >= 0
-              if row[val].blank? || !row[val].kind_of?(String)
-                record_info[key] = row[val]
-              else
-                record_info[key] = row[val].force_encoding("UTF-8")
-              end
+              record_info[key] = row[val]
+              record_info[key] = record_info[key].force_encoding("UTF-8") if row[val].kind_of?(String)
             end
           end
           record_info
