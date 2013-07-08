@@ -36,14 +36,8 @@ module Gluttonberg
         # if filter param is provided then it will only show filtered type
         def browser
           # Get the latest assets
-          @assets = Asset.order("created_at DESC").includes(:asset_type).limit(20)
-
           @category_filter = ( params[:filter].blank? ? "all" : params[:filter] )
-          unless @category_filter == "all"
-            @category = AssetCategory.where(:name => @category_filter).first
-            @assets = @assets.where({:asset_type_id => @category.asset_type_ids }) unless @category.blank? || @category.asset_type_ids.blank?
-          end
-
+          @assets = AssetCategory.find_assets_by_category(@category_filter).order("created_at DESC").limit(20)
           render(params["no_frame"] ? {:partial => "browser_root"} : {:layout => false})
         end
 
