@@ -24,7 +24,7 @@ module Gluttonberg
       def self.generate_string_for(character_set, length)
         newstr = ""
         character_set.delete_if {|x| SIMILAR_CHARS.include? x}
-        1.upto(length) { |i| newstr << chars[rand(character_set.size-1)] }
+        1.upto(length) { |i| newstr << character_set[rand(character_set.size-1)] }
         newstr
       end
   end

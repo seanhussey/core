@@ -36,96 +36,12 @@ module Gluttonberg
         # sample feedback array : [true , true , [active_record error array...] , true]
         def importCSV(file_path , local_options = {})
           begin
-            if RUBY_VERSION >= "1.9"
-              require 'csv'
-              csv_table = CSV.read(file_path)
-            else
-              csv_table = FasterCSV.read(file_path)
-            end
+            require 'csv'
+            csv_table = CSV.read(file_path)
           rescue => e
             return "Please provide a valid CSV file with correct column names."
           end
-
-          import_column_names = self.import_export_columns
-          if local_options && local_options.has_key?(:import_columns)
-            import_column_names = local_options[:import_columns]
-          end
-
-          wysiwyg_columns_names = self.wysiwyg_columns
-          if local_options && local_options.has_key?(:wysiwyg_columns)
-            wysiwyg_columns_names = local_options[:wysiwyg_columns]
-          end
-
-
-          if import_column_names.blank?
-            raise "Please define import_export_columns property"
-          end
-
-          import_columns = {}
-
-          import_column_names.each do |key|
-            import_columns[key] = self.find_column_position(csv_table , key )
-          end
-
-          feedback = []
-          records = []
-          all_valid = true #assume all records are valid.
-
-          csv_table.each_with_index do |row , index |
-            if index > 0 # ignore first row because its meta data row
-              record_info = {}
-              import_columns.each do |key , val|
-                if !val.blank? && val >= 0
-                  if row[val].blank? || !row[val].kind_of?(String)
-                    record_info[key] = row[val]
-                  else
-                    record_info[key] = row[val].force_encoding("UTF-8")
-                  end
-                end
-              end
-              record = nil
-              if local_options[:unique_key]
-                record = self.where(local_options[:unique_key] => record_info[local_options[:unique_key].to_s]).first
-              end
-              if record.blank?
-                # make object
-                if self.respond_to?(:localized?) && self.localized?
-                  record = self.new_with_localization(record_info)
-                else
-                  record = self.new(record_info)
-                end
-              else
-                record.attributes = record.attributes.merge(record_info)
-              end
-
-              record_info.each do |field,val|
-                record.send("#{field}=",val)
-              end
-
-              records << record
-              if record.valid?
-                feedback << true
-              else
-                feedback << record.errors
-                all_valid = false
-              end
-            end # if csv row index > 0
-
-          end #loop
-
-          if all_valid
-            records.each do |record|
-              unless wysiwyg_columns_names.blank?
-
-                wysiwyg_columns_names.each do |c|
-                  record.send("#{c}=",helper.simple_format(record.send(c)))
-                end
-              end
-              record.save
-            end
-          end
-
-          all_valid ? true : feedback
+          ImportUtils.import(file_path, local_options, self, csv_table)
         end
 
         class GlosentryHelper
@@ -146,10 +62,8 @@ module Gluttonberg
             csv_table.first.each_with_index do |table_col , index|
               return index if table_col.to_s.upcase == col_name.to_s.upcase
             end
-            nil
-          else
-            nil
           end
+          nil
         end
 
         def exportCSV(all_records , local_options = {})
@@ -191,6 +105,122 @@ module Gluttonberg
           row
         end
       end
+
+      class ImportUtils
+        attr_accessor :file_path, :local_options, :klass, :csv_table
+        attr_accessor :import_columns, :records, :feedback, :all_valid
+        attr_accessor :import_column_names, :wysiwyg_columns_names
+
+        def initialize(file_path , local_options = {}, klass, csv_table )
+          self.file_path = file_path
+          self.local_options = local_options
+          self.klass = klass
+          self.csv_table = csv_table
+          self.records = []
+          self.feedback = []
+          self.all_valid = true #assume all records are valid.
+        end
+
+        def self.import(file_path , local_options = {}, klass, csv_table)
+          import_utils = ImportUtils.new(file_path, local_options, klass, csv_table)
+          import_utils.prepare_import_columns
+
+          csv_table.each_with_index do |row , index |
+            if index > 0 # ignore first row because its meta data row
+              import_utils.import_row(row)
+            end # if csv row index > 0
+
+          end #loop
+          import_utils.assign_wysiwyg_columns
+          import_utils.all_valid ? true : import_utils.feedback
+        end
+
+        def prepare_import_columns
+          self.import_column_names = klass.import_export_columns
+          if local_options && local_options.has_key?(:import_columns)
+            self.import_column_names = local_options[:import_columns]
+          end
+
+          self.wysiwyg_columns_names = klass.wysiwyg_columns
+          if local_options && local_options.has_key?(:wysiwyg_columns)
+            self.wysiwyg_columns_names = local_options[:wysiwyg_columns]
+          end
+
+
+          if import_column_names.blank?
+            raise "Please define import_export_columns property"
+          end
+
+          self.import_columns = {}
+
+          self.import_column_names.each do |key|
+            self.import_columns[key] = klass.find_column_position(csv_table , key )
+          end
+        end
+
+        def import_row(row)
+          record_info = prepare_record_info(row)
+          record = find_or_initialize_record(record_info)
+
+          self.records << record
+          if record.valid?
+            self.feedback << true
+          else
+            feedback << record.errors
+            self.all_valid = false
+          end
+        end
+        def prepare_record_info(row)
+          record_info = {}
+          self.import_columns.each do |key , val|
+            if !val.blank? && val >= 0
+              if row[val].blank? || !row[val].kind_of?(String)
+                record_info[key] = row[val]
+              else
+                record_info[key] = row[val].force_encoding("UTF-8")
+              end
+            end
+          end
+          record_info
+        end
+
+        def find_or_initialize_record(record_info)
+          if local_options[:unique_key]
+            record = klass.where(local_options[:unique_key] => record_info[local_options[:unique_key].to_s]).first
+          end
+
+          if record.blank?
+            record = new_record(record_info)
+          end
+
+          record_info.each do |field,val|
+            record.send("#{field}=",val)
+          end
+          record
+        end
+
+        def new_record(record_info)
+          if klass.respond_to?(:localized?) && klass.localized?
+            klass.new_with_localization
+          else
+            klass.new
+          end
+        end
+
+        def assign_wysiwyg_columns
+          if self.all_valid
+            records.each do |record|
+              unless self.wysiwyg_columns_names.blank?
+                self.wysiwyg_columns_names.each do |c|
+                  record.send("#{c}=",helper.simple_format(record.send(c)))
+                end
+              end
+              record.save
+            end
+          end
+        end
+
+      end #ImportUtils
 
     end #ImportExportCSV
   end
