@@ -125,7 +125,7 @@ module Gluttonberg
       files = Dir.entries(Rails.root+"/bulks")
       files.each do |entry|
         unless entry.starts_with?(".") || entry.starts_with?("__")
-          file = MyFile2.init(entry)
+          file = GbBulkFile.init(entry)
           asset_name_with_extention = entry.split(".").first
 
           asset_params = {:name => asset_name_with_extention  , :file => file  }
@@ -183,31 +183,5 @@ module Gluttonberg
 
   end
 
-
-
-  # i made this class for providing extra methods in file class.
-  # I am using it for making assets from zip folder.
-  # keep in mind when we upload asset from browser, browser injects three extra attributes (that are given in MyFile class)
-  # but we are adding assets from file, i am injecting extra attributes manually. because asset library assumes that file has three extra attributes
-  class MyFile2 < File
-    attr_accessor :original_filename , :content_type , :size
-
-    def self.init(filename)
-      file = MyFile2.new(Rails.root+"/bulks/" + filename)
-      file.original_filename = filename
-      file.content_type = find_content_type(filename)
-      file.size = File.size(Rails.root+"/bulks/" + filename)
-      file
-    end
-
-    def self.find_content_type(filename)
-      begin
-       MIME::Types.type_for(filename).first.content_type
-      rescue
-        ""
-      end
-    end
-
-  end
 
 end
