@@ -50,7 +50,10 @@ module Gluttonberg
           params[:category] = params[:category].downcase.singularize unless params[:category].blank?
           params[:order_type] = params[:order_type] || "desc"
           @assets = AssetCategory.find_assets_by_category(params[:category])
-          @assets = @assets.paginate( :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items") , :page => params[:page] ).order(get_order)
+          @assets = @assets.paginate({
+            :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"),
+            :page => params[:page]
+          }).order(get_order)
         end
 
 

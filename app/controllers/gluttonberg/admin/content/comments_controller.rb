@@ -48,23 +48,23 @@ module Gluttonberg
 
 
         def pending
-          @comments = Comment.all_pending.order("created_at DESC").paginate(:per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), :page => params[:page] , :order => "created_at DESC")
-          render :template => "/gluttonberg/admin/content/comments/index"
+          @comments = ordering_and_pagination(Comment.all_pending)
+          render_comments_list
         end
 
         def approved
-          @comments = Comment.all_approved.order("created_at DESC").paginate(:per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), :page => params[:page] , :order => "created_at DESC")
-          render :template => "/gluttonberg/admin/content/comments/index"
+          @comments = ordering_and_pagination(Comment.all_approved)
+          render_comments_list
         end
 
         def rejected
-          @comments = Comment.all_rejected.order("created_at DESC").paginate(:per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), :page => params[:page] , :order => "created_at DESC")
-          render :template => "/gluttonberg/admin/content/comments/index"
+          @comments = ordering_and_pagination(Comment.all_rejected)
+          render_comments_list
         end
 
         def spam
-          @comments = Comment.all_spam.order("created_at DESC").paginate(:per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), :page => params[:page] , :order => "created_at DESC")
-          render :template => "/gluttonberg/admin/content/comments/index"
+          @comments = ordering_and_pagination(Comment.all_spam)
+          render_comments_list
         end
 
         def spam_detection_for_all_pending
@@ -123,6 +123,17 @@ module Gluttonberg
 
           def authorize_user_for_moderation
             authorize! :moderate, Gluttonberg::Comment
+          end
+
+          def ordering_and_pagination(comments)
+            comments.order("created_at DESC").paginate({
+              :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"),
+              :page => params[:page]
+            })
+          end
+
+          def render_comments_list
+            render :template => "/gluttonberg/admin/content/comments/index"
           end
       end
     end
