@@ -143,10 +143,10 @@ module Gluttonberg
           unless known_columns[:groups].blank? || row[known_columns[:groups]].blank?
             group_names = row[known_columns[:groups]].split(";")
             temp_group_ids = []
-            # group_names.each do |group_name|
-            #   group = Gluttonberg::Group.where(:name => group_name.strip).first
-            #   temp_group_ids << group.id unless group.blank?
-            # end
+            group_names.each do |group_name|
+              group = Gluttonberg::Group.where(:name => group_name.strip).first
+              temp_group_ids << group.id unless group.blank?
+            end
             user_info[:group_ids] = temp_group_ids
           end
 
