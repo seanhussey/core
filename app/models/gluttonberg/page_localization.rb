@@ -97,25 +97,11 @@ module Gluttonberg
     # prefix from. Otherwise it will just use the slug, with a fall-back
     # to it's page's default.
     def regenerate_path
-
       self.current_path = self.path
-
       page.reload #forcing that do not take cached page object
       slug = nil if slug.blank?
-      if page.parent_id && page.parent.home != true
-        localization = page.parent.localizations.where(:locale_id  => locale_id).first
-        new_path = "#{localization.path}/#{self.slug || page.slug}"
-      else
-        new_path = "#{self.slug || page.slug}"
-      end
-
-      # check duplication: add id at the end if its duplicated
-      already_exist = self.class.where([ "path = ? AND page_id != ? ", new_path, page.id]).all
-      if !already_exist.blank?
-        if already_exist.length > 1 || (already_exist.length == 1 && already_exist.first.id != self.id )
-          new_path= "#{new_path}_#{already_exist.length+1}"
-        end
-      end
+      new_path = prepare_new_path
+      
       self.previous_path = self.current_path
       write_attribute(:path, new_path)
     end
@@ -130,6 +116,24 @@ module Gluttonberg
 
       def update_content_localizations
         contents.each { |c| c.save } if self.content_needs_saving
+      end
+
+      def prepare_new_path
+        if page.parent_id && page.parent.home != true
+          localization = page.parent.localizations.where(:locale_id  => locale_id).first
+          new_path = "#{localization.path}/#{self.slug || page.slug}"
+        else
+          new_path = "#{self.slug || page.slug}"
+        end
+
+        # check duplication: add id at the end if its duplicated
+        already_exist = self.class.where([ "path = ? AND page_id != ? ", new_path, page.id]).all
+        if !already_exist.blank?
+          if already_exist.length > 1 || (already_exist.length == 1 && already_exist.first.id != self.id )
+            new_path= "#{new_path}_#{already_exist.length+1}"
+          end
+        end
+        new_path
       end
 
   end
