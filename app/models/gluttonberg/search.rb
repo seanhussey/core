@@ -2,25 +2,6 @@
 require 'will_paginate/array'
 module Gluttonberg
   class Search
-
-    # Iterate block/content classes to just load these constants 
-    # before setting up association with their localization. 
-    # This is kind of hack for lazyloading
-    self.load_block_classes
-
-    # if postgresql and there is not special search engine 
-    # then index data using texticle for postgresql
-    self.index_data_using_texticle
-
-
-    # if search engine is provided the use its custom methods
-    # otherwise use texticle for postgresql and like queries for mysql
-    # opts = {
-    #   :sources => [],
-    #   :published_only => true,
-    #   :per_page => 20,
-    #   :page => 1
-    # }
     def self.find(query, opts = {} )
       query= query.gsub(/[\\\!\*″′‟‛„‚”“”˝\(\)\;\:\.\@\&\=\+\$\,\/?\%\#\[\]]/, '')
       query = query.gsub(/'/, "\\\\'")
@@ -78,27 +59,46 @@ module Gluttonberg
     end
 
 
-
-    private
-
-      def self.load_block_classes
-        Gluttonberg::Content::Block.classes.uniq.each do |klass|
-          Gluttonberg.const_get klass.name.demodulize
-        end
+    def self.load_block_classes
+      Gluttonberg::Content::Block.classes.uniq.each do |klass|
+        Gluttonberg.const_get klass.name.demodulize
       end
+    end
 
-      def self.index_data_using_texticle
-        if Gluttonberg.dbms_name == "postgresql"
-          Rails.configuration.search_models.each do |model , columns|
-            model =  eval(model)
-            model.index do
-              columns.each do |column|
-                send(column)
-              end
+    def self.index_data_using_texticle
+      if Gluttonberg.dbms_name == "postgresql"
+        Rails.configuration.search_models.each do |model , columns|
+          model =  eval(model)
+          model.index do
+            columns.each do |column|
+              send(column)
             end
           end
         end
       end
+    end
+
+    # Iterate block/content classes to just load these constants 
+    # before setting up association with their localization. 
+    # This is kind of hack for lazyloading
+    self.load_block_classes
+
+    # if postgresql and there is not special search engine 
+    # then index data using texticle for postgresql
+    self.index_data_using_texticle
+
+
+    # if search engine is provided the use its custom methods
+    # otherwise use texticle for postgresql and like queries for mysql
+    # opts = {
+    #   :sources => [],
+    #   :published_only => true,
+    #   :per_page => 20,
+    #   :page => 1
+    # }
+
+
+    private      
 
       def self.replace_contents_with_page(results)
         # if it is localized or non locaized class 
