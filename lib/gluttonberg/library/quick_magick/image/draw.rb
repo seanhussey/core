@@ -42,7 +42,7 @@ module Gluttonberg
           # A roundRectangle primitive takes the same corner points as a rectangle
           # followed by the width and height of the rounded corners to be removed.
           def draw_round_rectangle(x0, y0, x1, y1, wc, hc, options={})
-            _draw(options, "roundRectangle #{x0},#{y0} #{x1},#{y1} #{wc},#{hc}")
+            _draw_6_points("roundRectangle",  x0, y0, x1, y1, wc, hc, options)
           end
 
           # The arc primitive is used to inscribe an elliptical segment in to a given rectangle.
@@ -50,14 +50,14 @@ module Gluttonberg
           # the start and end angles of the arc of the segment segment (e.g. 130,30 200,100 45,90).
           # The start and end points produced are then joined with a line segment and the resulting segment of an ellipse is filled.
           def draw_arc(x0, y0, x1, y1, a0, a1, options={})
-            _draw(options, "arc #{x0},#{y0} #{x1},#{y1} #{a0},#{a1}")
+            _draw_6_points("arc",  x0, y0, x1, y1, a0, a1, options)
           end
 
           # Use ellipse to draw a partial (or whole) ellipse.
           # Give the center point, the horizontal and vertical "radii"
           # (the semi-axes of the ellipse) and start and end angles in degrees (e.g. 100,100 100,150 0,360).
           def draw_ellipse(x0, y0, rx, ry, a0, a1, options={})
-            _draw(options, "ellipse #{x0},#{y0} #{rx},#{ry} #{a0},#{a1}")
+            _draw_6_points("ellipse",  x0, y0, rx, ry, a0, a1, options)
           end
 
           # The circle primitive makes a disk (filled) or circle (unfilled). Give the center and any point on the perimeter (boundary).
@@ -125,6 +125,11 @@ module Gluttonberg
           private
             def _draw(options, draw_command_postfix)
               append_to_operators("draw", "#{options_to_str(options)} #{draw_command_postfix}")
+            end
+
+            # draw_ellipse, draw_arc, draw_round_rectangle
+            def _draw_6_points(shape,  x0, y0, rx, ry, a0, a1, options={})
+              _draw(options, "#{shape} #{x0},#{y0} #{rx},#{ry} #{a0},#{a1}")
             end
         end #InstanceMethods
       end #Draw
