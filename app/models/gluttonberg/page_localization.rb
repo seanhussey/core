@@ -31,14 +31,13 @@ module Gluttonberg
     def contents
       @contents ||= begin
         # First collect the localized content
-        contents_data = Gluttonberg::Content.localization_associations.inject([]) do |memo, assoc|
-          memo += send(assoc).all
-        end
+        contents_data = localized_contents
+        contents_data = [] if contents_data.blank?
         # Then grab the content that belongs directly to the page
-        Gluttonberg::Content.non_localized_associations.inject(contents_data) do |memo, assoc|
-          contents_data += page.send(assoc).all
+        contents_data << non_localized_contents
+        unless contents_data.blank?
+          contents_data = contents_data.flatten.sort{|a,b| a.section_position <=> b.section_position}
         end
-        contents_data = contents_data.sort{|a,b| a.section_position <=> b.section_position}
       end
       @contents
     end
@@ -59,8 +58,8 @@ module Gluttonberg
     def non_localized_contents
       @non_localized_contents ||= begin
         # grab the content that belongs directly to the page
-        Gluttonberg::Content.non_localized_associations.inject(contents_data) do |memo, assoc|
-          contents_data += page.send(assoc).all
+        contents_data = Gluttonberg::Content.non_localized_associations.inject([]) do |memo, assoc|
+          memo += page.send(assoc).all
         end
         contents_data = contents_data.sort{|a,b| a.section_position <=> b.section_position}
       end
