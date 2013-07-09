@@ -28,13 +28,13 @@ module Gluttonberg
           # draws a line between the given two points
           # A line primitive requires a start point and end point.
           def draw_line(x0, y0, x1, y1, options={})
-            _draw(options, "line #{x0},#{y0} #{x1},#{y1}")
+            _draw_4_points("line", x0, y0, x1, y1, options)
           end
 
           # draw a rectangle with the given two corners
           # A rectangle primitive is specified by the pair of points at the upper left and lower right corners.
           def draw_rectangle(x0, y0, x1, y1, options={})
-            _draw(options, "rectangle #{x0},#{y0} #{x1},#{y1}")
+            _draw_4_points("rectangle", x0, y0, x1, y1, options)
           end
 
           # draw a rounded rectangle with the given two corners
@@ -62,7 +62,7 @@ module Gluttonberg
 
           # The circle primitive makes a disk (filled) or circle (unfilled). Give the center and any point on the perimeter (boundary).
           def draw_circle(x0, y0, x1, y1, options={})
-            _draw(options, "circle #{x0},#{y0} #{x1},#{y1}")
+            _draw_4_points("circle", x0, y0, x1, y1, options)
           end
 
           # The polyline primitive requires three or more points to define their perimeters.
@@ -130,6 +130,10 @@ module Gluttonberg
             # draw_ellipse, draw_arc, draw_round_rectangle
             def _draw_6_points(shape,  x0, y0, rx, ry, a0, a1, options={})
               _draw(options, "#{shape} #{x0},#{y0} #{rx},#{ry} #{a0},#{a1}")
+            end
+
+            def _draw_4_points(shape, x0, y0, x1, y1, options={})
+              _draw(options, "#{shape} #{x0},#{y0} #{x1},#{y1}")
             end
         end #InstanceMethods
       end #Draw
