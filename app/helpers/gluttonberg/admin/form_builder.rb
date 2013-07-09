@@ -61,7 +61,7 @@ module ActionView
       # Assets
       def asset_browser( field_id , opts = {} )
         asset_id = self.object.send(field_id.to_s)
-        filter = opts[:filter].blank? ? "all" : opts[:filter]
+        filter = opts[:filter] || "all"
 
         opts[:id] = "#{field_id}_#{asset_id}" if opts[:id].blank?
         html_id = opts[:id]

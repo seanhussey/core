@@ -24,55 +24,25 @@ module Gluttonberg
       # For Finding image assets
       #   asset_browser_tag( name_of_tag ,  opts = { :button_class => "" , :button_text => "Select" ,  :filter => "" ,  :id => "html_id", :asset_id => content.asset_id } )
 
-      def asset_browser_tag( field_id , opts = {} )
-        _asset_browser_tag( field_id , opts  )
+      def asset_browser_tag( field_name , opts = {} )
+        _asset_browser_tag( field_name , opts  )
       end
 
-      def _asset_browser_tag( field_id , opts = {} )
+      def _asset_browser_tag( field_name , opts = {} )
         asset_id = opts[:asset_id]
-        filter = opts[:filter].blank? ? "all" : opts[:filter]
-
-        if opts[:id].blank?
-         opts[:id] = rel = field_id.to_s + "_" + id.to_s
-        end
-        html_id = opts[:id]
-
-        asset_info = ""
-        asset_name = "Nothing selected"
-        unless asset_id.blank?
-          asset = Gluttonberg::Asset.find(:first , :conditions => {:id => asset_id})
-          asset_name =  asset.name if asset
-          if asset
-            if asset.category && asset.category.to_s.downcase == "image"
-              asset_info = asset_tag(asset , :small_thumb).html_safe
-            end
-          else
-            asset_name = "Asset missing!"
-          end
+        opts[:filter] = opts[:filter] || "all"
+        asset = if asset_id.blank?
+          nil
+        else
+          Gluttonberg::Asset.where(:id => asset_id).first
         end
 
-        asset_name = content_tag(:h5, asset_name) if asset_name
-
-        # Output it all
-        thumbnail_contents = ""
-        thumbnail_contents << asset_info
-        thumbnail_caption = ""
-        thumbnail_caption << asset_name unless asset_name.blank?
-        thumbnail_caption << hidden_field_tag("filter_" + field_id.to_s , value=filter , :id => "filter_#{opts[:id]}" )
-        thumbnail_caption << hidden_field_tag(field_id , asset_id , { :id => opts[:id] , :class => "choose_asset_hidden_field" } )
-
-        thumbnail_p = ""
-        thumbnail_p << link_to("Select", admin_asset_browser_url + "?filter=#{filter}" , { :class =>"btn button choose_button #{opts[:button_class]}" , :rel => html_id, :style => "margin-right:5px;" , :data_url => opts[:data_url] })
-        if opts[:remove_button] != false
-          thumbnail_p << clear_asset_tag( field_id , opts )
-        end
-
-        thumbnail_caption << content_tag(:p, thumbnail_p.html_safe)
-
-        thumbnail_contents << content_tag(:div, thumbnail_caption.html_safe, :class => "caption")
-        thumbnail = content_tag(:div, thumbnail_contents.html_safe, :class => "thumbnail asset_selector_wrapper")
-        li_content = content_tag(:li, thumbnail, :class => "span4")
-        content_tag(:ul , li_content , :id => "title_thumb_#{opts[:id]}", :class => "thumbnails")
+        opts[:id] = "#{field_name}_#{asset_id}" if opts[:id].blank?
+        render :partial => "/gluttonberg/admin/asset_library/shared/asset_browser", :locals => {
+          :opts => opts,
+          :asset => asset,
+          :field_name => field_name
+        }
       end
 
       def add_image_to_gallery_tag( button_text , add_url, gallery_id , opts = {})

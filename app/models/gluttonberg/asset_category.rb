@@ -32,7 +32,7 @@ module Gluttonberg
     end
 
     def self.find_assets_by_category(category_name)
-      if category_name == "all" then
+      if category_name == "all" || category_name.blank? then
         # ignore asset category if user selects 'all' from category
         Asset.includes(:asset_type)
       else
