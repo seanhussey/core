@@ -3,22 +3,14 @@ require 'will_paginate/array'
 module Gluttonberg
   class Search
 
-    # Iterate block/content classes to just load these constants before setting up association with their localization. This is kind of hack for lazyloading
-    Gluttonberg::Content::Block.classes.uniq.each do |klass|
-      Gluttonberg.const_get klass.name.demodulize
-    end
+    # Iterate block/content classes to just load these constants 
+    # before setting up association with their localization. 
+    # This is kind of hack for lazyloading
+    self.load_block_classes
 
-    # if postgresql and their is not special search engine then index data using texticle for postgresql
-    if ActiveRecord::Base.configurations[Rails.env] && ActiveRecord::Base.configurations[Rails.env]["adapter"] == "postgresql"
-      Rails.configuration.search_models.each do |model , columns|
-        model =  eval(model)
-        model.index do
-          columns.each do |column|
-            send(column)
-          end
-        end
-      end
-    end
+    # if postgresql and there is not special search engine 
+    # then index data using texticle for postgresql
+    self.index_data_using_texticle
 
 
     # if search engine is provided the use its custom methods
@@ -34,25 +26,17 @@ module Gluttonberg
       query = query.gsub(/'/, "\\\\'")
       query = query.gsub(/"/, "\\\"")
 
-      models = {}
-      sources = opts[:sources]
       published_only = opts[:published_only].blank? ? true : opts[:published_only]
-      per_page = opts[:per_page].blank? ? Gluttonberg::Setting.get_setting("number_of_per_page_items") : opts[:per_page]
-      page_num = opts[:page]
-      # if sources are provided then only look in sources models. It is only required when user want to search in specified models.
-      if sources.blank?
-        models = Rails.configuration.search_models
-      else
-        sources.each do |src|
-          models[src] = Rails.configuration.search_models[src]
-        end
-      end
+      per_page = Gluttonberg::Setting.get_setting("number_of_per_page_items") || opts[:per_page]
+      # if sources are provided then only look in sources models. 
+      # It is only required when user want to search in specified models.
+      models = self.find_models(opts[:sources])
 
-      case self.dbms_name
+      case Gluttonberg.dbms_name
         when "mysql"
-          find_in_mysql(query, page_num , per_page , models , published_only)
+          find_in_mysql(query, opts[:page] , per_page , models , published_only)
         when "postgresql"
-          find_in_postgresql(query, page_num , per_page, models , published_only)
+          find_in_postgresql(query, opts[:page] , per_page, models , published_only)
       end
     end
 
@@ -97,29 +81,64 @@ module Gluttonberg
 
     private
 
-      def self.dbms_name
-        adapter_name = ActiveRecord::Base.configurations[Rails.env]["adapter"]
-        if ["mysql2" , "mysql"].include?(adapter_name)
-          "mysql"
-        elsif adapter_name == "postgresql"
-          "postgresql"
-        else
-          adapter_name.to_s
+      def self.load_block_classes
+        Gluttonberg::Content::Block.classes.uniq.each do |klass|
+          Gluttonberg.const_get klass.name.demodulize
+        end
+      end
+
+      def self.index_data_using_texticle
+        if Gluttonberg.dbms_name == "postgresql"
+          Rails.configuration.search_models.each do |model , columns|
+            model =  eval(model)
+            model.index do
+              columns.each do |column|
+                send(column)
+              end
+            end
+          end
         end
       end
 
       def self.replace_contents_with_page(results)
-        # if it is localized or non locaized class then take return its parent page
+        # if it is localized or non locaized class 
+        # then take return its parent page
         results.each_with_index do |result , index|
-            if Gluttonberg::Content::Block.classes.collect{|k| [k.to_s , k.to_s + "Localization"] }.flatten.include?(result.class.name.to_s)
-              results[index] = result.parent.page
-            elsif Gluttonberg::Content::Block.classes.collect{|k| [k.to_s , k.to_s] }.flatten.include?(result.class.name.to_s)
-                results[index] = result.page
-            end
+          if self.localized_page_content?(result)
+            results[index] = result.parent.page
+          elsif self.nonlocalized_page_content?(result)
+            results[index] = result.page
+          end
         end
 
         results.uniq
       end
 
-  end
+      def self.localized_page_content?(result)
+        classes = Gluttonberg::Content::Block.classes.collect do |k| 
+          [k.to_s , k.to_s + "Localization"]
+        end
+        classes.flatten.include?(result.class.name.to_s)
+      end
+
+      def self.nonlocalized_page_content?(result)
+        classes = Gluttonberg::Content::Block.classes.collect do |k| 
+          [k.to_s , k.to_s]
+        end
+        classes.flatten.include?(result.class.name.to_s)
+      end
+
+      def self.find_models(sources)
+        if sources.blank?
+          models = Rails.configuration.search_models
+        else
+          models = {}
+          sources.each do |src|
+            models[src] = Rails.configuration.search_models[src]
+          end
+        end
+        models
+      end
+
+  end #Search
 end

@@ -43,7 +43,12 @@ module Gluttonberg
 
   def self.dbms_name
     if ActiveRecord::Base.configurations[Rails.env]
-      ActiveRecord::Base.configurations[Rails.env]["adapter"]
+      adapter_name = ActiveRecord::Base.configurations[Rails.env]["adapter"]
+      if ["mysql2" , "mysql"].include?(adapter_name)
+        "mysql"
+      else
+        adapter_name.to_s
+      end
     end
   end
 
