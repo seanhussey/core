@@ -2,41 +2,22 @@ module Gluttonberg
   module Public
     class ArticlesController <   Gluttonberg::Public::BaseController
       before_filter :is_blog_enabled
-
+      before_filter :find_blog, :only => [:index, :show, :preview]
+      
       def index
-        @blog = Gluttonberg::Blog.published.where(:slug => params[:blog_id]).includes([:articles]).first
-        raise ActiveRecord::RecordNotFound.new if @blog.blank?
         @articles = @blog.articles.published
-
-         respond_to do |format|
-           format.html
-           format.rss { render :layout => false }
+        respond_to do |format|
+          format.html
+          format.rss { render :layout => false }
         end
       end
 
       def show
-        @blog = Gluttonberg::Blog.published.where(:slug => params[:blog_id]).first
-
-        if @blog.blank?
-          @blog = Gluttonberg::Blog.published.where(:previous_slug => params[:blog_id]).first
-
-          unless @blog.blank?
-             redirect_to blog_article_path(:blog_id => @blog.slug , :id => params[:id]) , :status => 301
-             return
-          end
+        find_article
+        if @blog.previous_slug == params[:blog_id] || @article.previous_slug == params[:id]
+          redirect_to blog_article_path(:blog_id => @blog.slug , :id => params[:id]) , :status => 301
+          return
         end
-
-        raise ActiveRecord::RecordNotFound.new if @blog.blank?
-        @article = Gluttonberg::Article.published.where(:slug => params[:id], :blog_id => @blog.id).first
-        if @article.blank?
-          @article = Gluttonberg::Article.published.where(:previous_slug => params[:id], :blog_id => @blog.id).first
-          unless @article.blank?
-             redirect_to blog_article_path(:blog_id => @blog.slug , :id => @article.slug) , :status => 301
-             return
-          end
-        end
-
-        raise ActiveRecord::RecordNotFound.new if @article.blank?
         @article.load_localization(env['gluttonberg.locale'])
         @comments = @article.comments.where(:approved => true)
         @comment = Comment.new(:subscribe_to_comments => true)
@@ -73,6 +54,23 @@ module Gluttonberg
         raise ActiveRecord::RecordNotFound.new if @article.blank?
         render :show
       end
+
+      private
+        def find_blog
+          @blog = Gluttonberg::Blog.published.where(:slug => params[:blog_id]).includes([:articles]).first
+          if @blog.blank?
+            @blog = Gluttonberg::Blog.published.where(:previous_slug => params[:blog_id]).first
+          end
+          raise ActiveRecord::RecordNotFound.new if @blog.blank?
+        end
+
+        def find_article
+          @article = Gluttonberg::Article.published.where(:slug => params[:id], :blog_id => @blog.id).first
+          if @article.blank?
+            @article = Gluttonberg::Article.published.where(:previous_slug => params[:id], :blog_id => @blog.id).first
+          end
+          raise ActiveRecord::RecordNotFound.new if @article.blank?
+        end
 
     end
   end
