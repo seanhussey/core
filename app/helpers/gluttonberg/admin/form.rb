@@ -129,6 +129,6 @@ module Gluttonberg
         }.html_safe
       end
 
-    end
+    end #Form
   end
 end

@@ -1,6 +1,3 @@
-current_directory = Pathname(__FILE__).dirname.expand_path
-require File.join(current_directory, "admin", "form_builder")
-
 module Gluttonberg
     # Helpers specific to the administration interface. The majority are
     # related to forms, but there are other short cuts for things like navigation.

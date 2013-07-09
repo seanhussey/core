@@ -20,5 +20,9 @@ module Gluttonberg
       domain = "#{request.protocol}#{request.host_with_port}/"
       domain.strip
     end
+
+    def _render(opts)
+      render(opts)
+    end
   end
 end

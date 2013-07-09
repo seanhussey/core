@@ -1,8 +1,7 @@
-module ActionView
+module Gluttonberg
   module Helpers
-    class FormBuilder
+    module FormBuilder
       include ActionView::Helpers
-
       def publisable_dropdown
         object = self.object
         val = object.state
@@ -41,13 +40,14 @@ module ActionView
           time = self.object.send(field_name).strftime("%I:%M %p")
         end
 
-        render :partial => "/gluttonberg/admin/shared/datetime_field", :locals => {
+        _render "/gluttonberg/admin/shared/datetime_field", {
           :date_field_html_opts => date_field_html_opts,
           :time_field_html_opts => time_field_html_opts,
           :date => date,
           :time => time,
           :form => self,
-          :unique_field_name => unique_field_name
+          :unique_field_name => unique_field_name,
+          :field_name => field_name
         }
       end
 
@@ -63,12 +63,13 @@ module ActionView
         else
           Gluttonberg::Asset.where(:id => asset_id).first
         end
-        render :partial => "/gluttonberg/admin/asset_library/shared/asset_browser", :locals => {
+        locals = {
           :opts => opts,
           :asset => asset,
           :field_name => field_name,
           :form => self
         }
+        _render("/gluttonberg/admin/asset_library/shared/asset_browser", locals)
       end
 
       def asset_tag(asset , thumbnail_type = nil)
@@ -78,12 +79,21 @@ module ActionView
         end
       end
 
-      def clear_asset( field_id , opts = {} )
-        asset_id = self.object.send(field_id.to_s)
-        opts[:id] = "#{field_id}_#{asset_id}" if opts[:id].blank?
-        Gluttonberg::Admin::Assets.clear_asset_tag(field_id, opts)
+      def clear_asset( field_name , opts = {} )
+        asset_id = self.object.send(field_name.to_s)
+        opts[:id] = "#{field_name}_#{asset_id}" if opts[:id].blank?
+        view = ActionView::Base.new(ActionController::Base.view_paths)
+        view.extend ApplicationHelper
+        view.clear_asset_tag(field_name, opts)
       end
 
-    end
+      private
+
+        def _render(partial, assigns)
+          view = ActionView::Base.new(ActionController::Base.view_paths, assigns)
+          view.extend ApplicationHelper
+          view.render(:partial => partial, :locals => assigns)
+        end
+    end #FormBuilder
   end
 end
