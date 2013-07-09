@@ -38,13 +38,6 @@ module Gluttonberg
           render(params["no_frame"] ? {:partial => "browser_root"} : {:layout => false})
         end
 
-        def browser_collection
-          @collection = AssetCollection.where(:id => params[:id]).first
-          @category_filter =  params[:filter] || "all"
-          @assets = AssetCategory.find_assets_by_category_and_collection(@category_filter, @collection)
-          render :layout => false
-        end
-
         # list assets page by page if user drill down into a category from category tab of home page
         def category
           params[:category] = params[:category].downcase.singularize unless params[:category].blank?

@@ -17,6 +17,13 @@ module Gluttonberg
           end
         end
 
+        def browser_collection
+          @collection = AssetCollection.where(:id => params[:id]).first
+          @category_filter =  params[:filter] || "all"
+          @assets = AssetCategory.find_assets_by_category_and_collection(@category_filter, @collection)
+          render :layout => false
+        end
+
         private
           def handle_blank_asset_name
             @blank_asset_name = false
