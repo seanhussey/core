@@ -1,4 +1,4 @@
-class Notifier < ActionMailer::Base
+class Notifier < Gluttonberg::BaseNotifier
   
   default :from => "#{Gluttonberg::Setting.get_setting("title")} <#{Gluttonberg::Setting.get_setting("from_email")}>"
   default_url_options[:host] = Rails.configuration.host_name 
@@ -32,14 +32,5 @@ class Notifier < ActionMailer::Base
     
     mail(:to => @admin.email, :subject => "Re: [#{@website_title}] #{@article.title}")
   end
-  
-  protected
-  
-    def setup_email
-      @from        = "#{Gluttonberg::Setting.get_setting("title")} <#{Gluttonberg::Setting.get_setting("from_email")}>"
-      @subject     = "[#{Gluttonberg::Setting.get_setting("title")}] "
-      @sent_on     = Time.now
-      @content_type = "text/html"
-    end
     
 end
