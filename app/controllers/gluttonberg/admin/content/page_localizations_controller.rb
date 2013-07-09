@@ -64,22 +64,34 @@ module Gluttonberg
           end
 
           def update_publish_state
+            if params[:commit] && ["Publish", "Update"].include?(params[:commit])
+              publish!
+            else
+              unpublish!
+            end
+          end
+
+          def publish!
+            @page_localization.page.state = "published"
+            @page_localization.page.published_at = Time.now
+            @page_localization.page.save
+            Gluttonberg::Feed.log(current_user,@page_localization.page,"#{@page_localization.page.name} #{localization_detail_for_log}" , "updated and published.")
+          end
+
+          def unpublish!
+            @page_localization.page.state = "draft"
+            @page_localization.page.published_at = nil
+            @page_localization.page.save
+            Gluttonberg::Feed.log(current_user,@page_localization.page,"#{@page_localization.page.name} #{localization_detail_for_log}" , "saved as draft.")
+          end
+
+          def localization_detail_for_log
             localization_detail = ""
             if Gluttonberg.localized?
               localization_detail = "(#{@page_localization.locale.slug})"
             end
-            if params[:commit] && params[:commit] == "Publish" || params[:commit] && params[:commit] == "Update"
-              @page_localization.page.state = "published"
-              @page_localization.page.published_at = Time.now
-              @page_localization.page.save
-              Gluttonberg::Feed.log(current_user,@page_localization.page,"#{@page_localization.page.name} #{localization_detail}" , "updated and published.")
-            else
-              @page_localization.page.state = "draft"
-              @page_localization.page.published_at = nil
-              @page_localization.page.save
-              Gluttonberg::Feed.log(current_user,@page_localization.page,"#{@page_localization.page.name} #{localization_detail}" , "saved as draft.")
-            end
           end
+
 
       end #class
     end
