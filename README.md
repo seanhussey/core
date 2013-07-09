@@ -19,7 +19,7 @@ The following setups will get you up and running.
 `gem 'gluttonberg-core', :git => 'git://github.com/Gluttonberg/core.git', :require => 'gluttonberg'`
 `bundle install`
 3. Double check the username and password in the *database.yml* and then create the database.
-`rake db:create`
+`bundle exec rake db:create`
 4. Run the **Gluttonberg** installer rake task, the task will move all required files into place, migrate the database and then ask you for admin user details. `bundle exec rake gluttonberg:install`
 5. Start the server. `foreman start`
 6. Login to the [admin page](http://localhost:5000/admin) and start building. `http://localhost:5000/admin`
