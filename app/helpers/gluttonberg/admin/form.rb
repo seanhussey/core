@@ -46,13 +46,12 @@ module Gluttonberg
 
       def version_listing(versions , selected_version_num)
         unless versions.blank?
-          output = "<div class='historycontrols'>"
           selected = versions.last.version
           selected_version = versions.first
           collection = []
           versions.each do |version|
             link = version.version
-            snippet = "Version #{version.version} - #{version.updated_at.to_s(:long)}  " unless version.updated_at.blank?
+            snippet = version.updated_at.blank? ? "" : "Version #{version.version} - #{version.updated_at.to_s(:long)}  " 
             if version.version.to_i == selected_version_num.to_i
               selected = link
               selected_version = version
