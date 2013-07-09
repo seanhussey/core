@@ -1,3 +1,10 @@
-- @page_title = "#{link_to "Content", admin_content_path} > #{link_to "Blogs", admin_blogs_path} > Edit #{@blog.name}"
+- @page_title = "#{link_to "Blogs", admin_blogs_path} > Edit #{@blog.name}"
 
-= render :partial => "form", :locals => {:url => admin_blog_path(@blog)}
+.row-fluid
+  = render :partial => "/gluttonberg/admin/content/main/sidebar"
+
+  .span9
+    .page-header
+      %h1
+        = @page_title.html_safe
+    = render :partial => "form", :locals => {:url => admin_blog_path(@blog)}

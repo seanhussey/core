@@ -16,6 +16,7 @@
 //= require ./chosen-jquery-min
 //= require ./jquery-validate
 //= require ./redactormin.js
+//= require ./gb_jquery-nestable
 //= require ./rails
 //= require ./gb_utils
 //= require ./gb_jeditable

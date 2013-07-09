@@ -4,7 +4,7 @@ module Gluttonberg
   module Admin
     module Content
       class ArticlesController < Gluttonberg::Admin::BaseController
-
+        before_filter :is_blog_enabled
         before_filter :find_blog , :except => [:create]
         before_filter :find_article, :only => [:show, :edit, :update, :delete, :destroy , :duplicate]
         before_filter :authorize_user , :except => [:destroy , :delete]
@@ -111,18 +111,17 @@ module Gluttonberg
         protected
 
           def find_blog
-            @blog = Blog.find(params[:blog_id])
+            @blog = Blog.where(:id => params[:blog_id]).first
           end
 
           def find_article
             if params[:localization_id].blank?
               conditions = { :article_id => params[:id] , :locale_id => Locale.first_default.id}
-              #conditions[:user_id] = current_user.id unless current_user.super_admin?
-              @article_localization = ArticleLocalization.find(:first , :conditions => conditions)
+              @article_localization = ArticleLocalization.where(conditions).first
             else
-              @article_localization = ArticleLocalization.find(params[:localization_id])
+              @article_localization = ArticleLocalization.where(:id => params[:localization_id]).first
             end
-            @article = Article.find(:first , :conditions => {:id => params[:id]})
+            @article = Article.where(:id => params[:id]).first
           end
 
           def authorize_user

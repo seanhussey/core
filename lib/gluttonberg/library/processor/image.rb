@@ -17,12 +17,11 @@ module Gluttonberg
         # if the uploaded image exceeds the specified maximum, in which case it will resize it down.
         def generate_thumb_and_proper_resolution
           generate_proper_resolution
-          generate_image_thumb
+          generate_image_thumbnails
         end
 
         def suggested_measures(object , required_geometry)
-          required_geometry = required_geometry.delete("#")
-          required_geometry_tokens = required_geometry.split("x")
+          required_geometry_tokens = required_geometry.delete("#").split("x")
           actual_width = object.width.to_i
           actual_height = object.height.to_i
           required_width = required_geometry_tokens.first.to_i
@@ -49,85 +48,87 @@ module Gluttonberg
         end
 
         def generate_cropped_image(x , y , w , h, image_type)
-          asset_thumb = asset.asset_thumbnails.find(:first , :conditions => {:thumbnail_type => image_type.to_s })
-          if asset_thumb.blank?
-            asset_thumb = asset.asset_thumbnails.create({:thumbnail_type => image_type.to_s , :user_generated => true })
-          else
-            asset_thumb.update_attributes(:user_generated => true)
-          end
-
-          file_name = "#{asset.class.sizes[image_type.to_sym][:filename]}.#{asset.file_extension}"
-          begin
-            image = QuickMagick::Image.read(asset.tmp_original_file_on_disk).first
-          rescue
-            image = QuickMagick::Image.read(asset.tmp_original_file_on_disk).first
-          end
-          thumb_defined_width = asset.class.sizes[image_type.to_sym][:geometry].split('x').first#.to_i
-          scaling_percent = (thumb_defined_width.to_i/(w.to_i*1.0))*100
-          image.arguments << " -crop #{w}x#{h}+#{x}+#{y} +repage"
-          if scaling_percent != 1.0
-            image.arguments << " -resize #{scaling_percent}%"
-          end
-          image.save File.join(asset.tmp_directory, file_name)
-          asset.move_tmp_file_to_actual_directory(file_name , true)
+          asset_thumb = asset.asset_thumbnails.find_or_initialize_by_thumbnail_type(image_type.to_s)
+          asset_thumb.user_generated = true
+          asset_thumb.save
+          config = asset.class.sizes[image_type.to_sym]
+          file_name = "#{config[:filename]}.#{asset.file_extension}"
+          image = read_image_file(asset)
+          aurgments_str = _prepare_image_crop_arguments(x , y , w , h, config)
+          _resize_and_save(asset, image, nil, aurgments_str, file_name)
         end
 
         # Create thumbnailed versions of image attachements.
-        # TODO: generate thumbnails with the correct extension
-        def generate_image_thumb
+        def generate_image_thumbnails
           asset.class.sizes.each_pair do |name, config|
-            asset_thumb = asset.asset_thumbnails.find(:first , :conditions => {:thumbnail_type => name.to_s, :user_generated => true })
-            if asset_thumb.blank?
-              begin
-                image = QuickMagick::Image.read(asset.tmp_original_file_on_disk).first
-              rescue
-                image = QuickMagick::Image.read(asset.tmp_location_on_disk).first
-              end
-
-              file_name = "#{config[:filename]}.#{asset.file_extension}"
-
-              if config[:geometry].include?("#")
-                begin
-                  image.resize(suggested_measures(image, config[:geometry]))
-                  image.arguments << " -gravity Center  -crop #{config[:geometry].delete("#")}+0+0 +repage #{config[:grayscale] && config[:grayscale] == true ? "-colorspace Gray":""}"
-                rescue => e
-                  puts e
-                end
-              else
-                image.resize config[:geometry]
-                image.arguments << "-colorspace Gray" if config[:grayscale] && config[:grayscale] == true
-              end
-              image.save File.join(asset.tmp_directory, file_name)
-              asset.move_tmp_file_to_actual_directory(file_name, true)
-            end # asset_thumb.blank?
+            asset_thumb = asset.asset_thumbnails.where({
+              :thumbnail_type => name.to_s,
+              :user_generated => true
+            }).first
+            _generate_image_thumbnail(name, config) if asset_thumb.blank?
           end # sizes loop
 
           asset.update_attribute(:custom_thumbnail , true)
         end
 
+
+
         def generate_proper_resolution
           asset.make_backup
-          begin
-            image = QuickMagick::Image.read(asset.tmp_original_file_on_disk).first
-          rescue => e
-            image = QuickMagick::Image.read(asset.tmp_location_on_disk).first
-          end
-
-          actual_width = image.width.to_i
-          actual_height = image.height.to_i
-
-          asset.update_attributes( :width => actual_width, :height => actual_height)
-
-          image.resize asset.class.max_image_size
-          image.save File.join(asset.tmp_directory, asset.file_name)
-          asset.move_tmp_file_to_actual_directory(asset.file_name , true)
-          # remove mp3 info if any image have. it may happen in the case of updating asset from mp3 to image
-          audio = AudioAssetAttribute.where(:asset_id => asset.id).first
-          audio.destroy unless audio.blank?
+          image = read_image_file(asset)
+          asset.update_attributes( :width => image.width.to_i, :height => image.height.to_i)
+          _resize_and_save(asset, image, asset.class.max_image_size, nil, asset.file_name)
+          clean_audio_attributes_for_images(asset)
         end
 
+        private
+          def _prepare_image_crop_arguments(config)
+            thumb_defined_width = config[:geometry].split('x').first
+            scaling_percent = (thumb_defined_width.to_i/(w.to_i*1.0))*100
+            aurgments_str = " -crop #{w}x#{h}+#{x}+#{y} +repage"
+            aurgments_str << " -resize #{scaling_percent}%" if scaling_percent != 1.0
+            aurgments_str
+          end
 
+          def _generate_image_thumbnail(name, config)
+            image = read_image_file(asset)
+            file_name = "#{config[:filename]}.#{asset.file_extension}"
+            _resize_image_thumbnail(name, config, image, asset, file_name)
+          end
 
+          def _resize_image_thumbnail(name, config, image, asset, file_name)
+            aurgments_str = (config[:grayscale] == true ?  "-colorspace Gray" : "" )
+            resize_str = config[:geometry]
+
+            #fixed size thumbnail
+            if config[:geometry].include?("#")
+              resize_str = suggested_measures(image, config[:geometry])
+              aurgments_str << " -gravity Center  -crop #{config[:geometry].delete("#")}+0+0 +repage"
+            end
+            _resize_and_save(asset, image, resize_str, aurgments_str, file_name)
+          end
+
+          def read_image_file(asset)
+            begin
+              image = QuickMagick::Image.read(asset.tmp_original_file_on_disk).first
+            rescue => e
+              image = QuickMagick::Image.read(asset.tmp_location_on_disk).first
+            end
+            image
+          end
+
+          def _resize_and_save(asset, image, resize_str, aurgments_str, file_name)
+            image.resize resize_str unless resize_str.blank?
+            image.arguments << aurgments_str unless aurgments_str.blank?
+            image.save File.join(asset.tmp_directory, file_name)
+            asset.move_tmp_file_to_actual_directory(file_name , true)
+          end
+
+          def clean_audio_attributes_for_images(asset)
+            # remove mp3 info if any image have.
+            # it may happen in the case of updating asset from mp3 to image
+            AudioAssetAttribute.where(:asset_id => asset.id).delete_all
+          end
       end
     end
   end

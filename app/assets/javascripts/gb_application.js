@@ -1,5 +1,6 @@
 $(document).ready(function() {
   dragTreeManager.init();
+  initNestable();
   initClickEventsForAssetLinks($("body"));
   initSlugManagement();
   initBetterSlugManagement();
@@ -280,7 +281,6 @@ var AssetBrowser = {
           }
         }
 
-
         autoSaveAsset(AssetBrowser.logo_setting_url, id); //auto save if it is required
       } else {
         if (AssetBrowser.actualLink.hasClass("add_image_to_gallery")) {
@@ -517,7 +517,7 @@ function ajaxFileUploadForAssetLibrary(link) {
 
       data_id = $(this).attr("data_id");
       url = AssetBrowser.logo_setting_url;
-      auto_save_asset(url, new_id); // only if autosave is required
+      autoSaveAsset(url, new_id); // only if autosave is required
 
       if (AssetBrowser.actualLink.hasClass("add_image_to_gallery")) {
         $.ajax({
@@ -812,6 +812,93 @@ function initSlugManagement() {
 
 function enable_slug_management_on(src_class){
   $("."+src_class).attr('id','page_title')
+}
+
+function initNestable(){
+  window.nestableSerializedDataOnPageLoad = [];
+
+  // $('.dd').nestable({ /* config options */
+  // }).on('change', function(e) {
+  //   /* on change event */
+  //   var list   = e.length ? e : $(e.target),
+  //   output = list.data('output'),
+  //   url = list.attr('data-url');
+  // });
+
+  $('.dd').each(function(){
+    var $list = $(this);
+    var $saveButton = $($list.attr('data-saveButton'));
+    $saveButton.attr('disabled', 'disabled');
+    $list.nestable({
+      /* config options */
+    }).on("change", function(){
+      if(doesListReallyChanged($list) ){
+        enableButton($saveButton);
+      }
+    });
+
+    $saveButton.click(function(e){
+      if(blank($saveButton.attr('disabled'))){
+        saveNestableData($list, $saveButton);
+      }
+      e.preventDefault();
+    });
+
+    updateCurrentState($list);
+  });
+
+  function saveNestableData(list, saveButton){
+    updateCurrentState(list);
+    var url = list.attr('data-url');
+    if (window.JSON) {
+      var data = window.JSON.stringify(list.nestable('serialize'));
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: "nestable_serialized_data=" + data,
+        beforeSend: function(jqXHR, settings){
+          showOverlay();
+        },
+        success: function(html){
+          window.setTimeout(function(){
+            hideOverlay();
+          },500);
+          if(!blank(saveButton)){
+            disableButton(saveButton);
+          }
+        },
+        error: function(html){
+          $("#assetsDialogOverlay").html(html.responseText);
+          window.setTimeout(function(){
+            hideOverlay();
+          },10000)
+        }
+      });
+    } else {
+        console.log('JSON browser support required for this demo.');
+    }
+  }
+
+  function enableButton(saveButton){
+    saveButton.removeAttr('disabled');
+    saveButton.addClass('btn-primary');
+  }
+
+  function disableButton(saveButton){
+    saveButton.attr('disabled', 'disabled');
+    saveButton.removeClass('btn-primary');
+  }
+
+  function updateCurrentState(list){
+    window.nestableSerializedDataOnPageLoad[list.attr('data-id')] = list.nestable('serialize');
+  }
+
+  function doesListReallyChanged(list){
+    var change = JSON.stringify(window.nestableSerializedDataOnPageLoad[list.attr('data-id')]) != JSON.stringify(list.nestable('serialize'));
+    return change;
+  }
+
+
 }
 
 

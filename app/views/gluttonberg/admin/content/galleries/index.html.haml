@@ -1,4 +1,4 @@
-- @page_title = "#{link_to "Content", admin_content_path} > Galleries"
+- @page_title = "Galleries"
 
 .row-fluid
   = render :partial => "/gluttonberg/admin/content/main/sidebar"
@@ -11,7 +11,7 @@
         = sub_nav do
           - if can? :manage, Gluttonberg::Gallery
             = nav_link('New', new_admin_gallery_path)
-    
+
       - if @galleries.empty?
         %p.empty No Galleries
       - else
@@ -19,8 +19,8 @@
           %thead
             %tr
               %th Gallery
-              %th 
-                Created By          
+              %th
+                Created By
               %th.controls Controls
           %tbody
             - @galleries.each do |gallery|
@@ -29,8 +29,8 @@
                   = gallery.title
                 %td
                   - unless gallery.user.blank?
-                    = gallery.user.full_name  
+                    = gallery.user.full_name
                 %td.controls
-                  = link_to "Edit", edit_admin_gallery_path(gallery), :class => "btn " 
-                  - if can? :destroy , Gluttonberg::Gallery  
+                  = link_to "Edit", edit_admin_gallery_path(gallery), :class => "btn "
+                  - if can? :destroy , Gluttonberg::Gallery
                     = link_to "Delete", delete_admin_gallery_path(gallery), :class => "btn btn-danger"

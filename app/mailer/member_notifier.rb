@@ -1,4 +1,4 @@
-class MemberNotifier < ActionMailer::Base
+class MemberNotifier < Gluttonberg::BaseNotifier
   
   default :from => "#{Gluttonberg::Setting.get_setting("title")} <#{Gluttonberg::Setting.get_setting("from_email")}>"
   default_url_options[:host] = Rails.configuration.host_name 
@@ -38,14 +38,5 @@ class MemberNotifier < ActionMailer::Base
     @login_url = member_login_url
   end
   
-  
-  protected
-  
-    def setup_email
-      @from        = "#{Gluttonberg::Setting.get_setting("title")} <#{Gluttonberg::Setting.get_setting("from_email")}>"
-      @subject     = "[#{Gluttonberg::Setting.get_setting("title")}] "
-      @sent_on     = Time.now
-      @content_type = "text/html"
-    end
     
 end

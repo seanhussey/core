@@ -9,7 +9,7 @@ module Gluttonberg
         else
           model = Kernel.const_get(params[:flaggable_type])
         end
-        @flaggable = model.find(params[:flaggable_id])
+        @flaggable = model.where(:id => params[:flaggable_id]).first
         respond_to do |format|
           format.html
         end

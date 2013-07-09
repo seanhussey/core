@@ -4,7 +4,7 @@ module Gluttonberg
   module  Admin
     module Settings
       class LocalesController < Gluttonberg::Admin::BaseController
-        before_filter :find_locale, :only => [:delete, :edit, :update, :destroy]        
+        before_filter :find_locale, :only => [:delete, :edit, :update, :destroy]
         before_filter :authorize_user
         record_history :@locale
 
@@ -23,9 +23,9 @@ module Gluttonberg
           display_delete_confirmation(
             :title      => "Delete “#{@locale.name}” locale?",
             :url        => admin_locale_path(@locale),
-            :return_url => admin_locales_path , 
+            :return_url => admin_locales_path ,
             :warning    => "Page localizations of this locale will also be deleted."
-          )        
+          )
         end
 
         def create
@@ -59,16 +59,16 @@ module Gluttonberg
         end
 
         private
-      
+
           def find_locale
-            @locale = Locale.find(params[:id])
+            @locale = Locale.where(:id  => params[:id]).first
             raise ActiveRecord::RecordNotFound  unless @locale
           end
-          
+
           def authorize_user
             authorize! :manage, Gluttonberg::Locale
           end
-      
+
       end
     end
   end

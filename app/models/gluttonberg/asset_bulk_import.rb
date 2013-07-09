@@ -35,7 +35,7 @@ module Gluttonberg
           entry_name = entry.name.gsub("/", "-")
           filename = File.join(dir,entry_name)
           entry.extract(filename)
-          file = MyFile.init(filename , entry)
+          file = GbFile.init(filename , entry)
           asset_name_with_extention = entry_name.split(".").first
           asset_name_with_extention = asset_name_with_extention.humanize
           asset_name_with_extention = asset_name_with_extention.gsub('-',' ')

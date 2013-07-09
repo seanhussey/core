@@ -11,7 +11,7 @@ module Gluttonberg
         record_history :@page
 
         def index
-          @pages = Page.find(:all , :conditions => { :parent_id => nil } , :order => 'position' )
+          @pages = Page.where(:parent_id => nil).includes(:user, :localizations).order('position').all
         end
 
         def show
@@ -24,9 +24,8 @@ module Gluttonberg
         end
 
         def delete
-          default_localization = Gluttonberg::PageLocalization.find(:first , :conditions => { :page_id => @page.id , :locale_id => Gluttonberg::Locale.first_default.id } )
           display_delete_confirmation(
-            :title      => "Delete “#{default_localization.name}” page?",
+            :title      => "Delete “#{@page.current_localization.name}” page?",
             :url        => admin_page_url(@page),
             :return_url => admin_pages_path ,
             :warning    => "Children of this page will also be deleted."
@@ -41,8 +40,7 @@ module Gluttonberg
           if @page.save
             @page.create_default_template_file
             flash[:notice] = "The page was successfully created."
-            default_localization = Gluttonberg::PageLocalization.where(:page_id => @page.id , :locale_id => Gluttonberg::Locale.first_default.id).first
-            redirect_to edit_admin_page_page_localization_path( :page_id => @page.id, :id => default_localization.id)
+            redirect_to edit_admin_page_page_localization_path( :page_id => @page.id, :id => @page.current_localization.id)
           else
             prepare_to_edit
             render :new
@@ -93,8 +91,7 @@ module Gluttonberg
           @duplicated_page.user_id = current_user.id
           if @duplicated_page
             flash[:notice] = "The page was successfully duplicated."
-            default_localization = Gluttonberg::PageLocalization.find(:first , :conditions => { :page_id => @duplicated_page.id , :locale_id => Gluttonberg::Locale.first_default.id } )
-            redirect_to edit_admin_page_page_localization_path( :page_id => @duplicated_page.id, :id => default_localization.id)
+            redirect_to edit_admin_page_page_localization_path( :page_id => @duplicated_page.id, :id => @duplicated_page.current_localization.id)
           else
             flash[:error] = "There was an error duplicating the page."
             redirect_to admin_pages_path

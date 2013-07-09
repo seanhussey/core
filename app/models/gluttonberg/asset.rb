@@ -64,14 +64,13 @@ module Gluttonberg
     end
 
     def formatted_file_size
-      precision = 2
       unless size.blank?
         case
           when size == 1 then "1 Byte"
           when size < KILO_SIZE then "%d Bytes" % size
-          when size < MEGA_SIZE then "%.#{precision}f KB" % (size / KILO_SIZE)
-          when size < GIGA_SIZE then "%.#{precision}f MB" % (size / MEGA_SIZE)
-          else "%.#{precision}f GB" % (size / GIGA_SIZE)
+          when size < MEGA_SIZE then "%.2f KB" % (size / KILO_SIZE)
+          when size < GIGA_SIZE then "%.2f MB" % (size / MEGA_SIZE)
+          else "%.2f GB" % (size / GIGA_SIZE)
         end
       end
     end
@@ -125,7 +124,7 @@ module Gluttonberg
       files = Dir.entries(Rails.root+"/bulks")
       files.each do |entry|
         unless entry.starts_with?(".") || entry.starts_with?("__")
-          file = MyFile2.init(entry)
+          file = GbBulkFile.init(entry)
           asset_name_with_extention = entry.split(".").first
 
           asset_params = {:name => asset_name_with_extention  , :file => file  }
@@ -134,61 +133,26 @@ module Gluttonberg
       end
     end
 
+    def self.search_assets(query)
+      command = Gluttonberg.like_or_ilike
+      self.where(["name #{command} ? OR description LIKE ? ", "%#{query}%" , "%#{query}%" ] ).order("name ASC")
+    end
 
-
-    def copy_audios_to_s3
-      puts "--------copy_audios_to_s3"
-      key_id = Gluttonberg::Setting.get_setting("s3_key_id")
-      key_val = Gluttonberg::Setting.get_setting("s3_access_key")
-      s3_server_url = Gluttonberg::Setting.get_setting("s3_server_url")
-      s3_bucket = Gluttonberg::Setting.get_setting("s3_bucket")
-      if !key_id.blank? && !key_val.blank? && !s3_server_url.blank? && !s3_bucket.blank?
-        s3 = Aws::S3.new(key_id, key_val, {:server => s3_server_url})
-        bucket = s3.bucket(s3_bucket)
-        begin
-          local_file = Pathname.new(location_on_disk)
-          base_name = File.basename(local_file)
-          folder = self.asset_hash
-          date = Time.now+1.years
-          puts "Copying #{base_name} to #{s3_bucket}"
-          key = bucket.key("user_assets/" + folder + "/" + base_name, true)
-          key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822, "content-type" => "audio/mp3"})
-          self.update_attributes(:copied_to_s3 => true)
-          puts "Copied"
-        rescue => e
-          puts "#{base_name} failed to copy"
-          puts "** #{e} **"
-        end
+    def to_json_for_ajax_new
+      json = {
+        "asset_id" => self.id,
+        "title" => self.name,
+        "category" => self.category,
+        "url" => self.url
+      }
+      if self.category == "image"
+        json["url"] = self.thumb_small_url
+        json["jwysiwyg_image"] = self.url_for(:jwysiwyg_image)
       end
+      json.to_json
     end
 
   end
 
-
-
-  # i made this class for providing extra methods in file class.
-  # I am using it for making assets from zip folder.
-  # keep in mind when we upload asset from browser, browser injects three extra attributes (that are given in MyFile class)
-  # but we are adding assets from file, i am injecting extra attributes manually. because asset library assumes that file has three extra attributes
-  class MyFile2 < File
-    attr_accessor :original_filename , :content_type , :size
-
-    def self.init(filename)
-      file = MyFile2.new(Rails.root+"/bulks/" + filename)
-      file.original_filename = filename
-      file.content_type = find_content_type(filename)
-      file.size = File.size(Rails.root+"/bulks/" + filename)
-      file
-    end
-
-    def self.find_content_type(filename)
-      begin
-       MIME::Types.type_for(filename).first.content_type
-      rescue
-        ""
-      end
-    end
-
-  end
 
 end

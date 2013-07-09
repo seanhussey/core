@@ -13,7 +13,7 @@ module Gluttonberg
       end
 
       def create
-        @member = Member.find_by_email(params[:gluttonberg_member][:email])
+        @member = Member.where(:email => params[:gluttonberg_member][:email]).first
         if @member
           @member.deliver_password_reset_instructions!(current_localization_slug)
           flash[:notice] = "Instructions to reset your password have been emailed to you. " +
@@ -45,7 +45,7 @@ module Gluttonberg
       private
 
         def load_member_using_perishable_token
-          @member = Member.find_using_perishable_token(params[:id])
+          @member = Member.where(:perishable_token => params[:id]).first
           unless @member
             flash[:notice] = "We're sorry, but we could not locate your account. " +
             "If you are having issues try copying and pasting the URL " +

@@ -3,9 +3,10 @@
 
 = form_tag( admin_page_update_home_path(@home) ) do
 
-  = block("Setting") do
+  %legend
+    Setting
+  %p
     = label_tag :home ,  "Select New Homepage"
     = select_tag :home , options_from_collection_for_select(@pages, "id", "name" , selected = @current_home_page_id.to_s )  ,  { :class => "required"}
-    %br
-
-  = form_controls(admin_generic_settings_path)
+  %p
+    = form_controls(admin_generic_settings_path)

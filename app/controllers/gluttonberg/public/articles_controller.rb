@@ -1,42 +1,23 @@
 module Gluttonberg
   module Public
     class ArticlesController <   Gluttonberg::Public::BaseController
-
+      before_filter :is_blog_enabled
+      before_filter :find_blog, :only => [:index, :show, :preview]
+      
       def index
-        @blog = Gluttonberg::Blog.published.first(:conditions => {:slug => params[:blog_id]}, :include => [:articles])
-        raise ActiveRecord::RecordNotFound.new if @blog.blank?
         @articles = @blog.articles.published
-
-         respond_to do |format|
-           format.html
-           format.rss { render :layout => false }
+        respond_to do |format|
+          format.html
+          format.rss { render :layout => false }
         end
       end
 
       def show
-
-        @blog = Gluttonberg::Blog.published.first(:conditions => {:slug => params[:blog_id]})
-
-        if @blog.blank?
-          @blog = Gluttonberg::Blog.published.first(:conditions => {:previous_slug => params[:blog_id]})
-
-          unless @blog.blank?
-             redirect_to blog_article_path(:blog_id => @blog.slug , :id => params[:id]) , :status => 301
-             return
-          end
+        find_article
+        if @blog.previous_slug == params[:blog_id] || @article.previous_slug == params[:id]
+          redirect_to blog_article_path(:blog_id => @blog.slug , :id => params[:id]) , :status => 301
+          return
         end
-
-        raise ActiveRecord::RecordNotFound.new if @blog.blank?
-        @article = Gluttonberg::Article.published.first(:conditions => {:slug => params[:id], :blog_id => @blog.id})
-        if @article.blank?
-          @article = Gluttonberg::Article.published.first(:conditions => {:previous_slug => params[:id], :blog_id => @blog.id})
-          unless @article.blank?
-             redirect_to blog_article_path(:blog_id => @blog.slug , :id => @article.slug) , :status => 301
-             return
-          end
-        end
-
-        raise ActiveRecord::RecordNotFound.new if @article.blank?
         @article.load_localization(env['gluttonberg.locale'])
         @comments = @article.comments.where(:approved => true)
         @comment = Comment.new(:subscribe_to_comments => true)
@@ -54,7 +35,7 @@ module Gluttonberg
       end
 
       def unsubscribe
-        @subscription = CommentSubscription.find(:first , :conditions => {:reference_hash => params[:reference] })
+        @subscription = CommentSubscription.where(:reference_hash => params[:reference]).first
         unless @subscription.blank?
           @subscription.destroy
           flash[:notice] = "You are successfully unsubscribe from comments of \"#{@subscription.article.title}\""
@@ -66,13 +47,28 @@ module Gluttonberg
       end
 
       def preview
-        @blog = Gluttonberg::Blog.first(:conditions => {:slug => params[:blog_id]})
-        raise ActiveRecord::RecordNotFound.new if @blog.blank?
-        @article = Gluttonberg::Article.first(:conditions => {:slug => params[:article_id], :blog_id => @blog.id})
-        @article.load_localization(Locale.where(params[:locale_id]).first)
+        @article = Gluttonberg::Article.where(:slug => params[:article_id], :blog_id => @blog.id).first
         raise ActiveRecord::RecordNotFound.new if @article.blank?
+        @article.load_localization(Locale.where(params[:locale_id]).first)
         render :show
       end
+
+      private
+        def find_blog
+          @blog = Gluttonberg::Blog.published.where(:slug => params[:blog_id]).includes([:articles]).first
+          if @blog.blank?
+            @blog = Gluttonberg::Blog.published.where(:previous_slug => params[:blog_id]).first
+          end
+          raise ActiveRecord::RecordNotFound.new if @blog.blank?
+        end
+
+        def find_article
+          @article = Gluttonberg::Article.published.where(:slug => params[:id], :blog_id => @blog.id).first
+          if @article.blank?
+            @article = Gluttonberg::Article.published.where(:previous_slug => params[:id], :blog_id => @blog.id).first
+          end
+          raise ActiveRecord::RecordNotFound.new if @article.blank?
+        end
 
     end
   end

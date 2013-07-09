@@ -1,0 +1,12 @@
+.historycontrols
+  .btn-group
+    %a.btn.dropdown-toggle{"data-toggle" => "dropdown", :href => "#"}
+      Editing Version #{selected_version.version}
+      %span.caret
+    %ul.dropdown-menu
+      - collection.each do |c|
+        %li
+          = link_to c[0] , "?version=#{c[1]}" , :class => "#{c[1].to_s == selected.to_s ? 'active' : '' }"
+.clear
+%br/
+%br/

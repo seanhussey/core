@@ -33,7 +33,8 @@
     %h1
       = website_title
     %hr
-    %h3 Edit Your Site
+    %h3
+      Edit Your Site
     %br
     .row-fluid.dashboard
       - if Gluttonberg::Blog.table_exists?
@@ -87,7 +88,6 @@
           %h3 Recent Comments
           %br
           - @comments.each do |comment|
-
             .comment
               = comment.body.truncate(270)
               %hr

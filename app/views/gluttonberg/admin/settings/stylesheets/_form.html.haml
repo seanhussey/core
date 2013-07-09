@@ -3,10 +3,12 @@
 - unless @stylesheet.blank?
   = version_listing(@stylesheet.versions , @version )
 
+
 = form_for(@stylesheet, :url => url , :html => {:class => "validation"}) do  |f|
   = gb_error_messages_for(@stylesheet)
 
-  %fieldset
+  .span5
+
     %p
       = f.label :name
       = f.text_field(:name, :id => "page_title" , :class => "required")
@@ -19,10 +21,10 @@
       = f.label :css_prefix , "Target Browser(s)"
       = f.select(:css_prefix , css_prefix_list , :include_blank => "All Browsers")
 
-  %fieldset
     %p
       = f.label :value , "CSS"
       = f.text_area(:value , :class => "fullscreen" )
-  = form_controls(admin_stylesheets_path)
+
+    = form_controls(admin_stylesheets_path)
 
 = enable_redactor("jwysiwyg")

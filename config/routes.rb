@@ -7,12 +7,11 @@ Rails.application.routes.draw do
       root :to => "main#index"
 
       # Help
-      match("/help/:module_and_controller/:page" => "help#show", :module_and_controller => %r{\S+} , :as => :help)
+      get "/help/:module_and_controller/:page" => "help#show", :module_and_controller => %r{\S+} , :as => :help
 
       scope :module => 'content' do
-        match "/flagged_contents" => "flag#index" , :as => :flagged_contents
+        get "/flagged_contents" => "flag#index" , :as => :flagged_contents
         get '/flagged_contents/moderation/:id/:moderation' => "flag#moderation", :as => :flagged_contents_moderation
-        match 'content' => "main#index",      :as => :content
         resources :pages do
           get 'delete', :on => :member
           get 'duplicate', :on => :member
@@ -44,20 +43,20 @@ Rails.application.routes.draw do
           end
         end
 
-        match "/pages/move(.:format)" => "pages#move_node" , :as=> :page_move
+        post "/pages/move(.:format)" => "pages#move_node" , :as=> :page_move
         resources :galleries do
           get 'delete', :on => :member
           get 'add_image', :on => :member
           get 'remove_image' , :on => :member
         end
-        match "/galleries/move(.:format)" => "galleries#move_node" , :as=> :gallery_move
+        post "/galleries/move(.:format)" => "galleries#move_node" , :as=> :gallery_move
 
       end
 
       # Settings
       scope :module => 'settings' do
-        match 'settings' => "main#index",      :as => :settings
-        match 'history' => "global_history#index",      :as => :global_history
+        get 'settings' => "main#index",      :as => :settings
+        get 'history' => "global_history#index",      :as => :global_history
         resources :locales do
           get 'delete', :on => :member
         end
@@ -73,15 +72,15 @@ Rails.application.routes.draw do
         resources :stylesheets do
           get 'delete', :on => :member
         end
-        match "/stylesheets/move(.:format)" => "stylesheets#move_node" , :as=> :stylesheet_move
+        post "/stylesheets/move(.:format)" => "stylesheets#move_node" , :as=> :stylesheet_move
       end
 
       namespace :membership do
         root :to =>  "main#index"
-        match "/groups/move(.:format)" => "groups#move_node" , :as=> :group_move
-        match "members/export" => "members#export" , :as => :members_export
-        match 'members/new_bulk'  => "members#new_bulk" , :as => :members_import
-        match 'members/create_bulk' => "members#create_bulk" , :as => :members_bulk_create
+        post "/groups/move(.:format)" => "groups#move_node" , :as=> :group_move
+        get "members/export" => "members#export" , :as => :members_export
+        get 'members/new_bulk'  => "members#new_bulk" , :as => :members_import
+        post 'members/create_bulk' => "members#create_bulk" , :as => :members_bulk_create
         resources :members do
           get 'delete', :on => :member
           get 'welcome' , :on => :member
@@ -99,16 +98,16 @@ Rails.application.routes.draw do
           get 'crop', :on => :member
           post 'save_crop', :on => :member
         end
-        match "library" => "assets#index" , :as => :library
-        match "search_assets" => "assets#search" , :as => :library_search
-        match "add_asset_using_ajax"  => "assets#ajax_new" , :as => :add_asset_using_ajax
-        match "add_assets_in_bulk"  => "assets#add_assets_in_bulk" , :as => :add_assets_in_bulk
-        match "create_assets_in_bulk"  => "assets#create_assets_in_bulk" , :as => :create_assets_in_bulk
-        match "destroy_assets_in_bulk"  => "assets#destroy_assets_in_bulk" , :as => :destroy_assets_in_bulk
-        match "browser"  => "assets#browser" , :as => :asset_browser
-        match "browser-collection/:id"  => "assets#browser_collection" , :as => :asset_browser_collection
-        match "assets/:category/page/:page"  => "assets#category" , :as => :asset_category
-        match "collections/:id/page/:page"  => "collections#show" , :as => :asset_collection
+        get "library" => "assets#index" , :as => :library
+        get "search_assets" => "assets#search" , :as => :library_search
+        post "add_asset_using_ajax"  => "assets_ajax#create" , :as => :add_asset_using_ajax
+        get "add_assets_in_bulk"  => "assets_bulk#add_assets_in_bulk" , :as => :add_assets_in_bulk
+        post "create_assets_in_bulk"  => "assets_bulk#create_assets_in_bulk" , :as => :create_assets_in_bulk
+        post "destroy_assets_in_bulk"  => "assets_bulk#destroy_assets_in_bulk" , :as => :destroy_assets_in_bulk
+        get "browser"  => "assets#browser" , :as => :asset_browser
+        get "browser-collection/:id"  => "assets_ajax#browser_collection" , :as => :asset_browser_collection
+        get "assets/:category/page/:page"  => "assets#category" , :as => :asset_category
+        get "collections/:id/page/:page"  => "collections#show" , :as => :asset_collection
         resources :collections  do
           get 'delete', :on => :member
         end
@@ -118,14 +117,14 @@ Rails.application.routes.draw do
 
       get "login" => "user_sessions#new"
       post "login" => "user_sessions#create"
-      match "logout" => "user_sessions#destroy"
+      get "logout" => "user_sessions#destroy"
     end
 
     scope :module => 'public' do
-      match "/user_asset/:hash/:id(/:thumb_name)" => "public_assets#show" , :as => :public_asset
-      match "/_public/page" => "pages#show"
-      match "/restrict_site_access" => "pages#restrict_site_access" , :as => :restrict_site_access
-      match "sitemap" => "pages#sitemap" , :as => :sitemap
+      get "/user_asset/:hash/:id(/:thumb_name)" => "public_assets#show" , :as => :public_asset
+      get "/_public/page" => "pages#show"
+      get "/restrict_site_access" => "pages#restrict_site_access" , :as => :restrict_site_access
+      get "sitemap" => "pages#sitemap" , :as => :sitemap
       # Blog Stuff
 
       scope "(/:locale)" do
@@ -138,18 +137,18 @@ Rails.application.routes.draw do
       end
 
 
-      match "/mark_as_flag/:flaggable_type/:flaggable_id" => "flag#new" , :as => :mark_as_flag
-      match "/save_mark_as_flag" => "flag#create" , :as => :save_mark_as_flag
-      match "/articles/tag/:tag" => "articles#tag" , :as => :articles_by_tag
-      match "/articles/unsubscribe/:reference" => "articles#unsubscribe" , :as => :unsubscribe_article_comments
+      get "/mark_as_flag/:flaggable_type/:flaggable_id" => "flag#new" , :as => :mark_as_flag
+      post "/save_mark_as_flag" => "flag#create" , :as => :save_mark_as_flag
+      get "/articles/tag/:tag" => "articles#tag" , :as => :articles_by_tag
+      get "/articles/unsubscribe/:reference" => "articles#unsubscribe" , :as => :unsubscribe_article_comments
       get "(/:locale)/member/login" => "member_sessions#new" , :as => :member_login
       post "(/:locale)/member/login" => "member_sessions#create"  , :as => :member_login
-      match "(/:locale)/member/logout" => "member_sessions#destroy", :as => :member_logout
+      get "(/:locale)/member/logout" => "member_sessions#destroy", :as => :member_logout
       get "(/:locale)/member/confirm/:key" => "members#confirm", :as => :member_confirmation
       get "(/:locale)/member/resend_confirmation" => "members#resend_confirmation", :as => :member_resend_confirmation
       put "(/:locale)/member/profile" => "members#update"
       get "(/:locale)/member/profile" => "members#show", :as => :member_profile
-      match "(/:locale)/member/profile/edit" => "members#edit", :as => :member_profile_edit
+      get "(/:locale)/member/profile/edit" => "members#edit", :as => :member_profile_edit
 
       scope "(/:locale)" do
         resources :members

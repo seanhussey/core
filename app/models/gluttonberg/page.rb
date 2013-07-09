@@ -5,12 +5,16 @@ module Gluttonberg
   class Page < ActiveRecord::Base
     include Content::Publishable
     include Content::SlugManagement
+    include Content::PageFinder
+
     belongs_to :user
     has_many :localizations, :class_name => "Gluttonberg::PageLocalization"   , :dependent => :destroy
     has_and_belongs_to_many :groups, :class_name => "Group" , :join_table => "gb_groups_pages"
 
     attr_protected :user_id , :state , :published_at
-    attr_accessible :parent_id, :parent, :name, :navigation_label, :slug, :description_name, :hide_in_nav, :group_ids, :home
+    attr_accessible :parent_id, :parent, :position, :name
+    attr_accessible :navigation_label, :slug, :description_name
+    attr_accessible :hide_in_nav, :group_ids, :home
 
     # Generate the associations for the block/content classes
     Content::Block.classes.each do |klass|
@@ -29,92 +33,21 @@ module Gluttonberg
 
     def easy_contents(section_name, opts = {})
       begin
+        prepared_content = nil
         section_name = section_name.to_sym
         load_localization
         content = localized_contents.pluck {|c| c.section[:name] == section_name}
-        if content.class.name == "Gluttonberg::ImageContent"
-          if opts[:url_for].blank?
-            content.asset.url
-          else
-            content.asset.url_for(opts[:url_for].to_sym)
-          end
-        elsif content.class.name == "Gluttonberg::HtmlContent"
-          content.current_localization.text.html_safe
-        elsif content.class.name == "Gluttonberg::PlainTextContent"
-          content.current_localization.text
-        else
-          nil
+        prepared_content = case content.class.name
+          when "Gluttonberg::ImageContent"
+            content.asset.url_for opts[:url_for]
+          when "Gluttonberg::HtmlContent"
+            content.current_localization.text.html_safe
+          when "Gluttonberg::PlainTextContent"
+            content.current_localization.text
         end
       rescue
-        nil
       end
-    end
-
-    # A custom finder used to find a page + locale combination which most
-    # closely matches the path specified. It will also optionally limit it's
-    # search to the specified locale, otherwise it will fall back to the
-    # default.
-    def self.find_by_path(path, locale = nil , domain_name=nil)
-      path = path.match(/^\/(\S+)/)
-      if( !locale.blank? && !path.blank?)
-        path = path[1]
-        page = joins(:localizations).where("locale_id = ? AND gb_page_localizations.path LIKE ? ", locale.id, path).first
-        unless page.blank?
-          page.current_localization = page.localizations.where("locale_id = ? AND path LIKE ? ", locale.id, path).first
-        end
-        page
-      elsif path.blank? #looking for home
-        locale = Gluttonberg::Locale.first_default if locale.blank?
-        if !Rails.configuration.multisite.blank?
-          page_desc = PageDescription.all.find{|key , val|  val.home_for_domain?(domain_name) }
-          page_desc = page_desc.last unless page_desc.blank?
-          unless page_desc.blank?
-            pages = joins(:localizations).where("locale_id = ? AND description_name = ?", locale.id, page_desc.name)
-          end
-        end
-
-        if pages.blank?
-          pages = joins(:localizations).where("locale_id = ? AND home = ?", locale.id, true)
-        end
-
-        page = pages.first unless pages.blank?
-        unless page.blank?
-          page.current_localization = page.localizations.where("locale_id = ? ", locale.id).first
-        end
-        page
-      else # default locale
-         path = path[1]
-         locale = Gluttonberg::Locale.first_default
-         page = joins(:localizations).where("locale_id = ? AND gb_page_localizations.path LIKE ? ", locale.id, path).first
-         unless page.blank?
-           page.current_localization = page.localizations.where("locale_id = ? AND path LIKE ? ", locale.id, path).first
-         end
-         page
-      end
-    end
-
-    # A custom finder used to find a page + locale combination which most
-    # closely matches the path specified. It will also optionally limit it's
-    # search to the specified locale, otherwise it will fall back to the
-    # default.
-    def self.find_by_previous_path(path, locale = nil , domain_name=nil)
-      path = path.match(/^\/(\S+)/)
-      if( !locale.blank? && !path.blank?)
-        path = path[1]
-        page = joins(:localizations).where("locale_id = ? AND gb_page_localizations.previous_path LIKE ? ", locale.id, path).first
-        unless page.blank?
-          page.current_localization = page.localizations.where("locale_id = ? AND previous_path LIKE ? ", locale.id, path).first
-        end
-        page
-      elsif(!path.blank?) # default locale
-         path = path[1]
-         locale = Gluttonberg::Locale.first_default
-         page = joins(:localizations).where("locale_id = ? AND gb_page_localizations.previous_path LIKE ? ", locale.id, path).first
-         unless page.blank?
-           page.current_localization = page.localizations.where("locale_id = ? AND previous_path LIKE ? ", locale.id, path).first
-         end
-         page
-      end
+      prepared_content
     end
 
     def current_localization
@@ -127,6 +60,7 @@ module Gluttonberg
     def redirect_required?
       self.description.redirect?
     end
+
     def redirect_url
       self.description.redirect_url(self,{})
     end
@@ -166,41 +100,25 @@ module Gluttonberg
     # Returns the localized navigation label, or falls back to the page for a
     # the default.
     def nav_label
-      if current_localization.blank?
-        if navigation_label.blank?
-          name
-        else
-          navigation_label
-        end
+      if current_localization.navigation_label.blank?
+        current_localization.name
       else
-        if current_localization.navigation_label.blank?
-          current_localization.name
-        else
-          current_localization.navigation_label
-        end
+        current_localization.navigation_label
       end
     end
 
     # Returns the localized title for the page or a default
     def title
-      (current_localization.blank? || current_localization.name.blank?) ? self.name : current_localization.name
+      current_localization.name
     end
 
     # Delegates to the current_localization
     def path
-      unless current_localization.blank?
-        current_localization.path
-      else
-        localizations.first.path
-      end
+      current_localization.path
     end
 
     def public_path
-      unless current_localization.blank?
-        current_localization.public_path
-      else
-        localizations.first.public_path
-      end
+      current_localization.public_path
     end
 
 
@@ -228,22 +146,23 @@ module Gluttonberg
       end
     end
 
+    def load_default_localizations
+      Gluttonberg::Locale.first_default.id
+      self.current_localization = Gluttonberg::PageLocalization.where(:page_id => id , :locale_id => Gluttonberg::Locale.first_default.id).first
+    end
+
     def home=(state)
       write_attribute(:home, state)
       @home_updated = state
     end
 
     def self.home_page
-      Page.find( :first ,  :conditions => [ "home = ? " , true ] )
+      self.where(:home => true).first
     end
 
     def self.home_page_name
       home_temp = self.home_page
-      if home_temp.blank?
-        "Not Selected"
-      else
-        home_temp.name
-      end
+      home_temp.blank? ? "Not Selected" : home_temp.name
     end
 
     # if page type is not redirection.
@@ -266,100 +185,19 @@ module Gluttonberg
     end
 
     def self.repair_pages_structure
-      pages = Page.all
-
-      pages.each do |page|
-        if page.description.blank?
-          puts "Page description '#{page.description_name}' for '#{page.name}' page  does not exist in page descriptions file. #{page.id}"
-        elsif !page.description.sections.blank?
-          puts("Generating stubbed content for new page #{page.id}")
-
-          [PlainTextContent , HtmlContent , ImageContent].each do |klass|
-            list = klass.find(:all , :conditions => { :page_id => page.id})
-            list.each do |item|
-              found = page.description.contains_section?(item.section_name , item.class.to_s.demodulize.underscore)
-              puts found
-              if(!found)
-                  item.destroy
-              end
-            end
-          end
-
-          page.description.sections.each do |name, section|
-            # Create the content
-            association = page.send(section[:type].to_s.pluralize)
-            content = association.where(:section_name => name).first
-            if content.blank?
-              content = association.create(:section_name => name)
-            end
-            # Create each localization
-            if content.class.localized?
-              page.localizations.all.each do |localization|
-               if content.localizations.where("#{section[:type]}_id" => content.id, :page_localization_id => localization.id).count == 0
-                 content.localizations.create(:parent => content, :page_localization => localization)
-               end
-              end
-            end
-          end
-        end
-      end # pages loop end
-      puts "completed"
+      PageRepairer.repair_pages_structure
     end
 
     def is_public?
       groups.blank?
     end
 
-    def load_default_localizations
-      Gluttonberg::Locale.first_default.id
-      self.current_localization = Gluttonberg::PageLocalization.where(:page_id => id , :locale_id => Gluttonberg::Locale.first_default.id).first
-    end
-
-    def published?
-      if publishing_status == "Published"
-        return true
-      else
-        return false
-      end
-    end
-
     def duplicate
-      ActiveRecord::Base.transaction do
-        duplicated_page = self.dup
-        duplicated_page.state = "draft"
-        duplicated_page.created_at = Time.now
-        duplicated_page.published_at = nil
-        duplicated_page.position = nil
-
-        if duplicated_page.save
-          self.localizations.each do |localization|
-            dup_loc = duplicated_page.localizations.where(:locale_id => localization.locale_id).first
-            dup_loc_contents = dup_loc.contents
-            unless dup_loc.blank?
-              localization.contents.each do |content|
-                 if content.respond_to?(:parent) && content.parent.localized
-                    dup_content = dup_loc_contents.find{|c| c.respond_to?(:page_localization_id) &&  c.page_localization_id == dup_loc.id && c.parent.section_name ==  content.parent.section_name}
-                    dup_content.update_attributes(:text => content.text)
-                    dup_content = nil
-                 else
-                    dup_content = dup_loc_contents.find{|c| c.respond_to?(:page_id) && c.page_id == duplicated_page.id && c.section_name ==  content.section_name}
-                    dup_content.update_attributes(:asset_id => content.asset_id)
-                    dup_content = nil
-                 end
-              end
-
-            end
-          end
-
-          duplicated_page
-        else
-          nil
-        end
-      end
+      PageDuplicate.duplicate(self)
     end
+
 
     private
-
 
       # Checks to see if this page has been set as the homepage. If it has, we
       # then go and

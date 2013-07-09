@@ -39,15 +39,34 @@ module Gluttonberg
             end
 
             def move_node
-              if params[:element_ids].blank?
+              if params[:element_ids].blank? && params[:nestable_serialized_data].blank?
                 render :json => {:success => false}
                 return
               end
-              ids = params[:element_ids].split(",")
-              elements = self.class.drag_class.find_by_sorted_ids(ids )
-              elements.each_with_index do |element , index|
-                attr = {:position => index + 1}
-                element.update_attributes!( attr   )
+              if params[:element_ids]
+                ids = params[:element_ids].split(",")
+                elements = self.class.drag_class.find_by_sorted_ids(ids)
+                elements.each_with_index do |element , index|
+                  attr = {:position => index + 1}
+                  element.update_attributes!(attr)
+                end
+              else
+                def _update_position_for_pages(klass, pages, parent_id)
+                  pages.each_with_index do |row, index|
+                    klass.update(row["id"], :position => index, :parent_id => parent_id)
+                    unless row["children"].blank?
+                      _update_position_for_pages(klass, row["children"], row["id"])
+                    end
+                  end
+                end
+                nestable_serialized_data = JSON.parse(params[:nestable_serialized_data])
+                puts nestable_serialized_data
+                _update_position_for_pages(self.class.drag_class, nestable_serialized_data, nil)
+                # elements = self.class.drag_class.find_by_sorted_ids(ids)
+                # elements.each_with_index do |element , index|
+                #   attr = {:position => index + 1}
+                #   element.update_attributes!( attr   )
+                # end
               end
               render :json => {:success => true}
             end
