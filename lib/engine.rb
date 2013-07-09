@@ -60,24 +60,10 @@ module Gluttonberg
       ]
     end
     
-    
-
-    def init_asset_precompile
-      
-    end
-
-    
     init_basic_settings
     init_advance_settings
     init_internal_settings
-    init_asset_precompile
-    if Rails.version > "3.1"
-      initializer "Gluttonberg precompile hook", :group => :all do |app|
-        app.config.assets.precompile += ["*.js", "*.css"]
-      end
-    end
-    
-
+  
     # Load rake tasks
     rake_tasks do
       load File.join(File.dirname(__FILE__), 'rails/railties/tasks.rake')
@@ -85,35 +71,15 @@ module Gluttonberg
       load File.join(File.dirname(__FILE__), 'gluttonberg/tasks/gluttonberg.rake')
     end
 
-    # Check the gem config
-    initializer "check config" do |app|
-      # make sure mount_at ends with trailing slash
-      config.mount_at += '/'  unless config.mount_at.last == '/'
-    end
-
-    initializer "static assets" do |app|
-      app.middleware.use ::ActionDispatch::Static, "#{root}/public"
-    end
-
     initializer "initialize gluttonberg" do |app|
       init_middlewares(app)
       init_gb_components(app)
-    end
-
-
-    initializer "setup acts-as-taggable-on" do |app|
-      require "acts-as-taggable-on"
-      if ::ActsAsTaggableOn::Tag.attribute_names.include?("slug") == true
-        ::ActsAsTaggableOn::Tag.send(:include , Gluttonberg::Content::SlugManagement)
-      end
-    end
-
-    initializer "setup active_link_to" do |app|
+      init_acts_as_taggable_on(app)
       require 'active_link_to'
-    end
-
-    initializer "setup delayed job" do |app|
-      Delayed::Job.attr_accessible :priority, :payload_object, :handler, :run_at, :failed_at
+      init_delayed_job(app)
+      init_static_assets(app)
+      init_mount_at(app)
+      init_asset_precompile(app)
     end
 
     private
@@ -140,6 +106,33 @@ module Gluttonberg
         Gluttonberg::CanFlag.setup
         Time::DATE_FORMATS[:default] = "%d/%m/%Y %I:%M %p"
         Components.init_main_nav
+      end
+
+      def init_acts_as_taggable_on(app)
+        require "acts-as-taggable-on"
+        if ::ActsAsTaggableOn::Tag.attribute_names.include?("slug") == true
+          ::ActsAsTaggableOn::Tag.send(:include , Gluttonberg::Content::SlugManagement)
+        end
+      end
+
+      def init_delayed_job(app)
+        Delayed::Job.attr_accessible :priority, :payload_object, :handler, :run_at, :failed_at
+      end
+
+      def init_static_assets(app)
+        app.middleware.use ::ActionDispatch::Static, "#{root}/public"
+      end
+
+      def init_mount_at(app)
+        # make sure mount_at ends with trailing slash
+        config.mount_at += '/'  unless config.mount_at.last == '/'
+      end
+
+      def init_asset_precompile(app)
+        if Rails.version > "3.1"
+          #Gluttonberg precompile hook
+          app.config.assets.precompile += ["*.js", "*.css"]
+        end
       end
   end
 end
