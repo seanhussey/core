@@ -75,16 +75,22 @@ namespace :gluttonberg do
       FileUtils.mkdir_p(File.join(Rails.root, "db", "migrate"))
       FileUtils.mkdir_p(File.join(Rails.root, "app", "views", "pages"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "gluttonberg_migration.rb"), File.join(Rails.root, "db", "migrate", "#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_gluttonberg_migration.rb"))
+
+      sleep(1)
+      FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "add_artist_and_link_to_assets.rb"), File.join(Rails.root, "db", "migrate", "#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_add_artist_and_link_to_assets.rb"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "page_descriptions.rb"), File.join(Rails.root, "config", "page_descriptions.rb"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "sitemap.rb"), File.join(Rails.root, "config", "sitemap.rb"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "gluttonberg_basic_settings.rb"), File.join(Rails.root, "config", "initializers", "gluttonberg_basic_settings.rb"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "gluttonberg_advance_settings.rb"), File.join(Rails.root, "config", "initializers", "gluttonberg_advance_settings.rb"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "public.html.haml"), File.join(Rails.root, "app", "views", "layouts", "public.html.haml"))
+      FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "Procfile"), File.join(Rails.root, "Procfile"))
+      FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "unicorn.rb"), File.join(Rails.root, "config", "unicorn.rb"))
       FileUtils.rm(File.join(Rails.root, "public", "index.html"))
       FileUtils.chmod(0755, File.join(Rails.root, "script", "delayed_job"))
     rescue => e
       line.say("<%= color('Failure!', RED) %>")
       line.say(e.to_s)
+      return
     end
   end
 
@@ -97,6 +103,7 @@ namespace :gluttonberg do
     rescue => e
       line.say("<%= color('Failure!', RED) %>")
       line.say(e.to_s)
+      return
     end
   end
 
@@ -111,6 +118,7 @@ namespace :gluttonberg do
     rescue => e
       line.say("<%= color('Failure!', RED) %>")
       line.say(e.to_s)
+      return
     end
   end
 
@@ -154,6 +162,7 @@ namespace :gluttonberg do
       line = HighLine.new
       line.say("<%= color('Failure!', RED) %>")
       line.say(e.to_s)
+      return
     end
   end
 

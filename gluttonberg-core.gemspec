@@ -34,6 +34,10 @@ Gem::Specification.new do |s|
   s.add_dependency 'domainatrix', '0.0.11'
   s.add_dependency 'aws-sdk', '1.8.1.3' #1.11.3
   s.add_dependency 'highline', '1.6.19'
+  s.add_dependency 'haml', '4.0.3'
+  s.add_dependency 'sass', '3.2.9'
+  s.add_dependency 'unicorn', '4.6.3'
+  s.add_dependency 'foreman', '0.63.0'
   s.add_development_dependency 'rspec-rails', '2.13.2'
 
 end

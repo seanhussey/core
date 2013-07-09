@@ -9,10 +9,7 @@ gemspec
 
 gem 'rails', '~> 3.2'
 gem 'pg', '0.15.1'
-gem 'haml' , '4.0.3'
-gem 'sass' , '3.2.9'
 gem 'jquery-rails', '3.0.0'
-
 gem 'simplecov', :require => false, :group => :test
 
 group :assets do
