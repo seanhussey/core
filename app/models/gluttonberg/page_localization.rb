@@ -125,12 +125,15 @@ module Gluttonberg
         else
           new_path = "#{self.slug || page.slug}"
         end
+        check_duplication_in(new_path)
+      end
 
+      def check_duplication_in(new_path)
         # check duplication: add id at the end if its duplicated
         already_exist = self.class.where([ "path = ? AND page_id != ? ", new_path, page.id]).all
         if !already_exist.blank?
           if already_exist.length > 1 || (already_exist.length == 1 && already_exist.first.id != self.id )
-            new_path= "#{new_path}_#{already_exist.length+1}"
+            new_path = "#{new_path}_#{already_exist.length+1}"
           end
         end
         new_path
