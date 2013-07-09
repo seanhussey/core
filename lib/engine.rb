@@ -87,7 +87,6 @@ module Gluttonberg
 
     # Check the gem config
     initializer "check config" do |app|
-
       # make sure mount_at ends with trailing slash
       config.mount_at += '/'  unless config.mount_at.last == '/'
     end
@@ -96,31 +95,11 @@ module Gluttonberg
       app.middleware.use ::ActionDispatch::Static, "#{root}/public"
     end
 
-    initializer "middleware" do |app|
-      app.middleware.use Gluttonberg::Middleware::Locales
-      app.middleware.use Gluttonberg::Middleware::Rewriter
-      app.middleware.use Gluttonberg::Middleware::Honeypot , config.honeypot_field_name
+    initializer "initialize gluttonberg" do |app|
+      init_middlewares(app)
+      init_gb_components(app)
     end
 
-
-    initializer "setup gluttonberg components" do |app|
-      Gluttonberg::Content::Versioning.setup
-      Gluttonberg::Content::ImportExportCSV.setup
-      Gluttonberg::Content::CleanHtml.setup
-      Gluttonberg::PageDescription.setup
-
-      # register content class here.
-      # It is required for lazyloading environments.
-      Gluttonberg::Content::Block.register(Gluttonberg::PlainTextContent)
-      Gluttonberg::Content::Block.register(Gluttonberg::HtmlContent)
-      Gluttonberg::Content::Block.register(Gluttonberg::ImageContent)
-
-      Gluttonberg::Content.setup
-
-      Gluttonberg::CanFlag.setup
-      Time::DATE_FORMATS[:default] = "%d/%m/%Y %I:%M %p"
-      Components.init_main_nav
-    end
 
     initializer "setup acts-as-taggable-on" do |app|
       require "acts-as-taggable-on"
@@ -136,5 +115,31 @@ module Gluttonberg
     initializer "setup delayed job" do |app|
       Delayed::Job.attr_accessible :priority, :payload_object, :handler, :run_at, :failed_at
     end
+
+    private
+      def init_middlewares(app)
+        app.middleware.use Gluttonberg::Middleware::Locales
+        app.middleware.use Gluttonberg::Middleware::Rewriter
+        app.middleware.use Gluttonberg::Middleware::Honeypot , config.honeypot_field_name
+      end
+
+      def init_gb_components(app)
+        Gluttonberg::Content::Versioning.setup
+        Gluttonberg::Content::ImportExportCSV.setup
+        Gluttonberg::Content::CleanHtml.setup
+        Gluttonberg::PageDescription.setup
+
+        # register content class here.
+        # It is required for lazyloading environments.
+        Gluttonberg::Content::Block.register(Gluttonberg::PlainTextContent)
+        Gluttonberg::Content::Block.register(Gluttonberg::HtmlContent)
+        Gluttonberg::Content::Block.register(Gluttonberg::ImageContent)
+
+        Gluttonberg::Content.setup
+
+        Gluttonberg::CanFlag.setup
+        Time::DATE_FORMATS[:default] = "%d/%m/%Y %I:%M %p"
+        Components.init_main_nav
+      end
   end
 end
