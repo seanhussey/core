@@ -8,19 +8,15 @@ module Gluttonberg
     def self.open_zip_file_and_make_assets(asset_params, current_user)
       new_assets = []
       zip = asset_params[:file]
-      dir = File.join(Rails.root,"tmp")
-      dir = File.join(dir,Time.now.to_i.to_s)
-
-      FileUtils.mkdir_p(dir)
-
+      dir = create_tmp_folder
       begin
         Zip::ZipFile.open(zip.tempfile.path).each do |entry|
           asset = self.make_asset_for_entry(asset_params, current_user, entry , dir)
-          new_assets << asset if !asset.blank? && asset.kind_of?(Gluttonberg::Asset)
+          new_assets << asset if asset && asset.kind_of?(Gluttonberg::Asset)
         end
         zip.tempfile.close
       rescue => e
-        Rails.logger.info e
+       Rails.logger.info e
       end
       FileUtils.rm_r(dir)
       new_assets
@@ -36,19 +32,30 @@ module Gluttonberg
           filename = File.join(dir,entry_name)
           entry.extract(filename)
           file = GbFile.init(filename , entry)
-          asset_name_with_extention = entry_name.split(".").first
-          asset_name_with_extention = asset_name_with_extention.humanize
-          asset_name_with_extention = asset_name_with_extention.gsub('-',' ')
-          asset = Asset.new(asset_params.merge( :name => asset_name_with_extention ,  :file => file ) )
-          asset.user_id = current_user.id
-          status = asset.save
+          asset = prepare_asset(entry_name, file, current_user, asset_params)
           file.close
           FileUtils.remove_file(filename)
-          status ? asset : nil
+          asset
         end
       rescue => e
         Rails.logger.info e
       end
     end
+
+    private
+      def self.create_tmp_folder
+        dir = File.join(Rails.root,"tmp")
+        dir = File.join(dir,Time.now.to_i.to_s)
+        FileUtils.mkdir_p(dir)
+      end
+
+      def self.prepare_asset(entry_name, file, current_user, asset_params)
+        asset_name_with_extention = entry_name.split(".").first
+        asset_name_with_extention = asset_name_with_extention.humanize
+        asset_name_with_extention = asset_name_with_extention.gsub('-',' ')
+        asset = Asset.new(asset_params.merge( :name => asset_name_with_extention ,  :file => file ) )
+        asset.user_id = current_user.id
+        asset.save ? asset : nil
+      end
   end #class
 end

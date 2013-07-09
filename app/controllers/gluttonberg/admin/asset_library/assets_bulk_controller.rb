@@ -23,7 +23,8 @@ module Gluttonberg
         def create_assets_in_bulk
           # process new asset_collection and merge into existing collections
           AssetCollection.process_new_collection_and_merge(params, current_user)
-          if Asset.new(params[:asset]).valid?
+          @asset = Asset.new(params[:asset])
+          if @asset.valid?
             @new_assets = AssetBulkImport.open_zip_file_and_make_assets(params[:asset], current_user)
             if @new_assets.blank?
               flash[:error] = "The zip file you uploaded does not have any valid files."
