@@ -95,5 +95,7 @@ module Gluttonberg
           view.render(:partial => partial, :locals => assigns)
         end
     end #FormBuilder
+
+    ActionView::Helpers::FormBuilder.send(:include , Gluttonberg::Helpers::FormBuilder)
   end
 end

@@ -31,7 +31,6 @@ module Gluttonberg
   require 'gluttonberg/random_string_generator'
   require 'gluttonberg/helpers/form_builder'
 
-  ActionView::Helpers::FormBuilder.send(:include , Gluttonberg::Helpers::FormBuilder)
   # These should likely move into one of the initializers inside of the
   # engine config. This will ensure they only run after Rails and the app
   # has been loaded.
