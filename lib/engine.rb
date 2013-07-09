@@ -5,57 +5,78 @@ module Gluttonberg
   class Engine < Rails::Engine
 
     # Config defaults
-    config.widget_factory_name = "default factory name"
-    config.mount_at = '/'
-    config.admin_path = '/admin'
-    config.app_name = 'Gluttonberg 2.5'
-    config.localize = false
-    config.flagged_content = false
-    config.active_record.observers = ['gluttonberg/page_observer' , 'gluttonberg/page_localization_observer' , 'gluttonberg/locale_observer' ]
+    def init_basic_settings
+      config.mount_at = '/'
+      config.app_name = 'Gluttonberg'
+      config.max_image_size = "1600x1200>"
+      config.thumbnails = {}
+      config.enable_gallery = false
+      config.enable_members = false
+      config.encoding = "utf-8"
+      config.host_name = "localhost:3000"
+    end
 
+    def init_advance_settings
+      config.asset_storage = :filesystem
+      #engines which depends on gluttonberg-core can
+      #use this to provide additional processor for assets
+      #in first stage I am going to use it with Tv
+      config.asset_processors = []
+      config.asset_mixins = []
+      config.custom_css_for_cms = false
+      config.custom_js_for_cms = false
+      # User model always concat following three roles
+      # ["super_admin" , "admin" , "contributor"]
+      config.user_roles = []
+      config.cms_based_public_css = false
+      config.flagged_content = false
+      config.search_models = {
+        "Gluttonberg::Page" => [:name],
+        "Gluttonberg::Blog" => [:name , :description],
+        "Gluttonberg::ArticleLocalization" => [:title , :body],
+        "Gluttonberg::PlainTextContentLocalization" => [:text] ,
+        "Gluttonberg::HtmlContentLocalization" => [:text]
+      }
+      config.honeypot_field_name = "our_newly_weekly_series"
+      config.localize = false
+      config.member_csv_metadata = { 
+        :first_name => "FIRST NAME", 
+        :last_name => "LAST NAME",  
+        :email => "EMAIL", 
+        :groups => "GROUPS", 
+        :bio => "BIO"
+      }
+      config.member_mixins = []
+      config.password_pattern = /^(?=.*\d)(?=.*[a-zA-Z])(?!.*[^\w\S\s]).{6,}$/
+      config.password_validation_message = "must be a minimum of 6 characters in length, contain at least 1 letter and at least 1 number"
+      config.multisite = false
+    end
+
+    def init_internal_settings
+      config.identify_locale = :prefix
+      config.active_record.observers = ['gluttonberg/page_observer', 
+        'gluttonberg/page_localization_observer' , 
+        'gluttonberg/locale_observer' 
+      ]
+    end
+    
+    
+
+    def init_asset_precompile
+      
+    end
+
+    
+    init_basic_settings
+    init_advance_settings
+    init_internal_settings
+    init_asset_precompile
     if Rails.version > "3.1"
       initializer "Gluttonberg precompile hook", :group => :all do |app|
         app.config.assets.precompile += ["*.js", "*.css"]
       end
     end
-
-    config.thumbnails = {}
-    config.max_image_size = "1600x1200>"
-    config.encoding = "utf-8"
-    config.identify_locale = :prefix
-    config.host_name = "localhost:3000"
-    # User model always concat following three roles
-    # ["super_admin" , "admin" , "contributor"]
-    config.user_roles = []
-    config.password_pattern = /^(?=.*\d)(?=.*[a-zA-Z])(?!.*[^\w\S\s]).{6,}$/
-    config.password_validation_message = "must be a minimum of 6 characters in length, contain at least 1 letter and at least 1 number"
-
-    config.honeypot_field_name = "our_newly_weekly_series"
-    config.custom_css_for_cms = false
-    config.custom_js_for_cms = false
-    config.asset_storage = :filesystem
-
-    #engines which depends on gluttonberg-core can
-    #use this to provide additional processor for assets
-    #in first stage I am going to use it with Tv
-    config.asset_processors = []
-
-    config.asset_mixins = []
-    config.member_mixins = []
-    config.search_models = {
-      "Gluttonberg::Page" => [:name],
-      "Gluttonberg::Blog" => [:name , :description],
-      "Gluttonberg::ArticleLocalization" => [:title , :body],
-      "Gluttonberg::PlainTextContentLocalization" => [:text] ,
-      "Gluttonberg::HtmlContentLocalization" => [:text]
-    }
-    config.multisite = false
-
-    config.enable_members = false
-    config.member_csv_metadata = { :first_name => "FIRST NAME" , :last_name => "LAST NAME" ,  :email => "EMAIL" , :groups => "GROUPS" , :bio => "BIO" }
-
-    config.enable_gallery = false
-    config.cms_based_public_css = false
+    
 
     # Load rake tasks
     rake_tasks do
