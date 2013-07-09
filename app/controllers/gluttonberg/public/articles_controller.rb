@@ -47,11 +47,9 @@ module Gluttonberg
       end
 
       def preview
-        @blog = Gluttonberg::Blog.published.where(:slug => params[:blog_id]).first
-        raise ActiveRecord::RecordNotFound.new if @blog.blank?
         @article = Gluttonberg::Article.where(:slug => params[:article_id], :blog_id => @blog.id).first
-        @article.load_localization(Locale.where(params[:locale_id]).first)
         raise ActiveRecord::RecordNotFound.new if @article.blank?
+        @article.load_localization(Locale.where(params[:locale_id]).first)
         render :show
       end
 
