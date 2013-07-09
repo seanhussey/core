@@ -72,7 +72,7 @@ module Gluttonberg
           where context = '#{tag_type}'
         })
         @themes = @themes.collect{|theme| theme.name}
-        @themes.joins(",")
+        @themes.blank? ? "" : @themes.joins(",")
       end
 
       def date_format(date_time)

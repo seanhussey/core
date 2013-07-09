@@ -48,7 +48,7 @@ module Gluttonberg
         unless versions.blank?
           output = "<div class='historycontrols'>"
           selected = versions.last.version
-          selected_version = versions.last
+          selected_version = versions.first
           collection = []
           versions.each do |version|
             link = version.version
@@ -59,29 +59,13 @@ module Gluttonberg
             end
             collection << [snippet , link]
           end
-
-          # Output the form for picking the version
-          versions_html = "<ul class='dropdown-menu'>"
-          collection.each do |c|
-            versions_html << content_tag(:li , link_to(c[0] , "?version=#{c[1]}") , :class => "#{c[1].to_s == selected.to_s ? 'active' : '' }" )
-          end
-          versions_html << "</ul>"
-
-          current_version = '<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">'
-          current_version += "Editing Version #{selected_version.version} "
-          current_version += '<span class="caret"></span>'
-          current_version += '</a>'
-
-          combined_versions = current_version
-          combined_versions += versions_html
-
-          output << content_tag(:div , combined_versions.html_safe, :class => "btn-group" )
-
-          output += "</div>"
-          output += "<div class='clear'></div>"
-          output += "<br />"
-          output += "<br />"
-          output.html_safe
+          render :partial => "/gluttonberg/admin/shared/version_listing", :locals => {
+            :versions => versions,
+            :selected_version_num => selected_version_num,
+            :collection => collection,
+            :selected => selected,
+            :selected_version => selected_version
+          }
         end
       end #version_listing
 
