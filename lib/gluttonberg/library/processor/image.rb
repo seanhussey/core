@@ -16,8 +16,10 @@ module Gluttonberg
         # Generates thumbnails for images, but also additionally checks to see
         # if the uploaded image exceeds the specified maximum, in which case it will resize it down.
         def generate_thumb_and_proper_resolution
-          generate_proper_resolution
-          generate_image_thumbnails
+          if File.exist?(asset.tmp_location_on_disk)
+            generate_proper_resolution
+            generate_image_thumbnails
+          end
         end
 
         def suggested_measures(object , required_geometry)

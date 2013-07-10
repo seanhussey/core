@@ -49,6 +49,10 @@ module Gluttonberg
             # just dummy method. As we don't need to remove because tmp and actual folder is same for filesystem
           end
 
+          def download_asset_to_tmp_file
+            # just dummy method. As we don't need to download file for filesystem storage
+          end
+
           def update_file_on_storage
             if file
               FileUtils.mkdir(directory) unless File.exists?(directory)
