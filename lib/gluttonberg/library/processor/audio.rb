@@ -25,7 +25,7 @@ module Gluttonberg
               end
             end
             if Gluttonberg::Setting.get_setting("audio_assets") == "Enable"
-              Delayed::Job.enqueue AudioJob.new(asset.id)
+              AudioJob.perform_async(asset.id)
             end
           rescue => detail
             # if exception occurs and asset has some attributes, then remove them.

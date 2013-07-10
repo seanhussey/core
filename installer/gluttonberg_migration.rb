@@ -216,19 +216,6 @@ class GluttonbergMigration < ActiveRecord::Migration
     add_index :taggings, :tag_id
     add_index :taggings, [:taggable_id, :taggable_type, :context]
 
-    create_table :delayed_jobs, :force => true do |table|
-      table.integer  :priority, :default => 0
-      table.integer  :attempts, :default => 0
-      table.text     :handler
-      table.text     :last_error
-      table.datetime :run_at
-      table.datetime :locked_at
-      table.datetime :failed_at
-      table.string   :locked_by
-      table.timestamps
-    end
-    add_index :delayed_jobs, [:priority, :run_at], :name => 'delayed_jobs_priority'
-
     create_table :flags, :force => true do |t|
       t.integer :user_id
       t.integer :flaggable_id
@@ -354,7 +341,6 @@ class GluttonbergMigration < ActiveRecord::Migration
     drop_table :gb_audio_asset_attributes
     drop_table :taggings
     drop_table :tags
-    drop_table :delayed_jobs
     drop_table :flags
     drop_table :gb_asset_thumbnails
     drop_table :gb_stylesheets

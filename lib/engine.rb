@@ -112,8 +112,5 @@ module Gluttonberg
       require 'active_link_to'
     end
 
-    initializer "setup delayed job" do |app|
-      Delayed::Job.attr_accessible :priority, :payload_object, :handler, :run_at, :failed_at
-    end
   end
 end
