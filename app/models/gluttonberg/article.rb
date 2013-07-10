@@ -48,6 +48,15 @@ module Gluttonberg
       @current_localization = localizations.where(:locale_id => Locale.first_default.id).first
     end
 
+    def create_localizations(params)
+      Locale.all.each do |locale|
+        article_localization = ArticleLocalization.create(params.merge({
+          :locale_id => locale.id, 
+          :article_id => self.id
+        }))
+      end
+    end
+
     def duplicate
       ActiveRecord::Base.transaction do
         duplicated_article = self.dup

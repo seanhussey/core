@@ -58,6 +58,7 @@ var AssetBrowser = {
   Wysiwyg: null,
   logo_setting: false,
   filter: null,
+  filter_value: null,
   actualLink: null,
   link_parent: null,
   load: function(p, link, markup, Wysiwyg) {
@@ -70,6 +71,12 @@ var AssetBrowser = {
     }
     // its used for category filtering on assets and collections
     AssetBrowser.filter = $("#filter_" + $(link).attr("rel"));
+    if(!blank(link)){
+      AssetBrowser.filter_value = getParameterByName(link.attr('href'), "filter");
+      if(!blank(AssetBrowser.filter_value) && !blank(AssetBrowser.filter)){
+        AssetBrowser.filter_value = AssetBrowser.filter.val()
+      }
+    }
 
     if ($(link).is(".logo_setting")) {
       AssetBrowser.logo_setting = true;
@@ -102,10 +109,6 @@ var AssetBrowser = {
     // Grab the various nodes we need
     AssetBrowser.display = AssetBrowser.browser.find("#assetsDisplay");
     AssetBrowser.offsets = AssetBrowser.browser.find("> *:not(#assetsDisplay)");
-    AssetBrowser.backControl = AssetBrowser.browser.find("#back a");
-    AssetBrowser.backControl.css({
-      display: "none"
-    });
     // Calculate the offsets
     AssetBrowser.offsetHeight = 0;
     AssetBrowser.offsets.each(function(i, element) {
@@ -119,7 +122,6 @@ var AssetBrowser = {
     // Capture anchor clicks
     AssetBrowser.display.find("a").click(AssetBrowser.click);
     $("#assetsDialog form#asset_search_form").submit(AssetBrowser.search_submit);
-    AssetBrowser.backControl.click(AssetBrowser.back);
 
     AssetBrowser.browser.find("#ajax_new_asset_form").submit(function(e) {
       if($("#asset_file").val() != null && $("#asset_name").val() != null && $("#asset_file").val() != "" && $("#asset_name").val() != ""){
@@ -210,12 +212,6 @@ var AssetBrowser = {
 
   },
   handleJSON: function(json) {
-    if (json.backURL) {
-      AssetBrowser.backURL = json.backURL;
-      AssetBrowser.backControl.css({
-        display: "block"
-      });
-    }
     AssetBrowser.updateDisplay(json.markup);
   },
   updateDisplay: function(markup) {
@@ -314,9 +310,10 @@ var AssetBrowser = {
 
       if(accordionContentInner.attr("content-loaded") == "false"){
         accordionContentInner.prepend("<img src='/assets/gb_spinner.gif' class='gb_spinner'/>");
-        $.get("/admin/browser-collection/"+collectionID+".json?filter="+AssetBrowser.filter.val(), function(data){
+        $.get("/admin/browser-collection/"+collectionID+".json?filter="+AssetBrowser.filter_value, function(data){
           $(".gb_spinner").remove();
           accordionContentInner.prepend(data['markup']);
+          accordionContentInner.find("a").click(AssetBrowser.click);
         });
         accordionContentInner.attr("content-loaded",true);
       }
@@ -335,27 +332,9 @@ var AssetBrowser = {
       var url = target.attr("href") + ".json";
       // its collection url then add category filter for filtering assets
       if (target.hasClass("collection")) {
-        url += "?filter=" + AssetBrowser.filter.val();
+        url += "?filter=" + AssetBrowser.filter_value;
       }
       $.getJSON(url, null, AssetBrowser.handleJSON);
-    }
-    return false;
-  },
-  back: function() {
-    if (AssetBrowser.backURL) {
-      var category = "";
-      var show_content = ""
-      // if filter exist then apply it on backurl
-      if (AssetBrowser.filter !== null) {
-        if (AssetBrowser.filter == undefined || AssetBrowser.filter.length == 0) {
-          if (AssetBrowser.Wysiwyg != null) category = "&filter=image";
-        } else category = "&filter=" + AssetBrowser.filter.val();
-      }
-      $.get(AssetBrowser.backURL + category + show_content, null, AssetBrowser.updateDisplay);
-      AssetBrowser.backURL = null;
-      AssetBrowser.backControl.css({
-        display: "none"
-      });
     }
     return false;
   }

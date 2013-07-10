@@ -41,38 +41,12 @@ class Gluttonberg::ResourceGenerator < Rails::Generators::Base
   end
 
   def add_route
-    if draggable?
-      route(
-%Q(
-  namespace :admin do
-    post \"/#{plural_name}/move(.:format)\" => \"#{plural_name}#move_node\" , :as=> :#{singular_name}_move
-    match \"/#{plural_name}/import(.:format)\" => \"#{plural_name}#import\" , :as=> :#{plural_name}_import
-    match \"/#{plural_name}/export(.:format)\" => \"#{plural_name}#export\" , :as=> :#{plural_name}_export
-    resources :#{plural_name} do
-      member do
-        get 'delete'
-        get 'duplicate'
-      end
-    end
-  end
-)
-      )
-    else
-      route(
-%Q(
-  namespace :admin do
-    match \"/#{plural_name}/import(.:format)\" => \"#{plural_name}#import\" , :as=> :#{plural_name}_import
-    match \"/#{plural_name}/export(.:format)\" => \"#{plural_name}#export\" , :as=> :#{plural_name}_export
-    resources :#{plural_name} do
-      member do
-        get 'delete'
-        get 'duplicate'
-      end
-    end
-  end
-)
-      )
-    end
+    route_str = "namespace :admin do"
+    route_str << draggable_move_route if draggable?
+    route_str << import_export_routes if importable?
+    route_str << resource_admin_routes
+    route_str << "end"
+    route(route_str)
     route("resources :#{plural_name}")
   end
 
@@ -105,11 +79,7 @@ class Gluttonberg::ResourceGenerator < Rails::Generators::Base
     end
 
     def self.next_migration_number(dirname)
-      if ActiveRecord::Base.timestamped_migrations
-        Time.now.utc.strftime("%Y%m%d%H%M%S")
-      else
-        "%.3d" % (current_migration_number(dirname) + 1)
-      end
+      Gluttonberg.next_migration_number(dirname)
     end
 
     def file_name
@@ -197,6 +167,30 @@ class Gluttonberg::ResourceGenerator < Rails::Generators::Base
       else
         attr.name
       end
+    end
+
+    def resource_admin_routes
+  %{
+    resources :#{plural_name} do
+      member do
+        get 'delete'
+        get 'duplicate'
+      end
+    end
+  }
+    end
+
+    def draggable_move_route      
+  %{
+    post \"/#{plural_name}/move(.:format)\" => \"#{plural_name}#move_node\" , :as => :#{singular_name}_move
+  }
+    end
+
+    def import_export_routes
+  %{
+    match \"/#{plural_name}/import(.:format)\" => \"#{plural_name}#import\" , :as => :#{plural_name}_import
+    match \"/#{plural_name}/export(.:format)\" => \"#{plural_name}#export\" , :as => :#{plural_name}_export
+  }
     end
 
 end

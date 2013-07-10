@@ -15,7 +15,6 @@ module Gluttonberg
           class << self;  attr_accessor :slug_source_field_name end
           attr_accessor :current_slug
 
-
         end
       end
 
@@ -61,23 +60,17 @@ module Gluttonberg
           def slug_management
             if self.slug.blank?
               if self.class.slug_source_field_name.blank?
-                if self.respond_to?(:name)
-                  self.class.slug_source_field_name= :name
-                  self.slug= self.name
-                elsif self.respond_to?(:title)
-                  self.class.slug_source_field_name= :title
-                  self.slug= self.title
-                else
-                  self.class.slug_source_field_name= :id
-                  self.slug= self.id.to_s
-                end
-              else
-                self.slug= self.send(self.class.slug_source_field_name)
+                self.get_slug_source
               end
+              self.slug= self.send(self.class.slug_source_field_name)
             end #slug.blank
+            self.fix_duplicated_slug
+          end
+
+          def fix_duplicated_slug
             # check duplication: add id at the end if its duplicated
             already_exist = self.class.where(:slug => self.slug).all
-            if !already_exist.blank?
+            unless already_exist.blank?
               if already_exist.length > 1 || (already_exist.length == 1 && already_exist.first.id != self.id )
                 self.slug= "#{self.slug}-#{already_exist.length+1}"
               end

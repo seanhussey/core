@@ -33,9 +33,7 @@ module Gluttonberg
           article_attributes = params["gluttonberg_article_localization"].delete(:article)
           @article = Article.new(article_attributes)
           if @article.save
-            Locale.all.each do |locale|
-              @article_localization = ArticleLocalization.create(params[:gluttonberg_article_localization].merge(:locale_id => locale.id , :article_id => @article.id))
-            end
+            @article.create_localizations(params["gluttonberg_article_localization"])
             flash[:notice] = "The article was successfully created."
             redirect_to edit_admin_blog_article_path(@article.blog, @article)
           else
@@ -60,13 +58,7 @@ module Gluttonberg
             article.previous_slug = article.current_slug if article.slug_changed?
             article.save
 
-            localization_detail = ""
-            if Gluttonberg.localized?
-              localization_detail = " (#{@article_localization.locale.slug}) "
-            end
-            if Gluttonberg.localized?
-              Gluttonberg::Feed.log(current_user,@article_localization,"#{@article_localization.title}#{localization_detail}" , "updated")
-            end
+            _log_article_changes
 
             flash[:notice] = "The article was successfully updated."
             redirect_to edit_admin_blog_article_path(@article.blog, @article)
@@ -130,6 +122,16 @@ module Gluttonberg
 
           def authorize_user_for_destroy
             authorize! :destroy, Gluttonberg::Article
+          end
+
+          def _log_article_changes
+            localization_detail = ""
+            if Gluttonberg.localized?
+              localization_detail = " (#{@article_localization.locale.slug}) "
+            end
+            if Gluttonberg.localized?
+              Gluttonberg::Feed.log(current_user,@article_localization,"#{@article_localization.title}#{localization_detail}" , "updated")
+            end
           end
 
       end

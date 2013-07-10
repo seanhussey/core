@@ -10,6 +10,8 @@ module Gluttonberg
     validates_format_of :password, :with => Rails.configuration.password_pattern , :if => :require_password?, :message => Rails.configuration.password_validation_message
     validates_presence_of :first_name , :email
 
+    before_validation :verify_confirmation_status
+
     attr_accessor :return_url , :term_and_conditions
     attr_accessor :image_delete
 
@@ -104,6 +106,22 @@ module Gluttonberg
         true
       end
     end
+
+    def generate_confirmation_key
+      self.confirmation_key = Digest::SHA1.hexdigest(Time.now.to_s + rand(12341234).to_s)[1..24]
+    end
+
+    private
+
+      def verify_confirmation_status
+        if self.profile_confirmed != true
+          if self.class.does_email_verification_required
+            self.generate_confirmation_key
+          else
+            self.profile_confirmed = true
+          end
+        end
+      end
 
   end
 end
