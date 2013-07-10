@@ -64,6 +64,10 @@ module Gluttonberg
               end
               self.slug= self.send(self.class.slug_source_field_name)
             end #slug.blank
+            self.fix_duplicated_slug
+          end
+
+          def fix_duplicated_slug
             # check duplication: add id at the end if its duplicated
             already_exist = self.class.where(:slug => self.slug).all
             unless already_exist.blank?
