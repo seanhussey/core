@@ -27,7 +27,7 @@ module Gluttonberg
     # it use file name for making asset.
     def self.make_asset_for_entry(asset_params, current_user, entry , dir)
       begin
-        unless entry.name.starts_with?("._") || entry.name.starts_with?("__") || entry.name.split("/").last.starts_with?(".") || entry.name.split("/").last.starts_with?("__") || entry.directory?
+        unless hidden_file_or_directory?(entry)
           entry_name = entry.name.gsub("/", "-")
           filename = File.join(dir,entry_name)
           entry.extract(filename)
@@ -56,6 +56,10 @@ module Gluttonberg
         asset = Asset.new(asset_params.merge( :name => asset_name_with_extention ,  :file => file ) )
         asset.user_id = current_user.id
         asset.save ? asset : nil
+      end
+
+      def hidden_file_or_directory?(entry)
+        entry.name.starts_with?("._") || entry.name.starts_with?("__") || entry.name.split("/").last.starts_with?(".") || entry.name.split("/").last.starts_with?("__") || entry.directory?
       end
   end #class
 end
