@@ -27,7 +27,7 @@ module Gluttonberg
     # it use file name for making asset.
     def self.make_asset_for_entry(asset_params, current_user, entry , dir)
       begin
-        unless hidden_file_or_directory?(entry)
+        unless self.hidden_file_or_directory?(entry)
           entry_name = entry.name.gsub("/", "-")
           filename = File.join(dir,entry_name)
           entry.extract(filename)
@@ -58,7 +58,7 @@ module Gluttonberg
         asset.save ? asset : nil
       end
 
-      def hidden_file_or_directory?(entry)
+      def self.hidden_file_or_directory?(entry)
         entry.name.starts_with?("._") || entry.name.starts_with?("__") || entry.name.split("/").last.starts_with?(".") || entry.name.split("/").last.starts_with?("__") || entry.directory?
       end
   end #class
