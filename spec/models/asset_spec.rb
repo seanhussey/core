@@ -40,6 +40,7 @@ module Gluttonberg
     after :all do
       Gluttonberg::Library.flush_asset_types
       Gluttonberg::AssetCategory.all.each{|asset_mime_type| asset_mime_type.destroy}
+      Gluttonberg::Asset.all.each{|asset| asset.destroy}
     end
 
     it "should generate filename" do
@@ -52,6 +53,16 @@ module Gluttonberg
 
     it "should set size" do
       @asset.size.should_not be_nil
+    end
+
+    it "should set title" do
+      @asset.title.should == "temp file"
+    end
+
+    it "alt_or_title" do
+      @asset.alt_or_title.should == "temp file"
+      @asset.alt = "Alt text"
+      @asset.alt_or_title.should == "Alt text"
     end
 
     it "should set type name" do
@@ -200,6 +211,20 @@ module Gluttonberg
       asset.destroy
     end
 
+    it "refresh_all_asset_types" do
+      file = File.new(File.join(RSpec.configuration.fixture_path, "assets/audio.mp3"))
+      file.original_filename = "audio.mp3"
+      file.content_type = "audio/mp3"
+      file.size = 1024*1024*1.7
+
+      asset = Asset.new( @param.merge(:file =>  file) )
+      status = asset.save
+      status.should == true
+      File.exist?(asset.location_on_disk).should == true
+      asset.category.should == "audio"
+      Asset.refresh_all_asset_types
+      asset.category.should == "audio"
+    end
 
   end
 end

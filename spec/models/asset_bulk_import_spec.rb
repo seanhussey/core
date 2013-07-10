@@ -1,8 +1,7 @@
 require 'spec_helper'
 
 module Gluttonberg
-  describe AssetBulkImport, "file upload" do
-
+  describe AssetBulkImport, "Asset bulk import using zip" do
     before :all do
       @file = File.new(File.join(RSpec.configuration.fixture_path, "assets/assets_import.zip"))
       @collection1 = AssetCollection.new(:name => "Collection1")
@@ -32,8 +31,15 @@ module Gluttonberg
       assets = AssetBulkImport.open_zip_file_and_make_assets(@param, @current_user)
       assets.should_not be_nil
       assets.each do |asset|
-        asset.asset_collections == @asset_collections
+        asset.asset_collections.should == @asset_collections
       end
+    end
+
+    it "should return correct number of images for a collection" do
+      assets = AssetBulkImport.open_zip_file_and_make_assets(@param, @current_user)
+      assets.should_not be_nil
+      @collection1.images.should_not be_nil
+      @collection1.images.length.should == 2
     end
   end
 end

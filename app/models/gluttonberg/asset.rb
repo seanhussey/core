@@ -19,7 +19,7 @@ module Gluttonberg
 
     has_and_belongs_to_many :asset_collections     , :join_table => "gb_asset_collections_assets"
     belongs_to  :asset_type
-    has_one :audio_asset_attribute , :dependent => :destroy, :class_name => "Gluttonberg::AudioAssetAttribute"
+    has_one :audio_asset_attribute , :dependent => :destroy, :class_name => "Gluttonberg::AudioAssetAttribute", dependent: :destroy
 
     belongs_to :user
 
@@ -88,13 +88,6 @@ module Gluttonberg
     def self.refresh_all_asset_types
       all.each do |asset|
         asset.auto_set_asset_type
-        asset.save
-      end
-    end
-
-    def self.clear_all_asset_types
-      all.each do |asset|
-        asset.asset_type = nil
         asset.save
       end
     end
