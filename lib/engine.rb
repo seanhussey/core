@@ -20,7 +20,7 @@ module Gluttonberg
       config.asset_storage = :filesystem
       #engines which depends on gluttonberg-core can
       #use this to provide additional processor for assets
-      #in first stage I am going to use it with Tv
+      #in first stage I am going to use it with TV
       config.asset_processors = []
       config.asset_mixins = []
       config.custom_css_for_cms = false
