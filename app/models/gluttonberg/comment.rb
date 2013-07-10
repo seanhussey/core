@@ -135,16 +135,7 @@ module Gluttonberg
           dspam = Gluttonberg::Content::Despamilator.new(self.body)
           self.spam = (dspam.score >= 1.0)
           self.spam_score = dspam.score
-          unless self.spam
-            naughty_word_parser = Gluttonberg::Content::DespamilatorFilter::NaughtyWords.new
-            if !self.author_email.blank? && naughty_word_parser.local_parse(self.author_email) >= 1.0
-              self.spam = true
-            elsif !self.author_name.blank? && naughty_word_parser.local_parse(self.author_name) >= 1.0
-              self.spam = true
-            elsif !self.author_website.blank? && naughty_word_parser.local_parse(self.author_website) >= 1.0
-              self.spam = true
-            end
-          end
+          self.check_author_details_for_spam
         else
           self.spam = true
           self.spam_score = 1.0
@@ -168,6 +159,20 @@ module Gluttonberg
 
       def _concat(str1, str2)
         self.class._concat(str1, str2)
+      end
+
+      
+      def check_author_details_for_spam
+        unless self.spam
+          naughty_word_parser = Gluttonberg::Content::DespamilatorFilter::NaughtyWords.new
+          [:author_email, :author_name, :author_website].each do |field|
+            val = self.send(field)
+            if val.blank? && naughty_word_parser.local_parse(val) >= 1.0
+              self.spam = true
+              break
+            end
+          end
+        end
       end
 
   end
