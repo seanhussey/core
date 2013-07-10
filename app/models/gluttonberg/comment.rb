@@ -103,7 +103,6 @@ module Gluttonberg
       author_string = _concat("", self.author_name)
       author_string = _concat(author_string, self.author_email)
       author_string = _concat(author_string, self.author_website)
-      puts "#{self.author_name}#{self.author_email}#{self.author_website}---------#{author_string}"
       unless author_string.blank?
         gb_blacklist_settings = Gluttonberg::Setting.get_setting("comment_blacklist")
         gb_blacklist_settings = _concat(gb_blacklist_settings, author_string)

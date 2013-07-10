@@ -1,0 +1,7 @@
+- gallery.gallery_images.each do |g_image|
+  %li{:id => "image_#{g_image.id}"}
+    = link_to(asset_tag(g_image.image , gallery_thumb_image).html_safe , asset_url(g_image.image , :thumb_name => gallery_large_image) , :class => "thumb")
+    - unless g_image.image.alt.blank?
+      .caption
+        .image-desc
+          = g_image.image.alt
