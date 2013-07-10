@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'rubyzip', '0.9.9'
   s.add_dependency 'acts_as_tree', '1.3.0'
   s.add_dependency 'acts-as-taggable-on', '2.4.1'
-  s.add_dependency 'delayed_job', '2.1.4' #3.0.5
+  s.add_dependency 'sidekiq', '2.13.0'
   s.add_dependency 'jeditable-rails', '0.1.1'
   s.add_dependency 'cancan', '1.6.10'
   s.add_dependency 'active_link_to', '1.0.1'

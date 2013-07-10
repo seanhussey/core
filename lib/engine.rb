@@ -20,7 +20,7 @@ module Gluttonberg
       config.asset_storage = :filesystem
       #engines which depends on gluttonberg-core can
       #use this to provide additional processor for assets
-      #in first stage I am going to use it with Tv
+      #in first stage I am going to use it with TV
       config.asset_processors = []
       config.asset_mixins = []
       config.custom_css_for_cms = false
@@ -39,11 +39,11 @@ module Gluttonberg
       }
       config.honeypot_field_name = "our_newly_weekly_series"
       config.localize = false
-      config.member_csv_metadata = { 
-        :first_name => "FIRST NAME", 
-        :last_name => "LAST NAME",  
-        :email => "EMAIL", 
-        :groups => "GROUPS", 
+      config.member_csv_metadata = {
+        :first_name => "FIRST NAME",
+        :last_name => "LAST NAME",
+        :email => "EMAIL",
+        :groups => "GROUPS",
         :bio => "BIO"
       }
       config.member_mixins = []
@@ -54,16 +54,16 @@ module Gluttonberg
 
     def init_internal_settings
       config.identify_locale = :prefix
-      config.active_record.observers = ['gluttonberg/page_observer', 
-        'gluttonberg/page_localization_observer' , 
-        'gluttonberg/locale_observer' 
+      config.active_record.observers = ['gluttonberg/page_observer',
+        'gluttonberg/page_localization_observer' ,
+        'gluttonberg/locale_observer'
       ]
     end
-    
+
     init_basic_settings
     init_advance_settings
     init_internal_settings
-  
+
     # Load rake tasks
     rake_tasks do
       load File.join(File.dirname(__FILE__), 'rails/railties/tasks.rake')
@@ -76,7 +76,6 @@ module Gluttonberg
       init_gb_components(app)
       init_acts_as_taggable_on(app)
       require 'active_link_to'
-      init_delayed_job(app)
       init_static_assets(app)
       init_mount_at(app)
       init_asset_precompile(app)
@@ -113,10 +112,6 @@ module Gluttonberg
         if ::ActsAsTaggableOn::Tag.attribute_names.include?("slug") == true
           ::ActsAsTaggableOn::Tag.send(:include , Gluttonberg::Content::SlugManagement)
         end
-      end
-
-      def init_delayed_job(app)
-        Delayed::Job.attr_accessible :priority, :payload_object, :handler, :run_at, :failed_at
       end
 
       def init_static_assets(app)

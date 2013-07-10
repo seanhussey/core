@@ -30,7 +30,7 @@ module Gluttonberg
         private
           def self.enqueue_job(asset)
             if Gluttonberg::Setting.get_setting("audio_assets") == "Enable"
-              Delayed::Job.enqueue AudioJob.new(asset.id)
+              AudioJob.perform_async(asset.id)
             end
           end
 

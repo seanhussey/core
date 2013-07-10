@@ -4,12 +4,29 @@ namespace :gluttonberg do
   desc "Install Gluttonberg"
   task :install => :environment do
     line = HighLine.new
+    status = true
     line.say("<%= color('Preparing to install Gluttonberg!', BOLD) %>\n")
-    copy_files
-    run_migrations
-    bootstrap_data
-    setup_admin
-    line.say("<%= color('Finished installing Guttonberg.\nEnjoy!', GREEN) %>\n\n")
+    status = copy_files if status
+    status = run_migrations if status
+    status = bootstrap_data if status
+    status = setup_admin if status
+    if status
+      line.say("<%= color('Finished installing Guttonberg.\nEnjoy!', GREEN) %>\n\n")
+    else
+      line.say("<%= color('Sorry, There was an error and Gluttonberg could not be installed.', RED) %>\n\n")
+    end
+  end
+
+  desc "Cleanup a bad install"
+  task :cleanup => :environment do
+    line = HighLine.new
+    answer = line.ask("<%= color('This will attempt to clean up Gluttonberg.\nThere are not guarantees this will work properly.\nYou may need to still clean up a few files by hand.\nPlease type', YELLOW) %><%= color(' Gluttonberg ', BOLD) %><%= color('if you agree:  ', YELLOW) %>")
+    if answer == "Gluttonberg"
+      line.say("<%= color('Attempting to clean...', GREEN) %>")
+      line.say("<%= color('Cleaned!\nYou may now try to install', GREEN) %><%= color(' Gluttonberg ', BOLD) %><%= color('again.\nThere may still be a few files left on the system.', GREEN) %>")
+    else
+      line.say("<%= color('You didnt say the magic word.', RED) %>")
+    end
   end
 
   desc "Generate default locale (en-au)"
@@ -71,7 +88,6 @@ namespace :gluttonberg do
     begin
       line = HighLine.new
       line.say("<%= color('Moving files into place...', YELLOW) %>")
-      FileUtils.cp Gluttonberg::Engine.root + "installer/delayed_job_script", Rails.root + "script/delayed_job"
       FileUtils.mkdir_p(File.join(Rails.root, "db", "migrate"))
       FileUtils.mkdir_p(File.join(Rails.root, "app", "views", "pages"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "gluttonberg_migration.rb"), File.join(Rails.root, "db", "migrate", "#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_gluttonberg_migration.rb"))
@@ -82,15 +98,16 @@ namespace :gluttonberg do
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "sitemap.rb"), File.join(Rails.root, "config", "sitemap.rb"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "gluttonberg_basic_settings.rb"), File.join(Rails.root, "config", "initializers", "gluttonberg_basic_settings.rb"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "gluttonberg_advance_settings.rb"), File.join(Rails.root, "config", "initializers", "gluttonberg_advance_settings.rb"))
+      FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "sidekiq.rb"), File.join(Rails.root, "config", "initializers", "sidekiq.rb"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "public.html.haml"), File.join(Rails.root, "app", "views", "layouts", "public.html.haml"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "Procfile"), File.join(Rails.root, "Procfile"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "unicorn.rb"), File.join(Rails.root, "config", "unicorn.rb"))
       FileUtils.rm(File.join(Rails.root, "public", "index.html"))
-      FileUtils.chmod(0755, File.join(Rails.root, "script", "delayed_job"))
+      return true
     rescue => e
       line.say("<%= color('Failure!', RED) %>")
       line.say(e.to_s)
-      return
+      return false
     end
   end
 
@@ -100,10 +117,11 @@ namespace :gluttonberg do
       line.say("<%= color('Running migrations..', YELLOW) %>")
       ActiveRecord::Migration.verbose = false
       ActiveRecord::Migrator.migrate(ActiveRecord::Migrator.migrations_paths, nil)
+      return true
     rescue => e
       line.say("<%= color('Failure!', RED) %>")
       line.say(e.to_s)
-      return
+      return false
     end
   end
 
@@ -115,33 +133,39 @@ namespace :gluttonberg do
       Rake::Task["gluttonberg:generate_default_locale"].invoke
       Rake::Task["gluttonberg:generate_or_update_default_settings"].invoke
       add_memory_store_config_in_production
+      return true
     rescue => e
       line.say("<%= color('Failure!', RED) %>")
       line.say(e.to_s)
-      return
+      return false
     end
   end
 
   def add_memory_store_config_in_production
-    data = []
-    file_path = File.join(Rails.root, "config", "environments" , "production.rb" )
-    file = File.new(file_path)
+    begin
+      data = []
+      file_path = File.join(Rails.root, "config", "environments" , "production.rb" )
+      file = File.new(file_path)
 
-    file.each_line do |line|
-      data << line
-    end
-
-    file.close
-
-    file = File.new(file_path , "w" )
-    data.reverse.each_with_index do |line, index|
-      if line.include?("end")
-        data[data.length-index-1] = "  config.cache_store = :memory_store\nend\n"
-        break
+      file.each_line do |line|
+        data << line
       end
+
+      file.close
+
+      file = File.new(file_path , "w" )
+      data.reverse.each_with_index do |line, index|
+        if line.include?("end")
+          data[data.length-index-1] = "  config.cache_store = :memory_store\nend\n"
+          break
+        end
+      end
+      file.puts(data.join(""))
+      file.close
+      return true
+    rescue => e
+      return false
     end
-    file.puts(data.join(""))
-    file.close
   end
 
   def setup_admin
@@ -149,20 +173,20 @@ namespace :gluttonberg do
       line = HighLine.new
       line.say("<%= color('Setting up admin user..', YELLOW) %>")
       line.say("<%= color('Please answer the following questions..', YELLOW) %>")
-      first_name = line.ask("Enter your first name:  ")
-      last_name = line.ask("Enter your last name:  ")
-      email = line.ask("Enter your email:  ")
+      first_name = line.ask("Enter your first name:  ") {|q| q.validate = /.{2,}/}
+      last_name = line.ask("Enter your last name:  ") {|q| q.validate = /.{2,}/}
+      email = line.ask("Enter your email:  ") {|q| q.validate = /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i}
       password = line.ask("Enter a password:  ")  { |q| q.echo = "x" }
 
       user = User.new(:email => email, :password => password, :password_confirmation => password, :first_name => first_name, :last_name => last_name)
       user.role = "super_admin"
       user.save
-
+      return true
     rescue => e
       line = HighLine.new
       line.say("<%= color('Failure!', RED) %>")
       line.say(e.to_s)
-      return
+      return false
     end
   end
 
