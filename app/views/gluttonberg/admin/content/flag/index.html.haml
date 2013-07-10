@@ -1,41 +1,50 @@
-- @page_title = "#{link_to "Content", admin_content_path} > Flagged Content"
+- @page_title = "Flagged Content"
 
-- if @flags.empty?
-  %p.empty No Flagged Content
-- else
-  %table{:cellpadding => 0, :cellspacing => 0, :summary => "Flagged Content"}
-    %thead
-      %tr
-        %th Url
-        %th Content
-        %th Reason
-        %th Description
-        %th Flagged by
-        %th
-          Flagged at
-        %th
-          Controls
+.row-fluid
+  = render :partial => "/gluttonberg/admin/content/main/sidebar"
+  .span9
+    .row-fluid
+      .page-header
+        %h1
+          = @page_title
+      .subnav
 
-    %tbody
-      - @flags.each do |flag|
-        %tr
-          %td
-            - unless flag.url.blank?
-              = link_to flag.url , flag.url
-          %td
-            = flag.flaggable_type.demodulize.humanize
-          %td
-            = flag.reason
-          %td
-            = flag.description
-          %td
-            - unless flag.user.blank?
-              = flag.user.full_name
-          %td
-            = date_format flag.created_at
-          %td
-            - if flag.moderation_required != false
-              = link_to "Approve", admin_flagged_contents_moderation_path(flag, :moderation => "approve")
-              = link_to "Disapprove", admin_flagged_contents_moderation_path(flag, :moderation => "disapprove")
-            - else
-              = flag.approved == true ? "Approved" : "Disapproved"
+      - if @flags.empty?
+        %p.empty No Flagged Content
+      - else
+        %table.table.table-bordered{:cellpadding => 0, :cellspacing => 0, :summary => "Flagged Content"}
+          %thead
+            %tr
+              %th Url
+              %th Content
+              %th Reason
+              %th Description
+              %th Flagged by
+              %th
+                Flagged at
+              %th
+                Controls
+
+          %tbody
+            - @flags.each do |flag|
+              %tr{ :class => "#{cycle("even", "odd")}"}
+                %td
+                  - unless flag.url.blank?
+                    = link_to flag.url , flag.url
+                %td
+                  = flag.flaggable_type.demodulize.humanize
+                %td
+                  = flag.reason
+                %td
+                  = flag.description
+                %td
+                /   - unless flag.user.blank?
+                /     = flag.user.full_name
+                %td
+                  = date_format flag.created_at
+                %td
+                  - if flag.moderation_required != false
+                    = link_to "Approve", admin_flagged_contents_moderation_path(flag, :moderation => "approve"), :class => "btn"
+                    = link_to "Disapprove", admin_flagged_contents_moderation_path(flag, :moderation => "disapprove"), :class => "btn btn-danger"
+                  - else
+                    = flag.approved == true ? "Approved" : "Disapproved"

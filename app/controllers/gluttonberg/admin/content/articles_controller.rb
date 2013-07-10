@@ -4,7 +4,7 @@ module Gluttonberg
   module Admin
     module Content
       class ArticlesController < Gluttonberg::Admin::BaseController
-
+        before_filter :is_blog_enabled
         before_filter :find_blog , :except => [:create]
         before_filter :find_article, :only => [:show, :edit, :update, :delete, :destroy , :duplicate]
         before_filter :authorize_user , :except => [:destroy , :delete]
@@ -33,9 +33,7 @@ module Gluttonberg
           article_attributes = params["gluttonberg_article_localization"].delete(:article)
           @article = Article.new(article_attributes)
           if @article.save
-            Locale.all.each do |locale|
-              @article_localization = ArticleLocalization.create(params[:gluttonberg_article_localization].merge(:locale_id => locale.id , :article_id => @article.id))
-            end
+            @article.create_localizations(params["gluttonberg_article_localization"])
             flash[:notice] = "The article was successfully created."
             redirect_to edit_admin_blog_article_path(@article.blog, @article)
           else
@@ -60,13 +58,7 @@ module Gluttonberg
             article.previous_slug = article.current_slug if article.slug_changed?
             article.save
 
-            localization_detail = ""
-            if Gluttonberg.localized?
-              localization_detail = " (#{@article_localization.locale.slug}) "
-            end
-            if Gluttonberg.localized?
-              Gluttonberg::Feed.log(current_user,@article_localization,"#{@article_localization.title}#{localization_detail}" , "updated")
-            end
+            _log_article_changes
 
             flash[:notice] = "The article was successfully updated."
             redirect_to edit_admin_blog_article_path(@article.blog, @article)
@@ -111,18 +103,17 @@ module Gluttonberg
         protected
 
           def find_blog
-            @blog = Blog.find(params[:blog_id])
+            @blog = Blog.where(:id => params[:blog_id]).first
           end
 
           def find_article
             if params[:localization_id].blank?
               conditions = { :article_id => params[:id] , :locale_id => Locale.first_default.id}
-              #conditions[:user_id] = current_user.id unless current_user.super_admin?
-              @article_localization = ArticleLocalization.find(:first , :conditions => conditions)
+              @article_localization = ArticleLocalization.where(conditions).first
             else
-              @article_localization = ArticleLocalization.find(params[:localization_id])
+              @article_localization = ArticleLocalization.where(:id => params[:localization_id]).first
             end
-            @article = Article.find(:first , :conditions => {:id => params[:id]})
+            @article = Article.where(:id => params[:id]).first
           end
 
           def authorize_user
@@ -131,6 +122,16 @@ module Gluttonberg
 
           def authorize_user_for_destroy
             authorize! :destroy, Gluttonberg::Article
+          end
+
+          def _log_article_changes
+            localization_detail = ""
+            if Gluttonberg.localized?
+              localization_detail = " (#{@article_localization.locale.slug}) "
+            end
+            if Gluttonberg.localized?
+              Gluttonberg::Feed.log(current_user,@article_localization,"#{@article_localization.title}#{localization_detail}" , "updated")
+            end
           end
 
       end

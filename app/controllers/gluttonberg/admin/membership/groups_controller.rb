@@ -12,11 +12,11 @@ module Gluttonberg
         def index
           @groups = Group.all
         end
-  
+
         def new
           @group = Group.new
         end
-  
+
         def create
           @group = Group.new(params[:gluttonberg_group])
           if @group.save
@@ -26,10 +26,10 @@ module Gluttonberg
             render :action => :new
           end
         end
-        
-        def edit          
+
+        def edit
         end
-  
+
         def update
           if @group.update_attributes(params[:gluttonberg_group])
             flash[:notice] = "Member account updated!"
@@ -37,17 +37,17 @@ module Gluttonberg
           else
             flash[:notice] = "Failed to save account changes!"
             render :action => :edit
-          end 
+          end
         end
-        
+
         def delete
           display_delete_confirmation(
             :title      => "Delete “#{@group.name}” group?",
             :url        => admin_membership_group_path(@group),
-            :return_url => admin_membership_groups_path  
-          )        
+            :return_url => admin_membership_groups_path
+          )
         end
-  
+
         def destroy
           if @group.destroy
             flash[:notice] = "Group deleted!"
@@ -55,19 +55,19 @@ module Gluttonberg
           else
             flash[:error] = "There was an error deleting the group."
             redirect_to :action => :index
-          end  
+          end
         end
-  
+
        private
           def find_group
-            @group = Group.find(params[:id])
+            @group = Group.where(:id => params[:id]).first
             raise ActiveRecord::RecordNotFound  if @group.blank?
           end
-          
+
           def authorize_user
             authorize! :manage, Group
           end
-      
+
       end
     end
   end

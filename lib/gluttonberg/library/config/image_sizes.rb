@@ -36,9 +36,11 @@ module Gluttonberg
 
         module InstanceMethods
           # Returns the URL for the specified image size.
-          def url_for(name)
-            if self.class.sizes.has_key? name
-              filename = self.class.sizes[name][:filename]
+          def url_for(name=nil)
+            if name.blank?
+              url
+            elsif self.class.sizes.has_key? name
+              filename = self.class.sizes[name.to_sym][:filename]
               "#{asset_directory_public_url}/#{filename}.#{file_extension}"
             end
           end

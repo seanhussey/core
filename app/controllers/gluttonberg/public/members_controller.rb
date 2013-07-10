@@ -16,11 +16,6 @@ module Gluttonberg
 
       def create
         @member = Member.new(params[:gluttonberg_member])
-        if Member.does_email_verification_required
-          @member.confirmation_key = Digest::SHA1.hexdigest(Time.now.to_s + rand(12341234).to_s)[1..24]
-        else
-          @member.profile_confirmed = true
-        end
         if @member && @member.save
           if Member.does_email_verification_required
             MemberNotifier.confirmation_instructions(@member.id,current_localization_slug).deliver
@@ -53,8 +48,7 @@ module Gluttonberg
 
       def resend_confirmation
         if current_member.confirmation_key.blank?
-          confirmation_key = Digest::SHA1.hexdigest(Time.now.to_s + rand(12341234).to_s)[1..24]
-          current_member.confirmation_key = confirmation_key
+          current_member.generate_confirmation_key
           current_member.save
         end
         MemberNotifier.confirmation_instructions(current_member.id,current_localization_slug).deliver if current_member && !current_member.profile_confirmed
@@ -87,10 +81,6 @@ module Gluttonberg
           format.html
         end
       end
-
-
-
-      protected
 
     end
   end

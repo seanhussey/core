@@ -14,30 +14,6 @@ module Gluttonberg
           @collection = AssetCollection.new
         end
 
-        def edit
-        end
-
-        # if u pass filter param then it will bring filtered assets inside collection
-        def show
-          @category_filter = ( params[:filter].blank? ? "all" : params[:filter] )
-          opts = {
-              :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items") ,
-              :page => params[:page]
-          }
-
-          params[:order_type] = (params[:order_type].blank? ? "desc" : params[:order_type])
-
-          @assets = @collection.assets
-
-          if @category_filter != "all"
-            category = AssetCategory.where(:name => @category_filter).first
-            @assets = @assets.where({:asset_type_id => category.asset_type_ids })   unless category.blank? || category.asset_type_ids.blank?
-          end
-
-          @assets = @assets.paginate( opts ).order(get_order)
-        end
-
-
         def create
           @collection = AssetCollection.new(params[:collection])
           @collection.user_id = current_user.id
@@ -71,19 +47,18 @@ module Gluttonberg
         def destroy
           if @collection.destroy
             flash[:notice] = "The collection was successfully deleted."
-            redirect_to admin_assets_url
           else
             flash[:error] = "There was an error deleting the collection."
-            redirect_to admin_assets_url
           end
+          redirect_to admin_assets_url
         end
 
         private
 
-        def find_collection
-          @collection = AssetCollection.where(:id => params[:id]).first
-          raise ActiveRecord::RecordNotFound  if @collection.blank?
-        end # find_collection
+          def find_collection
+            @collection = AssetCollection.where(:id => params[:id]).first
+            raise ActiveRecord::RecordNotFound  if @collection.blank?
+          end # find_collection
 
       end # class
     end #asset_library

@@ -9,23 +9,28 @@
         %h1
           %span.title
             = @page_title.html_safe
-      .subnav
-        = sub_nav do
-          - if can?(:manage, Gluttonberg::Page)
-            = nav_link('Add New Page', new_admin_page_path)
-    
+      .subnav.nav.nav-pills
+        - if can?(:manage, Gluttonberg::Page)
+          = link_to('Add New Page', new_admin_page_path , :class => "btn btn-primary")
+          %a#saveNestableTree{:href => "Javascript:;", :class => "btn"}
+            Save Page Order
+
       - if @pages.empty?
         %p.empty No Pages
       - else
-        %table{:id => 'pages_table', :class => "table table-bordered #{(can?(:reorder , Gluttonberg::Page) ? drag_tree_table_class : "" )}", :cellpadding => 0, :cellspacing => 0, :rel => "" , :summary => "Pages" , :rel => drag_tree_url }
-          %thead
-            %tr
-              %th
+        .nestable_dragtree
+          %ol.header.dd-list
+            %li.dd-item
+              .dd-column.title
                 Page
-              %th.author
-                Author     
-              %th.published_state
+              .dd-column.author
+                Author
+              .dd-column.published_state
                 Status
-              %th
-          %tbody
-            = page_table_rows(@pages)
+              .dd-column.actions
+                &nbsp;
+
+          .dd{"data-id" => "pageTree", "data-url" => drag_tree_url, "data-saveButton" => "#saveNestableTree" }
+            %ol.dd-list
+              = page_table_rows(@pages)
+

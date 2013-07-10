@@ -1,26 +1,28 @@
+.row-fluid
+  = form_for(@setting, :url => url) do  |f|
+    = gb_error_messages_for(@setting)
+    .span5
+      %legend
+        Setting
+      - if @setting.delete_able
+        %p
+          = f.label :name ,  "Setting Name"
+          = f.text_field(:name)
+        %p
+          = f.label :value ,  "Setting Value"
+          = render :partial => "value_tag" , :locals => { :f => f}
+        %p
+          = f.label :values_list ,  "Setting Value List (; seperated) (optional)"
+          = f.text_area(:values_list , :class => "large tall")
+        %p
+          = f.label :help
+          = f.text_area(:help , :class => "large tall")
+      - else
+        %p
+          = f.label :value , @setting.user_friendly_name
+          = render :partial => "value_tag" , :locals => { :f => f}
+        %p
+          %small= @setting.help
 
-= form_for(@setting, :url => url) do  |f|
-  = gb_error_messages_for(@setting)
-
-  = block("Setting") do
-    - if @setting.delete_able
-      = f.label :name ,  "Setting Name"
-      = f.text_field(:name)
-      %br
-      = f.label :value ,  "Setting Value"
-      = render :partial => "value_tag" , :locals => { :f => f}
-      %br
-      = f.label :values_list ,  "Setting Value List (; seperated) (optional)"
-      = f.text_area(:values_list , :class => "large tall")
-      %br
-      = f.label :help
-      = f.text_area(:help , :class => "large tall")
-    - else
-      = f.label :value , @setting.user_friendly_name
-      = render :partial => "value_tag" , :locals => { :f => f}
-    %br
-    %small= @setting.help
-
-    %br
-
-  = form_controls(admin_configurations_path)
+      %p
+        = form_controls(admin_configurations_path)

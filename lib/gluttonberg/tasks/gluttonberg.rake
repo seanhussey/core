@@ -91,6 +91,7 @@ namespace :gluttonberg do
       FileUtils.mkdir_p(File.join(Rails.root, "db", "migrate"))
       FileUtils.mkdir_p(File.join(Rails.root, "app", "views", "pages"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "gluttonberg_migration.rb"), File.join(Rails.root, "db", "migrate", "#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_gluttonberg_migration.rb"))
+
       sleep(1)
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "add_artist_and_link_to_assets.rb"), File.join(Rails.root, "db", "migrate", "#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_add_artist_and_link_to_assets.rb"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "page_descriptions.rb"), File.join(Rails.root, "config", "page_descriptions.rb"))

@@ -66,13 +66,14 @@
 
 
     .container-fluid
-      = render "/layouts/flash_messages"
+      - unless flash.blank?
+        = render "/layouts/flash_messages"
       = yield
 
       %hr
-        %footer
-          %p
-            &copy;
-            %a{:href => "http://freerangefuture.com", :target => "_blank"}
-              Freerange Future
-            #{Time.now.year}
+      %footer
+        %p
+          &copy;
+          %a{:href => "http://freerangefuture.com", :target => "_blank"}
+            Freerange Future
+          #{Time.now.year}

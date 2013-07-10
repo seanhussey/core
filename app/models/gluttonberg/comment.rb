@@ -99,6 +99,18 @@ module Gluttonberg
       end
     end
 
+    def black_list_author
+      author_string = _concat("", self.author_name)
+      author_string = _concat(author_string, self.author_email)
+      author_string = _concat(author_string, self.author_website)
+      unless author_string.blank?
+        gb_blacklist_settings = Gluttonberg::Setting.get_setting("comment_blacklist")
+        gb_blacklist_settings = _concat(gb_blacklist_settings, author_string)
+        Gluttonberg::Setting.update_settings("comment_blacklist" => gb_blacklist_settings)
+        Comment.spam_detection_for_all
+      end
+    end
+
     protected
       def init_moderation
         if self.commentable.respond_to?(:moderation_required)
@@ -122,19 +134,43 @@ module Gluttonberg
           dspam = Gluttonberg::Content::Despamilator.new(self.body)
           self.spam = (dspam.score >= 1.0)
           self.spam_score = dspam.score
-          unless self.spam
-            naughty_word_parser = Gluttonberg::Content::DespamilatorFilter::NaughtyWords.new
-            if !self.author_email.blank? && naughty_word_parser.local_parse(self.author_email) >= 1.0
-              self.spam = true
-            elsif !self.author_name.blank? && naughty_word_parser.local_parse(self.author_name) >= 1.0
-              self.spam = true
-            elsif !self.author_website.blank? && naughty_word_parser.local_parse(self.author_website) >= 1.0
-              self.spam = true
-            end
-          end
+          self.check_author_details_for_spam
         else
           self.spam = true
           self.spam_score = 1.0
+        end
+      end
+
+      def self._blank?(str)
+        str.blank? || str == "NULL" || str.length < 3
+      end
+
+      def _blank?(str)
+        self.class._blank?(str)
+      end
+
+      def self._concat(str1, str2)
+        unless _blank?(str2)
+          str1 = str1.blank? ? str2 : "#{str1}, #{str2}"
+        end
+        str1
+      end
+
+      def _concat(str1, str2)
+        self.class._concat(str1, str2)
+      end
+
+      
+      def check_author_details_for_spam
+        unless self.spam
+          naughty_word_parser = Gluttonberg::Content::DespamilatorFilter::NaughtyWords.new
+          [:author_email, :author_name, :author_website].each do |field|
+            val = self.send(field)
+            if val.blank? && naughty_word_parser.local_parse(val) >= 1.0
+              self.spam = true
+              break
+            end
+          end
         end
       end
 

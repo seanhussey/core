@@ -36,13 +36,13 @@
     Rails.configuration.flagged_content = false
 
   # Full text search config
-    Rails.configuration.search_models = {
-      "Gluttonberg::Page" => [:name],
-      "Gluttonberg::Blog" => [:name , :description],
-      "Gluttonberg::ArticleLocalization" => [:title , :body],
-      "Gluttonberg::PlainTextContentLocalization" => [:text] ,
-      "Gluttonberg::HtmlContentLocalization" => [:text]
-    }
+    # Rails.configuration.search_models = {
+    #   "Gluttonberg::Page" => [:name],
+    #   "Gluttonberg::Blog" => [:name , :description],
+    #   "Gluttonberg::ArticleLocalization" => [:title , :body],
+    #   "Gluttonberg::PlainTextContentLocalization" => [:text] ,
+    #   "Gluttonberg::HtmlContentLocalization" => [:text]
+    # }
 
   # Honeypot field name
     Rails.configuration.honeypot_field_name = "our_newly_weekly_series"

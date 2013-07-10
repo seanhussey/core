@@ -1,9 +1,12 @@
 = form_for( @collection , :as => :collection , :url => url_opts ,  :html => { :method => method_name, :class => "nosubnav validation"} ) do |collection_form|
   = gb_error_messages_for(@collection)
-  = block("Collection") do
+  %legend
+    Collection
+  %p
     = collection_form.label :name
     = collection_form.text_field(:name , :class => "required")
-  
-  = submit_tag "Create", :class => "btn btn-success"
-  %a{:href => admin_asset_category_path(:category => 'all' , :page => 1 ), :class => "btn btn-danger"}
-    Cancel
+
+  %p
+    = submit_tag "Create", :class => "btn btn-success"
+    %a{:href => admin_asset_category_path(:category => 'all' , :page => 1 ), :class => "btn btn-danger"}
+      Cancel

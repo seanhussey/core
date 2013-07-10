@@ -1,0 +1,29 @@
+%ul.thumbnails{:id => "title_thumb_#{opts[:id]}"}
+  %li.span4
+    .thumbnail.asset_selector_wrapper
+      - if !asset.blank? && asset.category && asset.category.to_s.downcase == "image"
+        = asset_tag(asset , :small_thumb)
+      .caption
+        %h5
+          - if opts[:asset_id].blank?
+            Nothing selected
+          - elsif asset.blank?
+            Asset missing!
+          - else
+            = asset.name
+
+        = hidden_field_tag("filter_#{field_name}", opts[:filter] , :id => "filter_#{opts[:id]}" )
+        - html_opts = { :id => opts[:id] , :class => "choose_asset_hidden_field" }
+        - if defined?(form) && form
+          = form.hidden_field(field_name , html_opts )
+        - else
+          = hidden_field_tag(field_name , opts[:asset_id], html_opts )
+
+        %p
+          = link_to("Select", "/admin/browser?filter=#{opts[:filter]}" , { :class =>"btn button choose_button #{opts[:button_class]}" , :rel => opts[:id], :style => "margin-right:5px;" , :data_url => opts[:data_url] })
+
+          - if opts[:remove_button] != false
+            - if defined?(form) && form
+              = form.clear_asset( field_name , opts )
+            - else
+              = clear_asset_tag( field_name , opts )

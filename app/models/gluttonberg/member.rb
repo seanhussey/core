@@ -10,6 +10,8 @@ module Gluttonberg
     validates_format_of :password, :with => Rails.configuration.password_pattern , :if => :require_password?, :message => Rails.configuration.password_validation_message
     validates_presence_of :first_name , :email
 
+    before_validation :verify_confirmation_status
+
     attr_accessor :return_url , :term_and_conditions
     attr_accessor :image_delete
 
@@ -19,6 +21,9 @@ module Gluttonberg
         include mixin
       end
     end
+
+    include Membership::Import
+    include Membership::Export
 
     clean_html [:bio]
 
@@ -71,15 +76,23 @@ module Gluttonberg
     end
 
     def self.generateRandomString(length=10)
-      chars = ("A".."Z").to_a + ("0".."9").to_a
-      numbers = ("0".."9").to_a
-      similar_chars = %w{ i I 1 0 O o 5 S s }
-      chars.delete_if {|x| similar_chars.include? x}
-      numbers.delete_if {|x| similar_chars.include? x}
-      newpass = ""
-      1.upto(length-1) { |i| newpass << chars[rand(chars.size-1)] }
-      1.upto(1) { |i| newpass << numbers[rand(numbers.size-1)] }
-      newpass
+      RandomStringGenerator.generate(length)
+    end
+
+    def self.generate_password_hash
+      password = self.generateRandomString
+      password_hash = {
+          :password => password ,
+          :password_confirmation => password
+      }
+    end
+
+    def assign_groups(group_ids)
+      if !group_ids.blank? && group_ids.kind_of?(String)
+        self.group_ids = [group_ids]
+      else
+        self.group_ids = group_ids
+      end
     end
 
     def does_member_have_access_to_the_page?( page)
@@ -94,181 +107,21 @@ module Gluttonberg
       end
     end
 
-    ###############################
-    # takes complete path to csv file.
-    # and returns successfull_users , failed_users and updated_users arrays that contains user objects
-    # if user exist with given email then update its information
-    # otherwise create a new user for it
-    # returns [successfull_users , failed_users , updated_users , ]
-    # if csv format is incorrect then it will return a string "CSV file format is invalid"
-    def self.importCSV(file_path , invite , group_ids )
-      begin
-        if RUBY_VERSION >= "1.9"
-          require 'csv'
-          csv_table = CSV.read(file_path)
-        else
-          csv_table = FasterCSV.read(file_path)
-        end
-      rescue => e
-        return "Please provide a valid CSV file with correct column names."
-      end
-      first_name_column_num =   self.find_column_position(csv_table , Rails.configuration.member_csv_metadata[:first_name] )
-      last_name_column_num =   self.find_column_position(csv_table ,  Rails.configuration.member_csv_metadata[:last_name]  )
-      email_column_num =   self.find_column_position(csv_table , Rails.configuration.member_csv_metadata[:email] )
-      groups_column_num =   self.find_column_position(csv_table , Rails.configuration.member_csv_metadata[:groups] )
-      other_columns = {}
-
-      Rails.configuration.member_csv_metadata.each do |key , val|
-        if ![:first_name, :last_name , :email, :groups].include?(key)
-          other_columns[key] = self.find_column_position(csv_table , val )
-        end
-      end
-
-      successfull_users = []
-      failed_users = []
-      updated_users = []
-
-
-      if first_name_column_num && last_name_column_num  && email_column_num
-        csv_table.each_with_index do |row , index |
-            if index > 0 # ignore first row because its meta data row
-              #user information hash
-              user_info = {
-                :first_name => row[first_name_column_num] ,
-                :last_name => row[last_name_column_num] ,
-                :email => row[email_column_num],
-                :group_ids => []
-              }
-              other_columns.each do |key , val|
-                if !val.blank? && val >= 0
-                  if row[val].blank? || !user_info[key].kind_of?(String)
-                    user_info[key] = row[val]
-                  else
-                    user_info[key] = row[val].force_encoding("UTF-8")
-                  end
-                end
-              end
-
-              #attach user to an group if its valid
-              unless groups_column_num.blank? || row[groups_column_num].blank?
-                group_names = row[groups_column_num].split(";")
-                temp_group_ids = []
-                group_names.each do |group_name|
-                  group = Group.where(:name => group_name.strip).first
-                  temp_group_ids << group.id unless group.blank?
-                end
-                user_info[:group_ids] = temp_group_ids
-              end
-
-              unless group_ids.blank?
-                if user_info[:group_ids].blank?
-                  user_info[:group_ids] = group_ids
-                else
-                  user_info[:group_ids] << group_ids
-                end
-              end
-
-              user = self.where(:email => row[email_column_num]).first
-              if user.blank?
-                # generate random password
-                temp_password = self.generateRandomString
-                password_hash = {
-                  :password => temp_password ,
-                  :password_confirmation => temp_password
-                }
-
-                # make user object
-                user = self.new(user_info.merge(password_hash))
-
-                #if its valid then save it send an email and also add it to successfull_users array
-                if user.valid?
-                  user.save
-                  if invite == "1"
-                    # we will regenerate password and send it member
-                    MemberNotifier.delay.welcome(user)
-                  end
-                  successfull_users << user
-                else # if failed then add it to failed list
-                  failed_users << user
-                end
-              else
-                if  !self.contains_user?(user , successfull_users) and !self.contains_user?(user , updated_users)
-                  if user.update_attributes(user_info)
-                    updated_users << user
-                  else
-                    failed_users << user
-                  end
-                end
-              end
-            end # if csv row index > 0
-
-        end #loop
-      else
-        return "Please provide a valid CSV file with correct column names"
-      end #if
-      [successfull_users , failed_users , updated_users ]
+    def generate_confirmation_key
+      self.confirmation_key = Digest::SHA1.hexdigest(Time.now.to_s + rand(12341234).to_s)[1..24]
     end
 
-    def self.contains_user?(user , list)
-      list.each do |record|
-        return true if record.id == user.id || record.email == user.email
-      end
-      false
-    end
+    private
 
-    # csv_table is two dimentional array
-    # col_name is a string.
-    # if structure is proper and column name found it returns column index from 0 to n-1
-    # otherwise nil
-    def self.find_column_position(csv_table  , col_name)
-      if csv_table.instance_of?(Array) && csv_table.count > 0 && csv_table.first.count > 0
-        csv_table.first.each_with_index do |table_col , index|
-          return index if table_col.to_s.upcase == col_name.to_s.upcase
-        end
-        nil
-      else
-        nil
-      end
-    end
-
-    #export to a csv
-    def self.exportCSV
-      all_records = self.all
-      csv_class = nil
-      if RUBY_VERSION >= "1.9"
-        require 'csv'
-        csv_class = CSV
-      else
-        csv_class = FasterCSV
-      end
-      other_columns = {}
-      csv_string = csv_class.generate do |csv|
-          header_row = ["DATABASE ID",Rails.configuration.member_csv_metadata[:first_name],Rails.configuration.member_csv_metadata[:last_name], Rails.configuration.member_csv_metadata[:email], Rails.configuration.member_csv_metadata[:groups]]
-
-          index = 0
-          Rails.configuration.member_csv_metadata.each do |key , val|
-            if ![:first_name, :last_name , :email , :groups].include?(key)
-              other_columns[key] = index + 5
-              header_row << val
-              index += 1
-            end
+      def verify_confirmation_status
+        if self.profile_confirmed != true
+          if self.class.does_email_verification_required
+            self.generate_confirmation_key
+          else
+            self.profile_confirmed = true
           end
-          csv << header_row
-
-          all_records.each do |record|
-            data_row = [record.id, record.first_name, record.last_name , record.email , record.groups_name("; ")]
-            other_columns.each do |key , val|
-              if !val.blank? && val >= 0
-                data_row[val] = record.send(key)
-              end
-            end
-            csv << data_row
-          end
+        end
       end
-
-      csv_string
-    end
-
 
   end
 end

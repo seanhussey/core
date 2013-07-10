@@ -68,14 +68,14 @@ module Gluttonberg
         end
 
         def remove_image
-          item =GalleryImage.find(params[:id])
+          item = GalleryImage.where(:id => params[:id]).first
           Gluttonberg::Feed.log(current_user,item.gallery, item.gallery.title , "removed image '#{item.image.name}'")
           item.delete
           render :text => "{success:true}"
         end
 
         def add_image
-          @gallery =Gallery.find(params[:id])
+          @gallery = Gallery.where(:id => params[:id]).first
           max_position = @gallery.gallery_images.length
           @gallery_item = @gallery.gallery_images.create(:asset_id => params[:asset_id] , :position => (max_position )  )
           @gallery_images = @gallery.gallery_images.order("position ASC")
@@ -92,7 +92,7 @@ module Gluttonberg
           end
 
           def find_gallery
-            @gallery = Gallery.find(params[:id])
+            @gallery = Gallery.where(:id => params[:id]).first
             @gallery_images = @gallery.gallery_images.order("position ASC")
           end
 
@@ -106,7 +106,7 @@ module Gluttonberg
 
           def save_collection_images
             unless params[:collection_id].blank?
-              collection = AssetCollection.find(params[:collection_id])
+              collection = AssetCollection.where(:id => params[:collection_id]).first
               collection_images = collection.images
               Gluttonberg::Feed.log(current_user,@gallery, @gallery.title , "add #{pluralize(collection_images.length , 'image')} from collection '#{collection.name}'")
               max_position = @gallery.gallery_images.length

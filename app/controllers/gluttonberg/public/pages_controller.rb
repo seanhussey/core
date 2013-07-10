@@ -50,7 +50,7 @@ module Gluttonberg
       end
 
       def stylesheets
-        @stylesheet = Stylesheet.find(:first , :conditions => { :slug => params[:id] })
+        @stylesheet = Stylesheet.where(:slug => params[:id]).first
         unless params[:version].blank?
           @version = params[:version]
           @stylesheet.revert_to(@version)

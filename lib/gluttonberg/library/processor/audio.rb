@@ -13,28 +13,44 @@ module Gluttonberg
 
         # Collect mp3 files info using Mp3Info gem
         def self.collect_mp3_info(asset)
-          audio = asset.audio_asset_attribute
-
           begin
             #open mp3 file
             Mp3Info.open(asset.location_on_disk) do |mp3|
-              if audio.blank?
-                AudioAssetAttribute.create( :asset_id => asset.id , :length => mp3.length , :title => mp3.tag.title , :artist => mp3.tag.artist , :album => mp3.tag.album , :tracknum => mp3.tag.tracknum)
-              else
-                audio.update_attributes( {:length => mp3.length, :genre =>"" , :title => mp3.tag.title , :artist => mp3.tag.artist , :album => mp3.tag.album , :tracknum => mp3.tag.tracknum })
-              end
+              self.update_audio_attributes(asset, mp3)
             end
-            if Gluttonberg::Setting.get_setting("audio_assets") == "Enable"
-              AudioJob.perform_async(asset.id)
-            end
+            self.enqueue_job(asset)
           rescue => detail
-            # if exception occurs and asset has some attributes, then remove them.
-            unless audio.blank?
-              audio.update_attributes( {:length => nil , :title => nil , :artist => nil , :album => nil , :tracknum => nil })
-            end
+            # if exception occurs and asset has some attributes, 
+            # then remove them.
+            AudioAssetAttribute.where(:asset_id => asset.id).delete_all
           end
 
         end #collect_mp3_info
+
+        private
+          def self.enqueue_job(asset)
+            if Gluttonberg::Setting.get_setting("audio_assets") == "Enable"
+              AudioJob.perform_async(asset.id)
+            end
+          end
+
+          def self.update_audio_attributes(asset, mp3)
+            audio = asset.audio_asset_attribute
+            audio_attrs = {
+              :asset_id => asset.id, 
+              :length => mp3.length , 
+              :title => mp3.tag.title, 
+              :artist => mp3.tag.artist, 
+              :album => mp3.tag.album, 
+              :tracknum => mp3.tag.tracknum,
+              :genre =>""
+            }
+            if audio.blank?
+              AudioAssetAttribute.create(audio_attrs)
+            else
+              audio.update_attributes(audio_attrs)
+            end
+          end
 
       end
     end

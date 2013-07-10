@@ -25,6 +25,14 @@ Array.prototype.remove= function(){
 
 /* Jquery ajax file upload */
 jQuery.extend({
+  handleError: function( s, xhr, status, e ) {
+    // If a local callback was specified, fire it
+    if ( s.error )
+      s.error( xhr, status, e );
+    // If we have some XML response text (e.g. from an AJAX call) then log it in the console
+    else if(xhr.responseText)
+      console.log(xhr.responseText);
+  },
   createUploadIframe: function(id, uri)
 	{
 		//create frame
@@ -1506,8 +1514,8 @@ RedactorPlugins.asset_library_image = {
     this.buttonAddBefore('video', 'asset_library_image', 'Insert image', function()
     {
       var self = this;
-      var url = "/admin/browser";
-      var link = $("<img src='/admin/browser' />");
+      var url = "/admin/browser?filter=image";
+      var link = $("<a href='"+url+"'/>");
       var p = $("<p> </p>");
       AssetBrowser.showOverlay()
       $.get(url, null,
@@ -1666,5 +1674,17 @@ RedactorPlugins.gluttonberg_pages = {
       }
     }
     self.modalClose();
+  }
+}
+
+function getParameterByName(url, name ){
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)", 
+      regex = new RegExp( regexS ),
+      results = regex.exec( url );
+  if( results == null ){
+    return "";
+  } else{
+    return decodeURIComponent(results[1].replace(/\+/g, " "));
   }
 }

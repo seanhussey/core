@@ -5,7 +5,7 @@ module Gluttonberg
     self.table_name = "gb_page_localizations"
     belongs_to :fb_icon , :class_name => "Gluttonberg::Asset" , :foreign_key => "fb_icon_id"
 
-    attr_accessible :name, :slug, :navigation_label, :seo_title, :seo_keywords, :seo_description, :fb_icon_id, :contents, :locale_id
+    attr_accessible :name, :path , :slug, :navigation_label, :seo_title, :seo_keywords, :seo_description, :fb_icon_id, :contents, :locale_id
 
     attr_accessor :current_path
 
@@ -31,14 +31,13 @@ module Gluttonberg
     def contents
       @contents ||= begin
         # First collect the localized content
-        contents_data = Gluttonberg::Content.localization_associations.inject([]) do |memo, assoc|
-          memo += send(assoc).all
-        end
+        contents_data = localized_contents
+        contents_data = [] if contents_data.blank?
         # Then grab the content that belongs directly to the page
-        Gluttonberg::Content.non_localized_associations.inject(contents_data) do |memo, assoc|
-          contents_data += page.send(assoc).all
+        contents_data << non_localized_contents
+        unless contents_data.blank?
+          contents_data = contents_data.flatten.sort{|a,b| a.section_position <=> b.section_position}
         end
-        contents_data = contents_data.sort{|a,b| a.section_position <=> b.section_position}
       end
       @contents
     end
@@ -59,8 +58,8 @@ module Gluttonberg
     def non_localized_contents
       @non_localized_contents ||= begin
         # grab the content that belongs directly to the page
-        Gluttonberg::Content.non_localized_associations.inject(contents_data) do |memo, assoc|
-          contents_data += page.send(assoc).all
+        contents_data = Gluttonberg::Content.non_localized_associations.inject([]) do |memo, assoc|
+          memo += page.send(assoc).all
         end
         contents_data = contents_data.sort{|a,b| a.section_position <=> b.section_position}
       end
@@ -98,25 +97,11 @@ module Gluttonberg
     # prefix from. Otherwise it will just use the slug, with a fall-back
     # to it's page's default.
     def regenerate_path
-
       self.current_path = self.path
-
       page.reload #forcing that do not take cached page object
       slug = nil if slug.blank?
-      if page.parent_id && page.parent.home != true
-        localization = page.parent.localizations.where(:locale_id  => locale_id).first
-        new_path = "#{localization.path}/#{self.slug || page.slug}"
-      else
-        new_path = "#{self.slug || page.slug}"
-      end
-
-      # check duplication: add id at the end if its duplicated
-      already_exist = self.class.where([ "path = ? AND page_id != ? ", new_path, page.id]).all
-      if !already_exist.blank?
-        if already_exist.length > 1 || (already_exist.length == 1 && already_exist.first.id != self.id )
-          new_path= "#{new_path}_#{already_exist.length+1}"
-        end
-      end
+      new_path = prepare_new_path
+      
       self.previous_path = self.current_path
       write_attribute(:path, new_path)
     end
@@ -131,6 +116,27 @@ module Gluttonberg
 
       def update_content_localizations
         contents.each { |c| c.save } if self.content_needs_saving
+      end
+
+      def prepare_new_path
+        if page.parent_id && page.parent.home != true
+          localization = page.parent.localizations.where(:locale_id  => locale_id).first
+          new_path = "#{localization.path}/#{self.slug || page.slug}"
+        else
+          new_path = "#{self.slug || page.slug}"
+        end
+        check_duplication_in(new_path)
+      end
+
+      def check_duplication_in(new_path)
+        # check duplication: add id at the end if its duplicated
+        already_exist = self.class.where([ "path = ? AND page_id != ? ", new_path, page.id]).all
+        if !already_exist.blank?
+          if already_exist.length > 1 || (already_exist.length == 1 && already_exist.first.id != self.id )
+            new_path = "#{new_path}_#{already_exist.length+1}"
+          end
+        end
+        new_path
       end
 
   end
