@@ -1,14 +1,11 @@
 class Notifier < Gluttonberg::BaseNotifier
-  
-  default :from => "#{Gluttonberg::Setting.get_setting("title")} <#{Gluttonberg::Setting.get_setting("from_email")}>"
-  default_url_options[:host] = Rails.configuration.host_name 
-  
+
   def password_reset_instructions(user_id)
     user = User.find(user_id)
     setup_email
     @subject += "Password Reset Instructions"
-    @recipients = user.email  
-    @body[:edit_password_reset_url] = edit_admin_password_reset_url(user.perishable_token)
+    @edit_password_reset_url = edit_admin_password_reset_url(user.perishable_token)
+    mail(:to => user.email, :subject => @subject)
   end
   
   def comment_notification(subscriber , article , comment)
