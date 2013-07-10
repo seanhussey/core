@@ -7,7 +7,7 @@ module Gluttonberg
 
       def call(env)
         path = env['PATH_INFO']
-        unless bypass_path?(path, env)
+        unless Gluttonberg::Middleware::Locales.bypass_path?(path, env)
           case Gluttonberg::Engine.config.identify_locale
             when :subdomain
               # return the sub-domain
@@ -39,7 +39,7 @@ module Gluttonberg
           end
         end
 
-        def bypass_path?(path, env)
+        def self.bypass_path?(path, env)
           path =~ /^\/admin/ || path.start_with?("/stylesheets")  || path.start_with?("/javascripts")   || path.start_with?("/images") ||  path.start_with?("/gluttonberg")  || path.start_with?("/assets")  || path.start_with?("/user_asset")
         end
     end # Locales
