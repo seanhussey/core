@@ -99,16 +99,8 @@ module Gluttonberg
       end
     end
 
-    def absolute_file_path
-      Rails.root.to_s + "/public" + self.url.to_s
-    end
-
     def filename_without_extension
       self.file_name.split(".").first unless self.file_name.blank?
-    end
-
-    def absolute_file_path_without_extension
-      Rails.root.to_s + "/public" + self.url.split(".").first unless self.file_name.blank?
     end
 
     def self.create_assets_from_ftp
@@ -119,7 +111,6 @@ module Gluttonberg
         unless entry.starts_with?(".") || entry.starts_with?("__")
           file = GbBulkFile.init(entry)
           asset_name_with_extention = entry.split(".").first
-
           asset_params = {:name => asset_name_with_extention  , :file => file  }
           @asset = Asset.create(asset_params.merge({:asset_collection_ids => collection.id.to_s}))
         end
