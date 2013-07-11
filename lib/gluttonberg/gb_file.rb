@@ -7,11 +7,11 @@ module Gluttonberg
   class GbFile < File
     attr_accessor :original_filename , :content_type , :size
 
-    def self.init(filename , entry)
+    def self.init(filename)
       file = self.new(filename)
       file.original_filename = filename
       file.content_type = find_content_type(filename)
-      file.size = entry.size
+      file.size = File.size(filename)
       file
     end
 

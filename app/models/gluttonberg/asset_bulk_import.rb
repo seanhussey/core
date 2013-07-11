@@ -31,7 +31,7 @@ module Gluttonberg
           entry_name = entry.name.gsub("/", "-")
           filename = File.join(dir,entry_name)
           entry.extract(filename)
-          file = GbFile.init(filename , entry)
+          file = GbFile.init(filename)
           asset = prepare_asset(entry_name, file, current_user, asset_params)
           file.close
           FileUtils.remove_file(filename)
@@ -59,7 +59,12 @@ module Gluttonberg
       end
 
       def self.hidden_file_or_directory?(entry)
-        entry.name.starts_with?("._") || entry.name.starts_with?("__") || entry.name.split("/").last.starts_with?(".") || entry.name.split("/").last.starts_with?("__") || entry.directory?
+        self.hidden_file?(entry.name) || entry.directory?
+      end
+
+      def self.hidden_file?(file_name)
+        name = file_name.split("/").last
+        name.starts_with?(".") || name.starts_with?("__")
       end
   end #class
 end

@@ -47,6 +47,11 @@ module Gluttonberg
       @asset.file_name.should_not be_nil
     end
 
+    it "filename_without_extension" do
+      @asset.filename_without_extension.should_not be_nil
+      @asset.filename_without_extension.should == "gluttonberg_banner"
+    end
+
     it "should format filename correctly" do
       @asset.file_name.should == "gluttonberg_banner.jpg"
     end
@@ -78,6 +83,21 @@ module Gluttonberg
     it "should set the correct type" do
       @asset.valid?
       @asset.type_name.should == "Jpeg Image"
+
+      file = File.new(File.join(RSpec.configuration.fixture_path, "assets/untitled"))
+      file.original_filename = "untitled"
+      file.size = 1
+
+      param = {
+        :name=>"temp file",
+        :file=> file,
+        :description=>"<p>test</p>"
+      }
+
+      asset = Asset.new( param )
+      asset.type_name.should_not be_nil
+      asset.type_name.should == Library::UNCATEGORISED_CATEGORY
+      asset.category.should == Library::UNCATEGORISED_CATEGORY
     end
 
     it "should set the correct category" do
@@ -224,6 +244,46 @@ module Gluttonberg
       asset.category.should == "audio"
       Asset.refresh_all_asset_types
       asset.category.should == "audio"
+    end
+
+    it "create_assets_from_ftp and search using search_assets(query)" do
+      path = File.join(RSpec.configuration.fixture_path, "assets")
+      assets = Asset.create_assets_from_ftp(path)
+      assets.should_not be_nil
+      assets.length.should == 7
+
+      Asset.search_assets(".jpg").count.should == 0
+      Asset.search_assets("asset").count.should == 1
+      Asset.search_assets("gb").count.should == 2
+    end
+
+    it "formatted_file_size" do
+      asset = Asset.new( @param )
+      asset.formatted_file_size.should == "300 Bytes"
+      
+      asset.size = 1
+      asset.formatted_file_size.should == "1 Byte"
+
+      asset.size = 1023
+      asset.formatted_file_size.should == "1023 Bytes"
+
+      asset.size = 1024
+      asset.formatted_file_size.should == "1.00 KB"
+
+      asset.size = 1024 * 1.233
+      asset.formatted_file_size.should == "1.23 KB"
+
+      asset.size = 1024 * 1024
+      asset.formatted_file_size.should == "1.00 MB"
+
+      asset.size = 1024 * 1024 * 2.567
+      asset.formatted_file_size.should == "2.57 MB"
+
+      asset.size = 1024 * 1024 * 1024
+      asset.formatted_file_size.should == "1.00 GB"
+
+      asset.size = 1024 * 1024 * 1024 * 2.4
+      asset.formatted_file_size.should == "2.40 GB"
     end
 
   end
