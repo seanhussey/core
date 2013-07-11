@@ -33,6 +33,14 @@ Gluttonberg::PageDescription.add do
 
   end
 
+  # page description which redirects to rails defined route examples
+  page :examples do
+    label "Examples"
+    description "Examples Page"
+    rewrite_to 'examples'
+    layout "public"
+  end
+
   # page description with a single content section
   page :about do
     label "About"
