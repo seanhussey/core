@@ -7,13 +7,14 @@ module Gluttonberg
       # set of nested lists with links to each page.
       def navigation_tree(pages, opts = {})
         content = ""
+        pages = Gluttonberg::Page.where(:parent_id => nil, :state => "published").order("position ASC") if pages.nil?
         pages.each do |page|
           if page.hide_in_nav.blank? || page.hide_in_nav == false
             li_opts = {:id => page.slug + "Nav"}
             li_opts[:class] = "current" if page == @page
             page.load_localization(@locale)
             if page.home?
-              li_content = content_tag(:a, page.nav_label, :href => page_url(page , opts)).html_safe
+              li_content = content_tag(:a, page.nav_label, :href => "/").html_safe
             else
               if page.description && page.description.top_level_page?
                 li_content = content_tag(:a, page.nav_label, :href=>"javascript:;", :class => "menu_disabled").html_safe
