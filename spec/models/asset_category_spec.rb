@@ -45,7 +45,7 @@ module Gluttonberg
     end
 
     it "should find assets for category" do
-      file = File.new(File.join(RSpec.configuration.fixture_path, "assets/assets_import.zip"))
+      file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/assets_import.zip"))
       current_user = User.new
       param = {
         :file => file
@@ -58,7 +58,7 @@ module Gluttonberg
     end
 
     it "should find assets for category" do
-      file = File.new(File.join(RSpec.configuration.fixture_path, "assets/assets_import.zip"))
+      file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/assets_import.zip"))
       current_user = User.new
       collection1 = AssetCollection.new(:name => "Collection1")
       collection2 = AssetCollection.new(:name => "Collection2")

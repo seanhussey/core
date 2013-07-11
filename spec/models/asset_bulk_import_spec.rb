@@ -3,7 +3,7 @@ require 'spec_helper'
 module Gluttonberg
   describe AssetBulkImport, "Asset bulk import using zip" do
     before :all do
-      @file = File.new(File.join(RSpec.configuration.fixture_path, "assets/assets_import.zip"))
+      @file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/assets_import.zip"))
       @collection1 = AssetCollection.new(:name => "Collection1")
       @collection2 = AssetCollection.new(:name => "Collection2")
       @asset_collections = [ @collection1 , @collection2 ]

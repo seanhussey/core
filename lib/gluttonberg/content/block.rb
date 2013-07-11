@@ -73,8 +73,8 @@ module Gluttonberg
           localized_model.content_type = self.content_type
 
           # Tell the content module that we are localized
-          localized_model.association_name = "#{self.content_type}_localizations"
-          Gluttonberg::Content.register_localization( "#{self.content_type}_localizations".to_sym , localized_model)
+          localized_model.association_name = "#{self.content_type}_localizations".to_sym
+          Gluttonberg::Content.register_localization( localized_model.association_name , localized_model)
 
           # Set up the associations
           has_many :localizations, :class_name => Gluttonberg.const_get(class_name).to_s  , :foreign_key => "#{self.content_type}_id" , :dependent => :destroy

@@ -1,22 +1,12 @@
 require 'spec_helper'
 
-# i have added some attributes to file class.
-# because rails adds these attributes when file is uploaded through form.
-class File
-  attr_accessor :original_filename  , :content_type , :size
-
-  def tempfile
-    self
-  end
-end
-
 
 module Gluttonberg
 
   describe Asset, "file upload" do
 
     before :all do
-      @file = File.new(File.join(RSpec.configuration.fixture_path, "assets/gb_banner.jpg"))
+      @file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/gb_banner.jpg"))
       @file.original_filename = "gluttonberg_banner.jpg"
       @file.content_type = "image/jpeg"
       @file.size = 300
@@ -84,7 +74,7 @@ module Gluttonberg
       @asset.valid?
       @asset.type_name.should == "Jpeg Image"
 
-      file = File.new(File.join(RSpec.configuration.fixture_path, "assets/untitled"))
+      file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/untitled"))
       file.original_filename = "untitled"
       file.size = 1
 
@@ -154,7 +144,7 @@ module Gluttonberg
 
     # actual image should be resized if large than 1600x1200
     it "should resize actual image if larger than 1600x1200>" do
-      file = File.new(File.join(RSpec.configuration.fixture_path, "assets/high_res_photo.jpg"))
+      file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/high_res_photo.jpg"))
       file.original_filename = "high_res_photo.jpg"
       file.content_type = "image/jpeg"
       file.size = 3333287
@@ -177,7 +167,7 @@ module Gluttonberg
     # FIXED size thumbnails
 
     it "should generate fixed size image 1000x1000# when image is larger than required size" do
-      file = File.new(File.join(RSpec.configuration.fixture_path, "assets/high_res_photo.jpg"))
+      file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/high_res_photo.jpg"))
       file.original_filename = "high_res_photo.jpg"
       file.content_type = "image/jpeg"
       file.size = 3333287
@@ -198,7 +188,7 @@ module Gluttonberg
 
     # audio
     it "should obtain and save mp3 title" do
-      file = File.new(File.join(RSpec.configuration.fixture_path, "assets/audio.mp3"))
+      file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/audio.mp3"))
       file.original_filename = "audio.mp3"
       file.content_type = "audio/mp3"
       file.size = 1024*1024*1.7
@@ -214,7 +204,7 @@ module Gluttonberg
     end
 
     it "should obtain and save mp3 info" do
-      file = File.new(File.join(RSpec.configuration.fixture_path, "assets/audio.mp3"))
+      file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/audio.mp3"))
       file.original_filename = "audio.mp3"
       file.content_type = "audio/mp3"
       file.size = 1024*1024*1.7
@@ -232,7 +222,7 @@ module Gluttonberg
     end
 
     it "refresh_all_asset_types" do
-      file = File.new(File.join(RSpec.configuration.fixture_path, "assets/audio.mp3"))
+      file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/audio.mp3"))
       file.original_filename = "audio.mp3"
       file.content_type = "audio/mp3"
       file.size = 1024*1024*1.7

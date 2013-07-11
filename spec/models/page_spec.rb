@@ -25,6 +25,19 @@ module Gluttonberg
       @page.view.should == "newsletter"
     end
 
+    it "should return correct public path" do
+      localize = Engine.config.localize
+      Engine.config.localize = false
+      @page.public_path.should == "/first-name"
+      Engine.config.localize = true
+      @page.public_path.should == "/en-au/first-name"
+      Engine.config.localize = localize
+    end
+
+    it "should return correct name_and_code" do
+      @page.current_localization.name_and_code.should == "first name (Australia English)"
+    end
+
     it "should have only one home page at a time" do
       current_home = Page.create(:name => "Page1" , :home => true , :description_name => 'home')
       page2 = Page.create(:name => "Page2" , :description_name => 'home')
@@ -155,7 +168,5 @@ module Gluttonberg
         loc.versions.size.should == 10
       end
     end
-
-
-  end
+  end #Page
 end
