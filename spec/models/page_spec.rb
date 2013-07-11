@@ -21,11 +21,31 @@ module Gluttonberg
       @page.layout.should == "public"
     end
 
+    it "should have correct title" do
+      @page.title.should == "first name"
+    end
+
+    it "should have correct nav_label" do
+      @page.nav_label.should == "first name"
+      page = Page.create! :name => 'first name 2', :description_name => 'newsletter'
+      page.current_localization.update_attributes(:navigation_label => "Temporary Page")
+      page.nav_label.should == "Temporary Page"
+    end
+
+    it "should be able to load localizations" do
+      @page.load_localization(Locale.first_default)
+    end
+
+    it "should return correct be public page if no group is allocated" do
+      @page.is_public?.should == true
+    end
+
     it "should return correct view name" do
       @page.view.should == "newsletter"
     end
 
-    it "should return correct public path" do
+    it "should return correct path" do
+      @page.path.should == "first-name"
       localize = Engine.config.localize
       Engine.config.localize = false
       @page.public_path.should == "/first-name"
@@ -43,6 +63,9 @@ module Gluttonberg
       page2 = Page.create(:name => "Page2" , :description_name => 'home')
       page2.reload
       current_home.reload
+
+      Page.home_page.id.should == current_home.id
+      Page.home_page_name.should == current_home.name
 
       current_home.home.should be_true
       page2.home.should be_false
@@ -168,5 +191,24 @@ module Gluttonberg
         loc.versions.size.should == 10
       end
     end
+
+    it "redirect_required? && redirect_url" do
+      page = Page.create! :name => 'redirect required', :description_name => 'redirect_to_remote'
+      page.redirect_required?.should == true
+      page.path.should == "redirect-required"
+      page.redirect_url.should == "http://www.freerangefuture.com"
+      @page.redirect_required?.should == false
+
+      page = Page.create! :name => 'redirect to path', :description_name => 'redirect_to_path'
+      page.redirect_required?.should == true
+      page.redirect_url.should == "/local-path"
+    end 
+
+    it "rewrite_required?" do
+      page = Page.create! :name => 'rewrite required', :description_name => 'examples'
+      page.rewrite_required?.should == true
+      @page.rewrite_required?.should == false
+    end 
+
   end #Page
 end

@@ -224,7 +224,7 @@ module Gluttonberg
         when :block
           @redirect_block.call(page, params)
         when :path
-          Router.localized_url(redirect_value(page, params), params)
+          @redirect_option
         when :page
           path_to_page(page, params)
       end

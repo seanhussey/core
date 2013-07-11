@@ -42,6 +42,20 @@ Gluttonberg::PageDescription.add do
     layout "public"
   end
 
+  # redirect to remote
+  page :redirect_to_remote do
+    label "Examples"
+    description "Examples Page"
+    redirect_to :remote, 'http://www.freerangefuture.com'
+  end
+
+  # redirect to path
+  page :redirect_to_path do
+    label "Examples"
+    description "Examples Page"
+    redirect_to :path, '/local-path'
+  end
+
   # page description with a single content section
   page :about do
     label "About"
