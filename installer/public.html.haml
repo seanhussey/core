@@ -18,7 +18,6 @@
       %meta{:content=>"#{page_title}",:property=>"og:title"}
     %link{ :rel=>"shortcut icon", :href=>"/assets/favicon.png"}
   %body{:class=>body_class(@page)}
-    - @pages = Gluttonberg::Page.find(:all , :conditions => { :home => true } )
     - slug = @locale ? @locale.slug : ""
-    = navigation_tree(@pages, :id => "navigation" , :slug => slug   )
+    = navigation_tree(nil, :id => "navigation" , :slug => slug   )
     = yield
