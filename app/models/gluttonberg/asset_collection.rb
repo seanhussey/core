@@ -5,8 +5,9 @@ module Gluttonberg
     validates_uniqueness_of :name
     validates_presence_of :name
     attr_accessible :name
+
     def images
-      data = assets.find(:all , :include => :asset_type )
+      data = assets.includes([:asset_type]).all
       data.find_all{|d| d.category == "image"}
     end
 
@@ -25,10 +26,11 @@ module Gluttonberg
       if collection_ids.kind_of?(String)
         collection_ids = collection_ids.split(",")
       end
-      the_collection = find_or_create_asset_collection_from_hash(params["new_collection"], current_user)
+      the_collection = find_or_create_asset_collection_from_hash(params[:new_collection], current_user)
       unless the_collection.blank?
         collection_ids <<  the_collection.id
       end
+      collection_ids
     end
 
     private
@@ -39,10 +41,10 @@ module Gluttonberg
       def self.find_or_create_asset_collection_from_hash(param_hash, current_user)
        # Create new AssetCollection if requested by the user
        if param_hash
-           if param_hash.has_key?('new_collection_name')
-             unless param_hash['new_collection_name'].blank?
+           if param_hash.has_key?(:new_collection_name)
+             unless param_hash[:new_collection_name].blank?
                #create options for first or create
-               options = {:name => param_hash['new_collection_name'] }
+               options = {:name => param_hash[:new_collection_name] }
 
                # Retireve the existing AssetCollection if it matches or create a new one
                the_collection = AssetCollection.where(options).first

@@ -2,8 +2,8 @@ module Gluttonberg
   require 'mime/types'
   class AssetType < ActiveRecord::Base
     self.table_name = "gb_asset_types"
-    has_many    :assets , :class_name => "Asset"
-    has_many    :asset_mime_types , :class_name => "AssetMimeType"
+    has_many    :assets , :class_name => "Asset", dependent: :nullify
+    has_many    :asset_mime_types , :class_name => "AssetMimeType", dependent: :nullify
     belongs_to  :asset_category, :class_name => "AssetCategory"
 
     validates_uniqueness_of :name

@@ -15,9 +15,6 @@ namespace :gluttonberg do
           if !File.exist?(asset.tmp_location_on_disk) && !File.exist?(asset.tmp_original_file_on_disk)
             asset.download_asset_to_tmp_file
           end
-          # asset.generate_image_thumb
-          # asset.generate_proper_resolution
-          # asset.save
           Gluttonberg::Library::Processor::Image.process(asset)
           asset.remove_file_from_tmp_storage
         end

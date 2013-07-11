@@ -49,7 +49,6 @@ module Gluttonberg
     # This method is mainly for administrative purposes. It will rebuild the
     # table of asset types, then recategorise each asset.
     def self.rebuild
-      Asset.clear_all_asset_types
       flush_asset_types
       build_default_asset_types
       Asset.refresh_all_asset_types

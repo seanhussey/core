@@ -19,7 +19,7 @@ module Gluttonberg
 
     has_and_belongs_to_many :asset_collections     , :join_table => "gb_asset_collections_assets"
     belongs_to  :asset_type
-    has_one :audio_asset_attribute , :dependent => :destroy, :class_name => "Gluttonberg::AudioAssetAttribute"
+    has_one :audio_asset_attribute , :dependent => :destroy, :class_name => "Gluttonberg::AudioAssetAttribute", dependent: :destroy
 
     belongs_to :user
 
@@ -35,16 +35,12 @@ module Gluttonberg
     KILO_SIZE = 1024.0
 
     def alt_or_title
-      unless alt.blank?
-        alt
-      else
-        title
-      end
+      alt.blank? ? title : alt
     end
 
     # returns category of asset
     def category
-      if asset_type.nil? then
+      if asset_type.blank? then
         Library::UNCATEGORISED_CATEGORY
       else
         asset_type.asset_category.name
@@ -56,7 +52,7 @@ module Gluttonberg
     end
 
     def type_name
-      if asset_type.nil? then
+      if asset_type.blank? then
         Library::UNCATEGORISED_CATEGORY
       else
         asset_type.name
@@ -92,13 +88,6 @@ module Gluttonberg
       end
     end
 
-    def self.clear_all_asset_types
-      all.each do |asset|
-        asset.asset_type = nil
-        asset.save
-      end
-    end
-
     # find out and set type and category of file
     def set_category_and_type
       unless file.nil?
@@ -106,36 +95,29 @@ module Gluttonberg
       end
     end
 
-    def absolute_file_path
-      Rails.root.to_s + "/public" + self.url.to_s
-    end
-
     def filename_without_extension
       self.file_name.split(".").first unless self.file_name.blank?
     end
 
-    def absolute_file_path_without_extension
-      Rails.root.to_s + "/public" + self.url.split(".").first unless self.file_name.blank?
-    end
-
-    def self.create_assets_from_ftp
-      collection = AssetCollection.where(:name => "BULKS").first
-
-      files = Dir.entries(Rails.root+"/bulks")
+    def self.create_assets_from_ftp(absolute_directory_path=nil)
+      collection = AssetCollection.first_or_create(:name => "BULKS")
+      absolute_directory_path = Rails.root+"/bulks" if absolute_directory_path.blank?
+      files = Dir.entries(absolute_directory_path)
+      assets = []
       files.each do |entry|
-        unless entry.starts_with?(".") || entry.starts_with?("__")
-          file = GbBulkFile.init(entry)
+        unless AssetBulkImport.hidden_file?(entry)
+          file = GbFile.init(File.join(absolute_directory_path, entry))
           asset_name_with_extention = entry.split(".").first
-
           asset_params = {:name => asset_name_with_extention  , :file => file  }
-          @asset = Asset.create(asset_params.merge({:asset_collection_ids => collection.id.to_s}))
+          assets << Asset.create(asset_params.merge({:asset_collection_ids => collection.id.to_s}))
         end
       end
+      assets
     end
 
     def self.search_assets(query)
       command = Gluttonberg.like_or_ilike
-      self.where(["name #{command} ? OR description LIKE ? ", "%#{query}%" , "%#{query}%" ] ).order("name ASC")
+      self.where(["name #{command} ? OR description #{command} ? ", "%#{query}%" , "%#{query}%" ] ).order("name ASC")
     end
 
     def to_json_for_ajax_new
@@ -151,8 +133,5 @@ module Gluttonberg
       end
       json.to_json
     end
-
-  end
-
-
+  end #Asset
 end

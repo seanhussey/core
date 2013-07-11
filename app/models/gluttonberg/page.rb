@@ -58,7 +58,7 @@ module Gluttonberg
     end
 
     def redirect_required?
-      self.description.redirect?
+      self.description.redirection_required?
     end
 
     def redirect_url
