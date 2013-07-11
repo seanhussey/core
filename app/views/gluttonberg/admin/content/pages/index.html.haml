@@ -12,8 +12,9 @@
       .subnav.nav.nav-pills
         - if can?(:manage, Gluttonberg::Page)
           = link_to('Add New Page', new_admin_page_path , :class => "btn btn-primary")
-          %a#saveNestableTree{:href => "Javascript:;", :class => "btn"}
-            Save Page Order
+          - unless @pages.empty?
+            %a#saveNestableTree{:href => "Javascript:;", :class => "btn"}
+              Save Page Order
 
       - if @pages.empty?
         %p.empty No Pages
