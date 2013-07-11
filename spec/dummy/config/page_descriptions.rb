@@ -46,14 +46,14 @@ Gluttonberg::PageDescription.add do
   page :redirect_to_remote do
     label "Examples"
     description "Examples Page"
-    redirect_to :remote, 'http://www.freerangefuture.com'
+    redirect_to 'http://www.freerangefuture.com'
   end
 
   # redirect to path
   page :redirect_to_path do
     label "Examples"
     description "Examples Page"
-    redirect_to :path, '/local-path'
+    redirect_to '/local-path'
   end
 
   # page description with a single content section
