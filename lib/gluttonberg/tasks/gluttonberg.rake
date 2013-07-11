@@ -180,7 +180,7 @@ namespace :gluttonberg do
 
       user = User.new(:email => email, :password => password, :password_confirmation => password, :first_name => first_name, :last_name => last_name)
       user.role = "super_admin"
-      user.save
+      user.save!
       return true
     rescue => e
       line = HighLine.new
