@@ -36,5 +36,5 @@
 
 # Rails Config
   Rails.configuration.encoding = "utf-8"
-  Rails.configuration.host_name = "localhost:3000" # used for emails
+  Rails.configuration.host_name = "localhost:5000" # used for emails
   Rails.configuration.filter_parameters += [:password_confirmation] # Used in user and member modules

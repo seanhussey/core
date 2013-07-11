@@ -13,7 +13,7 @@ module Gluttonberg
       config.enable_gallery = false
       config.enable_members = false
       config.encoding = "utf-8"
-      config.host_name = "localhost:3000"
+      config.host_name = "localhost:5000"
     end
 
     def init_advance_settings
