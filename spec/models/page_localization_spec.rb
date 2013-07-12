@@ -5,7 +5,7 @@ module Gluttonberg
 
     before(:all) do
       @locale = Gluttonberg::Locale.generate_default_locale
-      @page = Page.create! :name => 'first name', :description_name => 'newsletter'
+      @page = Page.create! :name => 'first name', :description_name => 'generic_page'
       Gluttonberg::Setting.generate_common_settings
     end
 

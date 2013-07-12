@@ -3,10 +3,10 @@ require 'spec_helper'
 
 # this test is considering page_descriptions file in config folder
 # and its test is based on newsletter page type
-# page :newsletter do
+# page :generic_page do
 #   label "Newsletter"
 #   description "Newsletter Page"
-#   view "newsletter"
+#   view "generic"
 #   layout "application"
 #
 #   section :title do
@@ -31,10 +31,10 @@ module Gluttonberg
   describe PageObserver do
 
     before(:all) do
-      @page = Page.create(:name => 'first name', :description_name => 'newsletter')
+      @page = Page.create(:name => 'first name', :description_name => 'generic_page')
       locale = Gluttonberg::Locale.generate_default_locale
       @observer = PageObserver.instance
-      @page2 = Page.create(:name => 'Page2', :description_name => 'newsletter')
+      @page2 = Page.create(:name => 'Page2', :description_name => 'generic_page')
     end
 
     after(:all) do
@@ -55,7 +55,7 @@ module Gluttonberg
 
     it "should create muliple page localization when page is created given that there are multiple locales exist." do
       locale = Gluttonberg::Locale.create( :slug => "urdu" , :name => "Urdu", :slug_type => Gluttonberg::Locale.prefix_slug_type )
-      @page3 = Page.create(:name => 'Page3', :description_name => 'newsletter')
+      @page3 = Page.create(:name => 'Page3', :description_name => 'generic_page')
       @page3.localizations.length.should == 2
     end
 
@@ -96,7 +96,7 @@ module Gluttonberg
     end
 
     it "after_update(page) should regenerate_paths for page_localizations if page.paths_need_recaching? is true." do
-      @page4 = Page.create! :name => 'Page4', :description_name => 'newsletter'
+      @page4 = Page.create! :name => 'Page4', :description_name => 'generic_page'
       previous_path_of_localization = @page4.localizations.first.path
       new_path_of_localization = previous_path_of_localization + "_changed"
 
