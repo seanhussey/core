@@ -27,12 +27,28 @@ module Gluttonberg
       page_localization.save
 
       @page = Page.where(:id => @page.id).first
-      page_localization = @page.current_localization
-      contents = page_localization.contents
 
       #compare data after save
-      compare_data(contents, asset)
+      compare_data(@page.current_localization.contents, asset)
       compare_easy_contents_data(@page, asset)
+    end
+
+    it "duplicate should duplicate all content of a page" do
+      page = Page.create! :name => 'first name 2', :description_name => 'generic_page'
+      asset  = create_image_asset
+    
+      page.current_localization.contents = prepare_content_data(page.current_localization.contents, asset)
+
+      page.current_localization.save
+      # data comparison before save
+      compare_data(page.current_localization.contents, asset)
+
+      page = Page.where(:id => page.id).first
+      #compare data after save
+      compare_data(page.current_localization.contents, asset)
+      
+      duplicated = page.duplicate
+      compare_data(duplicated.current_localization.contents, asset)
     end
 
     private
