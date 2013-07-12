@@ -141,6 +141,10 @@ module Gluttonberg
       @position += 1
     end
 
+    def remove_section(name)
+      @sections.delete(name)
+    end
+
     def top_level_page?
        name == :top_level_page
     end

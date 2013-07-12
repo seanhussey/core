@@ -15,34 +15,14 @@ module Gluttonberg
 
 
     it "contents=, contents and easy_contents should accept and return all content in correct format" do
-      
       asset  = create_image_asset
       page_localization = @page.current_localization
       contents = page_localization.contents
-      contents_data = {}
-      contents.each do |content|
-        contents_data[content.association_name] = {} unless contents_data.has_key?(content.association_name)
-        contents_data[content.association_name][content.id.to_s] = {} unless contents_data[content.association_name].has_key?(content.id.to_s)
-        if content.association_name == :image_contents
-          contents_data[content.association_name][content.id.to_s][:asset_id] = asset.id
-        elsif content.association_name == :plain_text_content_localizations
-          contents_data[content.association_name][content.id.to_s][:text] = "Newsletter Title"
-        elsif content.association_name == :html_content_localizations
-          contents_data[content.association_name][content.id.to_s][:text] = "<p>Newsletter Description</p>"
-        end
-      end
     
-      page_localization.contents = contents_data
+      page_localization.contents = prepare_content_data(contents, asset)
 
-      contents.each do |content|
-        if content.association_name == :image_contents
-          content.asset_id.should == asset.id
-        elsif content.association_name == :plain_text_content_localizations
-          content.text.should == "Newsletter Title"
-        elsif content.association_name == :html_content_localizations
-          content.text.should == "<p>Newsletter Description</p>"
-        end
-      end
+      # data comparison before save
+      compare_data(contents, asset)
 
       page_localization.save
 
@@ -50,21 +30,9 @@ module Gluttonberg
       page_localization = @page.current_localization
       contents = page_localization.contents
 
-      contents.each do |content|
-        if content.association_name == :image_contents
-          content.asset_id.should == asset.id
-        elsif content.association_name == :plain_text_content_localizations
-          content.text.should == "Newsletter Title"
-        elsif content.association_name == :html_content_localizations
-          content.text.should == "<p>Newsletter Description</p>"
-        end
-      end
-
-
-      @page.easy_contents(:title).should == "Newsletter Title"
-      @page.easy_contents(:description).should == "<p>Newsletter Description</p>"
-      @page.easy_contents(:image).should == asset.url
-      @page.easy_contents(:image, :url_for => :fixed_image).should == asset.url_for(:fixed_image)
+      #compare data after save
+      compare_data(contents, asset)
+      compare_easy_contents_data(@page, asset)
     end
 
     private
@@ -82,6 +50,41 @@ module Gluttonberg
         asset = Asset.new( param )
         asset.save
         asset
+      end
+
+      def prepare_content_data(contents, asset)
+        contents_data = {}
+        contents.each do |content|
+          contents_data[content.association_name] = {} unless contents_data.has_key?(content.association_name)
+          contents_data[content.association_name][content.id.to_s] = {} unless contents_data[content.association_name].has_key?(content.id.to_s)
+          if content.association_name == :image_contents
+            contents_data[content.association_name][content.id.to_s][:asset_id] = asset.id
+          elsif content.association_name == :plain_text_content_localizations
+            contents_data[content.association_name][content.id.to_s][:text] = "Newsletter Title"
+          elsif content.association_name == :html_content_localizations
+            contents_data[content.association_name][content.id.to_s][:text] = "<p>Newsletter Description</p>"
+          end
+        end
+        contents_data
+      end
+
+      def compare_data(contents, asset)
+        contents.each do |content|
+          if content.association_name == :image_contents
+            content.asset_id.should == asset.id
+          elsif content.association_name == :plain_text_content_localizations
+            content.text.should == "Newsletter Title"
+          elsif content.association_name == :html_content_localizations
+            content.text.should == "<p>Newsletter Description</p>"
+          end
+        end
+      end
+
+      def compare_easy_contents_data(page, asset)
+        page.easy_contents(:title).should == "Newsletter Title"
+        page.easy_contents(:description).should == "<p>Newsletter Description</p>"
+        page.easy_contents(:image).should == asset.url
+        page.easy_contents(:image, :url_for => :fixed_image).should == asset.url_for(:fixed_image)
       end
   end #PageLocalization
 end

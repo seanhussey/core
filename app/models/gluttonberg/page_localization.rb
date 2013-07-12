@@ -76,7 +76,7 @@ module Gluttonberg
     end
 
     def paths_need_recaching?
-      @paths_need_recaching
+      self.paths_need_recaching
     end
 
     def name_and_code

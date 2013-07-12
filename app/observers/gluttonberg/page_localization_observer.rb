@@ -23,7 +23,7 @@ module Gluttonberg
         decendant_pages = page_localization.page.children
         
         decendant_pages.each do |d_p|
-          decendants = d_p.localizations.find( :all , :conditions => {:locale_id => page_localization.locale_id})          
+          decendants = d_p.localizations.where(:locale_id => page_localization.locale_id).all          
           unless decendants.blank?
             decendants.each do |l| 
               l.paths_need_recaching = true
