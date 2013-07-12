@@ -8,11 +8,7 @@ module Gluttonberg
     end
 
     after :all do
-      Gluttonberg::Library.flush_asset_types
-      Gluttonberg::AssetCategory.all.each{|category| category.destroy}
-      Gluttonberg::AssetCollection.all.each{|collection| collection.destroy}
-      User.all.each{|user| user.destroy}
-      Gluttonberg::Asset.all.each{|asset| asset.destroy}
+      clean_all_data
     end
 
     it "should have 5 categories" do

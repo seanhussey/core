@@ -28,9 +28,7 @@ module Gluttonberg
     end
 
     after :all do
-      Gluttonberg::Library.flush_asset_types
-      Gluttonberg::AssetCategory.all.each{|asset_mime_type| asset_mime_type.destroy}
-      Gluttonberg::Asset.all.each{|asset| asset.destroy}
+      clean_all_data
     end
 
     it "should generate filename" do

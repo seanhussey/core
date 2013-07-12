@@ -5,13 +5,10 @@ module Gluttonberg
   describe AssetCollection do
 
     before :all do
-      AssetCollection.delete_all
     end
 
     after :all do
-      AssetCollection.delete_all
-      User.all.each{|user| user.destroy}
-      Gluttonberg::Asset.all.each{|asset| asset.destroy}
+      clean_all_data
     end
 
     it "should have 2 collections" do

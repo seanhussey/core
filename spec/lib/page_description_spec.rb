@@ -8,7 +8,7 @@ module Gluttonberg
     end
 
     after :all do
-      Gluttonberg::Locale.all.each{|locale| locale.destroy}
+      clean_all_data
     end
 
     it "top_level_page?" do

@@ -25,7 +25,7 @@ module Gluttonberg
       @options = {
         :name       => name,
         :home       => false,
-        :domain       => nil,
+        :domain       => :default,
         :behaviour  => :default,
         :layout     => "public",
         :view       => "default"

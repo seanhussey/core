@@ -10,29 +10,13 @@ module Gluttonberg
     end
 
     after(:all) do
-      Gluttonberg::Page.all.each{|page| page.destroy}
-      Gluttonberg::Locale.all.each{|locale| locale.destroy}
-      Gluttonberg::Setting.all.each{|setting| setting.destroy}
-      Gluttonberg::Library.flush_asset_types
-      Gluttonberg::AssetCategory.all.each{|asset_mime_type| asset_mime_type.destroy}
-      Gluttonberg::Asset.all.each{|asset| asset.destroy}
+      clean_all_data
     end
 
 
     it "contents=, contents and easy_contents should accept and return all content in correct format" do
-      file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/gb_banner.jpg"))
-      file.original_filename = "gluttonberg_banner.jpg"
-      file.content_type = "image/jpeg"
-      file.size = 300
-      param = {
-        :name=>"temp file",
-        :file=> file,
-        :description=>"<p>test</p>"
-      }
-      Gluttonberg::Library.bootstrap
-      asset = Asset.new( param )
-      asset.save
-
+      
+      asset  = create_image_asset
       page_localization = @page.current_localization
       contents = page_localization.contents
       contents_data = {}
@@ -81,7 +65,23 @@ module Gluttonberg
       @page.easy_contents(:description).should == "<p>Newsletter Description</p>"
       @page.easy_contents(:image).should == asset.url
       @page.easy_contents(:image, :url_for => :fixed_image).should == asset.url_for(:fixed_image)
-
     end
+
+    private
+      def create_image_asset
+        file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/gb_banner.jpg"))
+        file.original_filename = "gluttonberg_banner.jpg"
+        file.content_type = "image/jpeg"
+        file.size = 300
+        param = {
+          :name=>"temp file",
+          :file=> file,
+          :description=>"<p>test</p>"
+        }
+        Gluttonberg::Library.bootstrap
+        asset = Asset.new( param )
+        asset.save
+        asset
+      end
   end #PageLocalization
 end
