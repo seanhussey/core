@@ -7,7 +7,7 @@ module Gluttonberg
 
     before(:all) do
       @locale = Gluttonberg::Locale.generate_default_locale
-      @page = Page.create! :name => 'first name', :description_name => 'newsletter'
+      @page = Page.create! :name => 'first name', :description_name => 'generic_page'
       Gluttonberg::Setting.generate_common_settings
     end
 
@@ -27,7 +27,7 @@ module Gluttonberg
 
     it "should have correct nav_label" do
       @page.nav_label.should == "first name"
-      page = Page.create! :name => 'first name 2', :description_name => 'newsletter'
+      page = Page.create! :name => 'first name 2', :description_name => 'generic_page'
       page.current_localization.update_attributes(:navigation_label => "Temporary Page")
       page.nav_label.should == "Temporary Page"
     end
@@ -41,7 +41,7 @@ module Gluttonberg
     end
 
     it "should return correct view name" do
-      @page.view.should == "newsletter"
+      @page.view.should == "generic"
     end
 
     it "should return correct path" do
@@ -126,7 +126,7 @@ module Gluttonberg
     end
 
     it "should create versioned content" do
-      p = Page.create! :name => '2nd name', :description_name => 'newsletter'
+      p = Page.create! :name => '2nd name', :description_name => 'generic_page'
       p.new_record?.should == false
       p.reload
       p.current_localization.localized_contents.each do |loc|
