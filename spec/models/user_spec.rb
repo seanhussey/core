@@ -12,7 +12,7 @@ describe User do
   end
 
   after :all do
-    User.all.each{|user| user.destroy}
+    clean_all_data
   end
 
   it "should not allow mass assignment for role" do

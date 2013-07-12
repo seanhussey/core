@@ -37,8 +37,7 @@ module Gluttonberg
     end
 
     after :all do
-      Gluttonberg::Page.all.each{|page| page.destroy}
-      Gluttonberg::Locale.all.each{|locale| locale.destroy}
+      clean_all_data
     end
 
 

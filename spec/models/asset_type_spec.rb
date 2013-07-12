@@ -8,8 +8,7 @@ module Gluttonberg
     end
 
     after :all do
-      Gluttonberg::Library.flush_asset_types
-      Gluttonberg::AssetCategory.all.each{|asset_mime_type| asset_mime_type.destroy}
+      clean_all_data
     end
 
     it "should have 52 gluttonberg asset types" do

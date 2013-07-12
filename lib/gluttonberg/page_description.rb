@@ -25,7 +25,7 @@ module Gluttonberg
       @options = {
         :name       => name,
         :home       => false,
-        :domain       => nil,
+        :domain       => :default,
         :behaviour  => :default,
         :layout     => "public",
         :view       => "default"
@@ -139,6 +139,10 @@ module Gluttonberg
       new_section.instance_eval(&blk)
       @sections[name] = new_section
       @position += 1
+    end
+
+    def remove_section(name)
+      @sections.delete(name)
     end
 
     def top_level_page?

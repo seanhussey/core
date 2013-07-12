@@ -2,28 +2,28 @@ require 'spec_helper'
 
 
 # this test is considering page_descriptions file in config folder
-# and its test is based on newsletter page type
+# and its test is based on generic page type
 # page :generic_page do
-#   label "Newsletter"
-#   description "Newsletter Page"
+#   label "Generic"
+#   description "Generic Page"
 #   view "generic"
-#   layout "application"
-#
+#   layout "public"
+
 #   section :title do
 #     label "Title"
 #     type :plain_text_content
 #   end
-#
+
 #   section :description do
 #     label "Description"
 #     type :html_content
 #   end
-#
+
 #   section :image do
 #     label "Image"
 #     type  :image_content
 #   end
-#
+
 # end
 
 
@@ -38,8 +38,7 @@ module Gluttonberg
     end
 
     after(:all) do
-      Gluttonberg::Page.all.each{|page| page.destroy}
-      Gluttonberg::Locale.all.each{|locale| locale.destroy}
+      clean_all_data
     end
 
     it "should create localization when we create locale" do

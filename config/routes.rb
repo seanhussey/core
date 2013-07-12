@@ -5,10 +5,6 @@ Rails.application.routes.draw do
   scope :module => 'gluttonberg' do
     namespace :admin do
       root :to => "main#index"
-
-      # Help
-      get "/help/:module_and_controller/:page" => "help#show", :module_and_controller => %r{\S+} , :as => :help
-
       scope :module => 'content' do
         get "/flagged_contents" => "flag#index" , :as => :flagged_contents
         get '/flagged_contents/moderation/:id/:moderation' => "flag#moderation", :as => :flagged_contents_moderation

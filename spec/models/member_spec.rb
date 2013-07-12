@@ -12,7 +12,7 @@ module Gluttonberg
     end
 
     after :all do
-      Member.all.each{|user| user.destroy}
+      clean_all_data
     end
 
     it "should generate valid random password" do
