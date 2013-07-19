@@ -2,9 +2,9 @@ module Gluttonberg
     # Helpers specific to the administration interface. The majority are
     # related to forms, but there are other short cuts for things like navigation.
     module Admin
-      include Messages
-      include Form
-      include Assets
+      include Gluttonberg::Admin::Messages
+      include Gluttonberg::Admin::Form
+      include Gluttonberg::Admin::Assets
 
       # Returns a link for sorting assets in the library
       def sorter_link(name, param, url)
