@@ -10,14 +10,14 @@ module Gluttonberg
         content = ""
         pages = Gluttonberg::Page.where(:parent_id => nil, :state => "published").order("position ASC") if pages.nil?
         pages.each do |page|
-          li_opts = {:id => page.slug + "Nav"}
+          li_opts = {:id => page.slug + "-nav"}
           li_opts[:class] = "current" if page == @page
           page.load_localization(@locale)
           li_content = build_page(page, opts)
           li_content << find_children(page, opts) unless find_children(page, opts).blank?
           content << content_tag(:li, li_content.html_safe, li_opts).html_safe
         end
-        content_tag(:ul, content.html_safe, opts).html_safe
+        return content_tag(:ul, content.html_safe, opts).html_safe
       end
 
       # build each page and returns an li
