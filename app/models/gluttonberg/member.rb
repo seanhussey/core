@@ -9,6 +9,7 @@ module Gluttonberg
 
     validates_format_of :password, :with => Rails.configuration.password_pattern , :if => :require_password?, :message => Rails.configuration.password_validation_message
     validates_presence_of :first_name , :email
+    validates :first_name, :last_name, :email, :length => { :maximum => 255 }
 
     before_validation :verify_confirmation_status
 
