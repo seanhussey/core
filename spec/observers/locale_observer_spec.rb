@@ -31,14 +31,13 @@ module Gluttonberg
   describe LocaleObserver do
 
     before(:all) do
-      @page = Page.create(:name => 'first name', :description_name => 'newsletter')
+      @page = Page.create(:name => 'first name', :description_name => 'generic_page')
       @locale = Gluttonberg::Locale.generate_default_locale
       @observer = LocaleObserver.instance
     end
 
     after :all do
-      Gluttonberg::Page.all.each{|page| page.destroy}
-      Gluttonberg::Locale.all.each{|locale| locale.destroy}
+      clean_all_data
     end
 
 
@@ -48,7 +47,7 @@ module Gluttonberg
     end
 
     it "should create localizations for new pages when we create locale" do
-      page2 = Page.create! :name => 'Page2', :description_name => 'newsletter'
+      page2 = Page.create! :name => 'Page2', :description_name => 'generic_page'
       page2.localizations.length.should == 1
     end
 
@@ -58,7 +57,7 @@ module Gluttonberg
     end
 
     it "should create content localizations for new pages for existing locale(s)" do
-      page2 = Page.create! :name => 'Page2', :description_name => 'newsletter'
+      page2 = Page.create! :name => 'Page2', :description_name => 'generic_page'
       page2.localizations.first.html_content_localizations.length.should == 1
       page2.localizations.first.plain_text_content_localizations.length.should == 1
     end

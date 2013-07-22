@@ -27,7 +27,6 @@ module Gluttonberg
   require 'gluttonberg/can_flag'
   require 'gluttonberg/record_history'
   require 'gluttonberg/gb_file'
-  require 'gluttonberg/gb_bulk_file'
   require 'gluttonberg/random_string_generator'
   require 'gluttonberg/helpers/form_builder'
 

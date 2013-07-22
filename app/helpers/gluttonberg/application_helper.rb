@@ -1,4 +1,7 @@
 helpers = Pathname(__FILE__).dirname.expand_path
+require File.join(helpers, "admin")
+require File.join(helpers, "asset_library")
+require File.join(helpers, "content_helpers")
 require File.join(helpers, "public")
 module Gluttonberg
   module ApplicationHelper

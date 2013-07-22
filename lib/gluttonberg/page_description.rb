@@ -25,7 +25,7 @@ module Gluttonberg
       @options = {
         :name       => name,
         :home       => false,
-        :domain       => nil,
+        :domain       => :default,
         :behaviour  => :default,
         :layout     => "public",
         :view       => "default"
@@ -55,7 +55,7 @@ module Gluttonberg
     # The specified file should contain the various page descriptions.
     def self.setup
       path = File.join(Rails.root, "config", "page_descriptions.rb")
-      require path if File.exists?(path)
+      eval(File.read(path)) if File.exists?(path)
     end
 
     def self.add(&blk)
@@ -70,9 +70,7 @@ module Gluttonberg
 
     # Returns the definition for a specific page description.
     def self.[](name)
-      # puts @@_descriptions
-      # puts @@_descriptions[name.to_s.downcase.to_sym].options
-      @@_descriptions[name.to_s.downcase.to_sym]
+      self.all[name.to_s.downcase.to_sym]
     end
 
     # Returns the full list of page descriptions as a hash, keyed to each
@@ -138,14 +136,17 @@ module Gluttonberg
     # Sugar for defining a section.
     def section(name, &blk)
       new_section = Section.new(name , @position)
-      #new_section.position = @position
       new_section.instance_eval(&blk)
       @sections[name] = new_section
       @position += 1
     end
 
+    def remove_section(name)
+      @sections.delete(name)
+    end
+
     def top_level_page?
-       @options[:name] == :top_level_page
+       name == :top_level_page
     end
 
     def name
@@ -153,7 +154,7 @@ module Gluttonberg
     end
 
     def redirection_required?
-      @options[:behaviour] == :rewrite
+      @options[:behaviour] == :redirect
     end
 
     # Configures the page to act as a rewrite to named route. This doesn’t
@@ -177,27 +178,12 @@ module Gluttonberg
     end
 
     # Declare this description as a redirect. The redirect type can be:
-    #
-    # :remote - A full url to another domain
-    # :block  - A block that will be evaluated and it’s return value will be
-    #           used to handle the redirect
     # :path   - The path to redirect to, hey, simple!
     # :page   - Allows the user to specify which other page they want to
     #           redirect to.
-    def redirect_to(type = nil, opt = nil, &blk)
-      if block_given?
-        @redirect_block = blk
-        @redirect_type  = :block
-      else
-        @redirect_option  = opt if opt
-        @redirect_type    = type
-      end
+    def redirect_to(path_or_url)      
+      @redirect_path_or_url  = path_or_url if path_or_url
       @options[:behaviour]  = :redirect
-    end
-
-    # Checks to see if the description has been defined as a redirect.
-    def redirect?
-      !@redirect_type.nil?
     end
 
     # Checks to see if this is home. Duh.
@@ -210,47 +196,23 @@ module Gluttonberg
       if Rails.configuration.multisite == false
         home?
       else
-        @options[:home] && Rails.configuration.multisite[@options[:domain]] == domain_name
+        home? && Rails.configuration.multisite[@options[:domain]] == domain_name
       end
     end
 
     # Returns the path that this description wants to redirect to. It accepts
     # the current page — from which is extracts the redirect options — and the
     # params for the current request.
-    def redirect_url(page, params)
-      case @redirect_type
-        when :remote
-          @redirect_option
-        when :block
-          @redirect_block.call(page, params)
-        when :path
-          Router.localized_url(redirect_value(page, params), params)
-        when :page
-          path_to_page(page, params)
-      end
+    def redirect_url(page, params={})
+      @redirect_path_or_url
     end
 
     private
-
-    # This method is used in conjunction with #redirect_url when a redirect to
-    # another page has been specified. It finds and examines the specified page
-    # to figure out what it’s path is.
-    def path_to_page(page, params)
-      localization = PageLocalization.where(
-        :page_id  => page.redirect_target_id,
-        :locale   => params[:locale]
-      ).first
-      raise ActiveRecord::RecordNotFound if localization.blank?
-      localization.path
-    end
 
     # This class is used to define the sections of content in a page
     # description. This class should never be instantiated direction, instead
     # sections should be declared in the description DSL.
     class Section
-
-      #attr_accessor :position
-
       def initialize(name , pos)
         @options = {:name => name, :limit => 1 , :position => pos}
         @custom_config = {}
@@ -264,23 +226,9 @@ module Gluttonberg
         }
       end
 
-      # Stores additional configuration options, which can be used by arbitrary
-      # code. Generally however it is intended to be used to provide
-      # configuration for the particular content class associated with this
-      # section.
-      def configure(opts)
-        @custom_config ||= {}
-        @custom_config.merge!(opts)
-      end
-
       # Returns the value for the specified option — name, description etc.
       def [](opt)
         @options[opt]
-      end
-
-      # Returns the custom configuration as a hash.
-      def config
-        @custom_config
       end
     end # Section
   end # PageDescription

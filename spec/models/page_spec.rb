@@ -7,22 +7,53 @@ module Gluttonberg
 
     before(:all) do
       @locale = Gluttonberg::Locale.generate_default_locale
-      @page = Page.create! :name => 'first name', :description_name => 'newsletter'
+      @page = Page.create! :name => 'first name', :description_name => 'generic_page'
       Gluttonberg::Setting.generate_common_settings
     end
 
     after(:all) do
-      Gluttonberg::Page.all.each{|page| page.destroy}
-      Gluttonberg::Locale.all.each{|locale| locale.destroy}
-      Gluttonberg::Setting.all.each{|setting| setting.destroy}
+      clean_all_data
     end
 
     it "should return correct layout name" do
       @page.layout.should == "public"
     end
 
+    it "should have correct title" do
+      @page.title.should == "first name"
+    end
+
+    it "should have correct nav_label" do
+      @page.nav_label.should == "first name"
+      page = Page.create! :name => 'first name 2', :description_name => 'generic_page'
+      page.current_localization.update_attributes(:navigation_label => "Temporary Page")
+      page.nav_label.should == "Temporary Page"
+    end
+
+    it "should be able to load localizations" do
+      @page.load_localization(Locale.first_default)
+    end
+
+    it "should return correct be public page if no group is allocated" do
+      @page.is_public?.should == true
+    end
+
     it "should return correct view name" do
-      @page.view.should == "newsletter"
+      @page.view.should == "generic"
+    end
+
+    it "should return correct path" do
+      @page.path.should == "first-name"
+      localize = Engine.config.localize
+      Engine.config.localize = false
+      @page.public_path.should == "/first-name"
+      Engine.config.localize = true
+      @page.public_path.should == "/en-au/first-name"
+      Engine.config.localize = localize
+    end
+
+    it "should return correct name_and_code" do
+      @page.current_localization.name_and_code.should == "first name (Australia English)"
     end
 
     it "should have only one home page at a time" do
@@ -30,6 +61,9 @@ module Gluttonberg
       page2 = Page.create(:name => "Page2" , :description_name => 'home')
       page2.reload
       current_home.reload
+
+      Page.home_page.id.should == current_home.id
+      Page.home_page_name.should == current_home.name
 
       current_home.home.should be_true
       page2.home.should be_false
@@ -90,7 +124,7 @@ module Gluttonberg
     end
 
     it "should create versioned content" do
-      p = Page.create! :name => '2nd name', :description_name => 'newsletter'
+      p = Page.create! :name => '2nd name', :description_name => 'generic_page'
       p.new_record?.should == false
       p.reload
       p.current_localization.localized_contents.each do |loc|
@@ -156,6 +190,23 @@ module Gluttonberg
       end
     end
 
+    it "redirect_required? && redirect_url" do
+      page = Page.create! :name => 'redirect required', :description_name => 'redirect_to_remote'
+      page.redirect_required?.should == true
+      page.path.should == "redirect-required"
+      page.redirect_url.should == "http://www.freerangefuture.com"
+      @page.redirect_required?.should == false
 
-  end
+      page = Page.create! :name => 'redirect to path', :description_name => 'redirect_to_path'
+      page.redirect_required?.should == true
+      page.redirect_url.should == "/local-path"
+    end 
+
+    it "rewrite_required?" do
+      page = Page.create! :name => 'rewrite required', :description_name => 'examples'
+      page.rewrite_required?.should == true
+      @page.rewrite_required?.should == false
+    end 
+
+  end #Page
 end

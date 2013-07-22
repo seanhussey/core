@@ -58,7 +58,7 @@ module Gluttonberg
     end
 
     def redirect_required?
-      self.description.redirect?
+      self.description.redirection_required?
     end
 
     def redirect_url
@@ -123,7 +123,7 @@ module Gluttonberg
 
 
     def paths_need_recaching?
-      @paths_need_recaching
+      self.paths_need_recaching
     end
 
     # Just palms off the request for the contents to the current localization

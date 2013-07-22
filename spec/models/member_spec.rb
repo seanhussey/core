@@ -12,7 +12,7 @@ module Gluttonberg
     end
 
     after :all do
-      Member.all.each{|user| user.destroy}
+      clean_all_data
     end
 
     it "should generate valid random password" do
@@ -74,27 +74,27 @@ module Gluttonberg
       valid_member.groups = [sales_group, production_group]
       valid_member.save
 
-      @page1 = Page.new :name => 'first name', :description_name => 'newsletter'
+      @page1 = Page.new :name => 'first name', :description_name => 'generic_page'
       @page1.groups = [sales_group, staff_group]
       @page1.save
 
-      @page2 = Page.new :name => 'first name', :description_name => 'newsletter'
+      @page2 = Page.new :name => 'first name', :description_name => 'generic_page'
       @page2.groups = [sales_group, production_group]
       @page2.save
 
-      @page3 = Page.new :name => 'first name', :description_name => 'newsletter'
+      @page3 = Page.new :name => 'first name', :description_name => 'generic_page'
       @page3.groups = [production_group]
       @page3.save
 
-      @page4 = Page.new :name => 'first name', :description_name => 'newsletter'
+      @page4 = Page.new :name => 'first name', :description_name => 'generic_page'
       @page4.groups = [staff_group]
       @page4.save
 
-      @page5 = Page.new :name => 'first name', :description_name => 'newsletter'
+      @page5 = Page.new :name => 'first name', :description_name => 'generic_page'
       @page5.groups = []
       @page5.save
 
-      @page6 = Page.new :name => 'first name', :description_name => 'newsletter'
+      @page6 = Page.new :name => 'first name', :description_name => 'generic_page'
       @page6.save
 
       valid_member.does_member_have_access_to_the_page?(@page1).should == true

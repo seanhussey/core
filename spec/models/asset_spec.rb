@@ -1,22 +1,12 @@
 require 'spec_helper'
 
-# i have added some attributes to file class.
-# because rails adds these attributes when file is uploaded through form.
-class File
-  attr_accessor :original_filename  , :content_type , :size
-
-  def tempfile
-    self
-  end
-end
-
 
 module Gluttonberg
 
   describe Asset, "file upload" do
 
     before :all do
-      @file = File.new(File.join(RSpec.configuration.fixture_path, "assets/gb_banner.jpg"))
+      @file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/gb_banner.jpg"))
       @file.original_filename = "gluttonberg_banner.jpg"
       @file.content_type = "image/jpeg"
       @file.size = 300
@@ -38,12 +28,16 @@ module Gluttonberg
     end
 
     after :all do
-      Gluttonberg::Library.flush_asset_types
-      Gluttonberg::AssetCategory.all.each{|asset_mime_type| asset_mime_type.destroy}
+      clean_all_data
     end
 
     it "should generate filename" do
       @asset.file_name.should_not be_nil
+    end
+
+    it "filename_without_extension" do
+      @asset.filename_without_extension.should_not be_nil
+      @asset.filename_without_extension.should == "gluttonberg_banner"
     end
 
     it "should format filename correctly" do
@@ -52,6 +46,16 @@ module Gluttonberg
 
     it "should set size" do
       @asset.size.should_not be_nil
+    end
+
+    it "should set title" do
+      @asset.title.should == "temp file"
+    end
+
+    it "alt_or_title" do
+      @asset.alt_or_title.should == "temp file"
+      @asset.alt = "Alt text"
+      @asset.alt_or_title.should == "Alt text"
     end
 
     it "should set type name" do
@@ -67,6 +71,21 @@ module Gluttonberg
     it "should set the correct type" do
       @asset.valid?
       @asset.type_name.should == "Jpeg Image"
+
+      file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/untitled"))
+      file.original_filename = "untitled"
+      file.size = 1
+
+      param = {
+        :name=>"temp file",
+        :file=> file,
+        :description=>"<p>test</p>"
+      }
+
+      asset = Asset.new( param )
+      asset.type_name.should_not be_nil
+      asset.type_name.should == Library::UNCATEGORISED_CATEGORY
+      asset.category.should == Library::UNCATEGORISED_CATEGORY
     end
 
     it "should set the correct category" do
@@ -123,7 +142,7 @@ module Gluttonberg
 
     # actual image should be resized if large than 1600x1200
     it "should resize actual image if larger than 1600x1200>" do
-      file = File.new(File.join(RSpec.configuration.fixture_path, "assets/high_res_photo.jpg"))
+      file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/high_res_photo.jpg"))
       file.original_filename = "high_res_photo.jpg"
       file.content_type = "image/jpeg"
       file.size = 3333287
@@ -146,7 +165,7 @@ module Gluttonberg
     # FIXED size thumbnails
 
     it "should generate fixed size image 1000x1000# when image is larger than required size" do
-      file = File.new(File.join(RSpec.configuration.fixture_path, "assets/high_res_photo.jpg"))
+      file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/high_res_photo.jpg"))
       file.original_filename = "high_res_photo.jpg"
       file.content_type = "image/jpeg"
       file.size = 3333287
@@ -167,7 +186,7 @@ module Gluttonberg
 
     # audio
     it "should obtain and save mp3 title" do
-      file = File.new(File.join(RSpec.configuration.fixture_path, "assets/audio.mp3"))
+      file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/audio.mp3"))
       file.original_filename = "audio.mp3"
       file.content_type = "audio/mp3"
       file.size = 1024*1024*1.7
@@ -183,7 +202,7 @@ module Gluttonberg
     end
 
     it "should obtain and save mp3 info" do
-      file = File.new(File.join(RSpec.configuration.fixture_path, "assets/audio.mp3"))
+      file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/audio.mp3"))
       file.original_filename = "audio.mp3"
       file.content_type = "audio/mp3"
       file.size = 1024*1024*1.7
@@ -200,6 +219,60 @@ module Gluttonberg
       asset.destroy
     end
 
+    it "refresh_all_asset_types" do
+      file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/audio.mp3"))
+      file.original_filename = "audio.mp3"
+      file.content_type = "audio/mp3"
+      file.size = 1024*1024*1.7
+
+      asset = Asset.new( @param.merge(:file =>  file) )
+      status = asset.save
+      status.should == true
+      File.exist?(asset.location_on_disk).should == true
+      asset.category.should == "audio"
+      Asset.refresh_all_asset_types
+      asset.category.should == "audio"
+    end
+
+    it "create_assets_from_ftp and search using search_assets(query)" do
+      path = File.join(RSpec.configuration.fixture_path, "assets")
+      assets = Asset.create_assets_from_ftp(path)
+      assets.should_not be_nil
+      assets.length.should == 7
+
+      Asset.search_assets(".jpg").count.should == 0
+      Asset.search_assets("asset").count.should == 1
+      Asset.search_assets("gb").count.should == 2
+    end
+
+    it "formatted_file_size" do
+      asset = Asset.new( @param )
+      asset.formatted_file_size.should == "300 Bytes"
+      
+      asset.size = 1
+      asset.formatted_file_size.should == "1 Byte"
+
+      asset.size = 1023
+      asset.formatted_file_size.should == "1023 Bytes"
+
+      asset.size = 1024
+      asset.formatted_file_size.should == "1.00 KB"
+
+      asset.size = 1024 * 1.233
+      asset.formatted_file_size.should == "1.23 KB"
+
+      asset.size = 1024 * 1024
+      asset.formatted_file_size.should == "1.00 MB"
+
+      asset.size = 1024 * 1024 * 2.567
+      asset.formatted_file_size.should == "2.57 MB"
+
+      asset.size = 1024 * 1024 * 1024
+      asset.formatted_file_size.should == "1.00 GB"
+
+      asset.size = 1024 * 1024 * 1024 * 2.4
+      asset.formatted_file_size.should == "2.40 GB"
+    end
 
   end
 end
