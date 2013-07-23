@@ -43,5 +43,8 @@ def clean_all_data
   Gluttonberg::AssetCollection.all.each{|collection| collection.destroy}
 
   User.all.each{|user| user.destroy}
-  Gluttonberg::Member.all.each{|user| user.destroy}
+  Gluttonberg::Member.all.each{|obj| obj.destroy}
+  Gluttonberg::Blog.all.each{|obj| obj.destroy}
+  Gluttonberg::Article.all.each{|obj| obj.destroy}
+  Gluttonberg::Comment.all.each{|obj| obj.destroy}
 end

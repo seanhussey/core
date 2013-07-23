@@ -55,11 +55,7 @@ module Gluttonberg
     end
 
     def self.enable_members
-      if Rails.configuration.enable_members == true || Rails.configuration.enable_members.kind_of?(Hash)
-        true
-      else
-        false
-      end
+      Rails.configuration.enable_members == true || Rails.configuration.enable_members.kind_of?(Hash)
     end
 
     def self.does_email_verification_required
