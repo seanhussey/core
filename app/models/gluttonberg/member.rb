@@ -34,7 +34,7 @@ module Gluttonberg
     end
 
     def full_name
-      "#{self.first_name} #{self.last_name}"
+      "#{self.first_name} #{self.last_name}".strip
     end
 
     def deliver_password_reset_instructions!(current_localization_slug = "")
