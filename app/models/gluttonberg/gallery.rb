@@ -7,14 +7,7 @@ module Gluttonberg
     attr_accessible :title, :slug, :description, :state, :published_at, :collection_imported
     has_many :gallery_images , :order => "position ASC"
     belongs_to :user
-
-    def name
-      title
-    end
-
-    def name=(new_name)
-      title = new_name
-    end
+    alias_attribute :name, :title
 
     def images
       gallery_images.map{|i| i.image }
