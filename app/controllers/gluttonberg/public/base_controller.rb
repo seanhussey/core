@@ -27,9 +27,9 @@ module Gluttonberg
             setting = Gluttonberg::Setting.get_setting("restrict_site_access")
             if !setting.blank? && cookies[:restrict_site_access] != "allowed"
               if env['gluttonberg.page'].blank?
-                return_url = {:return_url => request.url}
+                return_url = request.url
               else
-                return_url = {:return_url => env['gluttonberg.page'].current_localization.public_path}
+                return_url = env['gluttonberg.page'].current_localization.public_path
               end
               redirect_to restrict_site_access_path(:return_url => return_url)
             end
