@@ -35,7 +35,7 @@ module Gluttonberg
       begin
         prepared_content = nil
         section_name = section_name.to_sym
-        load_localization
+        load_localization(opts[:locale]) if current_localization.blank?
         content = localized_contents.pluck {|c| c.section[:name] == section_name}
         prepared_content = case content.class.name
           when "Gluttonberg::ImageContent"
