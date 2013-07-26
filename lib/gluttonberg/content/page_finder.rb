@@ -14,6 +14,7 @@ module Gluttonberg
         # search to the specified locale, otherwise it will fall back to the
         # default.
         def find_by_path(path, locale = nil , domain_name=nil)
+          path = "" if path.blank?
           path = path.match(/^\/(\S+)/)
           locale = Gluttonberg::Locale.first_default if locale.blank?
           page = nil
@@ -44,6 +45,7 @@ module Gluttonberg
         # search to the specified locale, otherwise it will fall back to the
         # default.
         def find_by_previous_path(path, locale = nil , domain_name=nil)
+          path = "" if path.blank?
           path = path.match(/^\/(\S+)/)
           locale = Gluttonberg::Locale.first_default if locale.blank?
           unless path.blank?

@@ -11,9 +11,9 @@ module Gluttonberg
           page = Gluttonberg::Page.find_by_path(path, env['gluttonberg.locale'] , env['HTTP_HOST'])
           unless page.blank?
             env['gluttonberg.page'] = page
-            env['GLUTTONBERG.PATH_INFO'] = path
+            env['GLUTTONBERG.PATH_INFO'] = path # for debugging purpose
             if page.redirect_required?
-              return [301, {"Location" => page.redirect_url}, ["This resource has permanently moved to #{page.redirect_url}"]]
+              return redirect_param_array(page.redirect_url)
             elsif page.rewrite_required?
               env['PATH_INFO'] = page.generate_rewrite_path(path)
             else
@@ -22,13 +22,19 @@ module Gluttonberg
           else
             page = Gluttonberg::Page.find_by_previous_path(path, env['gluttonberg.locale'] , env['HTTP_HOST'])
             unless page.blank?
-              return [301, {"Location" => page.current_localization.path}, ["This resource has permanently moved to #{page.current_localization.path}"]]
+              return redirect_param_array(page.public_path)
             end
           end
         end
 
         @app.call(env)
       end
+
+      private 
+        def redirect_param_array(path)
+          [301, {"Location" => path}, ["This resource has permanently moved to #{path}"]]
+        end
+
     end # Rewriter
   end # Middleware
 end # Gluttonberg
