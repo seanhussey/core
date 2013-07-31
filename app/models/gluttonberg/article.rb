@@ -14,6 +14,8 @@ module Gluttonberg
     attr_accessor :name
     delegate :title , :body , :excerpt , :featured_image_id , :featured_image  , :to => :current_localization
     attr_accessible :user_id, :blog_id, :author_id, :slug, :article_category_list, :tag_list, :disable_comments, :state, :published_at, :name
+    attr_accessible :user, :blog, :author
+    validates_presence_of :user_id, :author_id, :blog_id
 
     def commenting_disabled?
       !disable_comments.blank? && disable_comments

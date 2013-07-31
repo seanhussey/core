@@ -5,7 +5,6 @@ module Gluttonberg
     attr_accessible :body , :author_name , :author_email , :author_website  , :subscribe_to_comments , :blog_slug
 
     belongs_to :commentable, :polymorphic => true
-    belongs_to :article
     belongs_to :author, :class_name => "Gluttonberg::Member"
 
     before_save :init_moderation
@@ -21,6 +20,8 @@ module Gluttonberg
 
     attr_accessor :subscribe_to_comments , :blog_slug
     attr_accessible :body , :author_name , :author_email , :author_website , :commentable_id , :commentable_type , :author_id
+    attr_accessible :user, :author, :commentable
+    alias_attribute :user_id, :author_id
 
     can_be_flagged
 
@@ -41,35 +42,6 @@ module Gluttonberg
       end
     end
 
-    def self.all_comments_count
-      self.count
-    end
-
-    def self.approved_comments_count
-      self.all_approved.count
-    end
-
-    def self.rejected_comments_count
-      self.all_rejected.count
-    end
-
-    def self.pending_comments_count
-      self.all_pending.count
-    end
-
-    def self.spam_comments_count
-      self.all_spam.count
-    end
-
-
-    def user_id
-      self.author_id
-    end
-
-    def user_id=(new_id)
-      self.author_id=new_id
-    end
-
     # these are helper methods for comment.
     def writer_email
       if self.author_email
@@ -83,7 +55,7 @@ module Gluttonberg
       if self.author_name
         self.author_name
       elsif author
-        author.name
+        author.full_name
       end
     end
 
@@ -166,7 +138,7 @@ module Gluttonberg
           naughty_word_parser = Gluttonberg::Content::DespamilatorFilter::NaughtyWords.new
           [:author_email, :author_name, :author_website].each do |field|
             val = self.send(field)
-            if val.blank? && naughty_word_parser.local_parse(val) >= 1.0
+            if !val.blank? && naughty_word_parser.local_parse(val) >= 1.0
               self.spam = true
               break
             end

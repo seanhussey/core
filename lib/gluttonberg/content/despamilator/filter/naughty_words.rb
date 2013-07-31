@@ -25,7 +25,8 @@ module Gluttonberg
           unless gb_blacklist_settings.blank?
             gb_blacklist_settings_words = gb_blacklist_settings.split(",")
             gb_blacklist_settings_words.each do |word|
-              subject.register_match!({:score => 1.0, :filter => self}) if text =~ /\b#{word.strip.downcase}s?\b/
+              position = (text =~ /\b#{word.strip.downcase}s?\b/)
+              subject.register_match!({:score => 1.0, :filter => self}) if !position.blank? && position >= 0
             end
           end
         end
@@ -36,7 +37,8 @@ module Gluttonberg
             text = subject.downcase
 
             naughty_words.each do |word|
-              local_score += 0.1 if text =~ /\b#{word}s?\b/
+              position = (text =~ /\b#{word}s?\b/)
+              local_score += 0.1 if !position.blank? && position >= 0
             end
 
             gb_blacklist_settings = Gluttonberg::Setting.get_setting("comment_blacklist")

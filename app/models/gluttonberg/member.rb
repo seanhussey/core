@@ -9,6 +9,7 @@ module Gluttonberg
 
     validates_format_of :password, :with => Rails.configuration.password_pattern , :if => :require_password?, :message => Rails.configuration.password_validation_message
     validates_presence_of :first_name , :email
+    validates :first_name, :last_name, :email, :length => { :maximum => 255 }
 
     before_validation :verify_confirmation_status
 
@@ -33,7 +34,7 @@ module Gluttonberg
     end
 
     def full_name
-      "#{self.first_name} #{self.last_name}"
+      "#{self.first_name} #{self.last_name}".strip
     end
 
     def deliver_password_reset_instructions!(current_localization_slug = "")
@@ -54,11 +55,7 @@ module Gluttonberg
     end
 
     def self.enable_members
-      if Rails.configuration.enable_members == true || Rails.configuration.enable_members.kind_of?(Hash)
-        true
-      else
-        false
-      end
+      Rails.configuration.enable_members == true || Rails.configuration.enable_members.kind_of?(Hash)
     end
 
     def self.does_email_verification_required
