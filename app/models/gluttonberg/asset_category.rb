@@ -55,17 +55,16 @@ module Gluttonberg
       end
     end
 
-
-    private
-
-      def self.ensure_exists(name, unknown)
-        cat = where(:name => name).first
-        if cat then
-          cat.unknown = unknown
-          cat.save
-        else
-          cat = create(:name => name, :unknown => unknown)
-        end
+    def self.ensure_exists(name, unknown)
+      cat = where(:name => name).first
+      if cat then
+        cat.unknown = unknown
+        cat.save
+      else
+        cat = create(:name => name, :unknown => unknown)
       end
+    end
+
+      
   end
 end
