@@ -54,8 +54,9 @@ module Gluttonberg
 
       # Assets
       def asset_browser( field_name , opts = {} )
-        asset_id = self.object.send(field_name.to_s)
+        opts[:asset_id] = asset_id = self.object.send(field_name.to_s)
         filter = opts[:filter] || "all"
+
 
         opts[:id] = "#{field_name}_#{asset_id}" if opts[:id].blank?
         asset = if asset_id.blank?

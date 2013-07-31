@@ -19,6 +19,15 @@ module Gluttonberg
         end
         @app.call(env)
       end
+
+      def self.bypass_path?(path, env)
+        if path.blank?
+          false
+        else
+          path =~ /^\/admin/ || path.start_with?("/stylesheets")  || path.start_with?("/javascripts")   || path.start_with?("/images") ||  path.start_with?("/gluttonberg")  || path.start_with?("/assets")  || path.start_with?("/user_asset")
+        end
+      end
+
       private
         def handle_prefix(path, env)
           if Gluttonberg.localized?
@@ -37,10 +46,6 @@ module Gluttonberg
             env['gluttonberg.locale'] = result
             env['GLUTTONBERG.LOCALE_INFO'] = locale
           end
-        end
-
-        def self.bypass_path?(path, env)
-          path =~ /^\/admin/ || path.start_with?("/stylesheets")  || path.start_with?("/javascripts")   || path.start_with?("/images") ||  path.start_with?("/gluttonberg")  || path.start_with?("/assets")  || path.start_with?("/user_asset")
         end
     end # Locales
   end # Middleware
