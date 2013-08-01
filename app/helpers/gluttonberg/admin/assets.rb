@@ -60,8 +60,7 @@ module Gluttonberg
         end
         html_id = opts[:id]
         link_to("Remove", "Javascript:;" , {
-          :class => "btn btn-danger button remove #{opts[:button_class]}"  ,
-          :onclick => "$('##{html_id}').val('');$('#title_thumb_#{opts[:id]} h5').html('');$('#title_thumb_#{opts[:id]} img').remove();"
+          :class => "btn btn-danger button remove #{opts[:button_class]}"
         })
       end
 
