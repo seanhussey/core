@@ -7,6 +7,18 @@ module Gluttonberg
     attr_accessible :repeatable, :repeatable_type, :repeatable_id
     attr_accessible :title
     attr_accessible :position
-    is_drag_tree :scope => :repeatable_id, :flat => true, :order => "position"   
+
+    def duplicate!(dup_repeatable)
+      @cloned_repeater = self.dup
+      @cloned_repeater.position = nil
+      @cloned_repeater.created_at = Time.now
+      @cloned_repeater.repeatable = dup_repeatable
+      if @cloned_repeater.save
+        @cloned_repeater
+      else
+        return nil
+      end
+    end
+
   end
 end
