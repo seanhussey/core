@@ -1741,6 +1741,7 @@ var HtmlFormRepeater = {
   initSorter: function(containerselector, rowSelector){
     $(containerselector).sortable({
       revert: true,
+      handle: ".repeater-drag-node",
       update:  function( event, ui ){
         $(containerselector).find(rowSelector).each(function(index){
           $(this).find("._position").val(index);
