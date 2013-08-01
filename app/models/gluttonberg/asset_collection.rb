@@ -30,7 +30,7 @@ module Gluttonberg
       unless the_collection.blank?
         collection_ids <<  the_collection.id
       end
-      collection_ids
+      params[:asset][:asset_collection_ids] = collection_ids
     end
 
     private
