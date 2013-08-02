@@ -2,8 +2,6 @@ module Gluttonberg
   module DragTree
     module ActionView
       module Helpers
-
-
         def drag_tree_url(klass = self.class)
           controller_class = controller.class
           if controller_class.respond_to?(:drag_tree_route_name) then
@@ -12,7 +10,6 @@ module Gluttonberg
             ''
           end
         end
-
 
         def drag_tree_table_class(klass = self.class)
           # drag-tree treeTable
