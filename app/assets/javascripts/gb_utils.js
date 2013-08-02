@@ -1688,3 +1688,66 @@ function getParameterByName(url, name ){
     return decodeURIComponent(results[1].replace(/\+/g, " "));
   }
 }
+
+
+var HtmlFormRepeater = {
+  add: function(containerselector, rowSelector, link, callback){
+    var duplicatedForm = $(containerselector).find(rowSelector).last().clone();
+    HtmlFormRepeater.htmlCleanup(link, duplicatedForm);
+    $(containerselector).append(duplicatedForm);
+    var newElement = $(containerselector).find(rowSelector).last();
+    if(callback != undefined){
+      callback(newElement);
+    }
+    $(newElement).find("._destroy_button").click(function(e){
+      HtmlFormRepeater.remove($(this).parents(rowSelector));
+      e.preventDefault();
+    });
+  },
+  htmlCleanup: function(link, duplicatedForm){
+    var count = parseInt($(link).attr("data-count"));
+    count++;
+
+    duplicatedForm.show();
+    var html = duplicatedForm.html(); 
+    if(html) {
+      html = HtmlFormRepeater.idAndNameCleanup(count, html);
+      duplicatedForm.html(html);
+      HtmlFormRepeater.textInputCleanup(duplicatedForm);
+      duplicatedForm.find("input._destroy").val("");
+    }
+    duplicatedForm.addClass("new-item");
+    duplicatedForm.find("input._position").val(count);
+    $(link).attr("data-count", count);
+  },
+  idAndNameCleanup: function(count, html){
+    html = html.replace(/\[[0-9]+\]/g, "["+count+"]"); // name update
+    html = html.replace(/_attributes_[0-9]+_/g, "_attributes_"+count+"_"); //id update
+    return html;
+  },
+  textInputCleanup: function(duplicatedForm){
+    duplicatedForm.find("input[type='text']").val("");
+  },
+  remove: function(rowSelector){
+    $(rowSelector).hide();
+    $(rowSelector).find("._destroy").val("true");
+  },
+  initRemoveButton: function(containerselector, rowSelector){
+    $(containerselector).find("._destroy_button").click(function(e){
+      HtmlFormRepeater.remove($(this).parents(rowSelector));
+      e.preventDefault();
+    });
+  },
+  initSorter: function(containerselector, rowSelector){
+    $(containerselector).sortable({
+      revert: true,
+      handle: ".repeater-drag-node",
+      update:  function( event, ui ){
+        $(containerselector).find(rowSelector).each(function(index){
+          $(this).find("._position").val(index);
+        });
+      }
+    });
+  }
+}
+
