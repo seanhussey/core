@@ -1,6 +1,5 @@
 module Gluttonberg
-  # This module allows custom controllers to be registered wtih Gluttonberg’s
-  # administration.
+  # This module allows programmer to configure backend main and sub menues
   module Components
     @@components  = {}
     @@routes      = {}
@@ -21,7 +20,6 @@ module Gluttonberg
       Gluttonberg::Components.register_for_main_nav("Settings", "/admin/configurations")
     end
 
-
     def self.register_for_main_nav(name , url, opts = {})
       opts[:enabled] = true if opts[:enabled].blank?
       opts[:only_for_super_admin] = false if opts[:only_for_super_admin].blank?
@@ -41,7 +39,6 @@ module Gluttonberg
     def self.register(name, opts = {})
       @@components[name] = opts
     end
-
 
     # Returns a hash of the registered components, keyed to their label.
     def self.registered
