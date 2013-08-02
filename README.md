@@ -24,3 +24,7 @@ The following setups will get you up and running.
 4. Run the **Gluttonberg** installer rake task, the task will move all required files into place, migrate the database and then ask you for admin user details. `bundle exec rake gluttonberg:install`
 5. Start the server. `foreman start`
 6. Login to the [admin page](http://localhost:5000/admin) and start building. `http://localhost:5000/admin`
+
+## Help
+
+If you need help using **Gluttonberg** or are looking for tips, please read the [HELP.md](HELP.md) file.
