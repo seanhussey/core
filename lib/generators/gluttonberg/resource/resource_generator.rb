@@ -10,9 +10,9 @@ class Gluttonberg::ResourceGenerator < Rails::Generators::Base
   argument :resource_name, :type => :string, :required => true
   argument :attributes, :type => :array, :default => [], :banner => "field:type field:type"
 
-  hook_for :draggable, :aliases => "-d" , :type => :boolean
-  hook_for :importable, :aliases => "-i" , :type => :boolean
-  hook_for :localized, :aliases => "-l" , :type => :boolean
+  class_option :draggable, :aliases => "-d" , :type => :boolean
+  class_option :importable, :aliases => "-i" , :type => :boolean
+  class_option :localized, :aliases => "-l" , :type => :boolean
 
   def initialize(args, *options)
     super(args, *options)

@@ -9,6 +9,23 @@ module Gluttonberg
         self.build_document_types
       end
 
+      # Makes sure the specified type exists in the DB, if it doesn’t it creates
+      # a new record.
+      def self.ensure_type(name, mime_type, category)
+        asset_type = AssetType.where(:name => name).first
+        if asset_type then
+          asset_type.asset_category = category
+        else
+          asset_type = AssetType.new(:name => name, :asset_category => category)
+        end
+        mime_type.split(' ').each do |this_mime_type|
+          asset_mime_type = AssetMimeType.new(:mime_type => this_mime_type)
+          asset_type.asset_mime_types << asset_mime_type
+          asset_mime_type.save
+        end
+        asset_type.save
+      end
+
       private
         def self.build_unknown_types
           ensure_type('Unknown Image', 'image', AssetCategory.image_category)
@@ -81,23 +98,6 @@ module Gluttonberg
           ensure_type('Microsoft Project Document (mpp)', 'application/vnd.ms-project', AssetCategory.document_category)
           ensure_type('Microsoft Visio Document (vsd,vst,vsw,vss)', 'application/vnd.visio', AssetCategory.document_category)
           ensure_type('HTML Help Document (chm)', 'application/x-chm', AssetCategory.document_category)
-        end
-
-        # Makes sure the specified type exists in the DB, if it doesn’t it creates
-        # a new record.
-        def self.ensure_type(name, mime_type, category)
-          asset_type = AssetType.where(:name => name).first
-          if asset_type then
-            asset_type.asset_category = category
-          else
-            asset_type = AssetType.new(:name => name, :asset_category => category)
-          end
-          mime_type.split(' ').each do |this_mime_type|
-            asset_mime_type = AssetMimeType.new(:mime_type => this_mime_type)
-            asset_type.asset_mime_types << asset_mime_type
-            asset_mime_type.save
-          end
-          asset_type.save
         end
     end
   end

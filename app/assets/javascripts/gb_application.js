@@ -48,6 +48,16 @@ function initClickEventsForAssetLinks(element) {
     e.preventDefault();
   });
 
+  element.find(".thumbnails a.remove").click(function(e) {
+    var p = $(this).parent().parent().parent(".asset_selector_wrapper");
+    var link = $(this);
+    var parent = link.parents(".thumbnails");
+    parent.find('.choose_asset_hidden_field').val('');
+    parent.find('h5').html('');
+    parent.find('img').remove();
+    e.preventDefault();
+  });
+
 }
 
 
@@ -250,7 +260,7 @@ var AssetBrowser = {
 
       // assets only
       if (AssetBrowser.target !== null) {
-        AssetBrowser.target.attr("value", id);
+        AssetBrowser.actualLink.parents(".caption").find(".choose_asset_hidden_field").attr("value", id);
         var image_src = target.attr("data-thumb");
 
         image_url = target.attr("data-jwysiwyg");

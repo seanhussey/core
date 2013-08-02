@@ -4,13 +4,15 @@
       - if !asset.blank? && asset.category && asset.category.to_s.downcase == "image"
         = asset_tag(asset , :small_thumb)
       .caption
-        %h5
-          - if opts[:asset_id].blank?
-            Nothing selected
-          - elsif asset.blank?
-            Asset missing!
-          - else
-            = asset.name
+        - title = if opts[:asset_id].blank?
+          - "Nothing selected"
+        - elsif asset.blank?
+          - "Asset missing!"
+        - else
+          - asset.name
+        %h5{:title => title}
+          = title
+          
 
         = hidden_field_tag("filter_#{field_name}", opts[:filter] , :id => "filter_#{opts[:id]}" )
         - html_opts = { :id => opts[:id] , :class => "choose_asset_hidden_field" }

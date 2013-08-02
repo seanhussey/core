@@ -112,7 +112,6 @@ module Gluttonberg
     def self.setup
       ::ActiveRecord::Base.send :include, Gluttonberg::DragTree::ActiveRecord
       ::ActionController::Base.send  :include, Gluttonberg::DragTree::ActionController
-      #::ActionView::Helpers.send(:include,  Gluttonberg::DragTree::ActionView::Helpers)
     end
   end #DragTree
 end #Gluttonberg

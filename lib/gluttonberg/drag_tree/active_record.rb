@@ -3,9 +3,8 @@ module Gluttonberg
     module ActiveRecord
 
       def self.included(base)
-         base.extend(ClassMethods)
+        base.extend(ClassMethods)
       end
-
 
       module ClassMethods
         def is_drag_tree(options = {})
@@ -29,7 +28,7 @@ module Gluttonberg
 
         def find_by_sorted_ids(new_sorted_element_ids)
           # find records in unorder list
-          elements = self.find(new_sorted_element_ids )
+          elements = self.where(:id => new_sorted_element_ids).all
           # sort it using ruby method
           sorted_elements = []
           new_sorted_element_ids.each do |id|
@@ -59,30 +58,26 @@ module Gluttonberg
 
             def klass.repair_drag_tree
               if behaves_as_a_flat_drag_tree
-                if list_options[:scope].empty?
-                  repair_list
+                if list_options[:scope].blank?
+                  repair_list(self.all)
                 else
-                  # this is wasteful as it does a repair on every item
-                  # which means for items of the same scope they keep
-                  # getting re-repaired. :-(
-                  items = all()
-                  items.each{ |item| item.repair_list}
+                  unique_scope_ids = self.select(list_options[:scope]).distinct
+                  unique_scope_ids.each do |scope_id|
+                    items = self.where(list_options[:scope] => scope_id).all
+                    repair_list(items)
+                  end
                 end
               end
               # todo: add support for non flat trees
             end
             def klass.all_sorted(query={})
-              all({:order => [:position.asc]}.merge(query))
+              where(query).order("position asc")
             end
           end # class_eval
         end #included
       end #ModelHelpersClassMethods
 
-
     end # ActiveRecord
-
-
-
 
   end #DragTree
 end  #Gluttonberg
