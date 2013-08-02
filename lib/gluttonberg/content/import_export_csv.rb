@@ -20,7 +20,6 @@ module Gluttonberg
       module ClassMethods
 
         def import_export_csv(import_export_columns=nil,wysiwyg_columns=nil)
-          #@@wysiwyg_columns = wysiwyg_columns
           if import_export_columns.blank?
             self.import_export_columns = self.new.attributes.keys
           else
