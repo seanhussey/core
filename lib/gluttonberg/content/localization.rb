@@ -109,27 +109,6 @@ module Gluttonberg
             new_model
           end
 
-
-          # def all_with_localization(opts)
-          #   fallback = check_for_fallback(opts)
-          #   localization_opts = extract_localization_conditions(opts)
-          #   matches = all(prefix_localized_fields(opts))
-          #   matches.each { |match| match.load_localization(localization_opts, fallback || false) }
-          #   matches
-          # end
-
-          # def first_with_localization(opts)
-          #   fallback = check_for_fallback(opts)
-          #   localization_opts = extract_localization_conditions(opts)
-          #   match = first(prefix_localized_fields(opts))
-          #   if match
-          #     match.load_localization(localization_opts, fallback || false)
-          #     match
-          #   end
-          # end
-
-          private
-
         end
 
         module InstanceMethods

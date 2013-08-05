@@ -71,8 +71,10 @@ module Gluttonberg
         path
       end
 
-      def body_class(page)
-        if !@page.blank?
+      def body_class(page=nil)
+        if !page.blank?
+         "page #{page.current_localization.slug} #{page.home? ? 'home' : ''}"
+        elsif !@page.blank?
          "page #{@page.current_localization.slug} #{@page.home? ? 'home' : ''}"
         elsif !@article.blank?
          "post #{@article.slug}"

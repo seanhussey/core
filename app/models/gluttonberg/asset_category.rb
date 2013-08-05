@@ -24,10 +24,10 @@ module Gluttonberg
 
     def self.build_defaults
       # Ensure the default categories exist in the database.
-      ensure_exists('audio', false)
-      ensure_exists('image', false)
-      ensure_exists('video', false)
-      ensure_exists('document', false)
+      ensure_exists('audio')
+      ensure_exists('image')
+      ensure_exists('video')
+      ensure_exists('document')
       ensure_exists(Library::UNCATEGORISED_CATEGORY, true)
     end
 
@@ -55,7 +55,7 @@ module Gluttonberg
       end
     end
 
-    def self.ensure_exists(name, unknown)
+    def self.ensure_exists(name, unknown=false)
       cat = where(:name => name).first
       if cat then
         cat.unknown = unknown
