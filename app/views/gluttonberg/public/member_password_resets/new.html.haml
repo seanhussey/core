@@ -4,6 +4,9 @@
 #complete_profile
   = form_for(Gluttonberg::Member.new, :url => member_password_resets_path) do |f|
 
+    - unless flash.blank?
+      = render "/layouts/flash_messages"
+
     %fieldset.form_element
       = f.label :email
       = f.text_field :email, :class => "text_field"

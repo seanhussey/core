@@ -1,19 +1,36 @@
 - @page_id = "login"
-- @page_title = "Log In"
+- @page_title = "Chamge My Password"
 
-= form_for(@user, :url => admin_password_reset_path, :method => :put, :html => {:id => "wrapper"}) do |f|
-  %h1#loginTitle
-    Change My Password
-  
-  %fieldset
-    %p
-      = f.label :password, :class=>"block_label"
-      = f.password_field :password, :class => "text_field"
-  
-  %fieldset
-    %p
-      = f.label :password_confirmation, :class=>"block_password"
-      = f.password_field :password_confirmation, :class => "text_field"
+.row
+  .span6.offset3
+    = backend_logo("/assets/gb_logo.png" , {:height => "46px"})
+    %h1#login_title
+      = website_title
     
-  %fieldset.last
-    = f.submit "Reset my password", :class => "button", :disable_with => "Resetting your password..."
+    %div#form.well
+      = form_for(@user, :url => admin_password_reset_path, :method => :put, :html => {:id => "wrapper"}) do |f|
+        
+        %fieldset
+          - unless flash.blank?
+            = render "/layouts/flash_messages", :locals => {:close_button => true}
+
+          - if @user.errors.any?
+            .alert.alert-error
+              .error-title
+                Sorry, There was an error
+              %ul
+                - @user.errors.full_messages.each do |msg|
+                  %li
+                    = msg
+          
+          .control-group
+            = f.label :password, :class=>"control-label"
+            = f.password_field :password, :class => "span4"
+        
+          .control-group
+            = f.label :password_confirmation, :class=>"control-label"
+            = f.password_field :password_confirmation, :class => "span4"
+          
+          .control-group
+            .cotrols
+              = f.submit "Reset my password", :class => "btn btn-success", :disable_with => "Resetting your password..."

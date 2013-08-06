@@ -5,8 +5,10 @@
       - class_name = "success"
     - elsif name.to_s == "warning"
       - class_name = ""
-      
+    
+
     .page_flash#flash.alert.alert-block{:class => "alert-#{class_name}"}
-      %a.close{ "data-dismiss" => "alert" , :href=>"#"}
-        &times;
+      - if defined?(close_button)
+        %a.close{ "data-dismiss" => "alert" , :href=>"#"}
+          &times;
       = msg

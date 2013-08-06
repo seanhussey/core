@@ -72,10 +72,9 @@ module Gluttonberg
       end
 
       def body_class(page=nil)
+        page = @page if page.blank?
         if !page.blank?
          "page #{page.current_localization.slug} #{page.home? ? 'home' : ''}"
-        elsif !@page.blank?
-         "page #{@page.current_localization.slug} #{@page.home? ? 'home' : ''}"
         elsif !@article.blank?
          "post #{@article.slug}"
         elsif !@blog.blank?

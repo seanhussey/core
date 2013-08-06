@@ -29,10 +29,10 @@ module Gluttonberg
     end
 
     def self.generate_default_locale
-      if Gluttonberg::Locale.where(:slug => "en-au").count == 0
+      if Gluttonberg::Locale.where(:slug => "en").count == 0
         locale = Gluttonberg::Locale.create({
-          :slug => "en-au",
-          :name => "Australia English",
+          :slug => "en",
+          :name => "English",
           :default => true,
           :slug_type => Gluttonberg::Locale.prefix_slug_type
         })

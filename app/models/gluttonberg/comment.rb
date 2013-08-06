@@ -13,10 +13,10 @@ module Gluttonberg
 
     validates_presence_of :body
 
-    scope :all_approved, :conditions => ["approved = ? AND ( spam = ? OR spam IS NULL)",true , false]
-    scope :all_pending, :conditions => ["moderation_required = ? AND ( spam = ? OR spam IS NULL)",true , false]
-    scope :all_rejected, :conditions => ["moderation_required = ? AND approved = ? AND ( spam = ? OR spam IS NULL)",false , false , false]
-    scope :all_spam, :conditions => { :spam => true }
+    scope :all_approved, lambda { where("approved = ? AND ( spam = ? OR spam IS NULL)",true , false)}
+    scope :all_pending, lambda { where("moderation_required = ? AND ( spam = ? OR spam IS NULL)",true , false)}
+    scope :all_rejected, lambda { where("moderation_required = ? AND approved = ? AND ( spam = ? OR spam IS NULL)",false , false , false)}
+    scope :all_spam, lambda { where(:spam => true)}
 
     attr_accessor :subscribe_to_comments , :blog_slug
     attr_accessible :body , :author_name , :author_email , :author_website , :commentable_id , :commentable_type , :author_id
