@@ -111,9 +111,9 @@ Rails.application.routes.draw do
 
       resources :password_resets
 
-      get "login" => "user_sessions#new"
+      get "login" => "user_sessions#new", :as => :login
       post "login" => "user_sessions#create"
-      get "logout" => "user_sessions#destroy"
+      get "logout" => "user_sessions#destroy", :as => :logout
     end
 
     scope :module => 'public' do

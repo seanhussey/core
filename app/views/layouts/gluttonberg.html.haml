@@ -67,7 +67,7 @@
 
     .container-fluid
       - unless flash.blank?
-        = render "/layouts/flash_messages"
+        = render "/layouts/flash_messages", :locals => {:close_button => true}
       = yield
 
       %hr
