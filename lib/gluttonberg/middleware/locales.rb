@@ -35,8 +35,13 @@ module Gluttonberg
             locale = path.split('/')[1]
             if locale.blank?
               result = Gluttonberg::Locale.first_default
+              locale = result.slug
             else
               result = Gluttonberg::Locale.find_by_locale(locale)
+              if result.blank?
+                result = Gluttonberg::Locale.first_default
+                locale = result.slug
+              end
             end
           else # take default locale
             result = Gluttonberg::Locale.first_default

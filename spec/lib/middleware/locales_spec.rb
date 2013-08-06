@@ -126,6 +126,66 @@ module Gluttonberg
         modified_env['GLUTTONBERG.LOCALE'].id.should == @locale.id
         modified_env['GLUTTONBERG.LOCALE_INFO'].should == @locale.slug
       end
+
+      it "should be able to handle prefixed url for localized sites /" do
+        Rails.configuration.localize = true
+        middleware = Locales.new(TestApp.new)
+        env = {
+          'PATH_INFO' => "/en/engineer"
+        }
+        
+        modified_env = middleware.call(env)
+        modified_env['PATH_INFO'].should == "/engineer"
+        modified_env['GLUTTONBERG.LOCALE'].class.name.should == @locale.class.name
+        modified_env['GLUTTONBERG.LOCALE'].id.should == @locale.id
+        modified_env['GLUTTONBERG.LOCALE_INFO'].should == @locale.slug
+        Rails.configuration.localize = false
+      end
+
+      it "should be able to handle url without locale for localized sites /" do
+        Rails.configuration.localize = true
+        middleware = Locales.new(TestApp.new)
+        env = {
+          'PATH_INFO' => "/engineer"
+        }
+        
+        modified_env = middleware.call(env)
+        modified_env['PATH_INFO'].should == "/engineer"
+        modified_env['GLUTTONBERG.LOCALE'].class.name.should == @locale.class.name
+        modified_env['GLUTTONBERG.LOCALE'].id.should == @locale.id
+        modified_env['GLUTTONBERG.LOCALE_INFO'].should == @locale.slug
+        Rails.configuration.localize = false
+      end
+
+      it "should be able to handle url without locale for localized sites /" do
+        Rails.configuration.localize = true
+        middleware = Locales.new(TestApp.new)
+        env = {
+          'PATH_INFO' => "/"
+        }
+        
+        modified_env = middleware.call(env)
+        modified_env['PATH_INFO'].should == "/"
+        modified_env['GLUTTONBERG.LOCALE'].class.name.should == @locale.class.name
+        modified_env['GLUTTONBERG.LOCALE'].id.should == @locale.id
+        modified_env['GLUTTONBERG.LOCALE_INFO'].should == @locale.slug
+        Rails.configuration.localize = false
+      end
+
+      it "should be able to handle url without locale for localized sites /" do
+        Rails.configuration.localize = true
+        middleware = Locales.new(TestApp.new)
+        env = {
+          'PATH_INFO' => "/en"
+        }
+        
+        modified_env = middleware.call(env)
+        modified_env['PATH_INFO'].should == ""
+        modified_env['GLUTTONBERG.LOCALE'].class.name.should == @locale.class.name
+        modified_env['GLUTTONBERG.LOCALE'].id.should == @locale.id
+        modified_env['GLUTTONBERG.LOCALE_INFO'].should == @locale.slug
+        Rails.configuration.localize = false
+      end
     end #describe
 
   end 
