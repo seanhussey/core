@@ -26,10 +26,10 @@ module Gluttonberg
           unless action_name == "restrict_site_access"
             setting = Gluttonberg::Setting.get_setting("restrict_site_access")
             if !setting.blank? && cookies[:restrict_site_access] != "allowed"
-              if env['gluttonberg.page'].blank?
+              if env['GLUTTONBERG.PAGE'].blank?
                 return_url = request.url
               else
-                return_url = env['gluttonberg.page'].current_localization.public_path
+                return_url = env['GLUTTONBERG.PAGE'].current_localization.public_path
               end
               redirect_to restrict_site_access_path(:return_url => return_url)
             end
@@ -37,10 +37,10 @@ module Gluttonberg
         end
 
         def rails_locale
-          if env['gluttonberg.locale'].blank?
+          if env['GLUTTONBERG.LOCALE'].blank?
             I18n.locale = I18n.default_locale
           else
-            I18n.locale = env['gluttonberg.locale'].slug || I18n.default_locale
+            I18n.locale = env['GLUTTONBERG.LOCALE'].slug || I18n.default_locale
           end
 
         end
@@ -88,7 +88,7 @@ module Gluttonberg
         end
 
         def store_location
-          @page = env['gluttonberg.page']
+          @page = env['GLUTTONBERG.PAGE']
           if @page.blank?
             session[:return_to] = request.url
           else
@@ -97,7 +97,7 @@ module Gluttonberg
         end
 
         def retrieve_locale
-          @locale = env['gluttonberg.locale']
+          @locale = env['GLUTTONBERG.LOCALE']
         end
 
         # Exception handlers

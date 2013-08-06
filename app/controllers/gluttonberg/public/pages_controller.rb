@@ -69,7 +69,7 @@ module Gluttonberg
 
       private
         def retrieve_page
-          @page = env['gluttonberg.page']
+          @page = env['GLUTTONBERG.PAGE']
           unless( current_user &&( authorize! :manage, Gluttonberg::Page) )
             @page = nil if @page.blank? || !@page.published?
           end

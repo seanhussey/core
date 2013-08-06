@@ -43,7 +43,7 @@ module Gluttonberg
           end
           if result
             env['PATH_INFO'].gsub!("/#{locale}", '')
-            env['gluttonberg.locale'] = result
+            env['GLUTTONBERG.LOCALE'] = result
             env['GLUTTONBERG.LOCALE_INFO'] = locale
           end
         end

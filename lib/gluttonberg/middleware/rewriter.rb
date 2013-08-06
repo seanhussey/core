@@ -8,9 +8,9 @@ module Gluttonberg
       def call(env)
         path = env['PATH_INFO']
         unless Gluttonberg::Middleware::Locales.bypass_path?(path, env) 
-          page = Gluttonberg::Page.find_by_path(path, env['gluttonberg.locale'] , env['HTTP_HOST'])
+          page = Gluttonberg::Page.find_by_path(path, env['GLUTTONBERG.LOCALE'] , env['HTTP_HOST'])
           unless page.blank?
-            env['gluttonberg.page'] = page
+            env['GLUTTONBERG.PAGE'] = page
             env['GLUTTONBERG.PATH_INFO'] = path # for debugging purpose
             if page.redirect_required?
               return redirect_param_array(page.redirect_url)
@@ -20,7 +20,7 @@ module Gluttonberg
               env['PATH_INFO'] = "/_public/page"
             end
           else
-            page = Gluttonberg::Page.find_by_previous_path(path, env['gluttonberg.locale'] , env['HTTP_HOST'])
+            page = Gluttonberg::Page.find_by_previous_path(path, env['GLUTTONBERG.LOCALE'] , env['HTTP_HOST'])
             unless page.blank?
               return redirect_param_array(page.public_path)
             end
