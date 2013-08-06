@@ -6,7 +6,8 @@ module Gluttonberg
       end
 
       def call(env)
-        path = env['PATH_INFO']
+        env['PATH_INFO'] = '' if env['PATH_INFO'].nil?
+        path =  env['PATH_INFO']
         unless Gluttonberg::Middleware::Locales.bypass_path?(path, env)
           case Gluttonberg::Engine.config.identify_locale
             when :subdomain
@@ -42,9 +43,19 @@ module Gluttonberg
             locale = result.slug
           end
           if result
-            env['PATH_INFO'].gsub!("/#{locale}", '')
+            extract_locale_prefix_from_path_info(locale, env)
             env['GLUTTONBERG.LOCALE'] = result
             env['GLUTTONBERG.LOCALE_INFO'] = locale
+          end
+        end
+
+        def extract_locale_prefix_from_path_info(locale, env)
+          unless env['PATH_INFO'].blank?
+            if ![locale, "/#{locale}", "#{locale}/", "/#{locale}/"].include?(env['PATH_INFO'])
+              env['PATH_INFO'].gsub!("/#{locale}/", '/')
+            else
+              env['PATH_INFO'].gsub!("/#{locale}", '')
+            end
           end
         end
     end # Locales
