@@ -20,8 +20,8 @@ module Gluttonberg
           "Please check your email."
           redirect_to root_path
         else
-          flash[:notice] = "No member was found with that email address"
-          redirect_to root_path
+          flash[:error] = "No member was found with that email address"
+          render :new
         end
       end
 
@@ -47,11 +47,8 @@ module Gluttonberg
         def load_member_using_perishable_token
           @member = Member.where(:perishable_token => params[:id]).first
           unless @member
-            flash[:notice] = "We're sorry, but we could not locate your account. " +
-            "If you are having issues try copying and pasting the URL " +
-            "from your email into your browser or restarting the " +
-            "reset password process."
-            redirect_to root_path
+            flash[:notice] = t(:reset_password_error)
+            redirect_to new_member_password_reset_path
           end
         end
 
