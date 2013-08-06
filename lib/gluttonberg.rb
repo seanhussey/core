@@ -14,7 +14,6 @@ module Gluttonberg
   require 'acl9'
   require 'sidekiq'
   require 'sitemap_generator'
-  require 'gluttonberg/authorizable'
   require 'gluttonberg/components'
   require 'gluttonberg/content'
   require 'gluttonberg/drag_tree'
