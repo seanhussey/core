@@ -1,9 +1,9 @@
 module Gluttonberg
   module Content
-    # A mixin which allows for any arbitrary model to have multiple versions. It will
-    # generate the versioning models and add methods for creating, managing and
-    # retrieving different versions of a record.
-    # In reality this is behaving like a wrapper on acts_as_versioned
+    # A mixin which allows for any arbitrary model to have import/export functionality
+    # import_export_csv(["name"], ["bio"]) import_export_columns,wysiwyg_columns
+    # it adds importCSV(file_path , local_options = {})
+    # and exportCSV(records , local_options = {})
     module ImportExportCSV
 
       def self.setup
@@ -33,6 +33,12 @@ module Gluttonberg
         # if all records are created successfully then return true
         # otherwise returns array of feedback. each value represents the feedback for respective row in csv
         # sample feedback array : [true , true , [active_record error array...] , true]
+        # sample local_options
+        # {
+        #   :import_columns => [:name, :face_id, :handwritting_id], 
+        #   :wysiwyg_columns => [:bio],
+        #   :unique_key => :name
+        # }
         def importCSV(file_path , local_options = {})
           begin
             require 'csv'
@@ -52,6 +58,11 @@ module Gluttonberg
           @h ||= GlosentryHelper.new
         end
 
+        # sample local_options
+        # {
+        #   :import_columns => [:name, :face_id, :handwritting_id], 
+        #   :wysiwyg_columns => [:bio]
+        # }
         def exportCSV(all_records , local_options = {})
           ExportUtils.export(all_records, local_options, self)
         end
