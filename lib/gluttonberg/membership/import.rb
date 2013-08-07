@@ -160,16 +160,16 @@ module Gluttonberg
           user_info
         end #attr_user_to_group
 
-        def self.prepare_user_record
+        def self.prepare_user_record(user_info, row)
           # generate random password
-          temp_password = generateRandomString
+          temp_password = Gluttonberg::Member.generateRandomString
           password_hash = {
             :password => temp_password ,
             :password_confirmation => temp_password
           }
 
           # make user object
-          new(user_info.merge(password_hash))
+          Gluttonberg::Member.new(user_info.merge(password_hash))
         end
 
       end #PrivateMethods
