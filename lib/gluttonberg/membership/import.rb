@@ -54,13 +54,7 @@ module Gluttonberg
                       failed_users << user
                     end
                   else
-                    if  !contains_user?(user , successfull_users) and !contains_user?(user , updated_users)
-                      if user.update_attributes(user_info)
-                        updated_users << user
-                      else
-                        failed_users << user
-                      end
-                    end
+                    PrivateMethods.update_member(user, user_info, successfull_users , failed_users , updated_users)
                   end
                 end # if csv row index > 0
 
@@ -170,6 +164,16 @@ module Gluttonberg
 
           # make user object
           Gluttonberg::Member.new(user_info.merge(password_hash))
+        end
+
+        def self.update_member(user, user_info, successfull_users , failed_users , updated_users)
+          if !Gluttonberg::Member.contains_user?(user , successfull_users) and !Gluttonberg::Member.contains_user?(user , updated_users)
+            if user.update_attributes(user_info)
+              updated_users << user
+            else
+              failed_users << user
+            end
+          end
         end
 
       end #PrivateMethods
