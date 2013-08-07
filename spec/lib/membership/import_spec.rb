@@ -40,7 +40,7 @@ module Gluttonberg
       staff_profiles = Member.all
 
       successfull.length.should == 2
-      failed.length.should == 0
+      failed.length.should == 1
       updated.length.should == 1
       
       staff_profiles[0].first_name.should == "Abdul"
