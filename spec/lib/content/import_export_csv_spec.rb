@@ -22,9 +22,81 @@ module Gluttonberg
     end
 
     it "should export data" do
+      prepare_export_data
+
+      csvData = StaffProfile.exportCSV(StaffProfile.all)
+
+      csvData = csvData.split("\n")
+      csvData.length.should == 4 #3 data + 1 header rows
       
+      firstRow = csvData[0].split(",")
+      firstRow.length.should == 4 #4 columns
+      firstRow[0].should == "name"
+      firstRow[1].should == "bio"
+      firstRow[2].should == "published_at"
+      firstRow[3].should == "updated_at"
+
+      firstDataRow = csvData[1].split(",")
+      firstDataRow.length.should == 4 #4 columns
+      firstDataRow[0].should == "Abdul"
 
       StaffProfile.all{|staff| staff.destroy}
+    end
+
+
+    it "should export data with local options" do
+      prepare_export_data
+
+      csvData = StaffProfile.exportCSV(StaffProfile.all, {
+        :export_columns => [:name, :face_id, :handwritting_id], 
+        :wysiwyg_columns => [:bio]
+      })
+
+      csvData = csvData.split("\n")
+      csvData.length.should == 4 #3 data + 1 header rows
+      
+      firstRow = csvData[0].split(",")
+      firstRow.length.should == 6 #6 columns
+      firstRow[0].should == "name"
+      firstRow[1].should == "face_id"
+      firstRow[2].should == "handwritting_id"
+      firstRow[3].should == "bio"
+      firstRow[4].should == "published_at"
+      firstRow[5].should == "updated_at"
+
+      firstDataRow = csvData[1].split(",")
+      firstDataRow.length.should == 6 #6 columns
+      firstDataRow[0].should == "Abdul"
+
+
+      StaffProfile.all{|staff| staff.destroy}
+    end
+
+    def prepare_export_data
+      StaffProfile.all{|staff| staff.destroy}
+      StaffProfile.count.should == 0
+
+      attrs = {
+        :name => "Abdul",
+        :face_id => 5,
+        :bio => "Abdul Rauf is a web and mobile programmer.",
+        :handwritting_id => 9
+      }
+      staff = StaffProfile.new_with_localization(attrs)
+      staff.save
+      staff.publish!
+
+      attrs[:name] = "David"
+      attrs[:bio] = "David Walker"
+      staff2 = StaffProfile.new_with_localization(attrs)
+      staff2.save
+
+      attrs[:name] = "Nick"
+      attrs[:bio] = "Nick Crowther"
+      staff3 = StaffProfile.new_with_localization(attrs)
+      staff3.save
+
+      StaffProfile.count.should == 3
     end
 
 

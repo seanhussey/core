@@ -59,7 +59,7 @@ module Gluttonberg
       end #ClassMethods
 
       class ExportUtils
-        attr_accessor :all_records, :local_options, :klass, :export_column_names
+        attr_accessor :all_records, :local_options, :klass, :export_column_names, :export_wysiwyg_columns
         def initialize(all_records, local_options, klass)
           self.all_records = all_records
           self.local_options = local_options
@@ -72,7 +72,7 @@ module Gluttonberg
           require 'csv'
 
           csv_string = CSV.generate do |csv|
-            csv << export_utils.export_column_names
+            csv << export_utils.all_export_columns
             export_utils.all_records.each do |record|
               csv << export_utils.prepare_row(record)
             end
@@ -81,26 +81,48 @@ module Gluttonberg
         end
 
         def prepare_export_column_names
-          self.export_column_names = klass.import_export_columns
+          
           if self.local_options && self.local_options.has_key?(:export_columns)
-            self.export_column_names = self.local_options[:export_columns]
+            self.export_column_names = self.local_options[:export_columns].dup
+          else
+            self.export_column_names = klass.import_export_columns.dup
+          end
+
+          if self.local_options && self.local_options.has_key?(:wysiwyg_columns)
+            self.export_wysiwyg_columns = self.local_options[:wysiwyg_columns].dup
+          else
+            self.export_wysiwyg_columns = klass.wysiwyg_columns.dup
           end
 
           if self.export_column_names.blank?
             raise "Please define export_column_names property"
           end
-
-          self.export_column_names << "published_at"
-          self.export_column_names << "updated_at"
           self.export_column_names
+        end
+
+        def all_export_columns
+          temp_columns = self.export_column_names.blank? ? [] : self.export_column_names.dup
+          temp_columns << self.export_wysiwyg_columns.dup unless self.export_wysiwyg_columns.blank?
+          temp_columns << "published_at"
+          temp_columns << "updated_at"
+          temp_columns = temp_columns.flatten
+          temp_columns
         end
 
         def prepare_row(record)
           row = []
-          self.export_column_names.each do |column|
-            row << record.send(column)
+          self.all_export_columns.each do |column|
+            if self.export_wysiwyg_columns && self.export_wysiwyg_columns.include?(column)
+              if record.send(column).blank?
+                row << ""
+              else
+                row << record.send(column).html_safe
+              end
+            else
+              row << record.send(column)
+            end
           end
-          row
+          row.flatten
         end
       end
 
@@ -158,9 +180,9 @@ module Gluttonberg
         end
 
         def _prepare_import_column_names
-          self.import_column_names = klass.import_export_columns
+          self.import_column_names = klass.import_export_columns.dup
           if local_options && local_options.has_key?(:import_columns)
-            self.import_column_names = local_options[:import_columns]
+            self.import_column_names = local_options[:import_columns].dup
           end
           if import_column_names.blank?
             raise "Please define import_export_columns property"
