@@ -25,6 +25,7 @@ module Gluttonberg
           else
             self.import_export_columns = import_export_columns
           end
+          self.wysiwyg_columns = (wysiwyg_columns.blank? ? [] : wysiwyg_columns)
         end
 
 
