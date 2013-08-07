@@ -82,22 +82,22 @@ module Gluttonberg
 
         def prepare_export_column_names
           
-          if self.local_options && self.local_options.has_key?(:export_columns)
-            self.export_column_names = self.local_options[:export_columns].dup
-          else
-            self.export_column_names = klass.import_export_columns.dup
-          end
-
-          if self.local_options && self.local_options.has_key?(:wysiwyg_columns)
-            self.export_wysiwyg_columns = self.local_options[:wysiwyg_columns].dup
-          else
-            self.export_wysiwyg_columns = klass.wysiwyg_columns.dup
-          end
+          self.export_column_names = _prepare_names(:export_columns, :import_export_columns)
+          self.export_wysiwyg_columns = _prepare_names(:wysiwyg_columns, :wysiwyg_columns)
+          
 
           if self.export_column_names.blank?
             raise "Please define export_column_names property"
           end
           self.export_column_names
+        end
+
+        def _prepare_names(source, default)
+          if self.local_options && self.local_options.has_key?(source)
+            self.local_options[source].dup
+          else
+            klass.send(default).dup
+          end
         end
 
         def all_export_columns
@@ -259,14 +259,18 @@ module Gluttonberg
         def assign_wysiwyg_columns
           if self.all_valid
             records.each do |record|
-              unless self.wysiwyg_columns_names.blank?
-                self.wysiwyg_columns_names.each do |c|
-                  record.send("#{c}=", klass.helper.simple_format(record.send(c)))
-                end
-              end
-              record.save
+              assign_wysiwyg_column(record)
             end
           end
+        end
+
+        def assign_wysiwyg_column(record)
+          unless self.wysiwyg_columns_names.blank?
+            self.wysiwyg_columns_names.each do |c|
+              record.send("#{c}=", klass.helper.simple_format(record.send(c)))
+            end
+          end
+          record.save
         end
 
       end #ImportUtils

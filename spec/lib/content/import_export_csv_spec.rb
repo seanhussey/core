@@ -98,7 +98,7 @@ module Gluttonberg
 
     it "should import data" do
       StaffProfile.count.should == 0
-      file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/staff_profiles.csv"))
+      file = GbFile.new(File.join(RSpec.configuration.fixture_path, "staff_profiles.csv"))
       file.original_filename = "staff_profiles.csv"
 
       StaffProfile.importCSV(file)
