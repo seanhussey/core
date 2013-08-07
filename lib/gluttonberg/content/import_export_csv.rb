@@ -233,8 +233,11 @@ module Gluttonberg
         end
 
         def find_or_initialize_record(record_info)
+          record = nil
           if local_options[:unique_key]
-            record = klass.where(local_options[:unique_key] => record_info[local_options[:unique_key].to_s]).first
+            val = record_info[local_options[:unique_key].to_s]
+            val = record_info[local_options[:unique_key].to_sym] if val.blank?
+            record = klass.where(local_options[:unique_key] => val).first
           end
 
           if record.blank?

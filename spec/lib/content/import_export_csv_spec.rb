@@ -127,31 +127,46 @@ module Gluttonberg
 
     it "should import data" do
       StaffProfile.count.should == 0
+
+      attrs = {
+        :name => "Nick",
+        :face_id => 5,
+        :bio => "Managing Director",
+        :handwritting_id => 9
+      }
+      staff = StaffProfile.new_with_localization(attrs)
+      staff.save
+
+      StaffProfile.count.should == 1
+
       file = GbFile.new(File.join(RSpec.configuration.fixture_path, "staff_profiles.csv"))
       file.original_filename = "staff_profiles.csv"
 
       StaffProfile.importCSV(file, {
         :import_columns => [:name, :face_id, :handwritting_id], 
-        :wysiwyg_columns => [:bio]
+        :wysiwyg_columns => [:bio],
+        :unique_key => :name
       })
 
       StaffProfile.count.should == 3
       staff_profiles = StaffProfile.all
       
-      staff_profiles[0].name.should == "Abdul"
-      staff_profiles[0].bio.should == "<p>Abdul Rauf is a web and mobile programmer.</p>"
+      staff_profiles[0].name.should == "Nick"
+      staff_profiles[0].bio.should == "<p>Nick Crowther</p>"
       staff_profiles[0].face_id.should == 5
       staff_profiles[0].handwritting_id.should == 9
 
-      staff_profiles[1].name.should == "David"
-      staff_profiles[1].bio.should == "<p>David Walker</p>"
+      staff_profiles[1].name.should == "Abdul"
+      staff_profiles[1].bio.should == "<p>Abdul Rauf is a web and mobile programmer.</p>"
       staff_profiles[1].face_id.should == 5
       staff_profiles[1].handwritting_id.should == 9
 
-      staff_profiles[2].name.should == "Nick"
-      staff_profiles[2].bio.should == "<p>Nick Crowther</p>"
+      staff_profiles[2].name.should == "David"
+      staff_profiles[2].bio.should == "<p>David Walker</p>"
       staff_profiles[2].face_id.should == 5
       staff_profiles[2].handwritting_id.should == 9
+
+      
 
 
       StaffProfile.all{|staff| staff.destroy}
