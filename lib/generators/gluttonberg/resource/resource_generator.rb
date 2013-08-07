@@ -189,7 +189,7 @@ class Gluttonberg::ResourceGenerator < Rails::Generators::Base
     def import_export_routes
   %{
     match \"/#{plural_name}/import(.:format)\" => \"#{plural_name}#import\" , :as => :#{plural_name}_import
-    match \"/#{plural_name}/export(.:format)\" => \"#{plural_name}#export\" , :as => :#{plural_name}_export
+    get \"/#{plural_name}/export(.:format)\" => \"#{plural_name}#export\" , :as => :#{plural_name}_export
   }
     end
 
