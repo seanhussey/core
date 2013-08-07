@@ -128,7 +128,7 @@ module Gluttonberg
 
       class ImportUtils
         attr_accessor :file_path, :local_options, :klass, :csv_table
-        attr_accessor :import_columns, :records, :feedback, :all_valid
+        attr_accessor :import_columns, :wysiwyg_columns , :records, :feedback, :all_valid
         attr_accessor :import_column_names, :wysiwyg_columns_names
 
         def initialize(file_path , local_options = {}, klass, csv_table )
@@ -173,9 +173,13 @@ module Gluttonberg
           _prepare_wysiwyg_column_names
 
           self.import_columns = {}
-
           self.import_column_names.each do |key|
             self.import_columns[key] = find_column_position(key)
+          end
+
+          self.wysiwyg_columns = {} 
+          self.wysiwyg_columns_names.each do |key|
+            self.wysiwyg_columns[key] = find_column_position(key)
           end
         end
 
@@ -208,14 +212,23 @@ module Gluttonberg
             self.all_valid = false
           end
         end
+
+        def all_import_columns
+          temp_columns = self.import_columns.blank? ? {} : self.import_columns.dup
+          temp_columns = temp_columns.merge(self.wysiwyg_columns.dup) unless self.wysiwyg_columns.blank?
+          temp_columns
+        end
+
         def prepare_record_info(row)
           record_info = {}
-          self.import_columns.each do |key , val|
+
+          self.all_import_columns.each do |key , val|
             if !val.blank? && val >= 0
               record_info[key] = row[val]
               record_info[key] = record_info[key].force_encoding("UTF-8") if row[val].kind_of?(String)
             end
           end
+
           record_info
         end
 
@@ -231,6 +244,7 @@ module Gluttonberg
           record_info.each do |field,val|
             record.send("#{field}=",val)
           end
+
           record
         end
 
@@ -247,7 +261,7 @@ module Gluttonberg
             records.each do |record|
               unless self.wysiwyg_columns_names.blank?
                 self.wysiwyg_columns_names.each do |c|
-                  record.send("#{c}=",helper.simple_format(record.send(c)))
+                  record.send("#{c}=", klass.helper.simple_format(record.send(c)))
                 end
               end
               record.save

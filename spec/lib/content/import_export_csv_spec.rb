@@ -17,10 +17,6 @@ module Gluttonberg
       StaffProfile.wysiwyg_columns.should == ["bio"]
     end
 
-    it "should import data" do
-      #.importCSV(params[:csv].tempfile.path)
-    end
-
     it "should export data" do
       prepare_export_data
 
@@ -97,6 +93,68 @@ module Gluttonberg
       staff3.save
 
       StaffProfile.count.should == 3
+      StaffProfile.all{|staff| staff.destroy}
+    end
+
+    it "should import data" do
+      StaffProfile.count.should == 0
+      file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/staff_profiles.csv"))
+      file.original_filename = "staff_profiles.csv"
+
+      StaffProfile.importCSV(file)
+
+      StaffProfile.count.should == 3
+      staff_profiles = StaffProfile.all
+      
+      staff_profiles[0].name.should == "Abdul"
+      staff_profiles[0].bio.should == "<p>Abdul Rauf is a web and mobile programmer.</p>"
+      staff_profiles[0].face_id.should == nil
+      staff_profiles[0].handwritting_id.should == nil
+
+      staff_profiles[1].name.should == "David"
+      staff_profiles[1].bio.should == "<p>David Walker</p>"
+      staff_profiles[1].face_id.should == nil
+      staff_profiles[1].handwritting_id.should ==  nil
+
+      staff_profiles[2].name.should == "Nick"
+      staff_profiles[2].bio.should == "<p>Nick Crowther</p>"
+      staff_profiles[2].face_id.should == nil
+      staff_profiles[2].handwritting_id.should == nil
+
+
+      StaffProfile.all{|staff| staff.destroy}
+    end
+
+    it "should import data" do
+      StaffProfile.count.should == 0
+      file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/staff_profiles.csv"))
+      file.original_filename = "staff_profiles.csv"
+
+      StaffProfile.importCSV(file, {
+        :import_columns => [:name, :face_id, :handwritting_id], 
+        :wysiwyg_columns => [:bio]
+      })
+
+      StaffProfile.count.should == 3
+      staff_profiles = StaffProfile.all
+      
+      staff_profiles[0].name.should == "Abdul"
+      staff_profiles[0].bio.should == "<p>Abdul Rauf is a web and mobile programmer.</p>"
+      staff_profiles[0].face_id.should == 5
+      staff_profiles[0].handwritting_id.should == 9
+
+      staff_profiles[1].name.should == "David"
+      staff_profiles[1].bio.should == "<p>David Walker</p>"
+      staff_profiles[1].face_id.should == 5
+      staff_profiles[1].handwritting_id.should == 9
+
+      staff_profiles[2].name.should == "Nick"
+      staff_profiles[2].bio.should == "<p>Nick Crowther</p>"
+      staff_profiles[2].face_id.should == 5
+      staff_profiles[2].handwritting_id.should == 9
+
+
+      StaffProfile.all{|staff| staff.destroy}
     end
 
 
