@@ -53,7 +53,7 @@ module Gluttonberg
         :password_confirmation => temp_password
       }
       staff = Member.new(attrs)
-      staff.save
+      staff.save.should == true
 
       # generate random password
       temp_password = Gluttonberg::Member.generateRandomString
@@ -66,7 +66,7 @@ module Gluttonberg
         :password_confirmation => temp_password
       }
       staff2 = Member.new(attrs)
-      staff2.save
+      staff2.save.should == true
 
       # generate random password
       temp_password = Gluttonberg::Member.generateRandomString
@@ -79,7 +79,7 @@ module Gluttonberg
         :password_confirmation => temp_password
       }
       staff3 = Member.new(attrs)
-      staff3.save
+      staff3.save.should == true
 
       Member.count.should == 3
       Member.all{|staff| staff.destroy}

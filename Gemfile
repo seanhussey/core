@@ -8,7 +8,7 @@ gemspec
 # libraries used by the dummy application
 
 gem 'rails', '~> 3.2'
-gem 'pg', '0.15.1'
+gem 'pg', '~> 0.16'
 gem 'jquery-rails', '3.0.4'
 gem 'simplecov', :require => false, :group => :test
 
