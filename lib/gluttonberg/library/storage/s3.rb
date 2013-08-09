@@ -167,24 +167,7 @@ module Gluttonberg
           # TODO Refactor this method
           # This method is used for delayed job
           def copy_audios_to_s3
-            puts "--------copy_audios_to_s3"
-            bucket = bucket_handle
-            if bucket
-              begin
-                local_file = Pathname.new(location_on_disk)
-                base_name = File.basename(local_file)
-                folder = self.asset_hash
-                date = Time.now+1.years
-                puts "Copying #{base_name} to #{s3_bucket}"
-                key = bucket.key("user_assets/" + folder + "/" + base_name, true)
-                key.put(File.open(local_file), 'public-read', {"Expires" => date.rfc2822, "content-type" => "audio/mp3"})
-                self.update_attributes(:copied_to_s3 => true)
-                puts "Copied"
-              rescue => e
-                puts "#{base_name} failed to copy"
-                puts "** #{e} **"
-              end
-            end
+            copy_file_to_s3(self.file_name)            
           end
 
           # TODO
