@@ -36,7 +36,11 @@ module Gluttonberg
             s3_server_url = S3::ClassMethods.s3_server_url
             s3_bucket = S3::ClassMethods.s3_bucket_name
             if !key_id.blank? && !key_val.blank? && !s3_server_url.blank? && !s3_bucket.blank?
-              s3 = AWS::S3.new({ :access_key_id => key_id, :secret_access_key => key_val , :server => s3_server_url})
+              s3 = AWS::S3.new({ 
+                :access_key_id => key_id, 
+                :secret_access_key => key_val, 
+                :server => s3_server_url
+              })
               bucket = s3.buckets[s3_bucket]
             else
               nil
@@ -73,11 +77,11 @@ module Gluttonberg
         module InstanceMethods
 
           def bucket_handle
-            unless @bucket.blank?
-              @bucket
-            else
-              @bucket = S3::ClassMethods.bucket_handle
-            end
+            @bucket ||= S3::ClassMethods.bucket_handle
+          end
+
+          def bucket_handle=(handle)
+            @bucket = handle
           end
 
           # The generated directory where this file is located.
@@ -144,13 +148,13 @@ module Gluttonberg
           #takes file from tmp folder and upload to s3 if s3 info is given in CMS settings
           def copy_file_to_s3(file_name)
             bucket = bucket_handle
-            unless bucket.blank?
+            if bucket
               local_file = self.tmp_directory + "/" + file_name
               folder = self.asset_hash
               date = Time.now+1.years
               puts "Copying #{file_name} (#{local_file}) to #{S3::ClassMethods.s3_bucket_name}"
               key = bucket.objects[self.directory + "/" + file_name]
-              unless self.mime_type.blank?
+              response = unless self.mime_type.blank?
                 key.write(File.open(local_file), {:expires => date.rfc2822, :content_type => self.mime_type , :acl => :public_read })
               else
                 key.write(File.open(local_file) , {:expires => date.rfc2822 , :acl => :public_read })
@@ -164,13 +168,8 @@ module Gluttonberg
           # This method is used for delayed job
           def copy_audios_to_s3
             puts "--------copy_audios_to_s3"
-            key_id = Gluttonberg::Setting.get_setting("s3_key_id")
-            key_val = Gluttonberg::Setting.get_setting("s3_access_key")
-            s3_server_url = Gluttonberg::Setting.get_setting("s3_server_url")
-            s3_bucket = Gluttonberg::Setting.get_setting("s3_bucket")
-            if !key_id.blank? && !key_val.blank? && !s3_server_url.blank? && !s3_bucket.blank?
-              s3 = Aws::S3.new(key_id, key_val, {:server => s3_server_url})
-              bucket = s3.bucket(s3_bucket)
+            bucket = bucket_handle
+            if bucket
               begin
                 local_file = Pathname.new(location_on_disk)
                 base_name = File.basename(local_file)
@@ -187,8 +186,6 @@ module Gluttonberg
               end
             end
           end
-
-
 
           # TODO
           def remove_file_from_s3(file_name)
