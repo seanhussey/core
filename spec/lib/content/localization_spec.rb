@@ -9,7 +9,6 @@ module Gluttonberg
 
     after :all do
       clean_all_data
-      StaffProfile.all{|staff| staff.destroy}
     end
 
     it "should be localized" do
@@ -102,8 +101,6 @@ module Gluttonberg
 
       staff.destroy
     end
-
-
 
 
   end

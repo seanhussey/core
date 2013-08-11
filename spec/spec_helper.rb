@@ -47,4 +47,5 @@ def clean_all_data
   Gluttonberg::Blog.all.each{|obj| obj.destroy}
   Gluttonberg::Article.all.each{|obj| obj.destroy}
   Gluttonberg::Comment.all.each{|obj| obj.destroy}
+  StaffProfile.all.each{|staff| staff.destroy}
 end

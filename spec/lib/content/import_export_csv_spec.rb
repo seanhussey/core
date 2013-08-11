@@ -9,7 +9,6 @@ module Gluttonberg
 
     after :all do
       clean_all_data
-      StaffProfile.all{|staff| staff.destroy}
     end
 
     it "should set class attributes localized" do
@@ -36,7 +35,7 @@ module Gluttonberg
       firstDataRow.length.should == 4 #4 columns
       firstDataRow[0].should == "Abdul"
 
-      StaffProfile.all{|staff| staff.destroy}
+      StaffProfile.all.each{|staff| staff.destroy}
     end
 
 
@@ -65,36 +64,10 @@ module Gluttonberg
       firstDataRow[0].should == "Abdul"
 
 
-      StaffProfile.all{|staff| staff.destroy}
+      StaffProfile.all.each{|staff| staff.destroy}
     end
 
-    def prepare_export_data
-      StaffProfile.all{|staff| staff.destroy}
-      StaffProfile.count.should == 0
-
-      attrs = {
-        :name => "Abdul",
-        :face_id => 5,
-        :bio => "Abdul Rauf is a web and mobile programmer.",
-        :handwritting_id => 9
-      }
-      staff = StaffProfile.new_with_localization(attrs)
-      staff.save
-      staff.publish!
-
-      attrs[:name] = "David"
-      attrs[:bio] = "David Walker"
-      staff2 = StaffProfile.new_with_localization(attrs)
-      staff2.save
-
-      attrs[:name] = "Nick"
-      attrs[:bio] = "Nick Crowther"
-      staff3 = StaffProfile.new_with_localization(attrs)
-      staff3.save
-
-      StaffProfile.count.should == 3
-      StaffProfile.all{|staff| staff.destroy}
-    end
+    
 
     it "should import data" do
       StaffProfile.count.should == 0
@@ -122,7 +95,7 @@ module Gluttonberg
       staff_profiles[2].handwritting_id.should == nil
 
 
-      StaffProfile.all{|staff| staff.destroy}
+      StaffProfile.all.each{|staff| staff.destroy}
     end
 
     it "should import data" do
@@ -169,9 +142,36 @@ module Gluttonberg
       
 
 
-      StaffProfile.all{|staff| staff.destroy}
+      StaffProfile.all.each{|staff| staff.destroy}
     end
 
+
+    def prepare_export_data
+      StaffProfile.all.each{|staff| staff.destroy}
+      StaffProfile.count.should == 0
+
+      attrs = {
+        :name => "Abdul",
+        :face_id => 5,
+        :bio => "Abdul Rauf is a web and mobile programmer.",
+        :handwritting_id => 9
+      }
+      staff = StaffProfile.new_with_localization(attrs)
+      staff.save
+      staff.publish!
+
+      attrs[:name] = "David"
+      attrs[:bio] = "David Walker"
+      staff2 = StaffProfile.new_with_localization(attrs)
+      staff2.save
+
+      attrs[:name] = "Nick"
+      attrs[:bio] = "Nick Crowther"
+      staff3 = StaffProfile.new_with_localization(attrs)
+      staff3.save
+
+      StaffProfile.count.should == 3
+    end
 
   end
 end

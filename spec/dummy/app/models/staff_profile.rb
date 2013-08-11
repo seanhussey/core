@@ -9,4 +9,8 @@ class StaffProfile < ActiveRecord::Base
   is_localized do
   end
 
+  def title_or_name?
+    name
+  end
+
 end
