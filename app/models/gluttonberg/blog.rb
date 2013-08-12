@@ -6,6 +6,7 @@ module Gluttonberg
 
     belongs_to :user
     has_many :articles, :dependent => :destroy
+    belongs_to :fb_icon , :class_name => "Gluttonberg::Asset" , :foreign_key => "fb_icon_id"
 
     validates_presence_of :name, :user_id
 

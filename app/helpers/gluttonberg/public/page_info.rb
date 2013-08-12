@@ -56,16 +56,14 @@ module Gluttonberg
       def page_fb_icon_path
         path = nil
         object = find_current_object_for_meta_tags
-        fb_icon_settings = Gluttonberg::Setting.get_setting("fb_icon")
+        fb_icon_id = Gluttonberg::Setting.get_setting("fb_icon")
 
-        page_fb_icon = if !object.blank? && object.respond_to?(:fb_icon)
-          object.fb_icon
+        if !object.blank? && object.respond_to?(:fb_icon_id) && !object.fb_icon_id.blank?
+          fb_icon_id = object.fb_icon_id
         end
 
-        if !page_fb_icon.blank?
-          asset = page_fb_icon
-        elsif !fb_icon_settings.blank?
-          asset = Asset.where(:id => fb_icon_settings).first
+        asset = unless fb_icon_id.blank?
+          Asset.where(:id => fb_icon_id).first
         end
 
         path = asset.url unless asset.blank?
@@ -75,7 +73,7 @@ module Gluttonberg
       def body_class(page=nil)
         page = @page if page.blank?
         if !page.blank?
-         "page #{page.current_localization.slug} #{page.home? ? 'home' : ''}"
+         "page #{page.current_localization.slug.blank? ? page.slug : page.current_localization.slug} #{page.home? ? 'home' : ''}"
         elsif !@article.blank?
          "post #{@article.slug}"
         elsif !@blog.blank?
