@@ -14,7 +14,7 @@ module Gluttonberg
     def current_localization_slug
       if @locale
        @locale.slug
-      else
+      elsif Gluttonberg::Locale.first_default
        Gluttonberg::Locale.first_default.slug
       end
     end

@@ -16,7 +16,7 @@ module Gluttonberg
 
       private
         def _stylesheet_tag_for(stylesheet)
-          html << "\n"
+          html = ""
           unless stylesheet.css_prefix.blank?
             html << stylesheet.css_prefix
             html << "\n"
@@ -26,6 +26,7 @@ module Gluttonberg
             html << "\n"
             html << stylesheet.css_postfix
           end
+          html
         end
 
     end #CmsStylesheets

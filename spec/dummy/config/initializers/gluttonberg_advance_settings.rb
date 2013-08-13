@@ -30,7 +30,7 @@
     Rails.configuration.user_roles = ["sales", "accounts"]
 
   # CMS based public stylesheets
-    Rails.configuration.cms_based_public_css = true
+    Rails.configuration.cms_based_public_css = false
 
   # Flagged Config
     Rails.configuration.flagged_content = false
