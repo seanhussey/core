@@ -4,11 +4,21 @@ module Gluttonberg
   module Public
     module MetaTags
       def keywords_meta_tag
-        tag("meta",{:content => Gluttonberg::Setting.get_setting("keywords") , :name => "keywords" } )
+        keywords = Gluttonberg::Setting.get_setting("keywords")
+        unless keywords.blank?
+          tag("meta",{:content =>  keywords, :name => "keywords" } ) 
+        else
+          nil
+        end
       end
 
       def description_meta_tag
-        tag("meta",{:content => Gluttonberg::Setting.get_setting("description") , :name => "description" } )
+        description = Gluttonberg::Setting.get_setting("description")
+        unless description.blank?
+          tag("meta",{:content =>  description, :name => "description" } ) 
+        else
+          nil
+        end
       end
     end
   end
