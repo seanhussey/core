@@ -57,7 +57,7 @@ module Gluttonberg
           # open tag on the end of the result
           while previous_tags.length > 0
             previous_tag = previous_tags.pop()
-            unless previous_tag =~ /^<(br|hr|input|img)/
+            unless previous_tag =~ /^<(br|hr|input|img|area|base|link|meta)/
               tokens = previous_tag.split(" ")
               if tokens.length == 1
                 closing_tag = tokens.first.insert(1 , '/')
