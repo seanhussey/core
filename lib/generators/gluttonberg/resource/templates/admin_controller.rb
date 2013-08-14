@@ -43,10 +43,7 @@ module Admin
     def update
       @<%= singular_name %> = <%= class_name %>.find(params[:id])
       <% if localized? %>@<%= singular_name %>.load_localization(params[:locale_id]) unless params[:locale_id].blank? <%end%>
-      @<%= singular_name %>.current_slug = @<%= singular_name %>.slug
-      @<%= singular_name %>.assign_attributes(params[:<%= singular_name %>])
-      @<%= singular_name %>.previous_slug = @<%= singular_name %>.current_slug if @<%= singular_name %>.slug_changed?
-      if @<%= singular_name %>.save
+      if @<%= singular_name %>.update_attributes(params[:<%= singular_name %>])
         flash[:notice] = "The <%= singular_name.titleize.downcase %> was successfully updated."
         redirect_to admin_<%= plural_name %>_path
       else

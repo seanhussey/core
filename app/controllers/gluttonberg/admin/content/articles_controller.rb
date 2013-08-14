@@ -53,10 +53,7 @@ module Gluttonberg
           article_attributes = params["gluttonberg_article_localization"].delete(:article)
           if @article_localization.update_attributes(params[:gluttonberg_article_localization])
             article = @article_localization.article
-            article.current_slug = article.slug
-            article.assign_attributes(article_attributes)
-            article.previous_slug = article.current_slug if article.slug_changed?
-            article.save
+            article.update_attributes(article_attributes)
 
             _log_article_changes
 

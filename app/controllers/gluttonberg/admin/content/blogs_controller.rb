@@ -48,10 +48,7 @@ module Gluttonberg
         end
 
         def update
-          @blog.current_slug = @blog.slug
-          @blog.assign_attributes(params[:gluttonberg_blog])
-          @blog.previous_slug = @blog.current_slug if @blog.slug_changed?
-          if @blog.save
+          if @blog.update_attributes(params[:gluttonberg_blog])
             flash[:notice] = "The blog was successfully updated."
             redirect_to admin_blogs_path
           else

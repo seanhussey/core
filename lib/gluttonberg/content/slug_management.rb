@@ -38,10 +38,14 @@ module Gluttonberg
         end
 
         def slug=(new_slug)
-          #if you're changing this regex, make sure to change the one in /javascripts/slug_management.js too
-          # utf-8 special chars are fixed for new ruby 1.9.2
+          current_slug = self.slug
           new_slug = new_slug.sluglize unless new_slug.blank?
+          new_slug = unique_slug(new_slug)
           write_attribute(:slug, new_slug)
+          if self.respond_to?(:previous_slug) && self.slug_changed? && self.slug != current_slug
+            write_attribute(:previous_slug, current_slug)
+          end
+          new_slug
         end
 
         protected
@@ -68,6 +72,17 @@ module Gluttonberg
                 self.slug= "#{self.slug}-#{already_exist.length+1}"
               end
             end
+          end
+
+          def unique_slug(slug)
+            # check duplication: add id at the end if its duplicated
+            already_exist = self.class.where(:slug => slug).all
+            unless already_exist.blank?
+              if already_exist.length > 1 || (already_exist.length == 1 && already_exist.first.id != self.id )
+                slug = "#{slug}-#{already_exist.length+1}"
+              end
+            end
+            slug
           end
 
       end
