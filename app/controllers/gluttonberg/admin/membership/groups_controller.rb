@@ -19,12 +19,10 @@ module Gluttonberg
 
         def create
           @group = Group.new(params[:gluttonberg_group])
-          if @group.save
-            flash[:notice] = "Group created!"
-            redirect_to :action => :index
-          else
-            render :action => :new
-          end
+          generic_create(@group, {
+            :name => "group",
+            :success_path => admin_membership_groups_path
+          })
         end
 
         def edit

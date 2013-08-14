@@ -29,13 +29,11 @@ module Gluttonberg
         end
 
         def create
-          @locale = Locale.new(params["gluttonberg_locale"])
-          if @locale.save
-            flash[:notice] = "The locale was successfully created."
-            redirect_to admin_locales_path
-          else
-            render :new
-          end
+          @locale = Locale.new(params[:gluttonberg_locale])
+          generic_create(@locale, {
+            :name => "locale",
+            :success_path => admin_locales_path
+          })
         end
 
         def update

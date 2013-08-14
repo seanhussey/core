@@ -32,12 +32,10 @@ module Gluttonberg
 
         def create
           @blog = Blog.new(params[:gluttonberg_blog])
-          if @blog.save
-            flash[:notice] = "The blog was successfully created."
-            redirect_to admin_blogs_path
-          else
-            render :edit
-          end
+          generic_create(@blog, {
+            :name => "blog",
+            :success_path => admin_blogs_path
+          })
         end
 
         def edit

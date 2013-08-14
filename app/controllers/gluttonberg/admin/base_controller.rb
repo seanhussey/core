@@ -83,6 +83,15 @@ module Gluttonberg
           end
         end
 
+        def generic_create(object, opts)
+          if object.save
+            flash[:notice] = "The #{opts[:name]} was successfully created."
+            redirect_to opts[:success_path]
+          else
+            render :new
+          end
+        end
+
         # A helper for finding shortcutting the steps in finding a model ensuring
         # it has a localization and raising a NotFound if it’s missing.
         # TODO Fixme
