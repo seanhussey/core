@@ -4,17 +4,8 @@ module Gluttonberg
   module Public
     module PageInfo
       def page_title
-        object = find_current_object_for_meta_tags
         title_setting = Gluttonberg::Setting.get_setting("title")
-
-        page_title = if !object.blank? && object.respond_to?(:seo_title)
-          object.seo_title
-        end
-
-        page_title = @page.title if page_title.blank? && !@page.blank?
-        page_title = @article.title if page_title.blank? && !@article.blank?
-        page_title = @blog.name if page_title.blank? && !@blog.blank?
-        page_title = @custom_model_object.title_or_name? if page_title.blank? && !@custom_model_object.blank? && @custom_model_object.respond_to?(:title_or_name?)
+        page_title = _prepare_page_title
 
         if page_title.blank?
           title_setting
@@ -74,12 +65,13 @@ module Gluttonberg
         page = @page if page.blank?
         if !page.blank?
          "page #{page.current_localization.slug.blank? ? page.slug : page.current_localization.slug} #{page.home? ? 'home' : ''}"
-        elsif !@article.blank?
-         "post #{@article.slug}"
-        elsif !@blog.blank?
-         "blog #{@blog.slug}"
-        elsif !@custom_model_object.blank?
-         "#{@custom_model_object.class.name.downcase} #{@custom_model_object.slug}"
+        else
+          [@article, @blog, @custom_model_object].each do |object|
+            unless object.blank?
+              class_name = (object.kind_of?(Gluttonberg::Article) ? 'post' : object.class.name.demodulize.downcase)
+              return "#{class_name} #{object.slug}"
+            end
+          end
         end
       end
 
@@ -95,6 +87,19 @@ module Gluttonberg
           elsif !@custom_model_object.blank?
             @custom_model_object
           end
+        end
+
+        def _prepare_page_title
+          object = find_current_object_for_meta_tags
+          page_title = if !object.blank? && object.respond_to?(:seo_title)
+            object.seo_title
+          end
+
+          page_title = @page.title if page_title.blank? && !@page.blank?
+          page_title = @article.title if page_title.blank? && !@article.blank?
+          page_title = @blog.name if page_title.blank? && !@blog.blank?
+          page_title = @custom_model_object.title_or_name? if page_title.blank? && !@custom_model_object.blank? && @custom_model_object.respond_to?(:title_or_name?)
+          page_title
         end
     end
   end
