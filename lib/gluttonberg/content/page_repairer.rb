@@ -25,12 +25,16 @@ module Gluttonberg
       [PlainTextContent , HtmlContent , ImageContent].each do |klass|
         list = klass.where(:page_id => page.id).all
         list.each do |item|
-          found = page.description.contains_section?(item.section_name , item.class.to_s.demodulize.underscore)
-          unless found
-            puts "#{item.section_name} (#{klass.name}) section from #{page.name} page"
-            item.destroy
-          end
+          self.clean_page_section(page, item)
         end
+      end
+    end
+
+    def self.clean_page_section(page, content)
+      found = page.description.contains_section?(content.section_name , content.class.to_s.demodulize.underscore)
+      unless found
+        puts "#{content.section_name} (#{klass.name}) section from #{page.name} page"
+        content.destroy
       end
     end
 
@@ -57,19 +61,23 @@ module Gluttonberg
       # Create each localization
       if content.class.localized?
         page.localizations.all.each do |localization|
-          content_localization_count = content.localizations.where({
-            "#{section_info[:type]}_id" => content.id,
-            :page_localization_id => localization.id
-          }).count
-          # missing localization. create it
-          if content_localization_count == 0
-            puts "Create #{localization.locale.name} localizations for #{content.section_name}"
-            content.localizations.create({
-              :parent => content,
-              :page_localization => localization
-            })
-          end
+          self.create_missing_section_localization(page, section_name, section_info, content, localization)
         end
+      end
+    end
+
+    def self.create_missing_section_localization(page, section_name, section_info, content, localization)
+      content_localization_count = content.localizations.where({
+        "#{section_info[:type]}_id" => content.id,
+        :page_localization_id => localization.id
+      }).count
+      # missing localization. create it
+      if content_localization_count == 0
+        puts "Create #{localization.locale.name} localizations for #{content.section_name}"
+        content.localizations.create({
+          :parent => content,
+          :page_localization => localization
+        })
       end
     end
 
