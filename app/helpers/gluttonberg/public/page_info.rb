@@ -66,11 +66,10 @@ module Gluttonberg
         if !page.blank?
          "page #{page.current_localization.slug.blank? ? page.slug : page.current_localization.slug} #{page.home? ? 'home' : ''}"
         else
-          [@article, @blog, @custom_model_object].each do |object|
-            unless object.blank?
-              class_name = (object.kind_of?(Gluttonberg::Article) ? 'post' : object.class.name.demodulize.downcase)
-              return "#{class_name} #{object.slug}"
-            end
+          object = find_current_object_for_meta_tags
+          unless object.blank?
+            class_name = (object.kind_of?(Gluttonberg::ArticleLocalization) ? 'post' : object.class.name.demodulize.downcase)
+            "#{class_name} #{object.slug}"
           end
         end
       end
@@ -91,15 +90,14 @@ module Gluttonberg
 
         def _prepare_page_title
           object = find_current_object_for_meta_tags
-          page_title = if !object.blank? && object.respond_to?(:seo_title)
-            object.seo_title
+          page_title = nil
+          page_title = unless object.blank?
+            [:seo_title, :title, :name, :title_or_name?].each do |method|
+              if object.respond_to?(method) && !object.send(method).blank?
+                return object.send(method)
+              end
+            end
           end
-
-          page_title = @page.title if page_title.blank? && !@page.blank?
-          page_title = @article.title if page_title.blank? && !@article.blank?
-          page_title = @blog.name if page_title.blank? && !@blog.blank?
-          page_title = @custom_model_object.title_or_name? if page_title.blank? && !@custom_model_object.blank? && @custom_model_object.respond_to?(:title_or_name?)
-          page_title
         end
     end
   end

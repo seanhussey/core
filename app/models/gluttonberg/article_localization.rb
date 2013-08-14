@@ -17,5 +17,9 @@ module Gluttonberg
     def name
       title
     end
+
+    def slug
+      self.article.slug
+    end
   end
 end

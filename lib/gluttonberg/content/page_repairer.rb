@@ -25,12 +25,12 @@ module Gluttonberg
       [PlainTextContent , HtmlContent , ImageContent].each do |klass|
         list = klass.where(:page_id => page.id).all
         list.each do |item|
-          self.clean_page_section(page, item)
+          self.clean_page_section(page, item, klass)
         end
       end
     end
 
-    def self.clean_page_section(page, content)
+    def self.clean_page_section(page, content, klass)
       found = page.description.contains_section?(content.section_name , content.class.to_s.demodulize.underscore)
       unless found
         puts "#{content.section_name} (#{klass.name}) section from #{page.name} page"
