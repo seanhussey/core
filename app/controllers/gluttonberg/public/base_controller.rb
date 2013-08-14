@@ -125,11 +125,6 @@ module Gluttonberg
             Gluttonberg::Locale.first_default.slug
           end
         end
-
-        def localized_text(english , chineese)
-          (current_localization_slug == "cn" ? chineese : english )
-        end
-
     end
   end #public
 end

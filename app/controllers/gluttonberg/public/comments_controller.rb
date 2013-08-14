@@ -20,9 +20,6 @@ module Gluttonberg
       end
 
       private
-        def current_localization_slug
-          @locale ? @locale.slug : nil
-        end
 
         def send_notification
           if Setting.get_setting("comment_notification") == "Yes" || @blog.moderation_required == true
