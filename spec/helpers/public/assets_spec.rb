@@ -58,7 +58,16 @@ module Gluttonberg
     end
 
 
+    it "asset_tag_v2" do
+      helper.asset_tag_v2(nil).should be_nil
+      helper.asset_tag_v2(@assets.first).should be_nil #mp3
 
+      helper.asset_tag_v2(@assets.last).should_not be_nil #image
+      helper.asset_tag_v2(@assets.last).should eql("<img alt=\"Gb logo\" class=\"gb-logo\" src=\"#{@assets.last.url}\" title=\"Gb logo\" />")
+      helper.asset_tag_v2(@assets.last, {}, :jwysiwyg_image).should eql("<img alt=\"Gb logo\" class=\"gb-logo\" src=\"#{@assets.last.url_for(:jwysiwyg_image)}\" title=\"Gb logo\" />")
+      helper.asset_tag_v2(@assets.last, {:title => "Test title"}, :jwysiwyg_image).should eql("<img alt=\"Gb logo\" class=\"gb-logo\" src=\"#{@assets.last.url_for(:jwysiwyg_image)}\" title=\"Test title\" />")
+      helper.asset_tag_v2(@assets.last, {:title => "Test title", :alt => "Test Alt", :class => "image-class"}, :jwysiwyg_image).should eql("<img alt=\"Test Alt\" class=\"image-class gb-logo\" src=\"#{@assets.last.url_for(:jwysiwyg_image)}\" title=\"Test title\" />")
+    end
     
   end 
 end

@@ -40,14 +40,7 @@ module Gluttonberg
         def slug=(new_slug)
           #if you're changing this regex, make sure to change the one in /javascripts/slug_management.js too
           # utf-8 special chars are fixed for new ruby 1.9.2
-          unless new_slug.blank?
-            new_slug = new_slug.to_s.downcase.gsub(/\s/, '-').gsub(/[\!\*'"″′‟‛„‚”“”˝\(\)\;\:\.\@\&\=\+\$\,\/?\%\#\[\]]/, '')
-            new_slug = new_slug.gsub(/_$/,'-') # replace underscores with hyphen
-            while new_slug.include?("--")
-              new_slug = new_slug.gsub('--','-') # remove consective hyphen
-            end
-            new_slug = new_slug.gsub(/-$/,'') # remove trailing hyphen
-          end
+          new_slug = new_slug.sluglize unless new_slug.blank?
           write_attribute(:slug, new_slug)
         end
 

@@ -20,23 +20,16 @@ module Gluttonberg
     end
 
     def asset_tag(asset , thumbnail_type = nil, options = {} )
-      unless asset.blank?
-        path = thumbnail_type.blank? ? asset.url : asset.url_for(thumbnail_type)
-
-        unless options.has_key?(:alt)
-          options[:alt] = asset.alt.blank? ? asset.name : asset.alt
-        end
-        options[:src] = path
-        tag("img" , options)
-      end
+      asset_tag_v2(asset , options, thumbnail_type)
     end
 
     def asset_tag_v2(asset , options = {} , thumbnail_type = nil)
-      unless asset.blank?
-       options[:class] = (options[:class].blank? ? asset.name : "#{options[:class]} #{asset.name}" )
-       options[:title] = options[:alt] = asset.name
-       options[:src] = thumbnail_type.blank? ? asset.url : asset.url_for(thumbnail_type)
-       tag("img" , options)
+      if !asset.blank? && asset.category == "image"
+        options[:class] = (options[:class].blank? ? asset.name.sluglize : "#{options[:class]} #{asset.name.sluglize}" )
+        options[:title] = asset.name  unless options.has_key?(:title)
+        options[:alt] = asset.alt.blank? ? asset.name : asset.alt unless options.has_key?(:alt)
+        options[:src] = asset.url_for(thumbnail_type)
+        tag("img" , options)
       end
     end
 
