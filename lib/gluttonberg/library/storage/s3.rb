@@ -150,14 +150,13 @@ module Gluttonberg
             bucket = bucket_handle
             if bucket
               local_file = self.tmp_directory + "/" + file_name
-              folder = self.asset_hash
-              date = Time.now+1.years
+              date = (Time.now+1.years).rfc2822
               puts "Copying #{file_name} (#{local_file}) to #{S3::ClassMethods.s3_bucket_name}"
               key = bucket.objects[self.directory + "/" + file_name]
               response = unless self.mime_type.blank?
-                key.write(File.open(local_file), {:expires => date.rfc2822, :content_type => self.mime_type , :acl => :public_read })
+                key.write(File.open(local_file), {:expires => date, :content_type => self.mime_type , :acl => :public_read })
               else
-                key.write(File.open(local_file) , {:expires => date.rfc2822 , :acl => :public_read })
+                key.write(File.open(local_file) , {:expires => date , :acl => :public_read })
               end
               self.update_column(:copied_to_s3 , true)
               puts "Copied"
