@@ -49,13 +49,11 @@ module Gluttonberg
 
 
         def destroy
-          if @page.destroy
-            flash[:notice] = "The page was successfully deleted."
-            redirect_to admin_pages_path
-          else
-            flash[:error] = "There was an error deleting the page."
-            redirect_to admin_pages_path
-          end
+          generic_destroy(@page, {
+            :name => "page",
+            :success_path => admin_pages_path,
+            :failure_path => admin_pages_path
+          })
         end
 
         def edit_home

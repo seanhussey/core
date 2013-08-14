@@ -49,13 +49,11 @@ module Gluttonberg
         end
 
         def destroy
-          if @locale.destroy
-            flash[:notice] = "The locale was successfully deleted."
-            redirect_to admin_locales_path
-          else
-            flash[:error] = "There was an error deleting the locale."
-            redirect_to admin_locales_path
-          end
+          generic_destroy(@locale, {
+            :name => "locale",
+            :success_path => admin_locales_path,
+            :failure_path => admin_locales_path
+          })
         end
 
         private

@@ -49,13 +49,11 @@ module Gluttonberg
         end
 
         def destroy
-          if @group.destroy
-            flash[:notice] = "Group deleted!"
-            redirect_to :action => :index
-          else
-            flash[:error] = "There was an error deleting the group."
-            redirect_to :action => :index
-          end
+          generic_destroy(@group, {
+            :name => "group",
+            :success_path => admin_groups_path,
+            :failure_path => admin_groups_path
+          })
         end
 
        private

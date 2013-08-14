@@ -73,6 +73,16 @@ module Gluttonberg
 
         end
 
+        def generic_destroy(object, opts)
+          if object.delete
+            flash[:notice] = "The #{opts[:name]} was successfully deleted."
+            redirect_to opts[:success_path]
+          else
+            flash[:error] = "There was an error deleting the #{opts[:name]}."
+            redirect_to opts[:failure_path]
+          end
+        end
+
         # A helper for finding shortcutting the steps in finding a model ensuring
         # it has a localization and raising a NotFound if it’s missing.
         # TODO Fixme

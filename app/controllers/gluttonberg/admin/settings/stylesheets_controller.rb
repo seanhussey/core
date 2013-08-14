@@ -55,13 +55,11 @@ module Gluttonberg
         end
 
         def destroy
-          if @stylesheet.delete
-            flash[:notice] = "The stylesheet was successfully deleted."
-            redirect_to admin_stylesheets_path
-          else
-            flash[:error] = "There was an error deleting the stylesheet."
-            redirect_to admin_stylesheets_path
-          end
+          generic_destroy(@stylesheet, {
+            :name => "stylesheet",
+            :success_path => admin_stylesheets_path,
+            :failure_path => admin_stylesheets_path
+          })
         end
 
 

@@ -75,14 +75,11 @@ module Gluttonberg
         end
 
         def destroy
-          title = @article.current_localization.title
-          if @article.destroy
-            flash[:notice] = "The article was successfully deleted."
-            redirect_to admin_blog_articles_path(@blog)
-          else
-            flash[:error] = "There was an error deleting the Article."
-            redirect_to admin_blog_articles_path(@blog)
-          end
+          generic_destroy(@article, {
+            :name => "article",
+            :success_path => admin_blog_articles_path(@blog),
+            :failure_path => admin_blog_articles_path(@blog)
+          })
         end
 
         def duplicate

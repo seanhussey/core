@@ -58,13 +58,11 @@ module Gluttonberg
         end
 
         def destroy
-          if @gallery.delete
-            flash[:notice] = "The gallery was successfully deleted."
-            redirect_to admin_galleries_path
-          else
-            flash[:error] = "There was an error deleting the gallery."
-            redirect_to admin_galleries_path
-          end
+          generic_destroy(@gallery, {
+            :name => "gallery",
+            :success_path => admin_galleries_path,
+            :failure_path => admin_galleries_path
+          })
         end
 
         def remove_image

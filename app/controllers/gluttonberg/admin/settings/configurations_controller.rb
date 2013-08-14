@@ -61,13 +61,11 @@ module Gluttonberg
         end
 
         def destroy
-          if @setting.destroy
-            flash[:notice] = "The configuration was successfully deleted."
-            redirect_to admin_configurations_path
-          else
-            flash[:error] = "There was an error deleting the configuration."
-            redirect_to admin_configurations_path
-          end
+          generic_destroy(@setting, {
+            :name => "setting",
+            :success_path => admin_configurations_path,
+            :failure_path => admin_configurations_path
+          })
         end
 
         private
