@@ -153,11 +153,12 @@ module Gluttonberg
               date = (Time.now+1.years).rfc2822
               puts "Copying #{file_name} (#{local_file}) to #{S3::ClassMethods.s3_bucket_name}"
               key = bucket.objects[self.directory + "/" + file_name]
-              response = unless self.mime_type.blank?
-                key.write(File.open(local_file), {:expires => date, :content_type => self.mime_type , :acl => :public_read })
-              else
-                key.write(File.open(local_file) , {:expires => date , :acl => :public_read })
-              end
+              options = {
+                :expires => date, 
+                :acl => :public_read 
+              }
+              options[:content_type] = self.mime_type unless self.mime_type.blank?
+              response = key.write(File.open(local_file), options)
               self.update_column(:copied_to_s3 , true)
               puts "Copied"
             end
