@@ -16,7 +16,7 @@ module Gluttonberg
           url << "/#{opts[:thumb_name]}"
         end
       end
-        url
+      url
     end
 
     def asset_tag(asset , thumbnail_type = nil, options = {} )
