@@ -19,7 +19,14 @@ module Gluttonberg
       end
 
       module ClassMethods
-
+        def self.check_for_duplication(slug, object, potential_duplicates)
+          unless potential_duplicates.blank?
+            if potential_duplicates.length > 1 || (potential_duplicates.length == 1 && potential_duplicates.first.id != object.id )
+              slug = "#{slug}-#{potential_duplicates.length+1}"
+            end
+          end
+          slug
+        end
       end
 
       module InstanceMethods
@@ -76,13 +83,8 @@ module Gluttonberg
 
           def unique_slug(slug)
             # check duplication: add id at the end if its duplicated
-            already_exist = self.class.where(:slug => slug).all
-            unless already_exist.blank?
-              if already_exist.length > 1 || (already_exist.length == 1 && already_exist.first.id != self.id )
-                slug = "#{slug}-#{already_exist.length+1}"
-              end
-            end
-            slug
+            potential_duplicates = self.class.where(:slug => slug).all
+            Content::SlugManagement::ClassMethods.check_for_duplication(slug, self, potential_duplicates)
           end
 
       end

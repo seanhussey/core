@@ -130,13 +130,8 @@ module Gluttonberg
 
       def check_duplication_in(new_path)
         # check duplication: add id at the end if its duplicated
-        already_exist = self.class.where([ "path = ? AND page_id != ? ", new_path, page.id]).all
-        if !already_exist.blank?
-          if already_exist.length > 1 || (already_exist.length == 1 && already_exist.first.id != self.id )
-            new_path = "#{new_path}-#{already_exist.length+1}"
-          end
-        end
-        new_path
+        potential_duplicates = self.class.where([ "path = ? AND page_id != ? ", new_path, page.id]).all
+        Content::SlugManagement::ClassMethods.check_for_duplication(new_path, self, potential_duplicates)
       end
 
   end
