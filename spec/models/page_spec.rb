@@ -96,7 +96,7 @@ module Gluttonberg
       @page.respond_to?(:image_contents).should == true
       @page.respond_to?(:plain_text_contents).should == true
 
-      #in my example newsletter has one content for each type
+      #in my example generic_page has one content for each type
       @page.html_contents.length.should == 1
       @page.image_contents.length.should == 1
       @page.plain_text_contents.length.should == 1

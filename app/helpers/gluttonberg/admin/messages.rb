@@ -24,7 +24,6 @@ module Gluttonberg
               :id => "alert alert-#{type}", :class => "flash").html_safe
           end
         end
-
         content_tag("div", html.html_safe, :id => "flash").html_safe
       end
     end
