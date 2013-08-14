@@ -46,13 +46,11 @@ module Gluttonberg
         end
 
         def update
-          if @blog.update_attributes(params[:gluttonberg_blog])
-            flash[:notice] = "The blog was successfully updated."
-            redirect_to admin_blogs_path
-          else
-            flash[:error] = "Sorry, The blog could not be updated."
-            render :edit
-          end
+          @blog.assign_attributes(params[:gluttonberg_blog])
+          generic_update(@blog, {
+            :name => "blog",
+            :success_path => admin_blogs_path
+          })
         end
 
         def delete

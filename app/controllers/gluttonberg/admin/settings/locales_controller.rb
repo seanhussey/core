@@ -37,13 +37,11 @@ module Gluttonberg
         end
 
         def update
-          if @locale.update_attributes(params["gluttonberg_locale"]) || !@locale.dirty?
-            flash[:notice] = "The locale was successfully updated."
-            redirect_to admin_locales_path
-          else
-            flash[:error] = "Sorry, The locale could not be updated."
-            render :edit
-          end
+          @locale.assign_attributes(params["gluttonberg_locale"]) || !@locale.dirty?
+          generic_update(@locale, {
+            :name => "locale",
+            :success_path => admin_locales_path
+          })
         end
 
         def destroy

@@ -34,13 +34,11 @@ module Gluttonberg
         end
 
         def update
-          if @stylesheet.update_attributes(params[:gluttonberg_stylesheet])
-            flash[:notice] = "The stylesheet was successfully updated."
-            redirect_to admin_stylesheets_path
-          else
-            flash[:error] = "Sorry, The stylesheet could not be updated."
-            render :edit
-          end
+          @stylesheet.assign_attributes(params[:gluttonberg_stylesheet])
+          generic_update(@stylesheet, {
+            :name => "stylesheet",
+            :success_path => admin_stylesheets_path
+          })
         end
 
         def delete

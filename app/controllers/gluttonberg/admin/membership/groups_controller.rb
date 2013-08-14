@@ -29,13 +29,11 @@ module Gluttonberg
         end
 
         def update
-          if @group.update_attributes(params[:gluttonberg_group])
-            flash[:notice] = "Member account updated!"
-            redirect_to  :action => :index
-          else
-            flash[:notice] = "Failed to save account changes!"
-            render :action => :edit
-          end
+          @group.assign_attributes(params[:gluttonberg_group])
+          generic_update(@group, {
+            :name => "group",
+            :success_path => admin_membership_groups_path
+          })
         end
 
         def delete
