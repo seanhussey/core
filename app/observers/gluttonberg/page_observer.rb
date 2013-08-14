@@ -46,14 +46,18 @@ module Gluttonberg
         unless page.description.sections.empty?
           page.description.sections.each do |name, section|
             # Create the content
-            association = page.send(section[:type].to_s.pluralize)
-            content = association.create(:section_name => name)
-            # Create each localization
-             if content.class.localized?
-              page.localizations.all.each do |localization|
-                content.localizations.create(:parent => content, :page_localization => localization)
-              end
-            end
+            create_page_content(page, name, section)
+          end
+        end
+      end
+
+      def create_page_content(page, name, section)
+        association = page.send(section[:type].to_s.pluralize)
+        content = association.create(:section_name => name)
+        # Create each localization
+         if content.class.localized?
+          page.localizations.all.each do |localization|
+            content.localizations.create(:parent => content, :page_localization => localization)
           end
         end
       end
