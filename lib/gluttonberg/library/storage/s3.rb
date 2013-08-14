@@ -56,18 +56,22 @@ module Gluttonberg
               asset = Gluttonberg::Asset.where(:asset_hash => asset_hash).first
               unless asset.blank?
                 puts " Copying #{local_file} to #{S3::ClassMethods.s3_bucket_name}"
-                options = {
-                  :expires => (Time.now+1.years).rfc2822, 
-                  :acl => :public_read 
-                }
-                mime_type = asset.mime_type if mime_type.blank?
-                options[:content_type] = mime_type unless mime_type.blank?
-                response = bucket.objects[key_for_s3].write(File.open(local_file), options)
+                self.upload_file_to(asset, bucket.objects[key_for_s3], mime_type, local_file)
                 asset.update_attributes(:copied_to_s3 => true)
-                puts "Copied"
               end
             end
           end
+
+          def self.upload_file_to(asset, bucket_key, mime_type, local_file)
+            options = {
+              :expires => (Time.now+1.years).rfc2822, 
+              :acl => :public_read 
+            }
+            mime_type = asset.mime_type if mime_type.blank?
+            options[:content_type] = mime_type unless mime_type.blank?
+            response = bucket_key.write(File.open(local_file), options)
+            puts "Copied"
+          end 
 
         end
 
@@ -148,15 +152,9 @@ module Gluttonberg
             if bucket
               local_file = self.tmp_directory + "/" + file_name
               puts "Copying #{file_name} (#{local_file}) to #{S3::ClassMethods.s3_bucket_name}"
-              key = bucket.objects[self.directory + "/" + file_name]
-              options = {
-                :expires => (Time.now+1.years).rfc2822, 
-                :acl => :public_read 
-              }
-              options[:content_type] = self.mime_type unless self.mime_type.blank?
-              response = key.write(File.open(local_file), options)
+              bucket_key = bucket.objects[self.directory + "/" + file_name]
+              S3::ClassMethods.upload_file_to(self, bucket_key, self.mime_type, local_file)
               self.update_column(:copied_to_s3 , true)
-              puts "Copied"
             end
           end
 
