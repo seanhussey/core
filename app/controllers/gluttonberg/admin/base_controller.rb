@@ -84,39 +84,11 @@ module Gluttonberg
         end
 
         def generic_create(object, opts)
-          if object.save
-            flash[:notice] = "The #{opts[:name]} was successfully created."
-            redirect_to opts[:success_path]
-          else
-            render :new
-          end
+          generic_create_or_update(object, opts)
         end
 
         def generic_update(object, opts)
-          if object.save
-            flash[:notice] = "The #{opts[:name]} was successfully updated."
-            redirect_to opts[:success_path]
-          else
-            render :edit
-          end
-        end
-
-        # Below is all the required methods for authentication
-
-        def require_backend_access
-          return false unless require_user
-          unless current_user.have_backend_access?
-            store_location
-            flash[:notice] = "You dont have privilege to access this page"
-            redirect_to admin_login_url
-            return false
-          end
-        end
-
-        def is_blog_enabled
-          unless Gluttonberg::Comment.table_exists? == true
-            raise CanCan::AccessDenied
-          end
+          generic_create_or_update(object, opts)
         end
 
         def store_location
@@ -139,6 +111,17 @@ module Gluttonberg
 
         def internal_server_error
           render :layout => "bare" , :template => 'gluttonberg/admin/exceptions/internal_server_error', :handlers => [:haml], :formats => [:html]
+        end
+
+      private
+        def generic_create_or_update(object, opts)
+          message = object.new_record? ? "created" : "updated"
+          if object.save
+            flash[:notice] = "The #{opts[:name]} was successfully #{message}."
+            redirect_to opts[:success_path]
+          else
+            render :edit
+          end
         end
 
     end

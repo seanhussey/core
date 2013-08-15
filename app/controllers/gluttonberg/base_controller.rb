@@ -29,20 +29,34 @@ module Gluttonberg
         true
       end
 
+      def require_backend_access
+        _require_x_user(:have_backend_access?)
+      end
+      
       def require_super_admin_user
-        return false unless require_user
+        _require_x_user(:super_admin?)
+      end
 
-        unless current_user.super_admin?
-          store_location
-          flash[:notice] = "You dont have privilege to access this page"
-          redirect_to admin_login_url
-          return false
+      def is_blog_enabled
+        unless Gluttonberg::Comment.table_exists? == true
+          raise CanCan::AccessDenied
         end
       end
 
       def redirect_back_or_default(default)
         redirect_to(session[:return_to] || default)
         session[:return_to] = nil
+      end
+
+    private
+      def _require_x_user(authentication_method)
+        return false unless require_user
+        unless current_user.send(authentication_method)
+          store_location
+          flash[:notice] = "You dont have privilege to access this page"
+          redirect_to admin_login_url
+          return false
+        end
       end
 
   end
