@@ -182,9 +182,11 @@ module Gluttonberg
             FileUtils.mkdir(self.tmp_directory) unless File.exists?(self.tmp_directory)
             bucket = bucket_handle
             key = bucket.objects[self.location_on_disk]
-            File.open(self.tmp_location_on_disk, "w", encoding: "ASCII-8BIT") do |f|
-              key.read do |chunk|
-                f.write(chunk)
+            if key.exists?
+              File.open(self.tmp_location_on_disk, "w", encoding: "ASCII-8BIT") do |f|
+                key.read do |chunk|
+                  f.write(chunk)
+                end
               end
             end
             key = bucket.objects[self.original_file_on_disk]
