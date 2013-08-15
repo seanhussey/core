@@ -2,6 +2,7 @@ class GluttonbergMigration < ActiveRecord::Migration
   def change
     asset_library_tables
     pages_tables
+    pages_contents_tables
     tagging_tables
     membership_tables
     gallery_tables
@@ -15,27 +16,6 @@ class GluttonbergMigration < ActiveRecord::Migration
 
   private
     def asset_library_tables
-      create_table :gb_asset_categories do |t|
-        t.string :name, :null => false
-        t.boolean :unknown
-      end
-
-      create_table :gb_asset_types do |t|
-        t.string :name, :null => false
-        t.integer :asset_category_id, :default => 0
-      end
-
-      create_table :gb_asset_mime_types do |t|
-        t.string :mime_type, :null => false
-        t.integer :asset_type_id, :default => 0
-      end
-
-      create_table :gb_asset_collections do |t|
-        t.string :name, :null => false
-        t.integer :user_id
-        t.timestamps
-      end
-
       create_table :gb_assets do |t|
         t.string :mime_type
         t.integer :asset_type_id
@@ -58,6 +38,46 @@ class GluttonbergMigration < ActiveRecord::Migration
         t.timestamps
       end
 
+      create_table :gb_asset_thumbnails do |t|
+        t.column :asset_id, :integer
+        t.column :thumbnail_type, :string, :limit => 100
+        t.column :user_generated , :boolean
+        t.timestamps
+      end
+
+      _asset_collections_tables
+      _asset_meta_info_tables
+    end
+
+    def _asset_collections_tables
+      create_table :gb_asset_collections do |t|
+        t.string :name, :null => false
+        t.integer :user_id
+        t.timestamps
+      end
+
+      create_table :gb_asset_collections_assets , :id => false do |t|
+        t.column :asset_collection_id, :integer, :null => false
+        t.column :asset_id, :integer, :null => false
+      end
+    end
+
+    def _asset_meta_info_tables
+      create_table :gb_asset_categories do |t|
+        t.string :name, :null => false
+        t.boolean :unknown
+      end
+
+      create_table :gb_asset_types do |t|
+        t.string :name, :null => false
+        t.integer :asset_category_id, :default => 0
+      end
+
+      create_table :gb_asset_mime_types do |t|
+        t.string :mime_type, :null => false
+        t.integer :asset_type_id, :default => 0
+      end
+
       create_table :gb_audio_asset_attributes do |t|
         t.integer :asset_id , :null => false
         t.float   :length
@@ -68,53 +88,9 @@ class GluttonbergMigration < ActiveRecord::Migration
         t.string  :genre
         t.timestamps
       end
-
-      create_table :gb_asset_collections_assets , :id => false do |t|
-        t.column :asset_collection_id, :integer, :null => false
-        t.column :asset_id, :integer, :null => false
-      end
-
-      create_table :gb_asset_thumbnails do |t|
-        t.column :asset_id, :integer
-        t.column :thumbnail_type, :string, :limit => 100
-        t.column :user_generated , :boolean
-        t.timestamps
-      end
     end
 
     def pages_tables
-      create_table :gb_plain_text_content_localizations do |t|
-        t.integer :page_localization_id
-        t.string :text, :limit => 255
-        t.integer :plain_text_content_id
-        t.integer :version
-        t.timestamps
-      end
-
-      create_table :gb_html_contents do |t|
-        t.boolean :orphaned, :default => false
-        t.string :section_name, :limit => 50
-        t.integer :page_id
-        t.timestamps
-      end
-
-      create_table :gb_html_content_localizations do |t|
-        t.text :text
-        t.integer :html_content_id
-        t.integer :page_localization_id
-        t.integer :version
-        t.timestamps
-      end
-
-      create_table :gb_image_contents do |t|
-        t.boolean :orphaned, :default => false
-        t.string :section_name, :limit => 50
-        t.integer :asset_id
-        t.integer :page_id
-        t.integer :version
-        t.timestamps
-      end
-
       create_table :gb_page_localizations do |t|
         t.string :name, :limit => 150
         t.string :navigation_label, :limit => 100
@@ -144,11 +120,45 @@ class GluttonbergMigration < ActiveRecord::Migration
         t.datetime :published_at
         t.timestamps
       end
+    end
 
+    def pages_contents_tables
       create_table :gb_plain_text_contents do |t|
         t.boolean :orphaned, :default => false
         t.string :section_name, :limit => 50
         t.integer :page_id
+        t.timestamps
+      end
+
+      create_table :gb_plain_text_content_localizations do |t|
+        t.integer :page_localization_id
+        t.string :text, :limit => 255
+        t.integer :plain_text_content_id
+        t.integer :version
+        t.timestamps
+      end
+
+      create_table :gb_html_contents do |t|
+        t.boolean :orphaned, :default => false
+        t.string :section_name, :limit => 50
+        t.integer :page_id
+        t.timestamps
+      end
+
+      create_table :gb_html_content_localizations do |t|
+        t.text :text
+        t.integer :html_content_id
+        t.integer :page_localization_id
+        t.integer :version
+        t.timestamps
+      end
+
+      create_table :gb_image_contents do |t|
+        t.boolean :orphaned, :default => false
+        t.string :section_name, :limit => 50
+        t.integer :asset_id
+        t.integer :page_id
+        t.integer :version
         t.timestamps
       end
     end
@@ -198,6 +208,10 @@ class GluttonbergMigration < ActiveRecord::Migration
         t.timestamps
       end
 
+      _groups_tables
+    end
+
+    def _groups_tables
       create_table :gb_groups do |t|
         t.string :name, :null => false
         t.string :description
