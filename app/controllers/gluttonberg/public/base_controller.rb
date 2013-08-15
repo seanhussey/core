@@ -106,16 +106,11 @@ module Gluttonberg
         end
 
         def access_denied
-          render :layout => "bare" , :template => 'gluttonberg/public/exceptions/access_denied', :handlers => [:haml], :formats => [:html]
-        end
-
-        # handle NotAcceptable exceptions (406)
-        def not_acceptable
-          render :layout => "bare" , :template => 'gluttonberg/public/exceptions/not_acceptable', :handlers => [:haml], :formats => [:html]
+          render :layout => "bare" , :template => 'gluttonberg/public/exceptions/access_denied' , :status => 403, :handlers => [:haml], :formats => [:html]
         end
 
         def internal_server_error
-          render :layout => "bare" , :template => 'gluttonberg/public/exceptions/internal_server_error', :handlers => [:haml], :formats => [:html]
+          render :layout => "bare" , :template => 'gluttonberg/public/exceptions/internal_server_error' , :status => 500, :handlers => [:haml], :formats => [:html]
         end
 
         def current_localization_slug
