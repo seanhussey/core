@@ -7,26 +7,8 @@ module Gluttonberg
     # template. These models will be empty, but ready to be displayed in the
     # admin interface for editing.
     def after_create(page)
-      Locale.all.each do |locale|
-        loc = page.localizations.create(
-          :name     => page.name,
-          :locale_id   => locale.id
-        )
-      end
-
-      unless page.description.sections.empty?
-        page.description.sections.each do |name, section|
-          # Create the content
-          association = page.send(section[:type].to_s.pluralize)
-          content = association.create(:section_name => name)
-          # Create each localization
-           if content.class.localized?
-            page.localizations.all.each do |localization|
-              content.localizations.create(:parent => content, :page_localization => localization)
-            end
-          end
-        end
-      end
+      create_page_localizations(page)
+      create_page_contents(page)
     end
 
     def before_update(page)
@@ -49,5 +31,35 @@ module Gluttonberg
     def after_destroy(page)
       Page.delete_all(:parent_id => page.id)
     end
+
+    private
+      def create_page_localizations(page)
+        Locale.all.each do |locale|
+          loc = page.localizations.create(
+            :name     => page.name,
+            :locale_id   => locale.id
+          )
+        end
+      end
+
+      def create_page_contents(page)
+        unless page.description.sections.empty?
+          page.description.sections.each do |name, section|
+            # Create the content
+            create_page_content(page, name, section)
+          end
+        end
+      end
+
+      def create_page_content(page, name, section)
+        association = page.send(section[:type].to_s.pluralize)
+        content = association.create(:section_name => name)
+        # Create each localization
+         if content.class.localized?
+          page.localizations.all.each do |localization|
+            content.localizations.create(:parent => content, :page_localization => localization)
+          end
+        end
+      end
   end
 end

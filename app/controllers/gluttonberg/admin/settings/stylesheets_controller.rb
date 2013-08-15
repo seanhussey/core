@@ -20,12 +20,10 @@ module Gluttonberg
 
         def create
           @stylesheet = Stylesheet.new(params[:gluttonberg_stylesheet])
-          if @stylesheet.save
-            flash[:notice] = "The stylesheet was successfully created."
-            redirect_to admin_stylesheets_path
-          else
-            render :edit
-          end
+          generic_create(@stylesheet, {
+            :name => "stylesheet",
+            :success_path => admin_stylesheets_path
+          })
         end
 
         def edit
@@ -36,13 +34,11 @@ module Gluttonberg
         end
 
         def update
-          if @stylesheet.update_attributes(params[:gluttonberg_stylesheet])
-            flash[:notice] = "The stylesheet was successfully updated."
-            redirect_to admin_stylesheets_path
-          else
-            flash[:error] = "Sorry, The stylesheet could not be updated."
-            render :edit
-          end
+          @stylesheet.assign_attributes(params[:gluttonberg_stylesheet])
+          generic_update(@stylesheet, {
+            :name => "stylesheet",
+            :success_path => admin_stylesheets_path
+          })
         end
 
         def delete
@@ -55,13 +51,11 @@ module Gluttonberg
         end
 
         def destroy
-          if @stylesheet.delete
-            flash[:notice] = "The stylesheet was successfully deleted."
-            redirect_to admin_stylesheets_path
-          else
-            flash[:error] = "There was an error deleting the stylesheet."
-            redirect_to admin_stylesheets_path
-          end
+          generic_destroy(@stylesheet, {
+            :name => "stylesheet",
+            :success_path => admin_stylesheets_path,
+            :failure_path => admin_stylesheets_path
+          })
         end
 
 

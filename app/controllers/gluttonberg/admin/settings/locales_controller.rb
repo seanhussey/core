@@ -29,33 +29,27 @@ module Gluttonberg
         end
 
         def create
-          @locale = Locale.new(params["gluttonberg_locale"])
-          if @locale.save
-            flash[:notice] = "The locale was successfully created."
-            redirect_to admin_locales_path
-          else
-            render :new
-          end
+          @locale = Locale.new(params[:gluttonberg_locale])
+          generic_create(@locale, {
+            :name => "locale",
+            :success_path => admin_locales_path
+          })
         end
 
         def update
-          if @locale.update_attributes(params["gluttonberg_locale"]) || !@locale.dirty?
-            flash[:notice] = "The locale was successfully updated."
-            redirect_to admin_locales_path
-          else
-            flash[:error] = "Sorry, The locale could not be updated."
-            render :edit
-          end
+          @locale.assign_attributes(params["gluttonberg_locale"]) || !@locale.dirty?
+          generic_update(@locale, {
+            :name => "locale",
+            :success_path => admin_locales_path
+          })
         end
 
         def destroy
-          if @locale.destroy
-            flash[:notice] = "The locale was successfully deleted."
-            redirect_to admin_locales_path
-          else
-            flash[:error] = "There was an error deleting the locale."
-            redirect_to admin_locales_path
-          end
+          generic_destroy(@locale, {
+            :name => "locale",
+            :success_path => admin_locales_path,
+            :failure_path => admin_locales_path
+          })
         end
 
         private

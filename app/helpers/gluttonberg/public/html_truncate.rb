@@ -10,24 +10,32 @@ module Gluttonberg
       # 120, :omission => "(continued...)" ) -%>...
 
       def html_truncate(html, truncate_length, options={})
-        text = []
-        result = []
-        previous_tags = []
-        # get all text (including punctuation) and tags and stick them in a hash
-        html.scan(/<\/?[^>]*>|[A-Za-z0-9.,\/&#;\!\+\(\)\-"'?]+/).each { |t| text << t }
-
-        text.each do |str|
-          if truncate_length > 0
-            truncate_length -= _prepare_data_structure(result, previous_tags, str)
-          else
-            _close_open_tags(result, previous_tags)
-          end
+        if html && html.length < truncate_length
+          html
+        else
+          _html_truncate(html, truncate_length, options)
         end
-
-        (result.join(" ") + options[:omission].to_s).html_safe
       end
 
       private
+
+        def _html_truncate(html, truncate_length, options={})
+          text = []
+          result = []
+          previous_tags = []
+          # get all text (including punctuation) and tags and stick them in a hash
+          html.scan(/<\/?[^>]*>|[A-Za-z0-9.,\/&#;\!\+\(\)\-"'?]+/).each { |t| text << t }
+          text.each do |str|
+            if truncate_length > 0
+              truncate_length -= _prepare_data_structure(result, previous_tags, str)
+            else
+              _close_open_tags(result, previous_tags)
+            end
+          end
+
+          (result.join(" ") + options[:omission].to_s).html_safe
+        end
+
         def _prepare_data_structure(result, previous_tags, str)
           length_reduced = 0
           if str =~ /<\/?[^>]*>/
@@ -49,7 +57,7 @@ module Gluttonberg
           # open tag on the end of the result
           while previous_tags.length > 0
             previous_tag = previous_tags.pop()
-            unless previous_tag.start_with?("<br") || previous_tag.start_with?("<hr") || previous_tag.start_with?("<input")
+            unless previous_tag =~ /^<(br|hr|input|img|area|base|link|meta)/
               tokens = previous_tag.split(" ")
               if tokens.length == 1
                 closing_tag = tokens.first.insert(1 , '/')

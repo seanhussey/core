@@ -1,9 +1,9 @@
 module Gluttonberg
   module Content
-    # A mixin which allows for any arbitrary model to have multiple versions. It will
-    # generate the versioning models and add methods for creating, managing and
-    # retrieving different versions of a record.
-    # In reality this is behaving like a wrapper on acts_as_versioned
+    # A mixin which allows for any arbitrary model to have import/export functionality
+    # import_export_csv(["name"], ["bio"]) import_export_columns,wysiwyg_columns
+    # it adds importCSV(file_path , local_options = {})
+    # and exportCSV(records , local_options = {})
     module ImportExportCSV
 
       def self.setup
@@ -25,6 +25,7 @@ module Gluttonberg
           else
             self.import_export_columns = import_export_columns
           end
+          self.wysiwyg_columns = (wysiwyg_columns.blank? ? [] : wysiwyg_columns)
         end
 
 
@@ -32,6 +33,12 @@ module Gluttonberg
         # if all records are created successfully then return true
         # otherwise returns array of feedback. each value represents the feedback for respective row in csv
         # sample feedback array : [true , true , [active_record error array...] , true]
+        # sample local_options
+        # {
+        #   :import_columns => [:name, :face_id, :handwritting_id], 
+        #   :wysiwyg_columns => [:bio],
+        #   :unique_key => :name
+        # }
         def importCSV(file_path , local_options = {})
           begin
             require 'csv'
@@ -51,6 +58,11 @@ module Gluttonberg
           @h ||= GlosentryHelper.new
         end
 
+        # sample local_options
+        # {
+        #   :import_columns => [:name, :face_id, :handwritting_id], 
+        #   :wysiwyg_columns => [:bio]
+        # }
         def exportCSV(all_records , local_options = {})
           ExportUtils.export(all_records, local_options, self)
         end
@@ -58,7 +70,7 @@ module Gluttonberg
       end #ClassMethods
 
       class ExportUtils
-        attr_accessor :all_records, :local_options, :klass, :export_column_names
+        attr_accessor :all_records, :local_options, :klass, :export_column_names, :export_wysiwyg_columns
         def initialize(all_records, local_options, klass)
           self.all_records = all_records
           self.local_options = local_options
@@ -71,7 +83,7 @@ module Gluttonberg
           require 'csv'
 
           csv_string = CSV.generate do |csv|
-            csv << export_utils.export_column_names
+            csv << export_utils.all_export_columns
             export_utils.all_records.each do |record|
               csv << export_utils.prepare_row(record)
             end
@@ -80,32 +92,54 @@ module Gluttonberg
         end
 
         def prepare_export_column_names
-          self.export_column_names = klass.import_export_columns
-          if self.local_options && self.local_options.has_key?(:export_columns)
-            self.export_column_names = self.local_options[:export_columns]
-          end
+          
+          self.export_column_names = _prepare_names(:export_columns, :import_export_columns)
+          self.export_wysiwyg_columns = _prepare_names(:wysiwyg_columns, :wysiwyg_columns)
+          
 
           if self.export_column_names.blank?
             raise "Please define export_column_names property"
           end
-
-          self.export_column_names << "published_at"
-          self.export_column_names << "updated_at"
           self.export_column_names
+        end
+
+        def _prepare_names(source, default)
+          if self.local_options && self.local_options.has_key?(source)
+            self.local_options[source].dup
+          else
+            klass.send(default).dup
+          end
+        end
+
+        def all_export_columns
+          temp_columns = self.export_column_names.blank? ? [] : self.export_column_names.dup
+          temp_columns << self.export_wysiwyg_columns.dup unless self.export_wysiwyg_columns.blank?
+          temp_columns << "published_at"
+          temp_columns << "updated_at"
+          temp_columns = temp_columns.flatten
+          temp_columns
         end
 
         def prepare_row(record)
           row = []
-          self.export_column_names.each do |column|
-            row << record.send(column)
+          self.all_export_columns.each do |column|
+            if self.export_wysiwyg_columns && self.export_wysiwyg_columns.include?(column)
+              if record.send(column).blank?
+                row << ""
+              else
+                row << record.send(column).html_safe
+              end
+            else
+              row << record.send(column)
+            end
           end
-          row
+          row.flatten
         end
       end
 
       class ImportUtils
         attr_accessor :file_path, :local_options, :klass, :csv_table
-        attr_accessor :import_columns, :records, :feedback, :all_valid
+        attr_accessor :import_columns, :wysiwyg_columns , :records, :feedback, :all_valid
         attr_accessor :import_column_names, :wysiwyg_columns_names
 
         def initialize(file_path , local_options = {}, klass, csv_table )
@@ -150,16 +184,20 @@ module Gluttonberg
           _prepare_wysiwyg_column_names
 
           self.import_columns = {}
-
           self.import_column_names.each do |key|
             self.import_columns[key] = find_column_position(key)
+          end
+
+          self.wysiwyg_columns = {} 
+          self.wysiwyg_columns_names.each do |key|
+            self.wysiwyg_columns[key] = find_column_position(key)
           end
         end
 
         def _prepare_import_column_names
-          self.import_column_names = klass.import_export_columns
+          self.import_column_names = klass.import_export_columns.dup
           if local_options && local_options.has_key?(:import_columns)
-            self.import_column_names = local_options[:import_columns]
+            self.import_column_names = local_options[:import_columns].dup
           end
           if import_column_names.blank?
             raise "Please define import_export_columns property"
@@ -185,20 +223,32 @@ module Gluttonberg
             self.all_valid = false
           end
         end
+
+        def all_import_columns
+          temp_columns = self.import_columns.blank? ? {} : self.import_columns.dup
+          temp_columns = temp_columns.merge(self.wysiwyg_columns.dup) unless self.wysiwyg_columns.blank?
+          temp_columns
+        end
+
         def prepare_record_info(row)
           record_info = {}
-          self.import_columns.each do |key , val|
+
+          self.all_import_columns.each do |key , val|
             if !val.blank? && val >= 0
               record_info[key] = row[val]
               record_info[key] = record_info[key].force_encoding("UTF-8") if row[val].kind_of?(String)
             end
           end
+
           record_info
         end
 
         def find_or_initialize_record(record_info)
+          record = nil
           if local_options[:unique_key]
-            record = klass.where(local_options[:unique_key] => record_info[local_options[:unique_key].to_s]).first
+            val = record_info[local_options[:unique_key].to_s]
+            val = record_info[local_options[:unique_key].to_sym] if val.blank?
+            record = klass.where(local_options[:unique_key] => val).first
           end
 
           if record.blank?
@@ -208,6 +258,7 @@ module Gluttonberg
           record_info.each do |field,val|
             record.send("#{field}=",val)
           end
+
           record
         end
 
@@ -222,14 +273,18 @@ module Gluttonberg
         def assign_wysiwyg_columns
           if self.all_valid
             records.each do |record|
-              unless self.wysiwyg_columns_names.blank?
-                self.wysiwyg_columns_names.each do |c|
-                  record.send("#{c}=",helper.simple_format(record.send(c)))
-                end
-              end
-              record.save
+              assign_wysiwyg_column(record)
             end
           end
+        end
+
+        def assign_wysiwyg_column(record)
+          unless self.wysiwyg_columns_names.blank?
+            self.wysiwyg_columns_names.each do |c|
+              record.send("#{c}=", klass.helper.simple_format(record.send(c)))
+            end
+          end
+          record.save
         end
 
       end #ImportUtils

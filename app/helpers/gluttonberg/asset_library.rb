@@ -7,38 +7,32 @@ module Gluttonberg
       if Rails.configuration.asset_storage == :s3
         url = asset.url
       else
-        if Rails.env=="development"
-          url = "http://#{request.host}:#{request.port}/user_asset/#{asset.asset_hash[0..3]}/#{asset.id}"
-        else
-          url = "http://#{request.host}/user_asset/#{asset.asset_hash[0..3]}/#{asset.id}"
-        end
+        url = "http://#{request.host_with_port}/user_asset/#{asset.asset_hash[0..3]}/#{asset.id}"
         if opts[:thumb_name]
           url << "/#{opts[:thumb_name]}"
         end
       end
-        url
+      url
     end
 
     def asset_tag(asset , thumbnail_type = nil, options = {} )
-      unless asset.blank?
-        path = thumbnail_type.blank? ? asset.url : asset.url_for(thumbnail_type)
+      asset_tag_v2(asset , options, thumbnail_type)
+    end
 
-        unless options.has_key?(:alt)
-          options[:alt] = asset.alt.blank? ? asset.name : asset.alt
-        end
-        options[:src] = path
+    def asset_tag_v2(asset , options = {} , thumbnail_type = nil)
+      if !asset.blank? && asset.category == "image"
+        _prepare_options_for_asset_tag(asset , options , thumbnail_type)
         tag("img" , options)
       end
     end
 
-    def asset_tag_v2(asset , options = {} , thumbnail_type = nil)
-      unless asset.blank?
-       options[:class] = (options[:class].blank? ? asset.name : "#{options[:class]} #{asset.name}" )
-       options[:title] = options[:alt] = asset.name
-       options[:src] = thumbnail_type.blank? ? asset.url : asset.url_for(thumbnail_type)
-       tag("img" , options)
+    private
+      def _prepare_options_for_asset_tag(asset , options = {} , thumbnail_type = nil)
+        options[:class] = (options[:class].blank? ? asset.name.sluglize : "#{options[:class]} #{asset.name.sluglize}" )
+        options[:title] = asset.name  unless options.has_key?(:title)
+        options[:alt] = asset.alt.blank? ? asset.name : asset.alt unless options.has_key?(:alt)
+        options[:src] = asset.url_for(thumbnail_type)
       end
-    end
 
 
   end # Assets

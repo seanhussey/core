@@ -68,22 +68,6 @@ module Gluttonberg
         asset
       end
 
-      def prepare_content_data(contents, asset)
-        contents_data = {}
-        contents.each do |content|
-          contents_data[content.association_name] = {} unless contents_data.has_key?(content.association_name)
-          contents_data[content.association_name][content.id.to_s] = {} unless contents_data[content.association_name].has_key?(content.id.to_s)
-          if content.association_name == :image_contents
-            contents_data[content.association_name][content.id.to_s][:asset_id] = asset.id
-          elsif content.association_name == :plain_text_content_localizations
-            contents_data[content.association_name][content.id.to_s][:text] = "Newsletter Title"
-          elsif content.association_name == :html_content_localizations
-            contents_data[content.association_name][content.id.to_s][:text] = "<p>Newsletter Description</p>"
-          end
-        end
-        contents_data
-      end
-
       def compare_data(contents, asset)
         contents.each do |content|
           if content.association_name == :image_contents

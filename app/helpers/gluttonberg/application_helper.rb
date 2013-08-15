@@ -14,14 +14,13 @@ module Gluttonberg
     def current_localization_slug
       if @locale
        @locale.slug
-      else
+      elsif Gluttonberg::Locale.first_default
        Gluttonberg::Locale.first_default.slug
       end
     end
 
     def current_domain
-      domain = "#{request.protocol}#{request.host_with_port}/"
-      domain.strip
+      "#{request.protocol}#{request.host_with_port}/".strip
     end
 
     def _render(opts)

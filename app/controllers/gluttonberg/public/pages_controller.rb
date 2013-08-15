@@ -3,7 +3,9 @@ module Gluttonberg
     class PagesController < Gluttonberg::Public::BaseController
       before_filter :retrieve_page , :only => [ :show ]
 
-      # If localized template file exist then render that file otherwise render non-localized template
+      # If localized template file exist then render 
+      # that file otherwise render non-localized template
+      # for ajax request do not render layout
       def show
         if Gluttonberg::Member.enable_members == true && !@page.is_public?
           return unless require_member
@@ -69,7 +71,7 @@ module Gluttonberg
 
       private
         def retrieve_page
-          @page = env['gluttonberg.page']
+          @page = env['GLUTTONBERG.PAGE']
           unless( current_user &&( authorize! :manage, Gluttonberg::Page) )
             @page = nil if @page.blank? || !@page.published?
           end

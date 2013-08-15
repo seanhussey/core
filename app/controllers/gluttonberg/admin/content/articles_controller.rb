@@ -53,10 +53,7 @@ module Gluttonberg
           article_attributes = params["gluttonberg_article_localization"].delete(:article)
           if @article_localization.update_attributes(params[:gluttonberg_article_localization])
             article = @article_localization.article
-            article.current_slug = article.slug
-            article.assign_attributes(article_attributes)
-            article.previous_slug = article.current_slug if article.slug_changed?
-            article.save
+            article.update_attributes(article_attributes)
 
             _log_article_changes
 
@@ -78,14 +75,11 @@ module Gluttonberg
         end
 
         def destroy
-          title = @article.current_localization.title
-          if @article.destroy
-            flash[:notice] = "The article was successfully deleted."
-            redirect_to admin_blog_articles_path(@blog)
-          else
-            flash[:error] = "There was an error deleting the Article."
-            redirect_to admin_blog_articles_path(@blog)
-          end
+          generic_destroy(@article, {
+            :name => "article",
+            :success_path => admin_blog_articles_path(@blog),
+            :failure_path => admin_blog_articles_path(@blog)
+          })
         end
 
         def duplicate

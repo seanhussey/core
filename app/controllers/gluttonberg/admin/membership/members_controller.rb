@@ -67,12 +67,11 @@ module Gluttonberg
         end
 
         def destroy
-          if @member.destroy
-            flash[:notice] = "Member deleted!"
-          else
-            flash[:error] = "There was an error deleting the member."
-          end
-          redirect_to admin_membership_members_path
+          generic_destroy(@member, {
+            :name => "member",
+            :success_path => admin_membership_members_path,
+            :failure_path => admin_membership_members_path
+          })
         end
 
         def export

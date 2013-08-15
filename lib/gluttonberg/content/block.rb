@@ -55,36 +55,7 @@ module Gluttonberg
         def is_localized(&blk)
           self.localized = true
           self.attr_accessible :section_name
-
-          # Generate the localization model
-          class_name = "#{self.name.demodulize}Localization"
-          storage_name = "gb_#{class_name.tableize}"
-          localized_model = Class.new(ActiveRecord::Base)
-          foreign_key = self.name.foreign_key
-          localized_model.table_name = storage_name
-          Gluttonberg.const_set(class_name, localized_model)
-
-          # Mix in our base set of properties and methods
-          localized_model.send(:include, Gluttonberg::Content::BlockLocalization)
-          # Generate additional properties from the block passed in
-          localized_model.class_eval(&blk)
-          # Store the name so we can easily access it without having to look
-          # at this parent class
-          localized_model.content_type = self.content_type
-
-          # Tell the content module that we are localized
-          localized_model.association_name = "#{self.content_type}_localizations".to_sym
-          Gluttonberg::Content.register_localization( localized_model.association_name , localized_model)
-
-          # Set up the associations
-          has_many :localizations, :class_name => Gluttonberg.const_get(class_name).to_s  , :foreign_key => "#{self.content_type}_id" , :dependent => :destroy
-          localized_model.belongs_to(:parent, :class_name => self.name , :foreign_key => "#{self.content_type}_id")
-
-          localized_model.attr_accessible :text, :parent, :page_localization
-          localized_model.is_versioned
-
-          localized_model.clean_html([:text])
-
+          create_localization_model(&blk)
         end
 
         # Does this class have an associated localization class.
@@ -99,6 +70,44 @@ module Gluttonberg
           results.each { |r| r.load_localization(page_localization_id) }
           results
         end
+
+        private
+          def create_localization_model(&blk)
+            # Generate the localization model
+            class_name = "#{self.name.demodulize}Localization"
+            storage_name = "gb_#{class_name.tableize}"
+            localized_model = Class.new(ActiveRecord::Base)
+            foreign_key = self.name.foreign_key
+            localized_model.table_name = storage_name
+            Gluttonberg.const_set(class_name, localized_model)
+
+            # Mix in our base set of properties and methods
+            localized_model.send(:include, Gluttonberg::Content::BlockLocalization)
+            
+            # Store the name so we can easily access it without having to look
+            # at this parent class
+            localized_model.content_type = self.content_type
+
+            # Tell the content module that we are localized
+            localized_model.association_name = "#{self.content_type}_localizations".to_sym
+            Gluttonberg::Content.register_localization( localized_model.association_name , localized_model)
+
+            add_code_to_localization_model(localized_model, class_name, &blk)
+          end
+
+          def add_code_to_localization_model(localized_model, class_name, &blk)
+            # Generate additional properties from the block passed in
+            localized_model.class_eval(&blk)
+
+            # Set up the associations
+            has_many :localizations, :class_name => Gluttonberg.const_get(class_name).to_s  , :foreign_key => "#{self.content_type}_id" , :dependent => :destroy
+            localized_model.belongs_to(:parent, :class_name => self.name , :foreign_key => "#{self.content_type}_id")
+
+            localized_model.attr_accessible :text, :parent, :page_localization
+            localized_model.is_versioned
+
+            localized_model.clean_html([:text])
+          end
       end
 
       module InstanceMethods

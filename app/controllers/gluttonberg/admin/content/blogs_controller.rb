@@ -32,12 +32,10 @@ module Gluttonberg
 
         def create
           @blog = Blog.new(params[:gluttonberg_blog])
-          if @blog.save
-            flash[:notice] = "The blog was successfully created."
-            redirect_to admin_blogs_path
-          else
-            render :edit
-          end
+          generic_create(@blog, {
+            :name => "blog",
+            :success_path => admin_blogs_path
+          })
         end
 
         def edit
@@ -48,16 +46,11 @@ module Gluttonberg
         end
 
         def update
-          @blog.current_slug = @blog.slug
           @blog.assign_attributes(params[:gluttonberg_blog])
-          @blog.previous_slug = @blog.current_slug if @blog.slug_changed?
-          if @blog.save
-            flash[:notice] = "The blog was successfully updated."
-            redirect_to admin_blogs_path
-          else
-            flash[:error] = "Sorry, The blog could not be updated."
-            render :edit
-          end
+          generic_update(@blog, {
+            :name => "blog",
+            :success_path => admin_blogs_path
+          })
         end
 
         def delete
@@ -70,13 +63,11 @@ module Gluttonberg
         end
 
         def destroy
-          if @blog.delete
-            flash[:notice] = "The blog was successfully deleted."
-            redirect_to admin_blogs_path
-          else
-            flash[:error] = "There was an error deleting the blog."
-            redirect_to admin_blogs_path
-          end
+          generic_destroy(@blog, {
+            :name => "blog",
+            :success_path => admin_blogs_path,
+            :failure_path => admin_blogs_path
+          })
         end
 
 

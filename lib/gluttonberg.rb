@@ -14,7 +14,6 @@ module Gluttonberg
   require 'acl9'
   require 'sidekiq'
   require 'sitemap_generator'
-  require 'gluttonberg/authorizable'
   require 'gluttonberg/components'
   require 'gluttonberg/content'
   require 'gluttonberg/drag_tree'
@@ -29,6 +28,7 @@ module Gluttonberg
   require 'gluttonberg/gb_file'
   require 'gluttonberg/random_string_generator'
   require 'gluttonberg/helpers/form_builder'
+
 
   # These should likely move into one of the initializers inside of the
   # engine config. This will ensure they only run after Rails and the app

@@ -6,6 +6,7 @@ module Gluttonberg
       include PageInfo
       include MetaTags
       include NavTree
+      include CmsStylesheets
       include HtmlTruncate
       include Assets
 
@@ -62,7 +63,8 @@ module Gluttonberg
         unless string.blank?
           string = clean_public_query(string)
           string = string.gsub("$", "")
-          string = string.gsub(/[\!\*'"″′‟‘’‛„‚”“”˝\(\)\;\:\.\@\&\=\+\-\$\,\/?\%\#\[\]]/,'')
+          string = string.gsub(/[\\\!\*'\"\″′‟‘’‛„‚”“”˝\(\)\;\:\.\@\&\=\+\-\$\,\/?\%\#\[\]]/,'')
+          string
         else
           string
         end

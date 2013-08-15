@@ -19,25 +19,21 @@ module Gluttonberg
 
         def create
           @group = Group.new(params[:gluttonberg_group])
-          if @group.save
-            flash[:notice] = "Group created!"
-            redirect_to :action => :index
-          else
-            render :action => :new
-          end
+          generic_create(@group, {
+            :name => "group",
+            :success_path => admin_membership_groups_path
+          })
         end
 
         def edit
         end
 
         def update
-          if @group.update_attributes(params[:gluttonberg_group])
-            flash[:notice] = "Member account updated!"
-            redirect_to  :action => :index
-          else
-            flash[:notice] = "Failed to save account changes!"
-            render :action => :edit
-          end
+          @group.assign_attributes(params[:gluttonberg_group])
+          generic_update(@group, {
+            :name => "group",
+            :success_path => admin_membership_groups_path
+          })
         end
 
         def delete
@@ -49,13 +45,11 @@ module Gluttonberg
         end
 
         def destroy
-          if @group.destroy
-            flash[:notice] = "Group deleted!"
-            redirect_to :action => :index
-          else
-            flash[:error] = "There was an error deleting the group."
-            redirect_to :action => :index
-          end
+          generic_destroy(@group, {
+            :name => "group",
+            :success_path => admin_groups_path,
+            :failure_path => admin_groups_path
+          })
         end
 
        private

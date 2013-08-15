@@ -10,7 +10,7 @@ module Gluttonberg
       module ClassMethods
         #export to a csv
         def exportCSV
-          all_records = self.all
+          all_records = self.order("id asc").all
           require 'csv'
           other_columns = {}
           CSV.generate do |csv|

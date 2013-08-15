@@ -26,7 +26,7 @@ module Gluttonberg
           @gallery = Gallery.new(params[:gluttonberg_gallery])
           @gallery.user_id = current_user.id if @gallery.user_id.blank?
           if @gallery.save
-            save_collection_images
+            @gallery.save_collection_images(params, current_user)
             flash[:notice] = "The gallery was successfully created."
             redirect_to edit_admin_gallery_path(@gallery)
           else
@@ -58,13 +58,11 @@ module Gluttonberg
         end
 
         def destroy
-          if @gallery.delete
-            flash[:notice] = "The gallery was successfully deleted."
-            redirect_to admin_galleries_path
-          else
-            flash[:error] = "There was an error deleting the gallery."
-            redirect_to admin_galleries_path
-          end
+          generic_destroy(@gallery, {
+            :name => "gallery",
+            :success_path => admin_galleries_path,
+            :failure_path => admin_galleries_path
+          })
         end
 
         def remove_image
@@ -102,19 +100,6 @@ module Gluttonberg
 
           def authorize_user_for_destroy
             authorize! :destroy, Gluttonberg::Gallery
-          end
-
-          def save_collection_images
-            unless params[:collection_id].blank?
-              collection = AssetCollection.where(:id => params[:collection_id]).first
-              collection_images = collection.images
-              Gluttonberg::Feed.log(current_user,@gallery, @gallery.title , "add #{pluralize(collection_images.length , 'image')} from collection '#{collection.name}'")
-              max_position = @gallery.gallery_images.length
-              collection_images.each_with_index do |image , index|
-                @gallery.gallery_images.create(:asset_id => image.id , :position => (max_position + index)  )
-              end
-              @gallery.update_attributes(:collection_imported => true)
-            end
           end
 
       end

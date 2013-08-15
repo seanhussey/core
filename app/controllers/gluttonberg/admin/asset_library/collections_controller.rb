@@ -45,12 +45,11 @@ module Gluttonberg
           end
 
         def destroy
-          if @collection.destroy
-            flash[:notice] = "The collection was successfully deleted."
-          else
-            flash[:error] = "There was an error deleting the collection."
-          end
-          redirect_to admin_assets_url
+          generic_destroy(@collection, {
+            :name => "collection",
+            :success_path => admin_assets_url,
+            :failure_path => admin_assets_url
+          })
         end
 
         private

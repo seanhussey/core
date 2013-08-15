@@ -29,8 +29,8 @@ module Gluttonberg
         modified_env = middleware.call(env)
         modified_env['PATH_INFO'].should == "/_public/page"
         modified_env['GLUTTONBERG.PATH_INFO'].should == "/first-name"
-        modified_env['gluttonberg.page'].id.should == page.id
-        modified_env['gluttonberg.page'].class.name.should == page.class.name
+        modified_env['GLUTTONBERG.PAGE'].id.should == page.id
+        modified_env['GLUTTONBERG.PAGE'].class.name.should == page.class.name
       end
 
       it "should be able to set env with correct info - Test case home_page" do
@@ -44,8 +44,8 @@ module Gluttonberg
         modified_env = middleware.call(env)
         modified_env['PATH_INFO'].should == "/_public/page"
         modified_env['GLUTTONBERG.PATH_INFO'].should == "/home"
-        modified_env['gluttonberg.page'].id.should == page.id
-        modified_env['gluttonberg.page'].class.name.should == page.class.name
+        modified_env['GLUTTONBERG.PAGE'].id.should == page.id
+        modified_env['GLUTTONBERG.PAGE'].class.name.should == page.class.name
 
         env = {
           'PATH_INFO' => "/"
@@ -54,8 +54,8 @@ module Gluttonberg
         modified_env = middleware.call(env)
         modified_env['PATH_INFO'].should == "/_public/page"
         modified_env['GLUTTONBERG.PATH_INFO'].should == "/"
-        modified_env['gluttonberg.page'].id.should == page.id
-        modified_env['gluttonberg.page'].class.name.should == page.class.name
+        modified_env['GLUTTONBERG.PAGE'].id.should == page.id
+        modified_env['GLUTTONBERG.PAGE'].class.name.should == page.class.name
 
         env = {
           'PATH_INFO' => ""
@@ -64,8 +64,8 @@ module Gluttonberg
         modified_env = middleware.call(env)
         modified_env['PATH_INFO'].should == "/_public/page"
         modified_env['GLUTTONBERG.PATH_INFO'].should == ""
-        modified_env['gluttonberg.page'].id.should == page.id
-        modified_env['gluttonberg.page'].class.name.should == page.class.name
+        modified_env['GLUTTONBERG.PAGE'].id.should == page.id
+        modified_env['GLUTTONBERG.PAGE'].class.name.should == page.class.name
 
         env = {
           'PATH_INFO' => nil
@@ -74,8 +74,8 @@ module Gluttonberg
         modified_env = middleware.call(env)
         modified_env['PATH_INFO'].should == "/_public/page"
         modified_env['GLUTTONBERG.PATH_INFO'].should == nil
-        modified_env['gluttonberg.page'].id.should == page.id
-        modified_env['gluttonberg.page'].class.name.should == page.class.name
+        modified_env['GLUTTONBERG.PAGE'].id.should == page.id
+        modified_env['GLUTTONBERG.PAGE'].class.name.should == page.class.name
       end
 
       it "should not modify env['PATH_INFO'] if page is not found" do
@@ -89,7 +89,7 @@ module Gluttonberg
         modified_env = middleware.call(env)
         modified_env['PATH_INFO'].should == "/"
         modified_env['GLUTTONBERG.PATH_INFO'].should == nil
-        modified_env['gluttonberg.page'].should == nil
+        modified_env['GLUTTONBERG.PAGE'].should == nil
 
         env = {
           'PATH_INFO' => ""
@@ -98,7 +98,7 @@ module Gluttonberg
         modified_env = middleware.call(env)
         modified_env['PATH_INFO'].should == ""
         modified_env['GLUTTONBERG.PATH_INFO'].should == nil
-        modified_env['gluttonberg.page'].should == nil
+        modified_env['GLUTTONBERG.PAGE'].should == nil
 
         env = {
           'PATH_INFO' => nil
@@ -107,7 +107,7 @@ module Gluttonberg
         modified_env = middleware.call(env)
         modified_env['PATH_INFO'].should == nil
         modified_env['GLUTTONBERG.PATH_INFO'].should == nil
-        modified_env['gluttonberg.page'].should == nil
+        modified_env['GLUTTONBERG.PAGE'].should == nil
 
         env = {
           'PATH_INFO' => "/first-name111"
@@ -116,7 +116,7 @@ module Gluttonberg
         modified_env = middleware.call(env)
         modified_env['PATH_INFO'].should == "/first-name111"
         modified_env['GLUTTONBERG.PATH_INFO'].should == nil
-        modified_env['gluttonberg.page'].should == nil
+        modified_env['GLUTTONBERG.PAGE'].should == nil
 
         env = {
           'PATH_INFO' => "first-name111"
@@ -125,7 +125,7 @@ module Gluttonberg
         modified_env = middleware.call(env)
         modified_env['PATH_INFO'].should == "first-name111"
         modified_env['GLUTTONBERG.PATH_INFO'].should == nil
-        modified_env['gluttonberg.page'].should == nil
+        modified_env['GLUTTONBERG.PAGE'].should == nil
 
         env = {
           'PATH_INFO' => "first-name"
@@ -134,7 +134,7 @@ module Gluttonberg
         modified_env = middleware.call(env)
         modified_env['PATH_INFO'].should == "first-name"
         modified_env['GLUTTONBERG.PATH_INFO'].should == nil
-        modified_env['gluttonberg.page'].should == nil
+        modified_env['GLUTTONBERG.PAGE'].should == nil
       end
 
       it "should be able to set env with correct info - Test case generic_page find by previous path" do
@@ -150,8 +150,8 @@ module Gluttonberg
         modified_env = middleware.call(env)
         modified_env['PATH_INFO'].should == "/_public/page"
         modified_env['GLUTTONBERG.PATH_INFO'].should == "/first-page"
-        modified_env['gluttonberg.page'].id.should == page.id
-        modified_env['gluttonberg.page'].class.name.should == page.class.name
+        modified_env['GLUTTONBERG.PAGE'].id.should == page.id
+        modified_env['GLUTTONBERG.PAGE'].class.name.should == page.class.name
 
         env = {
           'PATH_INFO' => "/first-name"

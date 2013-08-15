@@ -92,7 +92,6 @@ module Gluttonberg
             end
           end
 
-
       end #class
     end
   end

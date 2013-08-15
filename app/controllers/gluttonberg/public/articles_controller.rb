@@ -18,7 +18,7 @@ module Gluttonberg
           redirect_to blog_article_path(:blog_id => @blog.slug , :id => params[:id]) , :status => 301
           return
         end
-        @article.load_localization(env['gluttonberg.locale'])
+        @article.load_localization(env['GLUTTONBERG.LOCALE'])
         @comments = @article.comments.where(:approved => true)
         @comment = Comment.new(:subscribe_to_comments => true)
         respond_to do |format|

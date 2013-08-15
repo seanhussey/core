@@ -20,65 +20,11 @@ module Gluttonberg
       module Model
         module ClassMethods
           def is_localized(&blk)
-
             # Why yes, this is localized.
             self.localized = true
 
             # Create the localization model
-            class_name = self.name + "Localization"
-            table_name = class_name.tableize
-            # Check to see if the localization is inside a constant
-            target = Object
-            if class_name.index("::")
-              modules = class_name.split("::")
-              # Remove the localization class from the end
-              class_name = modules.pop
-              # Get each constant in turn
-              modules.each { |mod| target = target.const_get(mod) }
-            end
-
-            self.localized_model = Class.new(ActiveRecord::Base)
-            target.const_set(class_name, self.localized_model)
-            self.localized_model_name = class_name
-            self.localized_model.table_name = table_name
-
-            # Add the properties declared in the block, and sprinkle in our own mixins
-            self.localized_model.class_eval(&blk)
-            self.localized_model.send(:include, ModelLocalization)
-
-            # For each property on the localization model, create an accessor on
-            # the parent model, without over-writing any of the existing methods.
-            exclusions = [:id, :created_at, :updated_at, :locale_id , :parent_id]
-            localized_properties = self.localized_model.column_names.reject { |p| exclusions.include? p }
-            non_localized_properties = self.column_names.reject { |p| exclusions.include? p }
-
-            self.localized_model.attr_accessible :locale_id , :parent_id
-
-
-            localized_properties.each do |prop|
-              self.localized_fields << prop
-              # Create the accessor that points to the localized version
-              unless non_localized_properties.include?(prop)
-                class_eval %{
-                  def #{prop}
-                     current_localization.#{prop}
-                  end
-                  def #{prop}=(val)
-                     current_localization.#{prop} = val
-                  end
-                }
-              end
-            end
-
-            # Associate the model and it’s localization
-            has_many  :localizations, :class_name => self.localized_model.name.to_s, :foreign_key => :parent_id, :dependent => :destroy
-            has_one  :default_localization, :class_name => self.localized_model.name.to_s, :foreign_key => :parent_id, :conditions =>  lambda { where("locale_id = ?", Locale.first_default.id) }
-            self.localized_model.belongs_to(:parent, :class_name => self.name, :foreign_key => :parent_id)
-
-            # Set up validations for when we update in the presence of a localization
-            after_validation  :validate_current_localization
-            after_save    :save_current_localization
-
+            create_localization_model(&blk)
           end
 
           def localized?
@@ -97,7 +43,10 @@ module Gluttonberg
               loc = self.localized_model.new(:locale_id => locale.id)
               new_model.instance_variable_set(:@current_localization, loc)
               new_model.localizations << loc
-              new_model.attributes = attrs #update current object and current localization
+              #update current object and current localization
+              attrs.each do |name, value|
+                new_model.send("#{name}=", value) 
+              end
               if locale.default?
                  default_localization = loc
               end
@@ -109,11 +58,81 @@ module Gluttonberg
             new_model
           end
 
+          private
+
+            def create_localization_model(&blk)
+              class_name = self.name + "Localization"
+              # Check to see if the localization is inside a constant
+              target = Object
+              if class_name.index("::")
+                modules = class_name.split("::")
+                # Remove the localization class from the end
+                class_name = modules.pop
+                # Get each constant in turn
+                modules.each { |mod| target = target.const_get(mod) }
+              end
+
+              self.localized_model = Class.new(ActiveRecord::Base)
+              target.const_set(class_name, self.localized_model)
+              self.localized_model_name = class_name
+              self.localized_model.table_name = class_name.tableize
+
+              add_code_to_localization_model(&blk)
+            end
+
+            def add_code_to_localization_model(&blk)
+              # Add the properties declared in the block, and sprinkle in our own mixins
+              self.localized_model.class_eval(&blk)
+              self.localized_model.send(:include, ModelLocalization)
+
+              self.localized_model.attr_accessible :locale_id , :parent_id
+
+              create_acccessors_for_localization_model
+              set_associations_for_localization_model
+              set_hooks_for_localization_model
+            end
+
+            def create_acccessors_for_localization_model
+              # For each property on the localization model, create an accessor on
+              # the parent model, without over-writing any of the existing methods.
+              exclusions = [:id, :created_at, :updated_at, :locale_id , :parent_id]
+              localized_properties = self.localized_model.column_names.reject { |p| exclusions.include? p }
+              non_localized_properties = self.column_names.reject { |p| exclusions.include? p }
+
+              localized_properties.each do |prop|
+                self.localized_fields << prop
+                # Create the accessor that points to the localized version
+                unless non_localized_properties.include?(prop)
+                  class_eval %{
+                    def #{prop}
+                       current_localization.#{prop}
+                    end
+                    def #{prop}=(val)
+                       current_localization.#{prop} = val
+                    end
+                  }
+                end
+              end
+            end
+
+            def set_associations_for_localization_model
+              # Associate the model and it’s localization
+              has_many  :localizations, :class_name => self.localized_model.name.to_s, :foreign_key => :parent_id, :dependent => :destroy
+              has_one  :default_localization, :class_name => self.localized_model.name.to_s, :foreign_key => :parent_id, :conditions =>  proc { ["locale_id = ?", Locale.first_default.id] }
+              self.localized_model.belongs_to(:parent, :class_name => self.name, :foreign_key => :parent_id)
+            end
+
+            def set_hooks_for_localization_model
+              # Set up validations for when we update in the presence of a localization
+              after_validation  :validate_current_localization
+              after_save    :save_current_localization
+            end
+
         end
 
         module InstanceMethods
           def localized?
-            self.class.is_localized?
+            self.class.localized?
           end
 
           # returns current localization if current localization does not exist then init it with default localization
@@ -156,8 +175,10 @@ module Gluttonberg
             unless locale.blank?
               loc = self.class.localized_model.where(:locale_id => locale_id, :parent_id => self.id).first
               if loc.blank?
-                tmp_current = self.current_localization
-                tmp_attributes = tmp_current.attributes
+                tmp_attributes = {}
+                unless self.current_localization.blank?
+                  tmp_attributes = self.current_localization.attributes
+                end
                 tmp_attributes[:locale_id] = locale_id
                 loc = self.class.localized_model.new(:locale_id => locale_id)
                 loc.attributes = tmp_attributes

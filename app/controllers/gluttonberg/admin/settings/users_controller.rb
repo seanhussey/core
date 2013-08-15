@@ -60,13 +60,11 @@ module Gluttonberg
         end
 
         def destroy
-          if @user.destroy
-            flash[:notice] = "Account deleted!"
-            redirect_to admin_users_path
-          else
-            flash[:error] = "There was an error deleting the account."
-            redirect_to admin_users_path
-          end
+          generic_destroy(@user, {
+            :name => "user",
+            :success_path => admin_users_path,
+            :failure_path => admin_users_path
+          })
         end
 
        private

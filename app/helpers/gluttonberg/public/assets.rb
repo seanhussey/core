@@ -6,7 +6,7 @@ module Gluttonberg
       def gallery_images_ul(id , gallery_thumb_image , gallery_large_image ,html_opts_for_ul = {})
         gallery = Gluttonberg::Gallery.where(:id => id).first
         unless gallery.blank? || gallery.gallery_images.blank?
-          options = render(:partial => "/gluttonberg/public/gallery_images_lis", :locals => {
+          options = render(:partial => "/gluttonberg/public/shared/gallery_images_lis", :locals => {
             :gallery => gallery,
             :gallery_thumb_image => gallery_thumb_image,
             :gallery_large_image => gallery_large_image

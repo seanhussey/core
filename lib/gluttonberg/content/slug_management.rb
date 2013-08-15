@@ -19,7 +19,14 @@ module Gluttonberg
       end
 
       module ClassMethods
-
+        def self.check_for_duplication(slug, object, potential_duplicates)
+          unless potential_duplicates.blank?
+            if potential_duplicates.length > 1 || (potential_duplicates.length == 1 && potential_duplicates.first.id != object.id )
+              slug = "#{slug}-#{potential_duplicates.length+1}"
+            end
+          end
+          slug
+        end
       end
 
       module InstanceMethods
@@ -38,17 +45,14 @@ module Gluttonberg
         end
 
         def slug=(new_slug)
-          #if you're changing this regex, make sure to change the one in /javascripts/slug_management.js too
-          # utf-8 special chars are fixed for new ruby 1.9.2
-          unless new_slug.blank?
-            new_slug = new_slug.to_s.downcase.gsub(/\s/, '-').gsub(/[\!\*'"″′‟‛„‚”“”˝\(\)\;\:\.\@\&\=\+\$\,\/?\%\#\[\]]/, '')
-            new_slug = new_slug.gsub(/_$/,'-') # replace underscores with hyphen
-            while new_slug.include?("--")
-              new_slug = new_slug.gsub('--','-') # remove consective hyphen
-            end
-            new_slug = new_slug.gsub(/-$/,'') # remove trailing hyphen
-          end
+          current_slug = self.slug
+          new_slug = new_slug.sluglize unless new_slug.blank?
+          new_slug = unique_slug(new_slug)
           write_attribute(:slug, new_slug)
+          if self.respond_to?(:previous_slug) && self.slug_changed? && self.slug != current_slug
+            write_attribute(:previous_slug, current_slug)
+          end
+          new_slug
         end
 
         protected
@@ -75,6 +79,12 @@ module Gluttonberg
                 self.slug= "#{self.slug}-#{already_exist.length+1}"
               end
             end
+          end
+
+          def unique_slug(slug)
+            # check duplication: add id at the end if its duplicated
+            potential_duplicates = self.class.where(:slug => slug).all
+            Content::SlugManagement::ClassMethods.check_for_duplication(slug, self, potential_duplicates)
           end
 
       end
