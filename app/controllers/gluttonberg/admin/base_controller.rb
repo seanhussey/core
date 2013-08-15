@@ -94,37 +94,10 @@ module Gluttonberg
 
         def generic_update(object, opts)
           if object.save
-            flash[:notice] = "The #{opts[:name]} was successfully created."
+            flash[:notice] = "The #{opts[:name]} was successfully updated."
             redirect_to opts[:success_path]
           else
             render :edit
-          end
-        end
-
-        # A helper for finding shortcutting the steps in finding a model ensuring
-        # it has a localization and raising a NotFound if it’s missing.
-        # TODO Fixme
-        def with_localization(model, id)
-          result = model.first_with_localization(localization_ids.merge(:id => id))
-          raise NotFound unless result
-          result.ensure_localization!
-          result
-        end
-
-        # Returns a hash with the locale and dialect ids extracted from the params
-        # or where they're missing, it will grab the defaults.
-        # TODO Do we need it anymore?
-        def localization_ids
-          @localization_opts ||= begin
-            if params[:localization]
-              ids = params[:localization].split("-")
-              {:locale => ids[0]}
-            else
-              locale = Gluttonberg::Locale.first_default
-              # Inject the ids into the params so our form fields behave
-              params[:localization] = "#{locale.id}"
-              {:locale => locale.id}
-            end
           end
         end
 
@@ -139,7 +112,6 @@ module Gluttonberg
             return false
           end
         end
-
 
         def is_blog_enabled
           unless Gluttonberg::Comment.table_exists? == true
