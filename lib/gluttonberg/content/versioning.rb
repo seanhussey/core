@@ -24,6 +24,7 @@ module Gluttonberg
           acts_as_versioned( options.merge( :limit => Gluttonberg::Setting.get_setting("number_of_revisions") ) , &extension )
           self.non_versioned_columns << excluded_columns
           self.non_versioned_columns.flatten!
+          include OverrideActsAsVersioned
         end
 
         def versioned?
@@ -36,6 +37,22 @@ module Gluttonberg
         def versioned?
           self.class.versioned?
         end
+      end
+
+      module OverrideActsAsVersioned
+        # Clears old revisions if a limit is set with the :limit option in <tt>acts_as_versioned</tt>.
+        # Override this method to set your own criteria for clearing old versions.
+        def clear_old_versions
+          if self.class.max_version_limit == 0
+           tmp_number_of_revisions = Gluttonberg::Setting.get_setting("number_of_revisions")
+           self.class.max_version_limit = tmp_number_of_revisions.to_i unless tmp_number_of_revisions.blank?
+          end
+          return if self.class.max_version_limit == 0
+          excess_baggage = send(self.class.version_column).to_i - self.class.max_version_limit
+          if excess_baggage > 0
+            self.class.versioned_class.delete_all ["#{self.class.version_column} <= ? and #{self.class.versioned_foreign_key} = ?", excess_baggage, id]
+          end
+        end  
       end
 
     end
