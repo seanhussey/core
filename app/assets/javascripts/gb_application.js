@@ -720,57 +720,60 @@ function initBetterSlugManagement() {
     doNotEdit = false;
   }
 
-  $('#page_slug_holder .domain').html($.trim(str));
+  if(pt.length > 0 && ps.length > 0 ){
 
-  pt.keyup(function(){
-    if (!doNotEdit) {
-      slug = pt.attr('value').toLowerCase().replace(/\s/gim, '-').replace(regex, '')
-      ps.html(slug);
-      hs.attr('value', slug);
-    };
-  })
+    $('#page_slug_holder .domain').html($.trim(str));
 
-  pb.click(function(){
-    hs.show();
-    ps.hide();
-    pb.hide();
-    hs.focus();
-    doNotEdit = true;
-    slugLength = hs.val().length;
-    currentSlug = hs.val();
-  })
-
-  hs.focusout(function(){
-    var len = hs.val().length;
-    if (doNotEdit) {
-      if (len == 0) {
-        hs.hide();
-        ps.show();
-        pb.show();
-        if (!editPage) {
-          doNotEdit = false;
-          slug = pt.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, '')
-          ps.html(slug);
-          hs.attr('value', slug);
-        } else {
-          hs.attr('value', currentSlug);
-        }
-      } else if(slugLength == len) {
-        hs.hide();
-        ps.show();
-        pb.show();
-        if (!editPage) {
-          doNotEdit = false;
-        }
-      } else {
-        hs.hide();
-        ps.show();
-        pb.show();
-        ps.html(hs.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, ''));
-        doNotEdit = true;
+    pt.keyup(function(){
+      if (!doNotEdit) {
+        slug = pt.attr('value').toLowerCase().replace(/\s/gim, '-').replace(regex, '')
+        ps.html(slug);
+        hs.attr('value', slug);
       };
-    };
-  })
+    })
+
+    pb.click(function(){
+      hs.show();
+      ps.hide();
+      pb.hide();
+      hs.focus();
+      doNotEdit = true;
+      slugLength = hs.val().length;
+      currentSlug = hs.val();
+    })
+
+    hs.focusout(function(){
+      var len = hs.val().length;
+      if (doNotEdit) {
+        if (len == 0) {
+          hs.hide();
+          ps.show();
+          pb.show();
+          if (!editPage) {
+            doNotEdit = false;
+            slug = pt.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, '')
+            ps.html(slug);
+            hs.attr('value', slug);
+          } else {
+            hs.attr('value', currentSlug);
+          }
+        } else if(slugLength == len) {
+          hs.hide();
+          ps.show();
+          pb.show();
+          if (!editPage) {
+            doNotEdit = false;
+          }
+        } else {
+          hs.hide();
+          ps.show();
+          pb.show();
+          ps.html(hs.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, ''));
+          doNotEdit = true;
+        };
+      };
+    });
+  }
 
 }
 
@@ -781,19 +784,21 @@ function initSlugManagement() {
     var pt = $('#page_title');
     var ps = $('#page_slug');
 
-    var regex = /[\!\*'"″′‟‛„‚”“”˝\(\);:.@&=+$,\/?%#\[\]]/gim;
+    if(pt.length > 0 && ps.length > 0 ){
+      var regex = /[\!\*'"″′‟‛„‚”“”˝\(\);:.@&=+$,\/?%#\[\]]/gim;
+      var pt_function = function() {
+        if (ps.attr('donotmodify') != 'true') 
+          ps.attr('value', pt.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, ''));
+      };
 
-    var pt_function = function() {
-      if (ps.attr('donotmodify') != 'true') ps.attr('value', pt.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, ''));
-    };
+      pt.bind("keyup", pt_function);
+      pt.bind("blur", pt_function);
 
-    pt.bind("keyup", pt_function);
-    pt.bind("blur", pt_function);
-
-    ps.bind("blur", function() {
-      ps.attr('value', ps.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, ''));
-      ps.attr('donotmodify', 'true');
-    });
+      ps.bind("blur", function() {
+        ps.attr('value', ps.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, ''));
+        ps.attr('donotmodify', 'true');
+      });
+    }
   } catch(e) {
     console.log(e)
   }
