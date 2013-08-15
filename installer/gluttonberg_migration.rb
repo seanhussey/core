@@ -123,6 +123,20 @@ class GluttonbergMigration < ActiveRecord::Migration
     end
 
     def pages_contents_tables
+      _text_contents_tables
+      _html_contents_tables
+
+      create_table :gb_image_contents do |t|
+        t.boolean :orphaned, :default => false
+        t.string :section_name, :limit => 50
+        t.integer :asset_id
+        t.integer :page_id
+        t.integer :version
+        t.timestamps
+      end
+    end
+
+    def _text_contents_tables
       create_table :gb_plain_text_contents do |t|
         t.boolean :orphaned, :default => false
         t.string :section_name, :limit => 50
@@ -137,7 +151,9 @@ class GluttonbergMigration < ActiveRecord::Migration
         t.integer :version
         t.timestamps
       end
+    end
 
+    def _html_contents_tables
       create_table :gb_html_contents do |t|
         t.boolean :orphaned, :default => false
         t.string :section_name, :limit => 50
@@ -152,16 +168,8 @@ class GluttonbergMigration < ActiveRecord::Migration
         t.integer :version
         t.timestamps
       end
-
-      create_table :gb_image_contents do |t|
-        t.boolean :orphaned, :default => false
-        t.string :section_name, :limit => 50
-        t.integer :asset_id
-        t.integer :page_id
-        t.integer :version
-        t.timestamps
-      end
     end
+
 
     def tagging_tables
       create_table :tags do |t|
