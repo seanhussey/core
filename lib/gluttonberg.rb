@@ -1,40 +1,40 @@
 module Gluttonberg
-  require 'engine' if defined?(Rails) && Rails::VERSION::MAJOR >= 3
-  require 'haml'
-  require 'authlogic'
-  require 'will_paginate'
-  require 'zip/zip'
-  require 'acts_as_tree'
-  require 'acts_as_versioned'
-  require 'paperclip'
-  require 'cancan'
-  require 'texticle'
-  require 'audio_job'
-  require 'aws'
-  require 'acl9'
-  require 'sidekiq'
-  require 'sitemap_generator'
-  require 'gluttonberg/components'
-  require 'gluttonberg/content'
-  require 'gluttonberg/drag_tree'
-  require 'gluttonberg/extensions'
-  require 'gluttonberg/library'
-  require 'gluttonberg/page_description'
-  require 'gluttonberg/templates'
-  require 'gluttonberg/middleware'
-  require 'gluttonberg/membership'
-  require 'gluttonberg/can_flag'
-  require 'gluttonberg/record_history'
-  require 'gluttonberg/gb_file'
-  require 'gluttonberg/random_string_generator'
-  require 'gluttonberg/helpers/form_builder'
 
+  def self.require_dependencies
+    require 'engine' if defined?(Rails) && Rails::VERSION::MAJOR >= 3
+    require 'haml'
+    require 'authlogic'
+    require 'will_paginate'
+    require 'zip/zip'
+    require 'acts_as_tree'
+    require 'acts_as_versioned'
+    require 'paperclip'
+    require 'cancan'
+    require 'texticle'
+    require 'audio_job'
+    require 'aws'
+    require 'acl9'
+    require 'sidekiq'
+    require 'sitemap_generator'
+    require 'jeditable-rails'
+  end
 
-  # These should likely move into one of the initializers inside of the
-  # engine config. This will ensure they only run after Rails and the app
-  # has been loaded.
-  DragTree.setup
-  RecordHistory.setup
+  def self.require_gluttonberg_components
+    require 'gluttonberg/components'
+    require 'gluttonberg/content'
+    require 'gluttonberg/drag_tree'
+    require 'gluttonberg/extensions'
+    require 'gluttonberg/library'
+    require 'gluttonberg/page_description'
+    require 'gluttonberg/templates'
+    require 'gluttonberg/middleware'
+    require 'gluttonberg/membership'
+    require 'gluttonberg/can_flag'
+    require 'gluttonberg/record_history'
+    require 'gluttonberg/gb_file'
+    require 'gluttonberg/random_string_generator'
+    require 'gluttonberg/helpers/form_builder'
+  end
 
   # Check to see if Gluttonberg is configured to be localized.
   def self.localized?
@@ -64,7 +64,10 @@ module Gluttonberg
     end
   end
 
-  require 'jeditable-rails'
+  self.require_dependencies
+  self.require_gluttonberg_components
+  DragTree.setup
+  RecordHistory.setup
 end
 
 
