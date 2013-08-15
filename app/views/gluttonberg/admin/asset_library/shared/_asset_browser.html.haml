@@ -1,9 +1,9 @@
 %ul.thumbnails{:id => "title_thumb_#{opts[:id]}"}
   %li.span4
-    .thumbnail.asset_selector_wrapper
+    %span.thumbnail.asset_selector_wrapper
       - if !asset.blank? && asset.category && asset.category.to_s.downcase == "image"
         = asset_tag(asset , :small_thumb)
-      .caption
+      %span.caption
         - title = if opts[:asset_id].blank?
           - "Nothing selected"
         - elsif asset.blank?
@@ -12,7 +12,6 @@
           - asset.name
         %h5{:title => title}
           = title
-          
 
         = hidden_field_tag("filter_#{field_name}", opts[:filter] , :id => "filter_#{opts[:id]}" )
         - html_opts = { :id => opts[:id] , :class => "choose_asset_hidden_field" }

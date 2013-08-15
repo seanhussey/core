@@ -12,7 +12,7 @@ module Gluttonberg
       def html_truncate(html, truncate_length, options={})
         if html && html.length < truncate_length
           html
-        else
+        elsif html
           _html_truncate(html, truncate_length, options)
         end
       end

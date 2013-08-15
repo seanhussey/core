@@ -1,147 +1,135 @@
 class GluttonbergMigration < ActiveRecord::Migration
-  def self.up
-
+  def change
     create_table :gb_plain_text_content_localizations do |t|
-      t.column :created_at, :timestamp
-      t.column :updated_at, :timestamp
-      t.column :page_localization_id, :integer
-      t.column :text, :string, :limit => 255
-      t.column :plain_text_content_id, :integer
-      t.column :version, :integer
+      t.integer :page_localization_id
+      t.string :text, :limit => 255
+      t.integer :plain_text_content_id
+      t.integer :version
+      t.timestamps
     end
 
     create_table :gb_html_contents do |t|
-      t.column :orphaned, :boolean, :default => false
-      t.column :section_name, :string, :limit => 50
-      t.column :created_at, :timestamp
-      t.column :updated_at, :timestamp
-      t.column :page_id, :integer
+      t.boolean :orphaned, :default => false
+      t.string :section_name, :limit => 50
+      t.integer :page_id
+      t.timestamps
     end
 
     create_table :gb_html_content_localizations do |t|
-      t.column :created_at, :timestamp
-      t.column :updated_at, :timestamp
-      t.column :text, :text
-      t.column :html_content_id, :integer
-      t.column :page_localization_id, :integer
-      t.column :version, :integer
+      t.text :text
+      t.integer :html_content_id
+      t.integer :page_localization_id
+      t.integer :version
+      t.timestamps
     end
 
     create_table :gb_image_contents do |t|
-      t.column :orphaned, :boolean, :default => false
-      t.column :section_name, :string, :limit => 50
-      t.column :created_at, :timestamp
-      t.column :updated_at, :timestamp
-      t.column :asset_id, :integer
-      t.column :page_id, :integer
-      t.column :version, :integer
+      t.boolean :orphaned, :default => false
+      t.string :section_name, :limit => 50
+      t.integer :asset_id
+      t.integer :page_id
+      t.integer :version
+      t.timestamps
     end
 
     create_table :gb_locales do |t|
-      t.column :name, :string, :limit => 70, :null => false
-      t.column :slug, :string, :limit => 70, :null => false
-      t.column :slug_type, :string, :limit => 70, :null => false # prefix , subdomain
-      t.column :default, :boolean, :default => false
+      t.string :name, :limit => 70, :null => false
+      t.string :slug, :limit => 70, :null => false
+      t.string :slug_type, :limit => 70, :null => false # prefix , subdomain
+      t.boolean :default, :default => false
+      t.timestamps
     end
 
     create_table :gb_settings do |t|
-      t.column :name, :string, :limit => 50, :null => false
-      t.column :value, :text
-      t.column :category, :integer, :default => 1
-      t.column :row, :integer
-      t.column :delete_able, :boolean, :default => true
-      t.column :enabled, :boolean, :default => true
-      t.column :help, :text
-      t.column :values_list, :text
+      t.string :name, :limit => 50, :null => false
+      t.text :value
+      t.integer :category, :default => 1
+      t.integer :row
+      t.boolean :delete_able, :default => true
+      t.boolean :enabled, :default => true
+      t.text :help
+      t.text :values_list
+      t.timestamps
     end
 
     create_table :gb_page_localizations do |t|
-      t.column :name, :string, :limit => 150
-      t.column :navigation_label, :string, :limit => 100
-      t.column :slug, :string, :limit => 50
-      t.column :path, :string, :limit => 255
-      t.column :created_at, :timestamp
-      t.column :updated_at, :timestamp
-      t.column :locale_id, :integer
-      t.column :page_id, :integer
-      t.column :seo_title , :string , :limit => 255
-      t.column :seo_keywords , :text
-      t.column :seo_description , :text
-      t.column :fb_icon_id , :integer
-      t.column :previous_path , :string
+      t.string :name, :limit => 150
+      t.string :navigation_label, :limit => 100
+      t.string :slug, :limit => 50
+      t.string :path, :limit => 255
+      t.integer :locale_id
+      t.integer :page_id
+      t.string :seo_title , :limit => 255
+      t.text :seo_keywords
+      t.text :seo_description
+      t.integer :fb_icon_id
+      t.string :previous_path
+      t.timestamps
     end
 
     create_table :gb_pages do |t|
-      t.column :parent_id, :integer
-      t.column :name, :string, :limit => 100
-      t.column :navigation_label, :string, :limit => 100
-      t.column :slug, :string, :limit => 100
-      t.column :description_name, :string, :limit => 100
-      t.column :home, :boolean, :default => false
-      t.column :created_at, :timestamp
-      t.column :updated_at, :timestamp
-      t.column :position, :integer
-      t.column :user_id, :integer
-      t.column :state, :string
-      t.column :hide_in_nav, :boolean
+      t.integer :parent_id
+      t.string :name, :limit => 100
+      t.string :navigation_label, :limit => 100
+      t.string :slug, :limit => 100
+      t.string :description_name, :limit => 100
+      t.boolean :home, :default => false
+      t.integer :position
+      t.integer :user_id
+      t.string :state
+      t.boolean :hide_in_nav
       t.datetime :published_at
+      t.timestamps
     end
 
     create_table :gb_plain_text_contents do |t|
-      t.column :orphaned, :boolean, :default => false
-      t.column :section_name, :string, :limit => 50
-      t.column :created_at, :timestamp
-      t.column :updated_at, :timestamp
-      t.column :page_id, :integer
+      t.boolean :orphaned, :default => false
+      t.string :section_name, :limit => 50
+      t.integer :page_id
+      t.timestamps
     end
 
     create_table :gb_asset_categories do |t|
-      t.column :name, :string, :null => false
-      t.column :unknown, :boolean
+      t.string :name, :null => false
+      t.boolean :unknown
     end
 
     create_table :gb_asset_types do |t|
-      t.column :name, :string, :null => false
-      t.column :asset_category_id, :integer, :default => 0
+      t.string :name, :null => false
+      t.integer :asset_category_id, :default => 0
     end
 
     create_table :gb_asset_mime_types do |t|
-      t.column :mime_type, :string, :null => false
-      t.column :asset_type_id, :integer, :default => 0
+      t.string :mime_type, :null => false
+      t.integer :asset_type_id, :default => 0
     end
 
     create_table :gb_asset_collections do |t|
-      t.column :name, :string, :null => false
-      t.column :created_at, :datetime
-      t.column :updated_at, :datetime
-      t.column :created_by, :integer
-      t.column :updated_by, :integer
-      t.column :user_id, :integer
+      t.string :name, :null => false
+      t.integer :user_id
+      t.timestamps
     end
 
     create_table :gb_assets do |t|
-      t.column :mime_type, :string
-      t.column :asset_type_id, :integer
-      t.column :name, :string, :null => false
-      t.column :description, :text
-      t.column :file_name, :string
-      t.column :asset_hash, :string
-      t.column :size, :integer
-      t.column :custom_thumbnail, :boolean
-      t.column :created_at, :datetime
-      t.column :updated_at, :datetime
-      t.column :synopsis, :text
-      t.column :copyrights, :text
-      t.column :year_of_production, :integer
-      t.column :created_by, :integer
-      t.column :updated_by, :integer
-      t.column :duration, :string
-      t.column :user_id, :integer
-      t.column :width, :integer
-      t.column :height, :integer
-      t.column :alt, :string
-      t.column :processed , :boolean
-      t.column :copied_to_s3 , :boolean
+      t.string :mime_type
+      t.integer :asset_type_id
+      t.string :name, :null => false
+      t.text :description
+      t.string :file_name
+      t.string :asset_hash
+      t.integer :size
+      t.boolean :custom_thumbnail
+      t.text :synopsis
+      t.text :copyrights
+      t.integer :year_of_production
+      t.string :duration
+      t.integer :user_id
+      t.integer :width
+      t.integer :height
+      t.string :alt
+      t.boolean :processed
+      t.boolean :copied_to_s3
+      t.timestamps
     end
 
     create_table :gb_audio_asset_attributes do |t|
@@ -178,22 +166,7 @@ class GluttonbergMigration < ActiveRecord::Migration
     end
 
 
-    begin
-      Gluttonberg::PlainTextContentLocalization.create_versioned_table
-    rescue => e
-      puts e
-    end
-    begin
-      Gluttonberg::HtmlContentLocalization.create_versioned_table
-    rescue => e
-      puts e
-    end
-
-    begin
-      Gluttonberg::ImageContent.create_versioned_table
-    rescue => e
-      puts e
-    end
+    
 
     create_table :tags do |t|
       t.string :name
@@ -210,7 +183,7 @@ class GluttonbergMigration < ActiveRecord::Migration
 
       t.string :context
 
-      t.datetime :created_at
+      t.timestamps
     end
 
     add_index :taggings, :tag_id
@@ -233,8 +206,7 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.column :asset_id, :integer
       t.column :thumbnail_type, :string, :limit => 100
       t.column :user_generated , :boolean
-      t.column :created_at, :datetime
-      t.column :updated_at, :datetime
+      t.timestamps
     end
 
     create_table :gb_stylesheets do |t|
@@ -245,12 +217,6 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.column :css_postfix , :string , :limit => 255
       t.column :position , :integer
       t.timestamps
-    end
-
-    begin
-      Gluttonberg::Stylesheet.create_versioned_table
-    rescue => e
-      puts e
     end
 
     create_table :gb_members do |t|
@@ -318,37 +284,6 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.integer :user_id
       t.timestamps
     end
-
   end
 
-  def self.down
-    drop_table :gb_plain_text_content_localizations
-    drop_table :gb_html_contents
-    drop_table :gb_html_content_localizations
-    drop_table :gb_image_contents
-    drop_table :gb_users
-    drop_table :gb_locales
-    drop_table :gb_settings
-    drop_table :gb_page_localizations
-    drop_table :gb_pages
-    drop_table :gb_plain_text_contents
-    drop_table :gb_asset_categories
-    drop_table :gb_asset_types
-    drop_table :gb_asset_mime_types
-    drop_table :gb_asset_collections
-    drop_table :gb_assets
-    drop_table :gb_asset_collections_assets
-    drop_table :gb_audio_asset_attributes
-    drop_table :taggings
-    drop_table :tags
-    drop_table :flags
-    drop_table :gb_asset_thumbnails
-    drop_table :gb_stylesheets
-    drop_table :gb_groups
-    drop_table :gb_groups_members
-    drop_table :gb_groups_pages
-    drop_table :gb_galleries
-    drop_table :gb_gallery_images
-    drop_table :gb_feeds
-  end
 end

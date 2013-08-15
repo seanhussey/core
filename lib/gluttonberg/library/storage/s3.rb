@@ -158,7 +158,6 @@ module Gluttonberg
             end
           end
 
-          # TODO Refactor this method
           # This method is used for delayed job
           def copy_audios_to_s3
             copy_file_to_s3(self.file_name)            

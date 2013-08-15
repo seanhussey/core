@@ -7,14 +7,8 @@ module Gluttonberg
       # that file otherwise render non-localized template
       # for ajax request do not render layout
       def show
-        if Gluttonberg::Member.enable_members == true && !@page.is_public?
-          return unless require_member
-          unless current_member.does_member_have_access_to_the_page?(page)
-            raise CanCan::AccessDenied
-          end
-        end
-
-        template = page.view
+        return unless verify_page_access
+        template = @page.view
         template_path = "pages/#{template}"
 
         if locale && File.exists?(File.join(Rails.root,  "app/views/pages/#{template}.#{locale.slug}.html.haml" ) )
@@ -76,6 +70,16 @@ module Gluttonberg
             @page = nil if @page.blank? || !@page.published?
           end
           raise ActiveRecord::RecordNotFound  if @page.blank?
+        end
+
+        def verify_page_access
+          if Gluttonberg::Member.enable_members == true && !@page.is_public?
+            return false unless require_member
+            unless current_member.does_member_have_access_to_the_page?(@page)
+              raise CanCan::AccessDenied
+            end
+          end
+          true
         end
 
     end
