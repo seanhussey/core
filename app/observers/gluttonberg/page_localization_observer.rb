@@ -23,16 +23,21 @@ module Gluttonberg
         decendant_pages = page_localization.page.children
         
         decendant_pages.each do |d_p|
-          decendants = d_p.localizations.where(:locale_id => page_localization.locale_id).all          
-          unless decendants.blank?
-            decendants.each do |l| 
-              l.paths_need_recaching = true
-              l.update_attributes(:path => "#{page_localization.path}/#{l.slug || l.page.slug}") 
-            end 
-          end
-        end#loop  
+          update_decendants(page_localization, d_p)
+        end
       end
     end
+
+    private
+      def update_decendants(page_localization, d_p)
+        decendants = d_p.localizations.where(:locale_id => page_localization.locale_id).all          
+        unless decendants.blank?
+          decendants.each do |l| 
+            l.paths_need_recaching = true
+            l.update_attributes(:path => "#{page_localization.path}/#{l.slug || l.page.slug}") 
+          end 
+        end
+      end
   end
 end
 
