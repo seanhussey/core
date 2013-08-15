@@ -34,22 +34,13 @@ module Gluttonberg
       def update
         @member.password = params[:gluttonberg_member][:password]
         @member.password_confirmation = params[:gluttonberg_member][:password_confirmation]
-        if @member.save
-          flash[:notice] = "Password successfully updated"
-          redirect_to root_path
-        else
-          render :edit
-        end
+        generic_update_reset_password(@member, root_path)
       end
 
       private
 
         def load_member_using_perishable_token
-          @member = Member.where(:perishable_token => params[:id]).first
-          unless @member
-            flash[:notice] = t(:reset_password_error)
-            redirect_to new_member_password_reset_path
-          end
+          @member = generic_find_using_perishable_token(Member)
         end
 
     end
