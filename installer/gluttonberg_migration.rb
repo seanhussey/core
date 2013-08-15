@@ -1,12 +1,5 @@
 class GluttonbergMigration < ActiveRecord::Migration
-  def self.up
-    create_table :gb_plain_text_contents do |t|
-      t.boolean :orphaned, :default => false
-      t.string :section_name, :limit => 50
-      t.integer :page_id
-      t.timestamps
-    end
-
+  def change
     create_table :gb_plain_text_content_localizations do |t|
       t.integer :page_localization_id
       t.string :text, :limit => 255
@@ -89,6 +82,13 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.timestamps
     end
 
+    create_table :gb_plain_text_contents do |t|
+      t.boolean :orphaned, :default => false
+      t.string :section_name, :limit => 50
+      t.integer :page_id
+      t.timestamps
+    end
+
     create_table :gb_asset_categories do |t|
       t.string :name, :null => false
       t.boolean :unknown
@@ -166,22 +166,7 @@ class GluttonbergMigration < ActiveRecord::Migration
     end
 
 
-    begin
-      Gluttonberg::PlainTextContentLocalization.create_versioned_table
-    rescue => e
-      puts e
-    end
-    begin
-      Gluttonberg::HtmlContentLocalization.create_versioned_table
-    rescue => e
-      puts e
-    end
-
-    begin
-      Gluttonberg::ImageContent.create_versioned_table
-    rescue => e
-      puts e
-    end
+    
 
     create_table :tags do |t|
       t.string :name
@@ -232,12 +217,6 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.column :css_postfix , :string , :limit => 255
       t.column :position , :integer
       t.timestamps
-    end
-
-    begin
-      Gluttonberg::Stylesheet.create_versioned_table
-    rescue => e
-      puts e
     end
 
     create_table :gb_members do |t|
@@ -308,40 +287,4 @@ class GluttonbergMigration < ActiveRecord::Migration
 
   end
 
-  def self.down
-    drop_table :gb_plain_text_content_localizations
-    drop_table :gb_html_contents
-    drop_table :gb_html_content_localizations
-    drop_table :gb_image_contents
-    drop_table :gb_users
-    drop_table :gb_locales
-    drop_table :gb_settings
-    drop_table :gb_page_localizations
-    drop_table :gb_pages
-    drop_table :gb_plain_text_contents
-    drop_table :gb_asset_categories
-    drop_table :gb_asset_types
-    drop_table :gb_asset_mime_types
-    drop_table :gb_asset_collections
-    drop_table :gb_assets
-    drop_table :gb_asset_collections_assets
-    drop_table :gb_audio_asset_attributes
-    drop_table :taggings
-    drop_table :tags
-    drop_table :flags
-    drop_table :gb_asset_thumbnails
-    drop_table :gb_stylesheets
-    drop_table :gb_groups
-    drop_table :gb_groups_members
-    drop_table :gb_groups_pages
-    drop_table :gb_galleries
-    drop_table :gb_gallery_images
-    drop_table :gb_feeds
-    drop_table :gb_members
-
-    Gluttonberg::PlainTextContentLocalization.drop_versioned_table
-    Gluttonberg::HtmlContentLocalization.drop_versioned_table
-    Gluttonberg::ImageContent.drop_versioned_table  
-    Gluttonberg::Stylesheet.drop_versioned_table
-  end
 end
