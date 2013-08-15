@@ -5,6 +5,12 @@ module Gluttonberg
   class Engine < Rails::Engine
 
     # Config defaults
+    def init_settings
+      init_basic_settings
+      init_advance_settings
+      init_internal_settings
+    end
+
     def init_basic_settings
       config.mount_at = '/'
       config.app_name = 'Gluttonberg'
@@ -60,10 +66,7 @@ module Gluttonberg
       ]
     end
 
-    init_basic_settings
-    init_advance_settings
-    init_internal_settings
-
+    init_settings
     # Load rake tasks
     rake_tasks do
       load File.join(File.dirname(__FILE__), 'rails/railties/tasks.rake')
@@ -72,16 +75,21 @@ module Gluttonberg
     end
 
     initializer "initialize gluttonberg" do |app|
-      init_middlewares(app)
-      init_gb_components(app)
-      init_acts_as_taggable_on(app)
-      require 'active_link_to'
-      init_static_assets(app)
-      init_mount_at(app)
-      init_asset_precompile(app)
+      init_gluttonberg(app)
     end
 
     private
+    
+      def init_gluttonberg(app)
+        init_middlewares(app)
+        init_gb_components(app)
+        init_acts_as_taggable_on(app)
+        require 'active_link_to'
+        init_static_assets(app)
+        init_mount_at(app)
+        init_asset_precompile(app)
+      end
+
       def init_middlewares(app)
         app.middleware.use Gluttonberg::Middleware::Locales
         app.middleware.use Gluttonberg::Middleware::Rewriter
