@@ -116,11 +116,12 @@ module Gluttonberg
       private
         def generic_create_or_update(object, opts)
           message = object.new_record? ? "created" : "updated"
+          render_action = object.new_record? ? :new : :edit
           if object.save
             flash[:notice] = "The #{opts[:name]} was successfully #{message}."
             redirect_to opts[:success_path]
           else
-            render :edit
+            render render_action
           end
         end
 
