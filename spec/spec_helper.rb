@@ -50,7 +50,7 @@ def clean_all_data
   StaffProfile.all.each{|staff| staff.destroy}
   Gluttonberg::Gallery.all.each{|obj| obj.destroy}
   Gluttonberg::CommentSubscription.all.each{|obj| obj.destroy}
-  
+  Gluttonberg::Feed.all.each{|obj| obj.destroy}
 end
 
 def prepare_content_data(contents, asset)
