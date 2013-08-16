@@ -17,7 +17,8 @@ namespace :gluttonberg do
     end
   end
 
-  desc "Cleanup a bad install"
+
+  desc "Cleanup a bad install #TODO"
   task :cleanup => :environment do
     line = HighLine.new
     answer = line.ask("<%= color('This will attempt to clean up Gluttonberg.\nThere are not guarantees this will work properly.\nYou may need to still clean up a few files by hand.\nPlease type', YELLOW) %><%= color(' Gluttonberg ', BOLD) %><%= color('if you agree:  ', YELLOW) %>")
@@ -177,7 +178,8 @@ namespace :gluttonberg do
       first_name = line.ask("Enter your first name:  ") {|q| q.validate = /.{2,}/}
       last_name = line.ask("Enter your last name:  ") {|q| q.validate = /.{2,}/}
       email = line.ask("Enter your email:  ") {|q| q.validate = /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i}
-      password = line.ask("Enter a password:  ")  { |q| q.echo = "x" }
+      password = ""
+      password = line.ask("Enter a password:  ")  { |q| q.validate = /^(?=.*\d)(?=.*[a-zA-Z])(?!.*[^\w\S\s]).{6,}$/; q.echo = "x" }
 
       user = User.new(:email => email, :password => password, :password_confirmation => password, :first_name => first_name, :last_name => last_name)
       user.role = "super_admin"
