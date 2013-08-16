@@ -23,7 +23,7 @@ class MemberNotifier < Gluttonberg::BaseNotifier
   def welcome(member_id, current_localization_slug = "")
     @member = Gluttonberg::Member.find(member_id)
     setup_email
-    @subject += "Confirmation Instructions"
+    @subject += "Your account is registered"
     @password = Gluttonberg::Member.generateRandomString
     password_hash = {  
       :password => @password ,
