@@ -26,7 +26,6 @@ module Gluttonberg
 
       firstDataRow = csvData[1].split(",")
       firstDataRow.length.should == 6 #4 columns
-      firstDataRow[0].should == Gluttonberg::Member.first.id.to_s
       firstDataRow[1].should == "Abdul"
       firstDataRow[2].should == "Rauf"
       firstDataRow[3].should == "test@test.com"
