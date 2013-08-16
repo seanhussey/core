@@ -3,9 +3,12 @@ require 'spec_helper'
 
 describe Notifier do
 
-  before(:all) do
+  before(:each) do
     @locale = Gluttonberg::Locale.generate_default_locale
     Gluttonberg::Setting.generate_common_settings
+  end
+
+  before(:all) do
     @params = {
       :first_name => "First",
       :email => "valid_user@test.com",

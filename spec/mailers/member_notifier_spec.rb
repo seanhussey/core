@@ -3,6 +3,11 @@ require 'spec_helper'
 
 describe MemberNotifier do
 
+  before(:each) do
+    @locale = Gluttonberg::Locale.generate_default_locale
+    Gluttonberg::Setting.generate_common_settings
+  end
+  
   before(:all) do
     Gluttonberg::Setting.generate_common_settings
     @params = {
