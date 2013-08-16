@@ -131,6 +131,9 @@ var AssetBrowser = {
     AssetBrowser.browser.find(".cancel").click(AssetBrowser.close);
     // Capture anchor clicks
     AssetBrowser.display.find("a").click(AssetBrowser.click);
+    // Capture size selector change
+    AssetBrowser.display.find("select").change(AssetBrowser.sizeSelectHandler);
+    
     $("#assetsDialog form#asset_search_form").submit(AssetBrowser.search_submit);
 
     AssetBrowser.browser.find("#ajax_new_asset_form").submit(function(e) {
@@ -204,9 +207,9 @@ var AssetBrowser = {
     }
     set_height = wrapper_height = $("body").height();
     window_height = $(window).height() + $(window).scrollTop()
-    if (set_height < window_height) set_height = window_height;
-    $("#assetsDialogOverlay").height(set_height)
-
+    if (set_height < window_height)
+      set_height = window_height;
+    $("#assetsDialogOverlay").height(set_height);
   },
   close: function() {
     AssetBrowser.overlay.css({
@@ -251,6 +254,13 @@ var AssetBrowser = {
       $("#search_tab_results").find("a").click(AssetBrowser.click);
     });
     e.preventDefault();
+  },
+  sizeSelectHandler: function(){
+    var target = $(this);
+    var image_url = target.val();
+    var file_title = target.attr("data-title");
+    insertImageInWysiwyg(image_url,"image",file_title);
+    AssetBrowser.close();
   },
   click: function() {
     var target = $(this);
@@ -664,7 +674,7 @@ function initCollectionAccordion(){
 
       if(accordionContentInner.attr("content-loaded") == "false"){
         accordionContentInner.prepend("<img src='/assets/gb_spinner.gif' class='gb_spinner'/>");
-        $.get("/admin/browser-collection/"+collectionID+".json", function(data){
+        $.get("/admin/browser-collection/"+collectionID+".json?open_link=true", function(data){
           $(".gb_spinner").remove();
           accordionContentInner.prepend(data['markup']);
         });

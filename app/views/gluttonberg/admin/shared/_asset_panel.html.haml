@@ -30,8 +30,15 @@
             %p
               = "Added #{asset.created_at}"
             %p
-              %a{:href => "#{admin_asset_url(asset)}", :rel => "#{asset.category}", :class => "assetLink btn btn-primary" , "data-title" => "#{asset.name}" , "data-thumb" => "#{asset.thumb_small_url}" , "data-jwysiwyg" => "#{(asset.category == "image" ? asset.url_for(:jwysiwyg_image) : asset.url)}" , "data-category" => "#{asset.category}"}
-                Select
+              - if params[:open_link].blank?
+                - if asset.category == "image" && !params[:size_selector].blank?
+                  = select_tag nil, options_for_select(Rails.configuration.thumbnails.collect{|key, val| [val[:label], asset.url_for(key)] }), {"data-title" => "#{asset.name}", :prompt => "Select Image Size"}
+                - else
+                  %a{:href => "#{admin_asset_url(asset)}", :rel => "#{asset.category}", :class => "assetLink btn btn-primary" , "data-title" => "#{asset.name}" , "data-thumb" => "#{asset.thumb_small_url}" , "data-jwysiwyg" => "#{(asset.category == "image" ? asset.url_for(:jwysiwyg_image) : asset.url)}" , "data-category" => "#{asset.category}"}
+                    Select
+              - else
+                %a{:href => "#{admin_asset_url(asset)}", :class => "assetLink btn btn-primary"}
+                  Show
 
 
 
