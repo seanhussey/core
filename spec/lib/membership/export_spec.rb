@@ -13,6 +13,7 @@ module Gluttonberg
 
 
     it "should export data" do
+      Gluttonberg::Member.all{|staff| staff.destroy}
       prepare_export_data
 
       csvData = Member.exportCSV
@@ -32,7 +33,7 @@ module Gluttonberg
       firstDataRow[4].should == "\"#{Gluttonberg::Member.first.groups_name}\""
       firstDataRow[5].should == "#{Gluttonberg::Member.first.bio}"
 
-      Member.all{|staff| staff.destroy}
+      Gluttonberg::Member.all{|staff| staff.destroy}
     end
 
 
@@ -77,11 +78,10 @@ module Gluttonberg
         :password => temp_password,
         :password_confirmation => temp_password
       }
-      staff3 = Member.new(attrs)
+      staff3 = Gluttonberg::Member.new(attrs)
       staff3.save.should == true
 
-      Member.count.should == 3
-      Member.all{|staff| staff.destroy}
+      Gluttonberg::Member.count.should == 3
     end
 
   end
