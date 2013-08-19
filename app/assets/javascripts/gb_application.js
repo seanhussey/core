@@ -906,6 +906,10 @@ var WarnNavigateAway = {
       $(this).change(WarnNavigateAway.changeEventHandler);
       $(this).keydown(WarnNavigateAway.changeEventHandler);
     });
+
+    $('form').submit(function() {
+      window.onbeforeunload = function() { };
+    })
   },
   
   changeEventHandler : function(e){
