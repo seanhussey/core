@@ -1,3 +1,4 @@
+var editingInProgress = false;
 $(document).ready(function() {
   dragTreeManager.init();
   initNestable();
@@ -10,6 +11,7 @@ $(document).ready(function() {
   initGluttonbergUI();
   initFormValidation();
   setUpAudio();
+  WarnNavigateAway.init();
 });
 
 
@@ -701,7 +703,8 @@ function enableRedactor(selector, _linkCount) {
         'outdent', 'indent', '|', 'video',
         'table', '|',  'html'
       ],
-      plugins: ['asset_library_image', 'gluttonberg_pages']
+      plugins: ['asset_library_image', 'gluttonberg_pages'],
+      keyupCallback : WarnNavigateAway.changeEventHandler
     });
 
   });
@@ -821,14 +824,6 @@ function enable_slug_management_on(src_class){
 function initNestable(){
   window.nestableSerializedDataOnPageLoad = [];
 
-  // $('.dd').nestable({ /* config options */
-  // }).on('change', function(e) {
-  //   /* on change event */
-  //   var list   = e.length ? e : $(e.target),
-  //   output = list.data('output'),
-  //   url = list.attr('data-url');
-  // });
-
   $('.dd').each(function(){
     var $list = $(this);
     var $saveButton = $($list.attr('data-saveButton'));
@@ -905,4 +900,28 @@ function initNestable(){
 
 }
 
+var WarnNavigateAway = {
+  init: function(){
+    $('input:not(:button,:submit),textarea,select').each(function(){
+      $(this).change(WarnNavigateAway.changeEventHandler);
+      $(this).keydown(WarnNavigateAway.changeEventHandler);
+    });
+
+    $('form').submit(function() {
+      window.onbeforeunload = function() { };
+    })
+  },
+  
+  changeEventHandler : function(e){
+    if(!editingInProgress){
+      setNavigationAwayConfirm();
+    }
+    editingInProgress = true;
+    function setNavigationAwayConfirm(){
+      window.onbeforeunload = function() {
+        return "Any changes to this page will not be saved.";
+      }; 
+    }
+  }
+}
 
