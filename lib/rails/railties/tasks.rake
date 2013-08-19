@@ -1,3 +1,0 @@
-namespace :gluttonberg do
-  
-end
