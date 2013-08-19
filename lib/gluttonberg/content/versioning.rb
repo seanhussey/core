@@ -37,6 +37,14 @@ module Gluttonberg
         def versioned?
           self.class.versioned?
         end
+
+        def create_version_without_updating_self(attr)
+          deep_copy = Marshal.load( Marshal.dump(self) )
+          deep_copy.assign_attributes(attr)
+          deep_copy.send(:set_new_version)
+          deep_copy.updated_at = Time.now
+          deep_copy.auto_save_version
+        end
       end
 
       module OverrideActsAsVersioned
