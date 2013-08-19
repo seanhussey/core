@@ -13,9 +13,11 @@ module Gluttonberg
 
 
     it "should export data" do
+      Gluttonberg::Member.all{|staff| staff.destroy}
       prepare_export_data
 
       csvData = Member.exportCSV
+      all_records = Member.order("id asc").all
 
       csvData = csvData.split("\n")
       csvData.length.should == 4 #3 data + 1 header rows
@@ -26,14 +28,13 @@ module Gluttonberg
 
       firstDataRow = csvData[1].split(",")
       firstDataRow.length.should == 6 #4 columns
-      firstDataRow[0].should == Gluttonberg::Member.first.id.to_s
-      firstDataRow[1].should == "Abdul"
-      firstDataRow[2].should == "Rauf"
-      firstDataRow[3].should == "test@test.com"
-      firstDataRow[4].should == "\"#{Gluttonberg::Member.first.groups_name}\""
-      firstDataRow[5].should == "#{Gluttonberg::Member.first.bio}"
+      firstDataRow[1].should == all_records.first.first_name
+      firstDataRow[2].should == all_records.first.last_name
+      firstDataRow[3].should == all_records.first.email
+      firstDataRow[4].should == "\"#{all_records.first.groups_name}\""
+      firstDataRow[5].should == "#{all_records.first.bio}"
 
-      Member.all{|staff| staff.destroy}
+      Gluttonberg::Member.all{|staff| staff.destroy}
     end
 
 
@@ -78,11 +79,10 @@ module Gluttonberg
         :password => temp_password,
         :password_confirmation => temp_password
       }
-      staff3 = Member.new(attrs)
+      staff3 = Gluttonberg::Member.new(attrs)
       staff3.save.should == true
 
-      Member.count.should == 3
-      Member.all{|staff| staff.destroy}
+      Gluttonberg::Member.count.should == 3
     end
 
   end

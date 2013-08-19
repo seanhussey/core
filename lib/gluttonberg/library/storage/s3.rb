@@ -180,22 +180,23 @@ module Gluttonberg
 
           def download_orginal_file_from_s3
             FileUtils.mkdir(self.tmp_directory) unless File.exists?(self.tmp_directory)
-            bucket = bucket_handle
-            key = bucket.objects[self.location_on_disk]
-            File.open(self.tmp_location_on_disk, "w", encoding: "ASCII-8BIT") do |f|
-              key.read do |chunk|
-                f.write(chunk)
-              end
-            end
-            key = bucket.objects[self.original_file_on_disk]
-            if key.exists?
-              File.open(self.tmp_original_file_on_disk, "w", encoding: "ASCII-8BIT") do |f|
-                key.read do |chunk|
-                  f.write(chunk)
+            _download_file_from_s3(self.location_on_disk, self.tmp_location_on_disk)
+            _download_file_from_s3(self.original_file_on_disk, self.tmp_original_file_on_disk)
+          end
+
+          private 
+            def _download_file_from_s3(src, dest)
+              FileUtils.mkdir(self.tmp_directory) unless File.exists?(self.tmp_directory)
+              bucket = bucket_handle
+              key = bucket.objects[self.location_on_disk]
+              if key.exists?
+                File.open(self.tmp_original_file_on_disk, "w", encoding: "ASCII-8BIT") do |f|
+                  key.read do |chunk|
+                    f.write(chunk)
+                  end
                 end
               end
             end
-          end
 
         end #InstanceMethods
       end #S3

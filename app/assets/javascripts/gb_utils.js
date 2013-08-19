@@ -1514,7 +1514,7 @@ RedactorPlugins.asset_library_image = {
     this.buttonAddBefore('video', 'asset_library_image', 'Insert image', function()
     {
       var self = this;
-      var url = "/admin/browser?filter=image";
+      var url = "/admin/browser?filter=image&size_selector=true";
       var link = $("<a href='"+url+"'/>");
       var p = $("<p> </p>");
       AssetBrowser.showOverlay()
@@ -1532,7 +1532,6 @@ RedactorPlugins.gluttonberg_pages = {
   init: function()
   {
     var self = this;
-
     var dropdown = {};
 
     if(linkCount > 0){
@@ -1543,7 +1542,6 @@ RedactorPlugins.gluttonberg_pages = {
         }
       };
     }
-
 
     dropdown["link"] = {
       title: 'Insert link',

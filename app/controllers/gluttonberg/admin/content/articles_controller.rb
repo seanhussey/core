@@ -17,7 +17,6 @@ module Gluttonberg
           @articles = Article.where( conditions).order("created_at DESC").paginate(:per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), :page => params[:page])
         end
 
-
         def show
           @comment = Comment.new
         end

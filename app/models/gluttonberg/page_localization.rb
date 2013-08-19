@@ -24,7 +24,12 @@ module Gluttonberg
     # Write an explicit setter for the slug so we can check it’s not a blank
     # value. This stops it being overwritten with an empty string.
     def slug=(new_slug)
-      write_attribute(:slug, new_slug) unless new_slug.blank?
+      unless new_slug.blank?
+        write_attribute(:slug, new_slug.sluglize)
+        if self.locale.default
+          self.page.slug = self.slug
+        end
+      end
     end
 
     # Returns an array of content localizations
