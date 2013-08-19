@@ -1,4 +1,4 @@
-class Repeater < ActiveRecord::Migration
+class CreateRepeater < ActiveRecord::Migration
   def change
     create_table :gb_repeater do |t|
       t.text :title
