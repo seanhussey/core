@@ -52,7 +52,6 @@ module Gluttonberg
               find_article
               auto_save = AutoSave.where(:auto_save_able_id => @article_localization.id, :auto_save_able_type => @article_localization.class.name).first
               unless auto_save.blank?
-                puts JSON.parse(auto_save.data).to_param
                 render :json => JSON.parse(auto_save.data).to_json
               end
             end
