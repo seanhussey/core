@@ -928,8 +928,7 @@ var WarnNavigateAway = {
     editingInProgress = false;
     window.onbeforeunload = function() { };
   }
-}
-
+};
 
 
 var AutoSave = {
