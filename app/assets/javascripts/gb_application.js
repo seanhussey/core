@@ -930,7 +930,8 @@ var WarnNavigateAway = {
 
 var AutoSave = {
   init : function(){
-    $(".retreive_changes").click(AutoSave.retrieve);    
+    $(".retreive_changes").click(AutoSave.retrieve);
+    $(".cancel_changes").click(AutoSave.destroy);
   },
   save : function(autosave_url , delay , form){
     console.log(autosave_url);
@@ -959,22 +960,17 @@ var AutoSave = {
     },delay * 1000);
   },
   retrieve : function(e){
-    console.log();
     $.getJSON($(this).attr("href"), function(data) {
-      console.log(data);
       updateForm(data, "gluttonberg_article_localization");
     });
 
     function updateForm(data, prefix){
-      
       for(index in data){
         var val = data[index];
-        //console.log(index + " " + (typeof val));
         var name = prefix + "["+ index +"]";
         if((typeof val) == "object"){
           updateForm(val, name);
         }else{
-          console.log(name)
           var element = $("[name='"+name+"']");
           if(element.length == 1){
             if(element.hasClass("jwysiwyg")){
@@ -985,8 +981,14 @@ var AutoSave = {
           }
         }
       }
-    }
+    }//updateForm
 
+    e.preventDefault();
+  },
+  destroy: function(e){
+    $.getJSON($(this).attr("href"), function(data) {
+      $(".restore-auto-save").hide();
+    });
     e.preventDefault();
   }
 };

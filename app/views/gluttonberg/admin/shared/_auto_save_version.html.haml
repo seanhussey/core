@@ -7,6 +7,6 @@
     To restore your changes to this page and continue editing, click Restore.
 
   %p.controls
-    = link_to("Restore", admin_retreive_changes_path("ArticleLocalization", params[:id]), :class => "btn retreive_changes")
+    = link_to("Restore", admin_retreive_changes_path(object.class.name, object.id), :class => "btn retreive_changes")
     or
-    = link_to("Cancel", admin_remove_autosaved_version_path("ArticleLocalization", params[:id]), :class => "btn")
+    = link_to("Cancel", admin_remove_autosaved_version_path(object.class.name, object.id), :class => "btn cancel_changes")
