@@ -9,6 +9,7 @@ class Notifier < Gluttonberg::BaseNotifier
   end
   
   def comment_notification(subscriber , article , comment,current_localization_slug = "")
+    setup_from
     @subscriber = subscriber
     @article = article
     @comment = comment
@@ -20,6 +21,7 @@ class Notifier < Gluttonberg::BaseNotifier
   end
   
   def comment_notification_for_admin(admin , article , comment)
+    setup_email
     @admin = admin
     @article = article
     @blog = @article.blog

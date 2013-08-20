@@ -26,6 +26,7 @@ describe Notifier do
   end
 
   it "password_reset_instructions" do
+    Gluttonberg::Setting.generate_common_settings
     mail_object = Notifier.password_reset_instructions(@user.id)
     mail_object.to.should eql([@params[:email]])
     mail_object.subject.should eql("Password Reset Instructions")
