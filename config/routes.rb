@@ -6,7 +6,9 @@ Rails.application.routes.draw do
     namespace :admin do
       root :to => "main#index"
       scope :module => 'content' do
-        match "/autosave/:model_name/:id" => "main#autosave" , :as => :autosave
+        match "/autosave/:model_name/:id" => "auto_save#create" , :as => :autosave
+        get "/remove_autosaved_version/:model_name/:id" => "auto_save#destroy" , :as => :remove_autosaved_version
+        get "/retreive_changes/:model_name/:id" => "auto_save#retreive_changes" , :as => :retreive_changes
         get "/flagged_contents" => "flag#index" , :as => :flagged_contents
         get '/flagged_contents/moderation/:id/:moderation' => "flag#moderation", :as => :flagged_contents_moderation
         resources :pages do

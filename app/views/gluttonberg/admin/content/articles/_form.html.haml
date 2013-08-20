@@ -2,7 +2,7 @@
 - unless @article_localization.blank?
   /= version_listing(@article_localization.versions , @article_localization )
 
-= form_for(@article_localization, :url => url , :html => {:class => "validation"}) do  |f|
+= form_for(@article_localization, :url => url , :html => {:class => "validation auto_save"}) do  |f|
   = gb_error_messages_for(@article_localization)
   .span5
     .tabbable

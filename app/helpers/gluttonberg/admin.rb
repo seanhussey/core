@@ -95,5 +95,20 @@ module Gluttonberg
         action_name == "edit"  || action_name == "update"
       end
 
+      def auto_save(class_name)
+        javascript_tag do
+          %{
+            AutoSave.save("/admin/autosave/#{class_name}/#{params[:id]}", #{Gluttonberg::Setting.get_setting('auto_save_time')});
+          }.html_safe
+        end
+      end
+
+      def auto_save_version(object)
+        auto_save = AutoSave.where(:auto_save_able_id => object.id, :auto_save_able_type => object.class.name).first
+        if !auto_save.blank? && auto_save.updated_at > object.updated_at
+          render :partial => "/gluttonberg/admin/shared/auto_save_version" , :locals => {} , :formats => [:html]
+        end
+      end
+
     end # Admin
 end # Gluttonberg
