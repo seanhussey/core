@@ -12,4 +12,5 @@
         = @page_title.html_safe
 
     .row-fluid
+      = auto_save(@page_localization)
       = render :partial => "form" , :locals => { :url => admin_page_page_localization_path( :page_id => params[:page_id], :id => @page_localization) }

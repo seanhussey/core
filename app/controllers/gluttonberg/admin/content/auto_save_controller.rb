@@ -6,9 +6,8 @@ module Gluttonberg
       class AutoSaveController < Gluttonberg::Admin::BaseController
         before_filter :find_auto_save, :except => [:create]
         def create
-          param_name = ActiveModel::Naming.param_key(params[:model_name].constantize).to_sym
           auto_save = AutoSave.where(prepare_opts).first_or_initialize
-          auto_save.data = params[param_name].to_json
+          auto_save.data = params[AutoSave.param_name_for(params[:model_name])].to_json
           render( :json => (auto_save.save ? "OK" : "Error").to_json )
         end #create
 
