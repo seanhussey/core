@@ -92,6 +92,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.string :state
     t.boolean :hide_in_nav
     t.datetime :published_at
+    t.datetime :deleted_at
     t.timestamps
   end
 
@@ -142,6 +143,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.string :alt
     t.boolean :processed
     t.boolean :copied_to_s3
+    t.datetime :deleted_at
     t.timestamps
   end
 
@@ -335,6 +337,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.integer :fb_icon_id
     t.string :previous_slug
     t.datetime :published_at
+    t.datetime :deleted_at
     t.timestamps
   end
 
@@ -347,6 +350,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.column :disable_comments , :boolean , :default => false
     t.datetime :published_at
     t.string :previous_slug
+    t.datetime :deleted_at
     t.timestamps
   end
 
@@ -362,6 +366,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.datetime :notification_sent_at
     t.boolean :spam , :default =>  false
     t.float   :spam_score
+    t.datetime :deleted_at
     t.timestamps
   end
 

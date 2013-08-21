@@ -1,7 +1,7 @@
 module Gluttonberg
   class Locale  < ActiveRecord::Base
-    include Content::SlugManagement
     self.table_name = "gb_locales"
+    include Content::SlugManagement    
 
     has_many :page_localizations,  :class_name => "Gluttonberg::PageLocalization" , :dependent => :destroy
 

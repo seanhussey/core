@@ -1,5 +1,4 @@
 # encoding: utf-8
-require 'will_paginate/array'
 module Gluttonberg
   class Search
     def self.find(query, opts = {} )

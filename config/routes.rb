@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   scope :module => 'gluttonberg' do
     namespace :admin do
       root :to => "main#index"
+      get "/trash" => "trash#index" , :as => :trash
       scope :module => 'content' do
         match "/autosave/:model_name/:id" => "auto_save#create" , :as => :autosave
         get "/remove_autosaved_version/:model_name/:id" => "auto_save#destroy" , :as => :remove_autosaved_version

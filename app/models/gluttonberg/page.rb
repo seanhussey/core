@@ -3,9 +3,11 @@
 
 module Gluttonberg
   class Page < ActiveRecord::Base
+    self.table_name = "gb_pages"
     include Content::Publishable
     include Content::SlugManagement
     include Content::PageFinder
+    is_trashable
 
     belongs_to :user
     has_many :localizations, :class_name => "Gluttonberg::PageLocalization"   , :dependent => :destroy
@@ -22,8 +24,6 @@ module Gluttonberg
     end
 
     validates_presence_of :name , :description_name
-
-    self.table_name = "gb_pages"
 
     after_save   :check_for_home_update
 

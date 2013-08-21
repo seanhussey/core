@@ -12,6 +12,7 @@ require File.join(content, "content", "despamilator")
 require File.join(content, "content", "page_repairer")
 require File.join(content, "content", "page_duplicate")
 require File.join(content, "content", "page_finder")
+require File.join(content, "content", "trashable")
 
 module Gluttonberg
   # The content module contains a whole bunch classes and mixins related to the
