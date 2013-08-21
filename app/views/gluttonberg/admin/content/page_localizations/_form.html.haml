@@ -1,9 +1,6 @@
 - @page = @page_localization.page
-= form_for(@page_localization, :url => url) do  |f|
-
+= form_for(@page_localization, :url => url, :html => {:class => "auto_save"}) do  |f|
   = gb_error_messages_for(@page_localization)
-
-
 
   .span5
     .tabbable

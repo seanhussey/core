@@ -12,6 +12,7 @@ $(document).ready(function() {
   initFormValidation();
   setUpAudio();
   WarnNavigateAway.init();
+  AutoSave.init();
 });
 
 
@@ -879,11 +880,13 @@ function initNestable(){
   }
 
   function enableButton(saveButton){
+    WarnNavigateAway.changeEventHandler();
     saveButton.removeAttr('disabled');
     saveButton.addClass('btn-primary');
   }
 
   function disableButton(saveButton){
+    WarnNavigateAway.removeEventHandler();
     saveButton.attr('disabled', 'disabled');
     saveButton.removeClass('btn-primary');
   }
@@ -907,9 +910,7 @@ var WarnNavigateAway = {
       $(this).keydown(WarnNavigateAway.changeEventHandler);
     });
 
-    $('form').submit(function() {
-      window.onbeforeunload = function() { };
-    })
+    $('form').submit(WarnNavigateAway.removeEventHandler);
   },
   
   changeEventHandler : function(e){
@@ -922,6 +923,118 @@ var WarnNavigateAway = {
         return "Any changes to this page will not be saved.";
       }; 
     }
+  },
+  removeEventHandler : function(){
+    editingInProgress = false;
+    window.onbeforeunload = function() { };
   }
-}
+};
 
+
+var AutoSave = {
+  init : function(class_name){
+    $(".retreive_changes").click(AutoSave.retrieve);
+    $(".cancel_changes").click(AutoSave.destroy);
+  },
+  save : function(autosave_url, delay , form){
+    console.log(autosave_url + "  " + editingInProgress);
+    console.log(delay * 1000);
+    setTimeout(function(){
+      if(editingInProgress){
+        if(form == undefined){
+          form = $("form.auto_save");
+        }
+        if(form != null && form.length > 0 ){
+          $.ajax({
+            url: autosave_url,
+            data: form.serialize(),
+            type: "POST",
+            success: function(data) {
+              console.log(data)
+            },
+            complete: function(){
+              AutoSave.save(autosave_url,delay);
+            }
+          });      
+        }
+      }else{
+        AutoSave.save(autosave_url,delay);
+      }
+    },delay * 1000);
+  },
+  retrieve : function(e){
+    var self = $(this);
+    $.getJSON(self.attr("href"), function(data) {
+      updateForm(data, self.attr("data-param-name"));
+    });
+
+    function updateForm(data, prefix){
+
+      for(index in data){
+        var val = data[index];
+        var name = prefix + "["+ index +"]";
+        console.log(name + "  " + (typeof val))
+        if((typeof val) == "object"){
+          if(val instanceof Array){
+            var element = $("[name='"+name+"']");
+            if(element.length == 0){
+              element = $("[name='"+name+"[]']");
+            }
+            if(element.length >= 1 && element.is("select")){
+              element.find("option").prop("selected", false);
+              for(option in val){
+                element.find("option[value='"+val[option]+"']").prop("selected", true);
+              }
+            }
+
+          }else{
+            updateForm(val, name);
+          }
+        }else{
+          var element = $("[name='"+name+"']");
+          console.log(element.length)
+          if(element.length >= 1){
+            if(element.hasClass("jwysiwyg")){
+              element.redactor('set', val);
+            }else if(element.attr("type") == "file"){
+              // ignore
+            }else if(element.attr("type") == "password"){
+              // ignore
+            }else if(element.attr("type") == "checkbox"){
+              element.attr("checked", "checked");
+            }else if(element.attr("type") == "radio"){
+              // ignore
+            }else if(element.is(".choose_asset_hidden_field")){
+              element.val(val);
+              if(!blank(val)){
+                $.getJSON("/admin/assets/"+val+".json", function(data){
+                  console.log(data);
+                  data = data["asset"];
+                  if (element.parents(".asset_selector_wrapper").find("img").length > 0) {
+                    element.parents(".asset_selector_wrapper").find("img").attr('src', data["small_thumb"]);
+                  } else {
+                    element.parents(".asset_selector_wrapper").prepend("<img src='" + data["small_thumb"] + "' />");
+                  }
+                  element.parents(".caption").find("h5").html(data["name"]);
+                });
+              }else{
+                //delete
+              }
+              
+            }else{
+              element.val(val);
+            }
+          }
+        }
+      }
+    }//updateForm
+
+    e.preventDefault();
+  },
+  destroy: function(e){
+    $.getJSON($(this).attr("href"), function(data) {
+      $(".restore-auto-save").hide();
+    });
+    e.preventDefault();
+  }
+};

@@ -31,15 +31,15 @@ Gem::Specification.new do |s|
   s.add_dependency 'ruby-mp3info', '0.8'
   s.add_dependency 'paperclip', '3.5.1'
   s.add_dependency 'acl9', '0.12.0'
-  s.add_dependency 'sitemap_generator', '4.1.1'
+  s.add_dependency 'sitemap_generator', '4.2.0'
   s.add_dependency 'domainatrix', '0.0.11'
-  s.add_dependency 'aws-sdk', '1.14.1'
+  s.add_dependency 'aws-sdk', '1.15.0'
   s.add_dependency 'highline', '1.6.19'
   s.add_dependency 'haml', '4.0.3'
   s.add_dependency 'sass', '3.2.10'
   s.add_dependency 'unicorn', '4.6.3'
   s.add_dependency 'foreman', '0.63.0'
+  s.add_dependency 'rabl', "0.8.6"
   s.add_development_dependency 'rspec-rails', '2.14.0'
   s.add_development_dependency 'fakes3', '0.1.5'
-
 end

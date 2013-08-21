@@ -1,0 +1,12 @@
+.restore-auto-save
+  %h4
+    Unsaved changes
+  %p
+    It looks like previous edits you made to this page have not yet been saved. 
+    %br
+    To restore your changes to this page and continue editing, click Restore.
+
+  %p.controls
+    = link_to("Restore", admin_retreive_changes_path(object.class.name, object.id), :class => "btn retreive_changes", "data-param-name" => Gluttonberg::AutoSave.param_name_for(object.class.name))
+    or
+    = link_to("Cancel", admin_remove_autosaved_version_path(object.class.name, object.id), :class => "btn cancel_changes")

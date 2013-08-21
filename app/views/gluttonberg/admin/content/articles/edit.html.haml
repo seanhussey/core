@@ -8,4 +8,5 @@
         %h1
           = @page_title.html_safe
 
+      = auto_save(@article.current_localization)
       = render :partial => "form", :locals => {:url => admin_blog_article_path(@blog, @article , :localization_id => params[:localization_id])}
