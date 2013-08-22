@@ -29,8 +29,7 @@
                 %td
                   =  record.title_or_name?
                 %td.controls{:width => 200}
-                  / = link_to "View Posts", admin_blog_articles_path(blog) , :class => "btn btn-primary"
-                  / - if current_user.super_admin?
-                  /   = link_to "Edit", edit_admin_blog_path(blog) , :class => "btn"
+                  = link_to "Restore", admin_restore_trash_item_path(record.class.name, record.id) , :class => "btn", :confirm => "Are you sure?"
+
                   = link_to "Delete", admin_destroy_trash_item_path(record.class.name, record.id) , :class => "btn btn-danger", :confirm => "Are you sure?", :method => "delete"
         = will_paginate(@all_records)

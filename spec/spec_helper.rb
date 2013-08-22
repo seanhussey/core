@@ -47,7 +47,7 @@ def clean_all_data
   Gluttonberg::Article.with_deleted.each{|obj| obj.destroy!}
   Gluttonberg::Comment.with_deleted.each{|obj| obj.destroy!}
   StaffProfile.all.each{|staff| staff.destroy}
-  Gluttonberg::Gallery.all.each{|obj| obj.destroy}
+  Gluttonberg::Gallery.with_deleted.each{|obj| obj.destroy!}
   Gluttonberg::CommentSubscription.all.each{|obj| obj.destroy}
   Gluttonberg::Feed.all.each{|obj| obj.destroy}
   Gluttonberg::AutoSave.all.each{|obj| obj.destroy}

@@ -1,30 +1,38 @@
 module Gluttonberg
   module Admin
     class TrashController < Gluttonberg::Admin::BaseController
+      before_filter :find_object, :only => [:destroy, :restore]
       def index
         load_models_in_development
         @all_records = Gluttonberg::Content::Trashable.all_trash        
         @all_records = @all_records.paginate(:page => params[:page], :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"))
       end
 
+      def empty
+        Gluttonberg::Content::Trashable.empty_trash
+        flash[:notice] = "The Trash bin is successfully emptied."
+        redirect_to admin_trash_path
+      end
+
       def destroy
-        klass = params[:class_name].constantize
-        object = klass.only_deleted.where(:id => params[:id]).first
-        unless object.blank?
-          title = object.title_or_name?
-          type = params[:class_name].demodulize
-          if object.destroy
-            flash[:notice] = "The #{type} was successfully deleted."
+        unless @object.blank?
+          if @object.destroy
+            flash[:notice] = "The #{@type} was successfully deleted."
           else
-            flash[:error] = "There was an error deleting the #{type}."
+            flash[:error] = "There was an error deleting the #{@type}."
           end
         end
         redirect_to admin_trash_path
       end
 
-      def empty
-        Gluttonberg::Content::Trashable.empty_trash
-        flash[:notice] = "The Trash bin is successfully emptied."
+      def restore
+        unless @object.blank?
+          if @object.recover
+            flash[:notice] = "The #{@type} was successfully restored."
+          else
+            flash[:error] = "There was an error restoring the #{@type}."
+          end
+        end
         redirect_to admin_trash_path
       end
 
@@ -45,6 +53,14 @@ module Gluttonberg
             rescue
               # ignore
             end
+          end
+        end
+
+        def find_object
+          klass = params[:class_name].constantize
+          @object = klass.only_deleted.where(:id => params[:id]).first
+          unless @object.blank?
+            @type = params[:class_name].demodulize
           end
         end
     end

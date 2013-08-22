@@ -8,7 +8,7 @@ Rails.application.routes.draw do
       get "/trash" => "trash#index" , :as => :trash
       get "/empty-trash" => "trash#empty" , :as => :empty_trash
       delete "/trash/:class_name/:id/destroy" => "trash#destroy" , :as => :destroy_trash_item
-      get "/empty-trash" => "trash#empty" , :as => :empty_trash
+      get "/trash/:class_name/:id/restore" => "trash#restore" , :as => :restore_trash_item
 
       scope :module => 'content' do
         match "/autosave/:model_name/:id" => "auto_save#create" , :as => :autosave

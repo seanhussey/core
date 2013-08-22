@@ -13,6 +13,7 @@ class BlogMigration < ActiveRecord::Migration
       t.integer :fb_icon_id
       t.string :previous_slug
       t.datetime :published_at
+      t.datetime :deleted_at
       t.timestamps
     end
 
@@ -25,6 +26,7 @@ class BlogMigration < ActiveRecord::Migration
       t.column :disable_comments , :boolean , :default => false
       t.datetime :published_at
       t.string :previous_slug
+      t.datetime :deleted_at
       t.timestamps
     end
 
@@ -40,6 +42,7 @@ class BlogMigration < ActiveRecord::Migration
       t.datetime :notification_sent_at
       t.boolean :spam , :default =>  false
       t.float   :spam_score
+      t.datetime :deleted_at
       t.timestamps
     end
 

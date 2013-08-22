@@ -79,6 +79,7 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.string :state
       t.boolean :hide_in_nav
       t.datetime :published_at
+      t.datetime :deleted_at
       t.timestamps
     end
 
@@ -129,6 +130,7 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.string :alt
       t.boolean :processed
       t.boolean :copied_to_s3
+      t.datetime :deleted_at
       t.timestamps
     end
 
@@ -163,10 +165,7 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.integer :image_id
       t.integer :position
       t.timestamps
-    end
-
-
-    
+    end    
 
     create_table :tags do |t|
       t.string :name
@@ -216,6 +215,7 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.column :css_prefix , :string , :limit => 255
       t.column :css_postfix , :string , :limit => 255
       t.column :position , :integer
+      t.datetime :deleted_at
       t.timestamps
     end
 
@@ -266,6 +266,7 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.column :state , :string
       t.datetime :published_at
       t.boolean :collection_imported , :default => false
+      t.datetime :deleted_at
       t.timestamps
     end
 

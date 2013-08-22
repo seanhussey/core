@@ -231,6 +231,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.column :css_prefix , :string , :limit => 255
     t.column :css_postfix , :string , :limit => 255
     t.column :position , :integer
+    t.datetime :deleted_at
     t.timestamps
   end
 
@@ -281,6 +282,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.column :state , :string
     t.datetime :published_at
     t.boolean :collection_imported , :default => false
+    t.datetime :deleted_at
     t.timestamps
   end
 
