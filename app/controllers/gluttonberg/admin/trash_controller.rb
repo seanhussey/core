@@ -5,7 +5,7 @@ module Gluttonberg
         load_models_in_development
 
         @all_records = []
-        Gluttonberg::Content::Trashable.models.each do |model|
+        Gluttonberg::Content::Trashable.classes.each do |model|
           model = model.constantize
           @all_records << model.only_deleted
         end
@@ -23,19 +23,9 @@ module Gluttonberg
       private
         def load_models_in_development
           if Rails.env == "development"
-            load_gb_models
+            Rails.application.eager_load!
           end
         end
-
-        def load_gb_models
-          Dir.glob(File.expand_path("app/models/*.rb", Rails.root)).each do |model_file|
-          require model_file
-        end
-          Dir.glob(File.expand_path("app/models/*.rb", Rails.root)).each do |model_file|
-            require model_file
-          end
-        end
-
     end
   end
 end
