@@ -2,6 +2,7 @@ module Gluttonberg
 
   def self.require_dependencies
     require 'engine' if defined?(Rails) && Rails::VERSION::MAJOR >= 3
+    require 'active_support/concern'
     require 'haml'
     require 'authlogic'
     require 'will_paginate'

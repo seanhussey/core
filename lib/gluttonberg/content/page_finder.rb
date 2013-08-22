@@ -1,12 +1,7 @@
 module Gluttonberg
   module Content
     module PageFinder
-
-      def self.included(klass)
-        klass.class_eval do
-          extend  ClassMethods
-        end
-      end
+      extend ActiveSupport::Concern
 
       module ClassMethods
         # A custom finder used to find a page + locale combination which most
