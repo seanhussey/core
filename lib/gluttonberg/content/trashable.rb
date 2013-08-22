@@ -3,6 +3,7 @@ module Gluttonberg
     # A mixin which allows for any arbitrary model to be trashable (soft delete)
     # In reality this is behaving like a wrapper on acts_as_paranoid
     module Trashable
+      extend ActiveSupport::Concern
       # A collection of the classes which have this module included in it.
       @classes = []
 
@@ -24,13 +25,6 @@ module Gluttonberg
         @classes
       end
 
-      def self.included(klass)
-        klass.class_eval do
-          extend  ClassMethods
-          include InstanceMethods
-        end
-      end
-
       module ClassMethods
 
         def is_trashable(options = {}, &extension)
@@ -46,24 +40,22 @@ module Gluttonberg
 
       end
 
-      module InstanceMethods
-        def trashable?
-          self.class.trashable?
-        end
-
-        def title_or_name?
-          if self.respond_to?(:title)
-            self.title
-          elsif self.respond_to?(:name)
-            self.name
-          else
-            id
-          end
-        end
-      end
-
       module OverrideActsAsParanoid
         
+      end
+
+      def trashable?
+        self.class.trashable?
+      end
+
+      def title_or_name?
+        if self.respond_to?(:title)
+          self.title
+        elsif self.respond_to?(:name)
+          self.name
+        else
+          id
+        end
       end
 
     end

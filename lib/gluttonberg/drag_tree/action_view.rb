@@ -48,10 +48,7 @@ module Gluttonberg
         def drag_tree_row_id(model)
           "node-#{model.id}"
         end
-
-
-      end
-
+      end #helpers
     end
   end #DragTree
 end  #Gluttonberg
