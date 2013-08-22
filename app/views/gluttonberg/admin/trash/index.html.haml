@@ -7,9 +7,11 @@
         %h1
           = @page_title
       .subnav
-          
+        - unless @all_records.blank?
+          = sub_nav do
+            = link_to "Empty", admin_empty_trash_path, :confirm => "Are you sure?"
 
-      - if @all_records.empty?
+      - if @all_records.blank?
         %p.empty Trash bin is empty
       - else
         %table{:cellpadding => 0, :cellspacing => 0, :summary => "Blogs" , :class => "table table-bordered "}
@@ -30,6 +32,5 @@
                   / = link_to "View Posts", admin_blog_articles_path(blog) , :class => "btn btn-primary"
                   / - if current_user.super_admin?
                   /   = link_to "Edit", edit_admin_blog_path(blog) , :class => "btn"
-                  / - if can? :destroy , Gluttonberg::Blog
-                  /   = link_to "Delete", delete_admin_blog_path(blog) , :class => "btn btn-danger"
+                  = link_to "Delete", admin_destroy_trash_item_path(record.class.name, record.id) , :class => "btn btn-danger", :confirm => "Are you sure?", :method => "delete"
         = will_paginate(@all_records)

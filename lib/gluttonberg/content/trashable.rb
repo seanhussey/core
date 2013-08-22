@@ -25,11 +25,26 @@ module Gluttonberg
         @classes
       end
 
+      def self.all_trash
+        all_records = []
+        Gluttonberg::Content::Trashable.classes.each do |model|
+          model = model.constantize
+          all_records << model.only_deleted
+        end
+        all_records = all_records.flatten
+        all_records = all_records.sort{|x,y| y.deleted_at <=> x.deleted_at}
+      end
+
+      def self.empty_trash
+        self.all_trash.each do |item|
+          item.destroy!
+        end
+      end
+
       module ClassMethods
 
         def is_trashable(options = {}, &extension)
           acts_as_paranoid
-          puts "-----#{self.name}"
           Trashable.register(self.name)
           include OverrideActsAsParanoid
         end

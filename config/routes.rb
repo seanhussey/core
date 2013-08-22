@@ -6,6 +6,10 @@ Rails.application.routes.draw do
     namespace :admin do
       root :to => "main#index"
       get "/trash" => "trash#index" , :as => :trash
+      get "/empty-trash" => "trash#empty" , :as => :empty_trash
+      delete "/trash/:class_name/:id/destroy" => "trash#destroy" , :as => :destroy_trash_item
+      get "/empty-trash" => "trash#empty" , :as => :empty_trash
+
       scope :module => 'content' do
         match "/autosave/:model_name/:id" => "auto_save#create" , :as => :autosave
         get "/remove_autosaved_version/:model_name/:id" => "auto_save#destroy" , :as => :remove_autosaved_version
