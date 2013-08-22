@@ -6,10 +6,7 @@ module Gluttonberg
     end
 
     module ActionController
-      def self.included(base)
-        base.extend(ClassMethods)
-      end
-
+      extend ActiveSupport::Concern
 
       module ClassMethods
         def record_history(object_name, title_field_name="", options = {})
@@ -56,8 +53,6 @@ module Gluttonberg
           end
         end
 
-
-
         #this method is used to get title or name for the object
         def object_title
           unless object.blank?
@@ -80,12 +75,8 @@ module Gluttonberg
             end
           end
         end
-
       end #ControllerHelperClassMethods
-
-
     end
-
   end #RecordHistory
 end #Gluttonberg
 
