@@ -101,6 +101,7 @@ module Gluttonberg
         Gluttonberg::Content::CleanHtml.setup
         Gluttonberg::PageDescription.setup
         Gluttonberg::Content::Trashable.setup
+        Gluttonberg::Content::Validations.setup
 
         # register content class here.
         # It is required for lazyloading environments.
