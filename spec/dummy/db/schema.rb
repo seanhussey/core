@@ -392,6 +392,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.text :seo_keywords
     t.text :seo_description
     t.integer :fb_icon_id
+    t.datetime :deleted_at
     t.timestamps
   end
 

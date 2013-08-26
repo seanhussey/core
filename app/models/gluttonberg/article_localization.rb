@@ -3,6 +3,7 @@ module Gluttonberg
     self.table_name = "gb_article_localizations"
     belongs_to :article  , :class_name => "Gluttonberg::Article"
     belongs_to :locale
+    is_trashable(:hidden => true)
 
     belongs_to :fb_icon , :class_name => "Gluttonberg::Asset" , :foreign_key => "fb_icon_id"
     belongs_to :featured_image , :foreign_key => :featured_image_id , :class_name => "Gluttonberg::Asset"
