@@ -39,7 +39,6 @@ module Gluttonberg
       })
       staff.valid?.should eql(true)
       staff.face_id = "adf"
-      puts staff.face_id
       staff.valid?.should eql(false)
       staff.face_id = "343"
       staff.valid?.should eql(true)
