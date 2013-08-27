@@ -22,6 +22,24 @@ module Gluttonberg
           end
         end
       end
+
+      # it validates all integer columns values - database schema
+      def integer_values
+        self.class.columns.each do |column|
+          if column.type == :integer
+            before_type_cast = :"#{column.name}_before_type_cast"
+            raw_value = self.send(before_type_cast) if self.respond_to?(before_type_cast)
+            raw_value ||= self.send(column.name)
+            unless raw_value.blank?
+              raw_value = raw_value.to_i if raw_value.to_s =~ /\A[+-]?\d+\Z/
+              unless raw_value.is_a? Integer
+                errors.add(column.name, "is not a number")
+              end
+            end
+          end
+        end
+      end
+
     end
   end
 end

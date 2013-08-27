@@ -29,5 +29,24 @@ module Gluttonberg
       staff.current_localization.valid?.should eql(false)
       staff.valid?.should eql(false)
     end
+
+    it "should validate all integer fields in both main and localized models" do
+      staff = StaffProfile.new_with_localization({
+        :name => "Abdul",
+        :face_id => 5,
+        :bio => "Abdul Rauf is a web and mobile programmer.",
+        :handwritting_id => 9
+      })
+      staff.valid?.should eql(true)
+      staff.face_id = "adf"
+      puts staff.face_id
+      staff.valid?.should eql(false)
+      staff.face_id = "343"
+      staff.valid?.should eql(true)
+
+      staff.current_localization.handwritting_id = "adfa"
+      staff.current_localization.valid?.should eql(false)
+      staff.valid?.should eql(false)
+    end
   end
 end

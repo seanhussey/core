@@ -5,6 +5,7 @@ class <%= class_name %> < ActiveRecord::Base
   attr_accessible <%= attributes.collect{|attr| ":#{attr_db_name_wrapper(attr)}"}.join(",") %>, :slug, :seo_title, :seo_keywords, :seo_description, :fb_icon_id, :state, :position , :published_at
   # it validates all columns values using max limit from database schema
   validate :max_field_length
+  validate :integer_values
   <% if localized? %>include Gluttonberg::Content::Localization
   delegate :fb_icon , :to =>  :current_localization
   <% attributes.find_all{|attr| ['asset', 'image','video','document','audio'].include?(attr.type.to_s) }.each do |attr| %>
@@ -18,6 +19,7 @@ class <%= class_name %> < ActiveRecord::Base
     belongs_to :fb_icon , :class_name => "Gluttonberg::Asset" , :foreign_key => "fb_icon_id"
     # it validates all columns values using max limit from database schema
     validate :max_field_length
+    validate :integer_values
   <% attributes.find_all{|attr| ['asset', 'image','video','document', 'audio'].include?(attr.type.to_s) }.each do |attr| %>
     belongs_to :<%=attr_name_wrapper(attr)%> , :foreign_key => "<%=attr_db_name_wrapper(attr)%>" , :class_name => "Gluttonberg::Asset"
   <% end %>end<% end %>
