@@ -42,6 +42,12 @@ module Gluttonberg
       staff.valid?.should eql(false)
       staff.face_id = "343"
       staff.valid?.should eql(true)
+      staff.face_id = "-343"
+      staff.valid?.should eql(true)
+      staff.face_id = "+343"
+      staff.valid?.should eql(true)
+      staff.face_id = "=343"
+      staff.valid?.should eql(false)
 
       staff.current_localization.handwritting_id = "adfa"
       staff.current_localization.valid?.should eql(false)
@@ -72,6 +78,11 @@ module Gluttonberg
       staff.valid?.should eql(false)
       staff.package = "123456.3444"
       staff.valid?.should eql(false)
+      
+      staff.package = "-123456.3"
+      staff.valid?.should eql(true)
+      staff.package = "+123456.3"
+      staff.valid?.should eql(true)
     end
   end
 end
