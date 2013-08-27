@@ -1,0 +1,33 @@
+require 'spec_helper'
+
+module Gluttonberg
+  describe Content::Validations do
+
+    before :all do
+      @locale = Gluttonberg::Locale.generate_default_locale
+    end
+
+    after :all do
+      clean_all_data
+    end
+
+    it "should validate all string fields in both main and localized models" do
+      staff = StaffProfile.new_with_localization({
+        :name => "Abdul",
+        :face_id => 5,
+        :bio => "Abdul Rauf is a web and mobile programmer.",
+        :handwritting_id => 9
+      })
+      staff.valid?.should eql(true)
+      staff.name = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin condimentum dui eget felis ullamcorper ornare. Nullam lobortis cursus massa. Duis ut commodo justo. Nam consequat, massa non rhoncus fermentum, neque velit ullamcorper massa, non tincidunt sapien lacus et ni"
+      staff.valid?.should eql(false)
+      #255 characters
+      staff.name = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin condimentum dui eget felis ullamcorper ornare. Nullam lobortis cursus massa. Duis ut commodo justo. Nam consequat, massa non rhoncus fermentum, neque velit ullamcorper massa, non tincidunt sap"
+      staff.valid?.should eql(true)
+
+      staff.current_localization.seo_title = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin condimentum dui eget felis ullamcorper ornare. Nullam lobortis cursus massa. Duis ut commodo justo. Nam consequat, massa non rhoncus fermentum, neque velit ullamcorper massa, non tincidunt sapien lacus et ni"
+      staff.current_localization.valid?.should eql(false)
+      staff.valid?.should eql(false)
+    end
+  end
+end

@@ -5,8 +5,10 @@ class StaffProfile < ActiveRecord::Base
 
   import_export_csv(["name"], ["bio"]) 
   attr_accessible :name, :face_id
+  validate :max_field_length
 
   is_localized do
+    validate :max_field_length
   end
 
   def title_or_name?
