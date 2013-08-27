@@ -7,15 +7,16 @@ module Gluttonberg
       extend ActiveSupport::Concern
 
       included do
-        cattr_accessor :localized, :localized_model, :localized_model_name, :localized_fields, :locale;
+        cattr_accessor :localized, :localized_model, :localized_model_name, :localized_fields, :locale, :parent_key;
         self.localized = false
         self.localized_fields = []
       end
       
       module ClassMethods
-        def is_localized(&blk)
+        def is_localized(opts={}, &blk)
           # Why yes, this is localized.
           self.localized = true
+          self.parent_key = (opts[:parent_key] || :parent_id)
 
           # Create the localization model
           create_localization_model(&blk)
@@ -79,7 +80,7 @@ module Gluttonberg
             self.localized_model.class_eval(&blk)
             self.localized_model.send(:include, ModelLocalization)
 
-            self.localized_model.attr_accessible :locale_id , :parent_id
+            self.localized_model.attr_accessible :locale_id , self.parent_key
 
             create_acccessors_for_localization_model
             set_associations_for_localization_model
@@ -89,7 +90,7 @@ module Gluttonberg
           def create_acccessors_for_localization_model
             # For each property on the localization model, create an accessor on
             # the parent model, without over-writing any of the existing methods.
-            exclusions = [:id, :created_at, :updated_at, :locale_id , :parent_id]
+            exclusions = [:id, :created_at, :updated_at, :locale_id , self.parent_key]
             localized_properties = self.localized_model.column_names.reject { |p| exclusions.include? p }
             non_localized_properties = self.column_names.reject { |p| exclusions.include? p }
 
@@ -111,9 +112,9 @@ module Gluttonberg
 
           def set_associations_for_localization_model
             # Associate the model and it’s localization
-            has_many  :localizations, :class_name => self.localized_model.name.to_s, :foreign_key => :parent_id, :dependent => :destroy
-            has_one  :default_localization, :class_name => self.localized_model.name.to_s, :foreign_key => :parent_id, :conditions =>  proc { ["locale_id = ?", Locale.first_default.id] }
-            self.localized_model.belongs_to(:parent, :class_name => self.name, :foreign_key => :parent_id)
+            has_many  :localizations, :class_name => self.localized_model.name.to_s, :foreign_key => self.parent_key, :dependent => :destroy
+            has_one  :default_localization, :class_name => self.localized_model.name.to_s, :foreign_key => self.parent_key, :conditions =>  proc { ["locale_id = ?", Locale.first_default.id] }
+            self.localized_model.belongs_to(:parent, :class_name => self.name, :foreign_key => self.parent_key)
           end
 
           def set_hooks_for_localization_model
@@ -146,7 +147,7 @@ module Gluttonberg
         def load_localization(locale, fallback = true)
           opts = {}
           opts[:locale_id] = locale.kind_of?(Gluttonberg::Locale) ? locale.id: locale
-          opts[:parent_id] = self.id
+          opts[self.parent_key] = self.id
           # Go and find the localization
           self.current_localization = nil
           self.current_localization = self.class.localized_model.where(opts).first
@@ -166,7 +167,7 @@ module Gluttonberg
         def create_localization(locale)
           locale_id = locale.kind_of?(Gluttonberg::Locale) ? locale.id: locale
           unless locale.blank?
-            loc = self.class.localized_model.where(:locale_id => locale_id, :parent_id => self.id).first
+            loc = self.class.localized_model.where(:locale_id => locale_id, self.parent_key => self.id).first
             if loc.blank?
               tmp_attributes = {}
               unless self.current_localization.blank?
