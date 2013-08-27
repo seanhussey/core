@@ -47,5 +47,31 @@ module Gluttonberg
       staff.current_localization.valid?.should eql(false)
       staff.valid?.should eql(false)
     end
+
+    it "should validate all decimal fields" do
+      staff = StaffProfile.new_with_localization({
+        :name => "Abdul",
+        :face_id => 5,
+        :bio => "Abdul Rauf is a web and mobile programmer.",
+        :handwritting_id => 9
+      })
+      staff.valid?.should eql(true)
+      staff.package = "adf"
+      staff.valid?.should eql(false)
+      staff.package = "343"
+      staff.valid?.should eql(true)
+      staff.package = "343.34"
+      staff.valid?.should eql(true)
+      staff.package = "123456.3"
+      staff.valid?.should eql(true)
+      staff.package = "123456.33"
+      staff.valid?.should eql(true)
+      staff.package = "123456.333"
+      staff.valid?.should eql(true)
+      staff.package = "1234567.3"
+      staff.valid?.should eql(false)
+      staff.package = "123456.3444"
+      staff.valid?.should eql(false)
+    end
   end
 end

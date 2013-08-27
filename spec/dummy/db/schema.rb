@@ -429,6 +429,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
   create_table :staff_profiles, :force => true do |t|
     t.string :name
     t.integer :face_id
+    t.decimal :package, :precision => 6, :scale => 3
 
     t.string :slug
     t.string :previous_slug
