@@ -11,6 +11,7 @@ module Gluttonberg
         ::ActiveRecord::Base.send :include, Gluttonberg::Content::Validations
       end
 
+      # it validates all columns values using max limit from database schema
       def max_field_length
         self.class.columns.each do |column|
           unless column.limit.blank?
