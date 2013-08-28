@@ -3,7 +3,7 @@ module Gluttonberg
     class TrashController < Gluttonberg::Admin::BaseController
       before_filter :find_object, :only => [:destroy, :restore]
       def index
-        load_models_in_development
+        ModelLoader.load_models_in_development
         @all_records = Gluttonberg::Content::Trashable.all_trash        
         @all_records = @all_records.paginate(:page => params[:page], :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"))
       end
@@ -37,24 +37,6 @@ module Gluttonberg
       end
 
       private
-        def load_models_in_development
-          if Rails.env == "development"
-            load_models_for(Rails.root)
-            Rails.application.railties.engines.each do |r|
-              load_models_for(r.root)
-            end
-          end
-        end
-
-        def load_models_for(root)
-          Dir.glob("#{root}/app/models/**/*.rb") do |model_path|
-            begin
-              require model_path
-            rescue
-              # ignore
-            end
-          end
-        end
 
         def find_object
           klass = params[:class_name].constantize

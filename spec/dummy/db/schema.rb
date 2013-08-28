@@ -302,6 +302,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.timestamps
   end
   
+  ModelLoader.load_models_in_development
 
   begin
     Gluttonberg::PlainTextContentLocalization.create_versioned_table
