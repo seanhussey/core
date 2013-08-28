@@ -2,9 +2,11 @@ module Gluttonberg
 
   def self.require_dependencies
     require 'engine' if defined?(Rails) && Rails::VERSION::MAJOR >= 3
+    require 'active_support/concern'
     require 'haml'
     require 'authlogic'
     require 'will_paginate'
+    require 'will_paginate/array'
     require 'zip/zip'
     require 'acts_as_tree'
     require 'acts_as_versioned'
@@ -18,6 +20,7 @@ module Gluttonberg
     require 'sitemap_generator'
     require 'jeditable-rails'
     require 'rabl'
+    require 'acts_as_paranoid'
   end
 
   def self.require_gluttonberg_components

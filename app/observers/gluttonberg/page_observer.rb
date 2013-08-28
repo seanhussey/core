@@ -29,7 +29,7 @@ module Gluttonberg
 
     # If parent page is removed then make sure its children either orphaned or child of their grandfather
     def after_destroy(page)
-      Page.delete_all(:parent_id => page.id)
+      Page.where(:parent_id => page.id).all{|page| page.destroy}
     end
 
     private

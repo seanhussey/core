@@ -32,25 +32,25 @@ end
 
 def clean_all_data
   Gluttonberg::Locale.all.each{|locale| locale.destroy}
-
-  Gluttonberg::Page.all.each{|page| page.destroy}
+  Gluttonberg::Page.with_deleted.each{|page| page.destroy!}
   
   Gluttonberg::Setting.all.each{|setting| setting.destroy}
 
   Gluttonberg::Library.flush_asset_types
   Gluttonberg::AssetCategory.all.each{|asset_category| asset_category.destroy}
-  Gluttonberg::Asset.all.each{|asset| asset.destroy}
+  Gluttonberg::Asset.with_deleted.each{|asset| asset.destroy!}
   Gluttonberg::AssetCollection.all.each{|collection| collection.destroy}
 
   User.all.each{|user| user.destroy}
   Gluttonberg::Member.all.each{|obj| obj.destroy}
-  Gluttonberg::Blog.all.each{|obj| obj.destroy}
-  Gluttonberg::Article.all.each{|obj| obj.destroy}
-  Gluttonberg::Comment.all.each{|obj| obj.destroy}
+  Gluttonberg::Blog.with_deleted.each{|obj| obj.destroy!}
+  Gluttonberg::Article.with_deleted.each{|obj| obj.destroy!}
+  Gluttonberg::Comment.with_deleted.each{|obj| obj.destroy!}
   StaffProfile.all.each{|staff| staff.destroy}
-  Gluttonberg::Gallery.all.each{|obj| obj.destroy}
+  Gluttonberg::Gallery.with_deleted.each{|obj| obj.destroy!}
   Gluttonberg::CommentSubscription.all.each{|obj| obj.destroy}
   Gluttonberg::Feed.all.each{|obj| obj.destroy}
+  Gluttonberg::AutoSave.all.each{|obj| obj.destroy}
 end
 
 def create_image_asset

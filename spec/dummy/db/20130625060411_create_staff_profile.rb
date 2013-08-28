@@ -4,6 +4,7 @@ class CreateStaffProfile < ActiveRecord::Migration
     create_table :staff_profiles do |t|
       t.string :name
       t.integer :face_id
+      t.decimal :package, :precision => 6, :scale => 3
 
       t.string :slug
       t.string :previous_slug

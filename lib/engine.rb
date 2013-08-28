@@ -100,7 +100,8 @@ module Gluttonberg
         Gluttonberg::Content::ImportExportCSV.setup
         Gluttonberg::Content::CleanHtml.setup
         Gluttonberg::PageDescription.setup
-
+        Gluttonberg::Content::Trashable.setup
+        Gluttonberg::Content::Validations.setup
         # register content class here.
         # It is required for lazyloading environments.
         Gluttonberg::Content::Block.register(Gluttonberg::PlainTextContent)

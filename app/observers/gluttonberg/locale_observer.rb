@@ -17,8 +17,6 @@ module Gluttonberg
         end
       end
     end
-
-      
     
     def after_update(locale)
       existing_localization_ids = []

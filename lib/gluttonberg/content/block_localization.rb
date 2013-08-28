@@ -6,12 +6,11 @@ module Gluttonberg
     # 
     # These just defer to the parent class.
     module BlockLocalization
-      def self.included(klass)
-        klass.class_eval do
-          class << self; attr_accessor :content_type, :association_name end
-          
-          belongs_to :page_localization
-        end
+      extend ActiveSupport::Concern
+
+      included do
+        cattr_accessor :content_type, :association_name          
+        belongs_to :page_localization
       end
       
       def association_name

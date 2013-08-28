@@ -5,16 +5,13 @@ module Gluttonberg
     # it adds importCSV(file_path , local_options = {})
     # and exportCSV(records , local_options = {})
     module ImportExportCSV
-
+      extend ActiveSupport::Concern
       def self.setup
         ::ActiveRecord::Base.send :include, Gluttonberg::Content::ImportExportCSV
       end
 
-      def self.included(klass)
-        klass.class_eval do
-          extend  ClassMethods
-          cattr_accessor :import_export_columns , :wysiwyg_columns
-        end
+      included do
+        cattr_accessor :import_export_columns , :wysiwyg_columns
       end
 
       module ClassMethods

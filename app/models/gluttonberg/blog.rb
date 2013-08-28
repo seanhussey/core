@@ -3,6 +3,7 @@ module Gluttonberg
     self.table_name = "gb_blogs"
     include Content::Publishable
     include Content::SlugManagement
+    is_trashable
 
     belongs_to :user
     has_many :articles, :dependent => :destroy

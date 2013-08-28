@@ -1,6 +1,7 @@
 module Gluttonberg
   class Comment < ActiveRecord::Base
     self.table_name = "gb_comments"
+    is_trashable
 
     attr_accessible :body , :author_name , :author_email , :author_website  , :subscribe_to_comments , :blog_slug
 

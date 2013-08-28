@@ -1,0 +1,35 @@
+- @page_title = "Trash".html_safe
+
+.row-fluid
+  .span9
+    .row-fluid
+      .page-header
+        %h1
+          = @page_title
+      .subnav
+        - unless @all_records.blank?
+          = sub_nav do
+            = link_to "Empty", admin_empty_trash_path, :confirm => "Are you sure?"
+
+      - if @all_records.blank?
+        %p.empty Trash bin is empty
+      - else
+        %table{:cellpadding => 0, :cellspacing => 0, :summary => "Blogs" , :class => "table table-bordered "}
+          %thead
+            %tr
+              %th Type
+              %th Title
+              %th.controls
+
+          %tbody
+            - @all_records.each do |record|
+              %tr
+                %td
+                  = record.class.name.demodulize
+                %td
+                  =  record.title_or_name?
+                %td.controls{:width => 200}
+                  = link_to "Restore", admin_restore_trash_item_path(record.class.name, record.id) , :class => "btn", :confirm => "Are you sure?"
+
+                  = link_to "Delete", admin_destroy_trash_item_path(record.class.name, record.id) , :class => "btn btn-danger", :confirm => "Are you sure?", :method => "delete"
+        = will_paginate(@all_records)

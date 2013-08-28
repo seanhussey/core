@@ -3,6 +3,7 @@ module Gluttonberg
     self.table_name = "gb_assets"
     has_many :set_elements, :as => :element
     has_many :asset_thumbnails
+    is_trashable
 
     #after_save  :update_file
     before_validation  :set_category_and_type

@@ -1,10 +1,7 @@
 module Gluttonberg
   module DragTree
     module ActiveRecord
-
-      def self.included(base)
-        base.extend(ClassMethods)
-      end
+      extend ActiveSupport::Concern
 
       module ClassMethods
         def is_drag_tree(options = {})
@@ -41,40 +38,43 @@ module Gluttonberg
       end #module ClassMethods
 
       module ModelHelpersClassMethods
-        def self.included(klass)
-          klass.class_eval do
-            cattr_accessor :is_flat_drag_tree
-            def klass.behaves_as_a_drag_tree
-              true
-            end
+        extend ActiveSupport::Concern
 
-            def klass.make_flat_drag_tree
-              self.is_flat_drag_tree = true
-            end
+        included do
+          cattr_accessor :is_flat_drag_tree
+        end
 
-            def klass.behaves_as_a_flat_drag_tree
-              self.is_flat_drag_tree
-            end
+        module ClassMethods
+          def behaves_as_a_drag_tree
+            true
+          end
 
-            def klass.repair_drag_tree
-              if behaves_as_a_flat_drag_tree
-                if list_options[:scope].blank?
-                  repair_list(self.all)
-                else
-                  unique_scope_ids = self.select(list_options[:scope]).distinct
-                  unique_scope_ids.each do |scope_id|
-                    items = self.where(list_options[:scope] => scope_id).all
-                    repair_list(items)
-                  end
+          def make_flat_drag_tree
+            self.is_flat_drag_tree = true
+          end
+
+          def behaves_as_a_flat_drag_tree
+            self.is_flat_drag_tree
+          end
+
+          def repair_drag_tree
+            if behaves_as_a_flat_drag_tree
+              if list_options[:scope].blank?
+                repair_list(self.all)
+              else
+                unique_scope_ids = self.select(list_options[:scope]).distinct
+                unique_scope_ids.each do |scope_id|
+                  items = self.where(list_options[:scope] => scope_id).all
+                  repair_list(items)
                 end
               end
-              # todo: add support for non flat trees
             end
-            def klass.all_sorted(query={})
-              where(query).order("position asc")
-            end
-          end # class_eval
-        end #included
+            # todo: add support for non flat trees
+          end
+          def all_sorted(query={})
+            where(query).order("position asc")
+          end
+        end #ClassMethods
       end #ModelHelpersClassMethods
 
     end # ActiveRecord

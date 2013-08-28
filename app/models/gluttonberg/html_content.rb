@@ -1,7 +1,7 @@
 module Gluttonberg
   class HtmlContent  < ActiveRecord::Base
-    include Content::Block
     self.table_name = "gb_html_contents"
+    include Content::Block
     attr_accessible :text
 
     is_localized do

@@ -92,6 +92,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.string :state
     t.boolean :hide_in_nav
     t.datetime :published_at
+    t.datetime :deleted_at
     t.timestamps
   end
 
@@ -142,6 +143,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.string :alt
     t.boolean :processed
     t.boolean :copied_to_s3
+    t.datetime :deleted_at
     t.timestamps
   end
 
@@ -229,6 +231,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.column :css_prefix , :string , :limit => 255
     t.column :css_postfix , :string , :limit => 255
     t.column :position , :integer
+    t.datetime :deleted_at
     t.timestamps
   end
 
@@ -279,6 +282,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.column :state , :string
     t.datetime :published_at
     t.boolean :collection_imported , :default => false
+    t.datetime :deleted_at
     t.timestamps
   end
 
@@ -298,6 +302,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.timestamps
   end
   
+  ModelLoader.load_models_in_development
 
   begin
     Gluttonberg::PlainTextContentLocalization.create_versioned_table
@@ -335,6 +340,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.integer :fb_icon_id
     t.string :previous_slug
     t.datetime :published_at
+    t.datetime :deleted_at
     t.timestamps
   end
 
@@ -347,6 +353,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.column :disable_comments , :boolean , :default => false
     t.datetime :published_at
     t.string :previous_slug
+    t.datetime :deleted_at
     t.timestamps
   end
 
@@ -362,6 +369,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.datetime :notification_sent_at
     t.boolean :spam , :default =>  false
     t.float   :spam_score
+    t.datetime :deleted_at
     t.timestamps
   end
 
@@ -385,6 +393,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.text :seo_keywords
     t.text :seo_description
     t.integer :fb_icon_id
+    t.datetime :deleted_at
     t.timestamps
   end
 
@@ -421,6 +430,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
   create_table :staff_profiles, :force => true do |t|
     t.string :name
     t.integer :face_id
+    t.decimal :package, :precision => 6, :scale => 3
 
     t.string :slug
     t.string :previous_slug

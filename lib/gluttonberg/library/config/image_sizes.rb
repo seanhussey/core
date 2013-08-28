@@ -2,6 +2,7 @@ module Gluttonberg
   module Library
     module Config
       module ImageSizes
+        extend ActiveSupport::Concern
 
         # Default sizes used when thumbnailing an image.
         DEFAULT_THUMBNAILS = {
@@ -34,29 +35,28 @@ module Gluttonberg
 
         end #ClassMethods
 
-        module InstanceMethods
-          # Returns the URL for the specified image size.
-          def url_for(name=nil)
-            if name.blank?
-              url
-            elsif self.class.sizes.has_key? name
-              filename = self.class.sizes[name.to_sym][:filename]
-              "#{asset_directory_public_url}/#{filename}.#{file_extension}"
-            end
+        # InstanceMethods
+        # Returns the URL for the specified image size.
+        def url_for(name=nil)
+          if name.blank?
+            url
+          elsif self.class.sizes.has_key? name
+            filename = self.class.sizes[name.to_sym][:filename]
+            "#{asset_directory_public_url}/#{filename}.#{file_extension}"
           end
+        end
 
-          # Returns the public URL to the asset’s small thumbnail — relative
-          # to the domain.
-          def thumb_small_url
-            url_for(:small_thumb) if category.downcase == "image"
-          end
+        # Returns the public URL to the asset’s small thumbnail — relative
+        # to the domain.
+        def thumb_small_url
+          url_for(:small_thumb) if category.downcase == "image"
+        end
 
-          # Returns the public URL to the asset’s large thumbnail — relative
-          # to the domain.
-          def thumb_large_url
-            url_for(:large_thumb) if category.downcase == "image"
-          end
-        end #InstanceMethods
+        # Returns the public URL to the asset’s large thumbnail — relative
+        # to the domain.
+        def thumb_large_url
+          url_for(:large_thumb) if category.downcase == "image"
+        end
       end
     end
   end

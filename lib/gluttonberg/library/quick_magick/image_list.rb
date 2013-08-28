@@ -1,6 +1,5 @@
 module Gluttonberg
   module Library
-
     module QuickMagick
       class ImageList
 
