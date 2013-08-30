@@ -1,5 +1,6 @@
 module Gluttonberg
   class BaseController < ActionController::Base
+    protect_from_forgery
     if Rails.env == "production"
       rescue_from ActionView::MissingTemplate, :with => :not_found
       rescue_from ActiveRecord::RecordNotFound, :with => :not_found
