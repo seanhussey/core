@@ -1472,7 +1472,7 @@ var dragTreeManager = {
 function get_sorted_element_ids(wrapper_id)
 {
    try{
-      var items = $(wrapper_id).find("tbody tr");
+      var items = $(wrapper_id).find("tbody tr.ui-droppable");
       items = $.map(items, function(value){
         return value.id.replace("node-","");
       });
