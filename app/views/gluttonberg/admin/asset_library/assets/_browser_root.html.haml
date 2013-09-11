@@ -55,12 +55,12 @@
 
   #upload.tab-pane
     - @asset  = Gluttonberg::Asset.new
-    = form_for( @asset , :as => :asset , :url => admin_add_asset_using_ajax_path  ,  :html => { :multipart=>true  , :method => "POST", :class => "nosubnav validation" , :id => "ajax_new_asset_form"} ) do |asset_form|
+    = form_for( @asset , :as => :asset , :url => admin_add_asset_using_ajax_path  ,  :html => { :multipart=>true  , :method => "POST", :class => "nosubnav " , :id => "ajax_new_asset_form"} ) do |asset_form|
       %legend
         Upload
       %p
         = asset_form.label :file , "File to upload"
-        = asset_form.file_field(:file , :class => "required")
+        = asset_form.file_field(:file , :class => "required", :id => "ajax_asset_file")
       %p
         = asset_form.label :name , "Name"
         = asset_form.text_field(:name, :class => "large required")
