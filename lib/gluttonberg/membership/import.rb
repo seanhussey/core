@@ -97,11 +97,12 @@ module Gluttonberg
 
         def self.read_data_row(row, known_columns, other_columns)
           user_info = {
-            :first_name => row[known_columns[:first_name]],
-            :last_name => row[known_columns[:last_name]],
-            :email => row[known_columns[:email]],
             :group_ids => []
           }
+          user_info[:first_name] = row[known_columns[:first_name]] unless Rails.configuration.member_csv_metadata[:first_name].blank? 
+          user_info[:last_name] = row[known_columns[:last_name]]  unless Rails.configuration.member_csv_metadata[:last_name].blank?
+          user_info[:email] = row[known_columns[:email]]  unless Rails.configuration.member_csv_metadata[:email].blank?
+
           other_columns.each do |key , val|
             if !val.blank? && val >= 0
               if row[val].blank? || !user_info[key].kind_of?(String)
@@ -115,9 +116,7 @@ module Gluttonberg
         end
 
         def self.known_columns_valid?(known_columns)
-          known_columns[:first_name] &&
-          known_columns[:last_name]  &&
-          known_columns[:email]
+          known_columns[:first_name] && known_columns[:email]
         end
 
         def self.attach_user_to_group(user_info, row, known_columns, other_columns, group_ids)
