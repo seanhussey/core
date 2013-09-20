@@ -6,18 +6,22 @@ module Gluttonberg
     @@nav_entries = nil
     @@main_nav_entries = []
     @@registered  = nil
+    @@cleared = false
     Component     = Struct.new(:name, :label , :admin_url, :only_for_super_admin )
 
     def self.clear_main_nav
       @@main_nav_entries = []
+      @@cleared = true
     end
 
     def self.init_main_nav
-      Gluttonberg::Components.register_for_main_nav("Dashboard", "/admin")
-      Gluttonberg::Components.register_for_main_nav("Content", "/admin/pages")
-      Gluttonberg::Components.register_for_main_nav("Library", "/admin/assets/all/page/1")
-      Gluttonberg::Components.register_for_main_nav("Members", "/admin/membership/members")
-      Gluttonberg::Components.register_for_main_nav("Settings", "/admin/configurations")
+      unless @@cleared
+        Gluttonberg::Components.register_for_main_nav("Dashboard", "/admin")
+        Gluttonberg::Components.register_for_main_nav("Content", "/admin/pages")
+        Gluttonberg::Components.register_for_main_nav("Library", "/admin/assets/all/page/1")
+        Gluttonberg::Components.register_for_main_nav("Members", "/admin/membership/members")
+        Gluttonberg::Components.register_for_main_nav("Settings", "/admin/configurations")
+      end
     end
 
     def self.register_for_main_nav(name , url, opts = {})
