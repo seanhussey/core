@@ -2,7 +2,9 @@ module Gluttonberg
   class Member < ActiveRecord::Base
     self.table_name = "gb_members"
 
-    attr_accessible :first_name , :last_name , :email , :password , :password_confirmation , :bio , :image , :image_delete , :term_and_conditions, :group_ids, :groups
+    attr_accessible :first_name , :last_name , :email , :password
+    attr_accessible :password_confirmation , :bio , :image , :image_delete , :term_and_conditions, :group_ids, :groups
+    attr_accessible :return_url
 
     has_and_belongs_to_many :groups, :class_name => "Group" , :join_table => "gb_groups_members"
     has_attached_file :image, :styles => { :profile => ["600x600"], :thumb => ["142x95#"] , :thumb_for_backend => ["100x75#"]}

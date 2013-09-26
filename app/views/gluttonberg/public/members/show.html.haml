@@ -4,8 +4,6 @@
       %a{:href=>"/member/profile"}
         Your Details
 
-
-
 %h1
   Welcome, #{current_member.first_name}
 
@@ -13,7 +11,7 @@
   .change
     = link_to "Update your details", member_profile_edit_path
   .avatar
-    - if current_user.blank?
+    - if current_member.image.blank?
       = image_tag("/assets/gb_missing.png", :class => "comment_image")
     - else
       = image_tag(current_member.image.url(:thumb))

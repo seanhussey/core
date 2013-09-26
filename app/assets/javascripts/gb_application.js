@@ -132,7 +132,7 @@ var AssetBrowser = {
     // Capture anchor clicks
     AssetBrowser.display.find("a").click(AssetBrowser.click);
     // Capture size selector change
-    AssetBrowser.display.find("select").change(AssetBrowser.sizeSelectHandler);
+    AssetBrowser.display.find("select.size_selector").change(AssetBrowser.sizeSelectHandler);
     
     $("#assetsDialog form#asset_search_form").submit(AssetBrowser.search_submit);
 
