@@ -26,6 +26,10 @@ module Gluttonberg
     attr_accessible :file, :name, :alt, :asset_collection_ids, :asset_collections, :mime_type
     attr_accessible :description, :synopsis, :copyrights, :year_of_production, :duration
     attr_accessible :artist_name, :link, :width, :height, :alt , :processed, :copied_to_s3
+    attr_accessible :poster_image_id
+
+    belongs_to :poster_image , :foreign_key => "poster_image_id" , :class_name => "Gluttonberg::Asset"
+
 
     attr_accessor :type
 

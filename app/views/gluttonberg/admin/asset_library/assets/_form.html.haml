@@ -33,6 +33,10 @@
           - if Rails.configuration.enable_gallery == true
             .help
               "link" field is also used for image target url in photo galleries.
+
+        - if @asset.category == "video"
+          = asset_form.label :poster_image_id
+          = asset_form.asset_browser :poster_image_id , :class => "attr_poster_image " , :filter => "image"
       .span6
 
         = render :partial => "collection_select_form" , :locals => {:asset_form => asset_form }

@@ -50,17 +50,16 @@
         "user[term_and_conditions]" : {
           required: true
         }
-
       },
       messages: {
         "user[first_name]": {
-        required: "#{t('validation_messages.first_name_required')}"
+          required: "#{t('validation_messages.first_name_required')}"
         },
         "user[email]": {
-        required: "#{t('validation_messages.email_required')}"
+          required: "#{t('validation_messages.email_required')}"
         },
         "user[password]": {
-        required: "#{t('validation_messages.password_required')}"
+          required: "#{t('validation_messages.password_required')}"
         },
         "user[password_confirmation]": {
         required: "#{t('validation_messages.password_confirmation_required')}"
@@ -70,11 +69,10 @@
           required: "#{t('validation_messages.term_and_conditions_required')}"
         }
 
-      }  ,
-          submitHandler: function(form) {
-
-            $("#user_submit_progress").show();
-           }
+      },
+      submitHandler: function(form) {
+        $("#user_submit_progress").show();
+      }
     });
 
 

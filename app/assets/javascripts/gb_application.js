@@ -132,14 +132,15 @@ var AssetBrowser = {
     // Capture anchor clicks
     AssetBrowser.display.find("a").click(AssetBrowser.click);
     // Capture size selector change
-    AssetBrowser.display.find("select").change(AssetBrowser.sizeSelectHandler);
+    AssetBrowser.display.find("select.size_selector").change(AssetBrowser.sizeSelectHandler);
     
     $("#assetsDialog form#asset_search_form").submit(AssetBrowser.search_submit);
 
     AssetBrowser.browser.find("#ajax_new_asset_form").submit(function(e) {
-      if($("#asset_file").val() != null && $("#asset_name").val() != null && $("#asset_file").val() != "" && $("#asset_name").val() != ""){
+      if($("#ajax_new_asset_form #ajax_asset_file").val() != null && $("#ajax_new_asset_form #asset_name").val() != null && $("#ajax_new_asset_form #ajax_asset_file").val() != "" && $("#ajax_new_asset_form #asset_name").val() != ""){
         ajaxFileUploadForAssetLibrary(link);
       }
+
       e.preventDefault();
     });
 
@@ -155,7 +156,7 @@ var AssetBrowser = {
     }
 
     try {
-      $("#assetsDialog form.validation").validate();
+      $("#assetsDialog form#ajax_new_asset_form").validate();
     } catch(e) {
       console.log(e)
     }
@@ -171,6 +172,10 @@ var AssetBrowser = {
       if($(element).height() > row_max_height){
         row_max_height = $(element).height();
       }
+      if(row_max_height < 240){
+        row_max_height = 240;
+      }
+
       $(element).attr('data-row' , row_num);
       if( (index+1) % ASSET_MAX_COLUMNS == 0 ){
         if(row_max_height > 0){
@@ -232,10 +237,10 @@ var AssetBrowser = {
     AssetBrowser.display.find("a").click(AssetBrowser.click);
 
     try {
-      $("form.validation").validate();
+      $("#assetsDialog form#ajax_new_asset_form").validate();
     } catch(ex) {}
     AssetBrowser.browser.find("#ajax_new_asset_form").submit(function(e) {
-      if($("#asset_file").val() != null && $("#asset_name").val() != null && $("#asset_file").val() != "" && $("#asset_name").val() != ""){
+      if($("#ajax_new_asset_form #ajax_asset_file").val() != null && $("#ajax_new_asset_form #asset_name").val() != null && $("#ajax_new_asset_form #ajax_asset_file").val() != "" && $("#ajax_new_asset_form #asset_name").val() != ""){
         ajaxFileUpload(AssetBrowser.actualLink);
       }
       e.preventDefault();
@@ -462,11 +467,11 @@ function ajaxFileUploadForAssetLibrary(link) {
 
   $("#progress_ajax_upload").show();
 
-  asset_name = $('input[name$="asset[name]"]').val();
+  asset_name = $('#ajax_new_asset_form input[name$="asset[name]"]').val();
   var formData = {
     "asset[name]": asset_name,
-    "asset[asset_collection_ids]": $("#asset_asset_collection_ids").val(),
-    "new_collection[new_collection_name]": $('input[name$="new_collection[new_collection_name]"]').val()
+    "asset[asset_collection_ids]": $("#ajax_new_asset_form #asset_asset_collection_ids").val(),
+    "new_collection[new_collection_name]": $('#ajax_new_asset_form input[name$="new_collection[new_collection_name]"]').val()
   }
 
   /*
@@ -482,7 +487,7 @@ function ajaxFileUploadForAssetLibrary(link) {
   $.ajaxFileUpload({
     url: '/admin/add_asset_using_ajax',
     secureuri: false,
-    fileElementId: 'asset_file',
+    fileElementId: 'ajax_asset_file',
     dataType: 'json',
     data: formData,
     success: function(data, status) {

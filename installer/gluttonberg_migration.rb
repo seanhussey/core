@@ -129,6 +129,7 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.string :alt
       t.boolean :processed
       t.boolean :copied_to_s3
+      t.integer :poster_image_id
       t.timestamps
     end
 
