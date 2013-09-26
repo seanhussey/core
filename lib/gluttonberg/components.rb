@@ -1,5 +1,5 @@
 module Gluttonberg
-  # This module allows programmer to configure backend main and sub menues
+  # This module allows a developer to configure backend main and sub menues
   module Components
     @@components  = {}
     @@routes      = {}
