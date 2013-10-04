@@ -122,7 +122,7 @@ module Gluttonberg
       end
     end
 
-    def find_home_page_description_for_domain?(domain_name)
+    def self.find_home_page_description_for_domain?(domain_name)
       page_desc = PageDescription.all.find{|key , val|  val.home_for_domain?(domain_name) }
       page_desc = page_desc.last unless page_desc.blank?
       page_desc
