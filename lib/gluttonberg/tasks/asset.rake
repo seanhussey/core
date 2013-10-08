@@ -5,7 +5,7 @@ ASSET_LIBRARY_BASE_DIR = File.join(File.dirname(__FILE__), "../..")
 namespace :gluttonberg do
   namespace :library do
 
-    desc "Try and generate thumbnails for all assets"
+    desc "Regenerate all thumbnails for all assets"
     task :create_thumbnails => :environment do
       category = Gluttonberg::AssetCategory.find( :first , :conditions =>{  :name => "image" } )
       if category
