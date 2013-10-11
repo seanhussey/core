@@ -117,6 +117,15 @@ module Gluttonberg
       save
     end
 
+    def path_without_self_slug
+      if page.parent_id && page.parent.home != true
+        localization = page.parent.localizations.where(:locale_id  => locale_id).first
+        "#{localization.path}/"
+      else
+        ""
+      end
+    end
+
     private
 
       def update_content_localizations
