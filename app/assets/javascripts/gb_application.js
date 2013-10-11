@@ -10,6 +10,7 @@ $(document).ready(function() {
   initGluttonbergUI();
   initFormValidation();
   setUpAudio();
+  $(".chzn-select").chosen();
 });
 
 

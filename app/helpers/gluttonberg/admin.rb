@@ -95,5 +95,26 @@ module Gluttonberg
         action_name == "edit"  || action_name == "update"
       end
 
+      def pages_lists_options(pages)
+        array = []
+        pages.each do |page|
+          unless page.children.blank?
+            sub_array = [[page.name, page.id]]
+            _add_option(sub_array, page)
+            array << [page.name , sub_array]
+          end
+        end
+        require 'pp'
+        pp array
+        array
+      end
+
+      def _add_option(array, page)
+        page.children.each do |child|
+          array << [child.name, child.id]
+          _add_option(array, child)
+        end
+      end
+
     end # Admin
 end # Gluttonberg

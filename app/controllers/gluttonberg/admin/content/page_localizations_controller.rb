@@ -41,7 +41,7 @@ module Gluttonberg
           end
 
           def prepare_to_edit
-            @pages  = Page.where("id != ? " , @page.id).all
+            @pages  = Page.where("id != ? AND parent_id IS NULL" , @page.id).all
             @descriptions = []
             Gluttonberg::PageDescription.all.each do |name, desc|
               @descriptions << [desc[:description], name]
