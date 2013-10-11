@@ -133,7 +133,7 @@ module Gluttonberg
       def init_asset_precompile(app)
         if Rails.version > "3.1"
           #Gluttonberg precompile hook
-          app.config.assets.precompile += ["*.js", "chosen.css", "gb_360player.css", "gb_admin-ie6.sass", "gb_admin-ie7.sass", "gb_admin-override.sass", "gb_bootstrap-responsive.css", "gb_bootstrap.css", "gluttonberg.css", "redactor.css", "user-styles.sass"]
+          app.config.assets.precompile += ["*.js", "chosen.css", "gb_360player.css", "gb_bootstrap-responsive.css", "gb_bootstrap.css", "gluttonberg.css", "redactor.css"]
         end
       end
   end
