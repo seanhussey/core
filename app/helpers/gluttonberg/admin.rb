@@ -104,8 +104,6 @@ module Gluttonberg
             array << [page.name , sub_array]
           end
         end
-        require 'pp'
-        pp array
         array
       end
 
