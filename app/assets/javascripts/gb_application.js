@@ -10,6 +10,7 @@ $(document).ready(function() {
   initGluttonbergUI();
   initFormValidation();
   setUpAudio();
+  $(".chzn-select").chosen();
 });
 
 
@@ -783,7 +784,7 @@ function initBetterSlugManagement() {
           hs.hide();
           ps.show();
           pb.show();
-          ps.html(hs.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, ''));
+          ps.html(hs.val().toLowerCase().replace(/\s/gim, '_').replace(regex, ''));
           doNotEdit = true;
         };
       };

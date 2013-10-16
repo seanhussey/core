@@ -35,10 +35,12 @@
           %p
             #page_slug_holder
               %span.domain
-                = current_domain
+                #{current_domain}#{@page_localization.path_without_self_slug}
               #page_slug
                 %span{:donotedit => true}
-                  = @page_localization.slug
+                  = @page_localization.slug || @page.slug
+                - if f.object.slug.blank?
+                  - f.object.slug = @page.slug
                 = f.text_field(:slug, :id => 'page_hidden_slug')
                 .edit.btn.btn-mini
                   Edit URL
