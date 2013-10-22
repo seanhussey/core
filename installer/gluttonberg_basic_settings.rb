@@ -19,9 +19,22 @@
 
     Rails.configuration.thumbnails = {
       :jwysiwyg_image => {
-        :label    => "Thumb for jwysiwyg",
+        :label    => "Thumbnail",
         :filename => "_jwysiwyg_image",
-        :geometry => "250x200"
+        :geometry => "250x200",
+        :show_in_asset_picker => true
+      },
+      :wysiwyg_medium_size => {
+        :label    => "Medium Size Image",
+        :filename => "wysiwyg_medium_size",
+        :geometry => "310",
+        :show_in_asset_picker => true
+      },
+      :wysiwyg_full_width => {
+        :label    => "Full Width Image",
+        :filename => "wysiwyg_full_width",
+        :geometry => "620",
+        :show_in_asset_picker => true
       }
     }
 
