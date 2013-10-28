@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'acts_as_tree', '1.4.0'
   s.add_dependency 'freerange_acts_as_versioned', '1.0.0'
   s.add_dependency 'acts-as-taggable-on', '2.4.1'
-  s.add_dependency 'sidekiq', '2.13.0'
+  s.add_dependency 'sidekiq', '2.16.0'
   s.add_dependency 'jeditable-rails', '0.1.1'
   s.add_dependency 'cancan', '1.6.10'
   s.add_dependency 'active_link_to', '1.0.1'
