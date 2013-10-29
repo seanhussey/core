@@ -63,7 +63,7 @@ module Gluttonberg
         unless string.blank?
           string = clean_public_query(string)
           string = string.gsub("$", "")
-          string = string.gsub(/[\\\!\*'\"\″′‟‘’‛„‚”“”˝\(\)\;\:\.\@\&\=\+\-\$\,\/?\%\#\[\]]/,'')
+          #string = string.gsub(/[\\\!\*'\"\″′‟‘’‛„‚”“”˝\(\)\;\:\.\@\&\=\+\-\$\,\/?\%\#\[\]]/,'')
           string
         else
           string
