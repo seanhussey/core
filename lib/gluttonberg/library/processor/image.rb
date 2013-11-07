@@ -88,7 +88,7 @@ module Gluttonberg
         end
 
         private
-          def _prepare_image_crop_arguments(config)
+          def _prepare_image_crop_arguments(x , y , w , h, config)
             thumb_defined_width = config[:geometry].split('x').first
             scaling_percent = (thumb_defined_width.to_i/(w.to_i*1.0))*100
             aurgments_str = " -crop #{w}x#{h}+#{x}+#{y} +repage"
