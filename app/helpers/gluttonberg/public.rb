@@ -48,7 +48,6 @@ module Gluttonberg
         end
       end
 
-
       def clean_public_query(string)
         unless string.blank?
           string = string.gsub("'", "\\\\'")
@@ -63,7 +62,7 @@ module Gluttonberg
         unless string.blank?
           string = clean_public_query(string)
           string = string.gsub("$", "")
-          string = string.gsub(/[\\\!\*'\"\″′‟‘’‛„‚”“”˝\(\)\;\:\.\@\&\=\+\-\$\,\/?\%\#\[\]]/,'')
+          string = string.gsub(/[\!\*'"″′‟‘’‛„‚”“”˝\\\(\)\;\:\.\@\&\=\+\-\$\,\/?\%\#\[\]]/,'')
           string
         else
           string
