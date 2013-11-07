@@ -48,7 +48,6 @@ module Gluttonberg
         end
       end
 
-
       def clean_public_query(string)
         unless string.blank?
           string = string.gsub("'", "\\\\'")
