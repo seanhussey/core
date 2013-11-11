@@ -12,8 +12,8 @@
   %div.pageBlock
     %dl
     <% attributes.each do |attribute| -%>
-  %dt <%= attribute.name %>
-      %dd #{@<%= singular_name %>.<%= attribute.name %>.humanize}
+  %dt <%= attribute.name.humanize %>
+      %dd #{@<%= singular_name %>.<%= attribute.name %>}
     <% end %>
 
   %dl.meta

@@ -16,8 +16,8 @@
           = nav_link('Export', admin_<%= plural_name %>_export_path)
           <% end %>
         <% unless draggable? %>
-        - if !@<%= plural_name %>.blank? || !params[:query].blank?
-          - form_tag(admin_<%=plural_name%>_path, :method => :get  , :id => "list_search_form") do
+        - if !@<%= plural_name %>.blank?
+          = form_tag(admin_<%=plural_name%>_path, :method => :get  , :id => "list_search_form") do
             = text_field_tag :query, params[:query]
             = submit_tag "Search" , :class => "button"
 
