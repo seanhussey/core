@@ -10,7 +10,7 @@ module Gluttonberg
         opts[:max_depth] ||= 10
         content = ""
         home = Gluttonberg::Page.home_page if pages.nil?
-        pages = home.children if home
+        pages = home.children.published if home
         pages = Gluttonberg::Page.where(:parent_id => nil, :state => "published").order("position ASC") if pages.nil?
 
         pages.each do |page|
@@ -28,7 +28,7 @@ module Gluttonberg
 
       def find_children(page, page_depth, opts)
         content = ""
-        page.children.each do |child|
+        page.children.published.each do |child|
           child_depth = page_depth + 1
           li_opts = {:id => page.slug + "-nav"}
           li_opts[:class] = "current" if page == @page
