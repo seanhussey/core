@@ -8,6 +8,8 @@ module Gluttonberg
       # set of nested lists with links to each page.
       def navigation_tree(pages, opts = {})
         content = ""
+        home = Gluttonberg::Page.home_page
+        pages = home.children if home
         pages = Gluttonberg::Page.where(:parent_id => nil, :state => "published").order("position ASC") if pages.nil?
         pages.each do |page|
           li_opts = {:id => page.slug + "-nav"}
