@@ -19,5 +19,5 @@
     %link{ :rel=>"shortcut icon", :href=>"/assets/favicon.png"}
   %body{:class=>body_class(@page)}
     - slug = @locale ? @locale.slug : ""
-    = navigation_tree(nil, :id => "navigation" , :slug => slug   )
+    = navigation_tree(nil, :id => "navigation", :slug => slug, :max_depth => 0)
     = yield

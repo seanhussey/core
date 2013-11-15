@@ -7,7 +7,7 @@ module Gluttonberg
       # A simple helper which loops through a heirarchy of pages and produces a
       # set of nested lists with links to each page.
       def navigation_tree(pages, opts = {})
-        opts[:max_depth] ||= 0
+        opts[:max_depth] ||= 10
         content = ""
         home = Gluttonberg::Page.home_page if pages.nil?
         pages = home.children if home
