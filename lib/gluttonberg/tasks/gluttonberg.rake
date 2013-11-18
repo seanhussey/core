@@ -104,6 +104,9 @@ namespace :gluttonberg do
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "public.html.haml"), File.join(Rails.root, "app", "views", "layouts", "public.html.haml"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "Procfile"), File.join(Rails.root, "Procfile"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "unicorn.rb"), File.join(Rails.root, "config", "unicorn.rb"))
+      FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "bootstrap.min.css"), File.join(Rails.root, "app", "assets", "stylesheets", "bootstrap.min.css"))
+      FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "bootstrap-theme.min.css"), File.join(Rails.root, "app", "assets", "stylesheets", "bootstrap-theme.min.css"))
+      FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "bootstrap.min.js"), File.join(Rails.root, "app", "assets", "javascripts", "bootstrap.min.js"))
       FileUtils.rm(File.join(Rails.root, "public", "index.html"))
       return true
     rescue => e

@@ -1,7 +1,13 @@
-%h1
+%h2
   <%= singular_name %>
-  
+
 <% attributes.each do |attribute| -%>
 %p
-  = @<%= singular_name %>.<%= attribute.name %>.humanize
+  <% if attribute.type == :text %>
+  = @<%= singular_name %>.<%= attribute.name %>.html_safe
+  <% elsif attribute.type == :asset %>
+  %img{:src => "#{@<%= singular_name %>.<%= attribute.name %>.url_for(:wysiwyg_medium_size)}"}
+  <% else %>
+  = @<%= singular_name %>.<%= attribute.name %>
+  <% end %>
 <% end %>

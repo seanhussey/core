@@ -16,7 +16,7 @@ module Gluttonberg
         pages.each do |page|
           page_depth = 1
           li_opts = {:id => page.slug + "-nav"}
-          li_opts[:class] = "current" if page == @page
+          li_opts[:class] = "active" if page == @page
           page.load_localization(@locale)
           li_content = build_page(page, opts)
           li_content << find_children(page, page_depth, opts) if opts[:max_depth] >= page_depth
