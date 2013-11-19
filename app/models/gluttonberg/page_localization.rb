@@ -118,7 +118,7 @@ module Gluttonberg
     end
 
     def path_without_self_slug
-      if page.parent_id && page.parent.home != true
+      if page.parent_id && !page.parent.blank? && page.parent.home != true
         localization = page.parent.localizations.where(:locale_id  => locale_id).first
         "#{localization.path}/"
       else
@@ -133,7 +133,7 @@ module Gluttonberg
       end
 
       def prepare_new_path
-        if page.parent_id && page.parent.home != true
+        if page.parent_id && !page.parent.blank? && page.parent.home != true
           localization = page.parent.localizations.where(:locale_id  => locale_id).first
           new_path = "#{localization.path}/#{self.slug || page.slug}"
         else

@@ -102,6 +102,8 @@ module Gluttonberg
             sub_array = [[page.name, page.id]]
             _add_option(sub_array, page)
             array << [page.name , sub_array]
+          else
+            array << [page.name, page.id]
           end
         end
         array
