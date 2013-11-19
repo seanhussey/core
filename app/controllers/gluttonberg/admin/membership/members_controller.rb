@@ -33,7 +33,7 @@ module Gluttonberg
           @member.profile_confirmed = true
 
           if @member.save
-            flash[:notice] = "Member account registered and welcome email is also sent to the member"
+            flash[:notice] = "Member has been registered, A welcome email has been sent."
             MemberNotifier.welcome(@member.id).deliver
             redirect_to admin_membership_members_path
           else

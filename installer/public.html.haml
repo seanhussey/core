@@ -1,7 +1,12 @@
+- @slug = @locale ? @locale.slug : ""
+- if @page
+  - @pages = @page.children.published.blank? && !@page.parent.blank? ? @page.parent.children.published : @page.children.published
+
 !!!
 %html
   %head
-    %title= page_title
+    %title
+      = page_title
     = javascript_include_tag "application", :charset => "utf-8"
     = stylesheet_link_tag "application"
     = csrf_meta_tag
@@ -18,6 +23,23 @@
       %meta{:content=>"#{page_title}",:property=>"og:title"}
     %link{ :rel=>"shortcut icon", :href=>"/assets/favicon.png"}
   %body{:class=>body_class(@page)}
-    - slug = @locale ? @locale.slug : ""
-    = navigation_tree(nil, :id => "navigation" , :slug => slug   )
-    = yield
+    .navbar.navbar-inverse.navbar-static-top{role: "navigation"}
+      .container
+        .navbar-header
+          %button.navbar-toggle{"data-target" => ".navbar-collapse", "data-toggle" => "collapse", type: "button"}
+            %span.sr-only Toggle navigation
+            %span.icon-bar
+            %span.icon-bar
+            %span.icon-bar
+          %a.navbar-brand{href: "/"}
+            = Gluttonberg::Setting.get_setting("title").blank? ? "Gluttonberg" : Gluttonberg::Setting.get_setting("title")
+        .collapse.navbar-collapse
+          = navigation_tree(nil, :slug => @slug, :class => "nav navbar-nav", :max_depth => 0)
+
+    .container
+      .row
+        .col-md-3
+          = navigation_tree(@pages, :id => "list-group", :slug => @slug, :class => "nav nav-pills nav-stacked", :max_depth => 0)
+
+        .col-md-9
+          = yield

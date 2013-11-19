@@ -7,14 +7,34 @@ module Gluttonberg
       # A simple helper which loops through a heirarchy of pages and produces a
       # set of nested lists with links to each page.
       def navigation_tree(pages, opts = {})
+        opts[:max_depth] ||= 10
         content = ""
+        home = Gluttonberg::Page.home_page if pages.nil?
+        pages = home.children.published if home
         pages = Gluttonberg::Page.where(:parent_id => nil, :state => "published").order("position ASC") if pages.nil?
+
         pages.each do |page|
+          page_depth = 1
+          li_opts = {:id => page.slug + "-nav"}
+          li_opts[:class] = "active" if page == @page
+          page.load_localization(@locale)
+          li_content = build_page(page, opts)
+          li_content << find_children(page, page_depth, opts) if opts[:max_depth] >= page_depth
+          content << content_tag(:li, li_content.html_safe, li_opts).html_safe
+        end
+
+        return content_tag(:ul, content.html_safe, opts).html_safe
+      end
+
+      def find_children(page, page_depth, opts)
+        content = ""
+        page.children.published.each do |child|
+          child_depth = page_depth + 1
           li_opts = {:id => page.slug + "-nav"}
           li_opts[:class] = "current" if page == @page
           page.load_localization(@locale)
-          li_content = build_page(page, opts)
-          li_content << find_children(page, opts) unless find_children(page, opts).blank?
+          li_content = build_page(child, opts)
+          li_content << find_children(child, child_depth, opts) if opts[:max_depth] >= child_depth
           content << content_tag(:li, li_content.html_safe, li_opts).html_safe
         end
         return content_tag(:ul, content.html_safe, opts).html_safe
@@ -31,12 +51,6 @@ module Gluttonberg
             return content_tag(:a, page.nav_label, :href => page_url(page , opts)).html_safe
           end
         end
-      end
-
-      # find each child of a parent page.
-      def find_children(page, opts)
-        children = page.children.published
-        navigation_tree(children , opts).html_safe unless children.blank?
       end
 
       # finds the correct url for a page.
