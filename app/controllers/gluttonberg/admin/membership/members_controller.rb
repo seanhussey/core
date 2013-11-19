@@ -4,7 +4,7 @@ module Gluttonberg
   module Admin
     module Membership
       class MembersController < Gluttonberg::Admin::Membership::BaseController
-        before_filter :find_member, :only => [:delete, :edit, :update, :destroy, :find_member]
+        before_filter :find_member, :only => [:delete, :edit, :update, :destroy]
         before_filter :authorize_user , :except => [:edit , :update]
         record_history :@member
         include Gluttonberg::Public
@@ -98,7 +98,7 @@ module Gluttonberg
         end
 
         def welcome
-           MemberNotifier.welcome( @member ).deliver
+           MemberNotifier.welcome( params[:id] ).deliver
            flash[:notice] = "Welcome email is successfully sent to the member."
            redirect_to admin_membership_members_path
         end

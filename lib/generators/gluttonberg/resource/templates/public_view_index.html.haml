@@ -9,10 +9,10 @@
     %thead
       %tr
         %th
-          \#
+          ID
         <% attributes.each do |attribute| -%>
 %th
-          = attribute.name
+          <%= attribute.name.humanize %>
         <% end %>
     %tbody
       - @<%= plural_name %>.each do |<%= singular_name %>|

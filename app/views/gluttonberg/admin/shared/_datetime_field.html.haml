@@ -1,10 +1,15 @@
-= text_field_tag("#{unique_field_name}_date" , date , date_field_html_opts )
-= text_field_tag("#{unique_field_name}_time" , time , time_field_html_opts )
-= form.hidden_field("#{field_name}" ,  :class => "#{unique_field_name}")
+.date-time-wrapper
+  %span.date-time-input-wrapper
+    = text_field_tag("#{unique_field_name}_date" , date , date_field_html_opts )
+    = text_field_tag("#{unique_field_name}_time" , time , time_field_html_opts )
+    = form.hidden_field("#{field_name}" ,  :class => "#{unique_field_name}")
+    .clear
 
-%span.help-block
-  %span.span2 DD/MM/YYYY
-  %span.span2 HH:MM AM/PM
+  %span.help-block
+    %span.span2.datehelp DD/MM/YYYY
+    %span.span2.timehelp HH:MM AM/PM
+
+  .clear
 
 %label.error{:class => "#{unique_field_name}_error"}
 .clear

@@ -31,7 +31,7 @@ module Gluttonberg
         time_field_html_opts[:class] = "" if time_field_html_opts[:class].blank?
         time_field_html_opts[:class] += " small span2 timefield"
 
-        time_field_html_opts[:onblur] = date_field_html_opts[:onblur]
+        time_field_html_opts[:onblur] = "checkTimeFormat(this,'.#{unique_field_name}_error');combine_datetime('#{unique_field_name}');"
 
         date = time = ""
 
