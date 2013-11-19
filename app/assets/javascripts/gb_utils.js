@@ -930,11 +930,12 @@ function checkDateFormat(datefield,error_label){
             return false;
           }
         } else {
-          show_validation_error(error_label ,"Invalid date format: " + form.startdate.value);
+          show_validation_error(error_label ,"Invalid date format: " + date);
           datefield.focus();
           return false;
         }
       }
+    error_label.html('');
 }
 
 function checkTimeFormat(timeField,error_label)
@@ -974,6 +975,7 @@ function checkTimeFormat(timeField,error_label)
       }
     }
 
+    error_label.html('');
     return true;
 }
 
