@@ -165,11 +165,11 @@ module Gluttonberg
       home_temp.blank? ? "Not Selected" : home_temp.name
     end
 
-    # if page type is not redirection.
+    # if page type is not redirection or rewrite.
     # then create default view files for all localzations of the page.
     # file will be created in host appliation/app/views/pages/template_name.locale-slug.html.haml
     def create_default_template_file
-      unless self.description.redirection_required?
+      unless self.description.redirection_required? || self.description.rewrite_required?
         self.localizations.each do |page_localization|
           file_path = File.join(Rails.root, "app", "views" , "pages" , "#{self.view}.#{page_localization.locale.slug}.html.haml"  )
           unless File.exists?(file_path)
