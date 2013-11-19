@@ -16,13 +16,16 @@
             %p
               No records were imported, Please fix following errors and re-import the CSV file.
             %ul
-              - @feedback.each_with_index do |feed , index|
-                - unless feed == true
-                  %li
-                    Row #{index+2}
-                    %ul
-                      - feed.full_messages.each do |msg|
-                        %li= msg
+              - if @feedback.kind_of? String
+                %li= @feedback
+              - else
+                - @feedback.each_with_index do |feed , index|
+                  - unless feed == true
+                    %li
+                      Row #{index+2}
+                      %ul
+                        - feed.full_messages.each do |msg|
+                          %li= msg
         .span5
           %legend CSV Content
           %p
