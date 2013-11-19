@@ -75,7 +75,8 @@
                       %li= link_to "Duplicate", duplicate_admin_<%= singular_name %>_path(<%= singular_name %>) , :class => ""
                       - if can? :destroy , <%= class_name %>
                         %li.divider
-                        %li= link_to "Delete", delete_admin_<%= singular_name %>_path(<%= singular_name %>)  , :class => ""
+                        %li.danger
+                          = link_to "Delete", delete_admin_<%= singular_name %>_path(<%= singular_name %>)  , :class => ""
 
         <% unless draggable? %>
         = will_paginate @<%= plural_name %>
