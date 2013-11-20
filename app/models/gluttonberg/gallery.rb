@@ -7,6 +7,9 @@ module Gluttonberg
 
     attr_accessible :title, :slug, :description, :state, :published_at, :collection_imported
     has_many :gallery_images , :order => "position ASC", :dependent => :destroy
+    attr_accessible :gallery_images, :gallery_images_attributes
+    accepts_nested_attributes_for :gallery_images, :allow_destroy => true
+
     belongs_to :user
     alias_attribute :name, :title
     validates_presence_of :user_id
@@ -22,7 +25,13 @@ module Gluttonberg
         Gluttonberg::Feed.log(current_user,self, self.title , "add #{pluralize(collection_images.length , 'image')} from collection '#{collection.name}'")
         max_position = self.gallery_images.length
         collection_images.each_with_index do |image , index|
-          self.gallery_images.create(:asset_id => image.id , :position => (max_position + index)  )
+          self.gallery_images.create({
+            :caption  => image.name,
+            :link     => image.link,
+            :credits  => image.artist_name,
+            :asset_id => image.id,
+            :position => (max_position + index)
+          })
         end
         self.update_attributes(:collection_imported => true)
       end

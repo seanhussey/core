@@ -36,12 +36,22 @@ module Gluttonberg
         # ignore asset category if user selects 'all' from category
         Asset.includes(:asset_type)
       else
-        req_category = AssetCategory.where(:name => category_name).first
+        req_categories = AssetCategory.where(:name => category_name.split(",")).all
         # if category is not found then raise exception
-        if req_category.blank?
+        if req_categories.blank?
           raise ActiveRecord::RecordNotFound
         else
-          req_category.assets.includes(:asset_type)
+          # assets = []
+          # req_categories.each do |req_category|
+          #   assets << req_category.assets.includes(:asset_type).all
+          # end
+          # assets = assets.sort{|x,y| y <=> x}
+          asset_types = []
+          req_categories.each do |req_category|
+            asset_types << req_category.asset_types.all.collect{|type| type.id}
+          end
+          asset_types = asset_types.flatten unless asset_types.blank?
+          Asset.where(:asset_type_id => asset_types).includes(:asset_type)
         end
       end # category#all
     end

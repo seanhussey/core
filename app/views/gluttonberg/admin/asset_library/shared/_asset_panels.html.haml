@@ -43,6 +43,10 @@
             - elsif asset.category == 'image'
               %a{:href => admin_asset_url(asset), :class => "thumbnail"}
                 %img{:src => asset.thumb_small_url  }
+            - elsif asset.category == 'video'
+              - unless asset.poster_image.blank?
+                %a{:href => admin_asset_url(asset), :class => "thumbnail"}
+                  %img{:src => asset.poster_image.thumb_small_url  }
 
           %td
             %a{:href => "#{admin_asset_url(asset)}#{breadcrumbs_val}", :class => "assetLink"}

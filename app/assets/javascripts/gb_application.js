@@ -292,6 +292,12 @@ var AssetBrowser = {
           } else {
             AssetBrowser.link_parent.prepend("<img src='" + image_src + "' />");
           }
+        }else if(file_type == "video"){
+          if (AssetBrowser.link_parent.find("img").length > 0) {
+            AssetBrowser.link_parent.find("img").attr('src', image_src);
+          } else {
+            AssetBrowser.link_parent.prepend("<img src='" + image_src + "' />");
+          }
         }else if(file_type == "audio"){
           if (AssetBrowser.link_parent.find("div.ui360 a").length > 0) {
             AssetBrowser.link_parent.find("div.ui360 a").attr('href', image_url);
@@ -911,4 +917,17 @@ function initNestable(){
 
 }
 
+function initGalleryImageRepeater(){
+  var containerselector = ".form_field_wrapper[data-field='gallery_images'] ul:first";
+  var rowSelector = "li.row-fluid.gallery_image_repeater_form";
+  $(".add_gallery_image").click(function(e){
+    HtmlFormRepeater.add(containerselector, rowSelector, this, function(newElement){
+      initClickEventsForAssetLinks(newElement);
+      newElement.find(".remove").click();
+    });
+    e.preventDefault();
+  });
 
+  HtmlFormRepeater.initRemoveButton(containerselector, rowSelector);
+  HtmlFormRepeater.initSorter(containerselector, rowSelector);
+}

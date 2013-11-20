@@ -20,6 +20,7 @@ module Gluttonberg
 
         def new
           @gallery = Gallery.new
+          prepare_repeaters
         end
 
         def create
@@ -30,19 +31,22 @@ module Gluttonberg
             flash[:notice] = "The gallery was successfully created."
             redirect_to edit_admin_gallery_path(@gallery)
           else
+            prepare_repeaters
             render :edit
           end
         end
 
         def edit
+          prepare_repeaters
         end
 
         def update
           if @gallery.update_attributes(params[:gluttonberg_gallery])
-            save_collection_images
+            @gallery.save_collection_images(params, current_user)
             flash[:notice] = "The gallery was successfully updated."
             redirect_to edit_admin_gallery_path(@gallery)
           else
+            prepare_repeaters
             flash[:error] = "Sorry, The gallery could not be updated."
             render :edit
           end
@@ -100,6 +104,10 @@ module Gluttonberg
 
           def authorize_user_for_destroy
             authorize! :destroy, Gluttonberg::Gallery
+          end
+
+          def prepare_repeaters
+            @gallery.gallery_images.build if @gallery.gallery_images.blank?
           end
 
       end

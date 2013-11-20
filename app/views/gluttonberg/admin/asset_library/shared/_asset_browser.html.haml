@@ -1,8 +1,12 @@
 %ul.thumbnails{:id => "title_thumb_#{opts[:id]}"}
   %li.span4
     %span.thumbnail.asset_selector_wrapper
-      - if !asset.blank? && asset.category && asset.category.to_s.downcase == "image"
-        = asset_tag(asset , :small_thumb)
+      - unless asset.blank?
+        - if asset.category && asset.category.to_s.downcase == "image"
+          = asset_tag(asset , :small_thumb)
+        - elsif asset.category && asset.category.to_s.downcase == "video"
+          - unless asset.poster_image.blank?
+            = asset_tag(asset.poster_image , :small_thumb)
       %span.caption
         - title = if opts[:asset_id].blank?
           - "Nothing selected"
