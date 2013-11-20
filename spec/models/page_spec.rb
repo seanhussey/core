@@ -107,6 +107,11 @@ module Gluttonberg
       p2 = Page.create(:name => "P2" , :description_name => 'home' , :parent => p1)
       p1.children.length.should == 1
       p2.parent.id.should == p1.id
+
+      p1.slug.should == "p1"
+      p1.path.should == "p1"
+      p2.slug.should == "p2"
+      p2.path.should == "p1/p2"
     end
 
 
