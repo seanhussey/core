@@ -87,6 +87,12 @@ module Gluttonberg
       @description
     end
 
+    # Returns the page_options set in the PageDescription
+    def page_options
+      @page_options = description.options[:page_options]
+      @page_options
+    end
+
     # Returns the name of the view template specified for this page —
     # determined via the associated PageDescription
     def view

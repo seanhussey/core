@@ -28,7 +28,8 @@ module Gluttonberg
         :domain       => :default,
         :behaviour  => :default,
         :layout     => "public",
-        :view       => "default"
+        :view       => "default",
+        :page_options => {}
       }
       @sections = {}
       @@_descriptions[name] = self
@@ -157,6 +158,10 @@ module Gluttonberg
       @options[:behaviour] == :redirect
     end
 
+    def page_options(opts = {})
+      @options[:page_options] = opts
+    end
+
     # Configures the page to act as a rewrite to named route. This doesn’t
     # work like a rewrite in the traditional sense, since it is intended to be
     # used to redirect requests to a controller. Becuase of this it can't rewrite
@@ -181,7 +186,7 @@ module Gluttonberg
     # :path   - The path to redirect to, hey, simple!
     # :page   - Allows the user to specify which other page they want to
     #           redirect to.
-    def redirect_to(path_or_url)      
+    def redirect_to(path_or_url)
       @redirect_path_or_url  = path_or_url if path_or_url
       @options[:behaviour]  = :redirect
     end
