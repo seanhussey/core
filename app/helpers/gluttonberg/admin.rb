@@ -98,13 +98,9 @@ module Gluttonberg
       def pages_lists_options(pages)
         array = []
         pages.each do |page|
-          unless page.children.blank?
-            sub_array = [[page.name, page.id]]
-            _add_option(sub_array, page)
-            array << [page.name , sub_array]
-          else
-            array << [page.name, page.id]
-          end
+          sub_array = [[page.name, page.id]]
+          _add_option(sub_array, page) unless page.children.blank?
+          array << [page.name , sub_array]
         end
         array
       end
