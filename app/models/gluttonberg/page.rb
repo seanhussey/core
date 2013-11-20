@@ -42,8 +42,12 @@ module Gluttonberg
             content.asset.url_for opts[:url_for]
           when "Gluttonberg::HtmlContent"
             content.current_localization.text.html_safe
+          when "Gluttonberg::TextareaContent"
+            content.current_localization.text.html_safe
           when "Gluttonberg::PlainTextContent"
             content.current_localization.text
+          when "Gluttonberg::SelectContent"
+            content.text
         end
       rescue
       end

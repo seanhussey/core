@@ -218,7 +218,7 @@ module Gluttonberg
         @custom_config = {}
       end
 
-      %w(type limit label).each do |opt|
+      %w(type limit label select_options_data select_options_default_value).each do |opt|
         class_eval %{
           def #{opt}(opt_value)
             @options[:#{opt}] = opt_value

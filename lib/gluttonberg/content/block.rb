@@ -133,6 +133,20 @@ module Gluttonberg
           section[:label]
         end
 
+        def select_options_data
+          unless section[:select_options_data].blank?
+            section[:select_options_data].call
+          else
+            []
+          end
+        end
+
+        def select_options_default_value
+          unless section[:select_options_default_value].blank?
+            section[:select_options_default_value].call
+          end
+        end
+
         def section_position
           section[:position]
         end

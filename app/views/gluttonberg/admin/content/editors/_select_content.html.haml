@@ -1,0 +1,7 @@
+%p
+  %label= content.section_label
+
+  - name_of_tag = "gluttonberg_page_localization[contents][#{content.association_name}][#{content.id}][text]"
+
+  = select_tag( name_of_tag, options_for_select(content.select_options_data, (content.text.blank? ? content.text : content.select_options_default_value)), :include_blank => true ,  :id => "page_select_#{content.id}", :class => "page_#{content.section_name}_select" )  
+
