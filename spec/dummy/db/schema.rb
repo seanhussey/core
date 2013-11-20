@@ -131,6 +131,10 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.integer  "position",   :null => false
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.text     "caption"
+    t.text     "credits"
+    t.string   "artist_name"
+    t.string   "link"
   end
 
   create_table "gb_groups", :force => true do |t|

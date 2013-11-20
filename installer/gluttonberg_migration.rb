@@ -271,9 +271,13 @@ class GluttonbergMigration < ActiveRecord::Migration
     end
 
     create_table :gb_gallery_images do |t|
-      t.integer :gallery_id, :null => false
-      t.integer :asset_id, :null => false
-      t.integer :position, :null => false
+      t.integer  :gallery_id, :null => false
+      t.integer  :asset_id, :null => false
+      t.integer  :position, :null => false
+      t.text     :caption
+      t.text     :credits
+      t.string   :artist_name
+      t.string   :link
       t.timestamps
     end
 

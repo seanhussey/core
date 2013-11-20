@@ -24,6 +24,9 @@
                   = asset.name
           - elsif asset.category == 'image'
             %img{:src => "#{asset.thumb_small_url}"}
+          - elsif asset.category && asset.category.to_s.downcase == "video"
+            - unless asset.poster_image.blank?
+              %img{:src => "#{asset.poster_image.thumb_small_url}"}
           .caption
             %h5
               = asset.name
@@ -33,6 +36,11 @@
               - if params[:open_link].blank?
                 - if asset.category == "image" && !params[:size_selector].blank?
                   = select_tag nil, options_for_select(Rails.configuration.thumbnails.find_all{|key, val| val[:show_in_asset_picker] == true || key == :jwysiwyg_image}.collect{|key, val| [val[:label], asset.url_for(key)] }), {"data-title" => "#{asset.name}", :prompt => "Select Image Size", :class => "size_selector"}
+                
+                - elsif asset.category && asset.category == "video" && !asset.poster_image.blank?
+                  %a{:href => "#{admin_asset_url(asset)}", :rel => "#{asset.category}", :class => "assetLink btn btn-primary" , "data-title" => "#{asset.name}" , "data-thumb" => "#{asset.poster_image.thumb_small_url}" , "data-jwysiwyg" => "#{(asset.category == "image" ? asset.url_for(:jwysiwyg_image) : asset.url)}" , "data-category" => "#{asset.category}"}
+                    Select
+
                 - else
                   %a{:href => "#{admin_asset_url(asset)}", :rel => "#{asset.category}", :class => "assetLink btn btn-primary" , "data-title" => "#{asset.name}" , "data-thumb" => "#{asset.thumb_small_url}" , "data-jwysiwyg" => "#{(asset.category == "image" ? asset.url_for(:jwysiwyg_image) : asset.url)}" , "data-category" => "#{asset.category}"}
                     Select

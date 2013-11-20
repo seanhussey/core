@@ -9,15 +9,7 @@
           = @page_title.html_safe
       .subnav
 
-
-
       = render :partial => "form", :locals => {:url => admin_gallery_path(@gallery)}
-      %p
-        %span.thumbnails
-          = add_image_to_gallery_tag( "Attach an image" , add_image_admin_gallery_path(@gallery) , @gallery.id )
-
-      #images_container
-        = render :partial => "images_list"
 
 :javascript
   initEditGalleryList();

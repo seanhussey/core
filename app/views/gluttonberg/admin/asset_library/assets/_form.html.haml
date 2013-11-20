@@ -18,21 +18,15 @@
         %p
           = asset_form.label :alt , "Description"
           = asset_form.text_field(:alt, :class => "large" , :maxlength => 255 )
-          - if Rails.configuration.enable_gallery == true
-            .help
-              "Description" field is also used for image caption in photo galleries.
+          
         %p
-          = asset_form.label :artist_name
+          = asset_form.label :artist_name, "Credits"
           = asset_form.text_field(:artist_name, :class => "large" , :maxlength => 255 )
 
         - if Rails.configuration.enable_gallery == true
           %p
             = asset_form.label :link
             = asset_form.text_field(:link, :class => "large" , :maxlength => 255 )
-
-          - if Rails.configuration.enable_gallery == true
-            .help
-              "link" field is also used for image target url in photo galleries.
 
         - if @asset.category == "video"
           = asset_form.label :poster_image_id
