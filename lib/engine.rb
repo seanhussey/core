@@ -106,6 +106,9 @@ module Gluttonberg
         Gluttonberg::Content::Block.register(Gluttonberg::PlainTextContent)
         Gluttonberg::Content::Block.register(Gluttonberg::HtmlContent)
         Gluttonberg::Content::Block.register(Gluttonberg::ImageContent)
+        Gluttonberg::Content::Block.register(Gluttonberg::TextareaContent)
+        Gluttonberg::Content::Block.register(Gluttonberg::SelectContent)
+        
 
         Gluttonberg::Content.setup
 

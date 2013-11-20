@@ -23,10 +23,34 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.timestamps
     end
 
+    create_table :gb_textarea_contents do |t|
+      t.boolean :orphaned, :default => false
+      t.string :section_name, :limit => 50
+      t.integer :page_id
+      t.timestamps
+    end
+
+    create_table :gb_textarea_content_localizations do |t|
+      t.text :text
+      t.integer :textarea_content_id
+      t.integer :page_localization_id
+      t.integer :version
+      t.timestamps
+    end
+
     create_table :gb_image_contents do |t|
       t.boolean :orphaned, :default => false
       t.string :section_name, :limit => 50
       t.integer :asset_id
+      t.integer :page_id
+      t.integer :version
+      t.timestamps
+    end
+
+    create_table :gb_select_contents do |t|
+      t.boolean :orphaned, :default => false
+      t.string :section_name, :limit => 50
+      t.string :text
       t.integer :page_id
       t.integer :version
       t.timestamps
