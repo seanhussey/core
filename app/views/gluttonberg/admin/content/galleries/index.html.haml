@@ -20,7 +20,11 @@
             %tr
               %th Gallery
               %th
-                Created By
+                Slug
+              %th
+                Published At
+              %th
+                Created At
               %th.controls Controls
           %tbody
             - @galleries.each do |gallery|
@@ -28,8 +32,13 @@
                 %td
                   = gallery.title
                 %td
-                  - unless gallery.user.blank?
-                    = gallery.user.full_name
+                  = gallery.slug
+                %td
+                  - unless gallery.published_at.blank?
+                    = gallery.published_at.strftime("%d/%m/%Y")
+                %td
+                  - unless gallery.created_at.blank?
+                    = gallery.created_at.strftime("%d/%m/%Y")
                 %td.controls
                   = link_to "Edit", edit_admin_gallery_path(gallery), :class => "btn "
                   - if can? :destroy , Gluttonberg::Gallery

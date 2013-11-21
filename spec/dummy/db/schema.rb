@@ -121,8 +121,14 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.string   "state"
     t.datetime "published_at"
     t.boolean  "collection_imported", :default => false
+    t.string :seo_title , :limit => 255
+    t.text :seo_keywords
+    t.text :seo_description
+    t.integer :fb_icon_id
+    t.string :previous_path
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
+  
   end
 
   create_table "gb_gallery_images", :force => true do |t|

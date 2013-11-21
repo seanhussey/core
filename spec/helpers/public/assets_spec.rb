@@ -32,9 +32,9 @@ module Gluttonberg
       clean_all_data
     end
 
-    it "gallery_images_ul" do
-      helper.gallery_images_ul(nil, :jwysiwyg_image, :fixed_image).should be_nil
-      helper.gallery_images_ul(1, :jwysiwyg_image, :fixed_image).should be_nil
+    it "gallery_ul" do
+      helper.gallery_ul(nil, :jwysiwyg_image, :fixed_image).should be_nil
+      helper.gallery_ul("test", :jwysiwyg_image, :fixed_image).should be_nil
 
       params = {
         :gluttonberg_gallery => {
@@ -52,9 +52,9 @@ module Gluttonberg
       @gallery.save
       @gallery.save_collection_images(params, @current_user)
 
-      helper.gallery_images_ul(@gallery.id, :jwysiwyg_image, :fixed_image).scan("<ul>").length.should eql(1)
-      helper.gallery_images_ul(@gallery.id, :jwysiwyg_image, :fixed_image).scan("<li").length.should eql(2)
-      helper.gallery_images_ul(@gallery.id, :jwysiwyg_image, :fixed_image).scan("</li>").length.should eql(2)
+      helper.gallery_ul(@gallery.slug, :jwysiwyg_image, :fixed_image).scan("<ul").length.should eql(1)
+      helper.gallery_ul(@gallery.slug, :jwysiwyg_image, :fixed_image).scan("<li").length.should eql(2)
+      helper.gallery_ul(@gallery.slug, :jwysiwyg_image, :fixed_image).scan("</li>").length.should eql(2)
     end
 
 
