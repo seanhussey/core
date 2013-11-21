@@ -42,20 +42,21 @@ module Gluttonberg
 
       # build each page and returns an li
       def build_page(page, opts)
+        span = content_tag(:span, page.nav_label).html_safe
         if page.home?
-          return content_tag(:a, page.nav_label, :href => "/").html_safe
+          return content_tag(:a, span, :href => "/").html_safe
         else
           if page.description && page.description.top_level_page?
-            return content_tag(:a, page.nav_label, :href=>"javascript:;", :class => "menu_disabled").html_safe
+            return content_tag(:a, span, :href=>"javascript:;", :class => "menu_disabled").html_safe
           else
-            return content_tag(:a, page.nav_label, :href => page_url(page , opts)).html_safe
+            return content_tag(:a, span, :href => page_url(page , opts)).html_safe
           end
         end
       end
 
       # finds the correct url for a page.
       def page_url(path_or_page , opts = {})
-        if path_or_page.rewrite_required?
+        if path_or_page.redirect_required?
           url = Rails.application.routes.recognize_path(path_or_page.description.rewrite_route)
           url[:host] = Rails.configuration.host_name
           Rails.application.routes.url_for(url)
