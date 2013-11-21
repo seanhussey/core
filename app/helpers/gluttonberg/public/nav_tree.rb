@@ -12,7 +12,8 @@ module Gluttonberg
         home = Gluttonberg::Page.home_page if pages.nil?
         pages = home.children.published if home
         pages = Gluttonberg::Page.where(:parent_id => nil, :state => "published").order("position ASC") if pages.nil?
-
+        pages = pages.to_a
+        pages.insert(0, Gluttonberg::Page.home_page) if opts[:include_home] == true
         pages.each do |page|
           page_depth = 1
           li_opts = {:id => page.slug + "-nav"}
