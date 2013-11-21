@@ -902,10 +902,16 @@ select.size_selector
 
     :border 1px solid #dddddd
     li
+      :background-color white
       :border-bottom 1px solid #eee
       :margin
         :bottom 10px
         :top 5px
+      &:last-child
+        :border-bottom none
+      &:hover
+        :background-color #f5f5f5
+
 
       .repeater-drag-node
         :margin-left 10px
