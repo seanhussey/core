@@ -1,6 +1,16 @@
 = form_for(@gallery, :url => url , :html => {:class => "validation"}) do  |f|
-  = gb_error_messages_for(@gallery)
 
+  - unless @gallery.errors.full_messages.blank?
+    .model-error.alert.alert-block.alert-error
+      %h4.alert-heading
+        Sorry there was an error
+      %ul
+        - @gallery.errors.full_messages.each_with_index do |error, index|
+          %li
+            - if error == "Gallery images asset can't be blank"
+              Gallery image/video can't be blank
+            - else
+              = error
   .span5
     %p
       = f.label :title
