@@ -894,16 +894,37 @@ select.size_selector
         :width 90px
 
 .form_field_wrapper.form-repeater-wrapper
-  ul
+  ul:first-child
+    list-style: none
+    margin-top: 20px
+    margin-left: 0px
+    padding-top: 5px
+
+    :border 1px solid #dddddd
     li
       :border-bottom 1px solid #eee
       :margin
         :bottom 10px
         :top 5px
-  ul:first-child
-    list-style: none
-    margin-top: 20px
-    margin-left: 0px
+
+      .repeater-drag-node
+        :margin-left 10px
+
+      .repeater-delete-wrapper
+        :float right
+        :margin-right 10px
+
+      .expandable.expanded
+        .h5_inner
+          :display none
+
+      .expandable
+        background: url('/assets/gb_arrow.png') top right no-repeat
+        cursor: pointer
+
+      .collapsed
+        background: url('/assets/gb_arrow.png') bottom right no-repeat
+        cursor: pointer
 
     img
       :width 100px

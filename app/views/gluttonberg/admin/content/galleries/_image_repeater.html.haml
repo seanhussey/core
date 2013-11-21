@@ -6,25 +6,23 @@
       - index += 1
       %li.row-fluid.gallery_image_repeater_form
         %span.repeater-drag-node
-        .span10
-          .span4
-            = repeater_form.label :asset_id, "Image/Video"
-            = repeater_form.asset_browser :asset_id , :class => "attr_image " , :filter => "image,video"
-          .span6
-            = repeater_form.label :caption
-            = repeater_form.text_field :caption
-            .clear
-            = repeater_form.label :credits
-            = repeater_form.text_field :credits
-            .clear
-            = repeater_form.label :link
-            = repeater_form.text_field :link
-            .clear
-          
-
+        .span4
+          = repeater_form.label :asset_id, "Image/Video"
+          = repeater_form.asset_browser :asset_id , :class => "attr_image " , :filter => "image,video"
+        .span6
+          = repeater_form.label :caption
+          = repeater_form.text_field :caption
+          .clear
+          = repeater_form.label :credits
+          = repeater_form.text_field :credits
+          .clear
+          = repeater_form.label :link
+          = repeater_form.text_field :link
+          .clear
+        .repeater-delete-wrapper
           = repeater_form.hidden_field :position, :class => "_position"
           = repeater_form.hidden_field :_destroy, :class => "_destroy"
-          = link_to "Remove", "Javascript:;", :class => "_destroy_button"
+          = link_to "Remove", "Javascript:;", :class => "_destroy_button btn btn-danger"
           
 
   = link_to "Add Image", "Javascript:;", "data-count" => @gallery.gallery_images.length, :class => "btn add_gallery_image"
