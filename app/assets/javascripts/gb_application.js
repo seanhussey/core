@@ -742,15 +742,15 @@ function initBetterSlugManagement() {
     doNotEdit = false;
   }
 
-  if(pt.length > 0 && ps.length > 0 ){
+  if(pt.length > 0 && ps.length > 0 && hs.length > 0 ){
 
     $('#page_slug_holder .domain').html($.trim(str));
 
     pt.keyup(function(){
       if (!doNotEdit) {
-        slug = pt.attr('value').toLowerCase().replace(/\s/gim, '-').replace(regex, '')
+        slug = pt.val().toLowerCase().replace(/\s/gim, '-').replace(regex, '')
         ps.html(slug);
-        hs.attr('value', slug);
+        hs.val(slug);
       };
     })
 
@@ -773,18 +773,11 @@ function initBetterSlugManagement() {
           pb.show();
           if (!editPage) {
             doNotEdit = false;
-            slug = pt.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, '')
+            slug = pt.val().toLowerCase().replace(/\s/gim, '_').replace(regex, '')
             ps.html(slug);
-            hs.attr('value', slug);
+            hs.val(slug);
           } else {
-            hs.attr('value', currentSlug);
-          }
-        } else if(slugLength == len) {
-          hs.hide();
-          ps.show();
-          pb.show();
-          if (!editPage) {
-            doNotEdit = false;
+            hs.val(currentSlug);
           }
         } else {
           hs.hide();
@@ -805,19 +798,20 @@ function initSlugManagement() {
   try {
     var pt = $('#page_title');
     var ps = $('#page_slug');
+    var donotmodify = (ps.attr('donotmodify') == 'true') || ps.val().length > 1;
 
     if(pt.length > 0 && ps.length > 0 ){
       var regex = /[\!\*'"″′‟‛„‚”“”˝\(\);:.@&=+$,\/?%#\[\]]/gim;
       var pt_function = function() {
-        if (ps.attr('donotmodify') != 'true') 
-          ps.attr('value', pt.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, ''));
+        if (!donotmodify) 
+          ps.val(pt.val().toLowerCase().replace(/\s/gim, '-').replace(regex, ''));
       };
 
       pt.bind("keyup", pt_function);
       pt.bind("blur", pt_function);
 
       ps.bind("blur", function() {
-        ps.attr('value', ps.attr('value').toLowerCase().replace(/\s/gim, '_').replace(regex, ''));
+        ps.val(ps.val().toLowerCase().replace(/\s/gim, '-').replace(regex, ''));
         ps.attr('donotmodify', 'true');
       });
     }
