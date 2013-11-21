@@ -26,8 +26,11 @@ module Gluttonberg
     def slug=(new_slug)
       unless new_slug.blank?
         write_attribute(:slug, new_slug.sluglize)
-        if self.locale.default
-          self.page.slug = self.slug
+        page_temp_slug = self.page.slug
+        self.page.slug = self.slug
+        write_attribute(:slug, self.page.slug)
+        unless self.locale.default
+          self.page.slug = page_temp_slug
         end
       end
     end
@@ -144,7 +147,8 @@ module Gluttonberg
 
       def check_duplication_in(new_path)
         # check duplication: add id at the end if its duplicated
-        potential_duplicates = self.class.where([ "path = ? AND page_id != ? ", new_path, page.id]).all
+        potential_duplicates = self.class.where([ "path = ? AND page_id != ?", new_path, page.id]).all
+        potential_duplicates = potential_duplicates.find_all{|l| l.page.parent_id == self.page.parent_id}
         Content::SlugManagement::ClassMethods.check_for_duplication(new_path, self, potential_duplicates)
       end
 

@@ -74,7 +74,7 @@ module Gluttonberg
         end
 
         def generic_destroy(object, opts)
-          if object.delete
+          if object.destroy
             flash[:notice] = "The #{opts[:name]} was successfully deleted."
             redirect_to opts[:success_path]
           else

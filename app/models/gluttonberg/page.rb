@@ -6,9 +6,10 @@ module Gluttonberg
     include Content::Publishable
     include Content::SlugManagement
     include Content::PageFinder
+    self.slug_scope = :parent_id
 
     belongs_to :user
-    has_many :localizations, :class_name => "Gluttonberg::PageLocalization"   , :dependent => :destroy
+    has_many :localizations, :class_name => "Gluttonberg::PageLocalization", :dependent => :destroy
     has_and_belongs_to_many :groups, :class_name => "Group" , :join_table => "gb_groups_pages"
 
     attr_protected :user_id , :state , :published_at
