@@ -81,7 +81,7 @@ module Gluttonberg
               end
               self.slug= self.send(self.class.slug_source_field_name)
             end #slug.blank
-            #self.fix_duplicated_slug
+            self.fix_duplicated_slug
           end
 
           def fix_duplicated_slug
