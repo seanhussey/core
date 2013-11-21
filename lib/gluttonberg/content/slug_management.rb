@@ -12,7 +12,7 @@ module Gluttonberg
           include InstanceMethods
 
           before_validation :slug_management
-          class << self;  attr_accessor :slug_source_field_name end
+          class << self;  attr_accessor :slug_source_field_name, :slug_scope end
           attr_accessor :current_slug
 
         end
@@ -22,10 +22,23 @@ module Gluttonberg
         def self.check_for_duplication(slug, object, potential_duplicates)
           unless potential_duplicates.blank?
             if potential_duplicates.length > 1 || (potential_duplicates.length == 1 && potential_duplicates.first.id != object.id )
-              slug = "#{slug}-#{potential_duplicates.length+1}"
+              slug = "#{self.slug_without_postfix(slug)}-#{potential_duplicates.length+1}"
             end
           end
           slug
+        end
+
+        def self.slug_without_postfix(slug)
+          temp_slug = slug
+
+          unless temp_slug.blank?
+            slug_tokens = temp_slug.split("-")
+            if slug_tokens.last.to_i.to_s == slug_tokens.last && slug_tokens.length > 1
+              slug_tokens = slug_tokens[0..-2]
+              temp_slug = slug_tokens.join("-")
+            end
+          end
+          temp_slug
         end
       end
 
@@ -68,23 +81,40 @@ module Gluttonberg
               end
               self.slug= self.send(self.class.slug_source_field_name)
             end #slug.blank
-            self.fix_duplicated_slug
+            #self.fix_duplicated_slug
           end
 
           def fix_duplicated_slug
             # check duplication: add id at the end if its duplicated
-            already_exist = self.class.where(:slug => self.slug).all
-            unless already_exist.blank?
-              if already_exist.length > 1 || (already_exist.length == 1 && already_exist.first.id != self.id )
-                self.slug= "#{self.slug}-#{already_exist.length+1}"
+            potential_duplicates = find_potential_duplicates(self.slug)
+
+            unless potential_duplicates.blank?
+              if potential_duplicates.length > 1 || (potential_duplicates.length == 1 && potential_duplicates.first.id != self.id )
+                self.slug = "#{slug_without_postfix(self.slug)}-#{potential_duplicates.length+1}"
               end
             end
           end
 
           def unique_slug(slug)
             # check duplication: add id at the end if its duplicated
-            potential_duplicates = self.class.where(:slug => slug).all
+            potential_duplicates = find_potential_duplicates(slug)
             Content::SlugManagement::ClassMethods.check_for_duplication(slug, self, potential_duplicates)
+          end
+
+          def slug_without_postfix(slug)
+            Content::SlugManagement::ClassMethods.slug_without_postfix(slug)
+          end
+
+          def find_potential_duplicates(slug)
+            temp_slug = slug_without_postfix(slug)
+            potential_duplicates = self.class.where(["slug = ? OR slug = ? OR slug like ? ", slug, temp_slug, "#{temp_slug}-%"])
+            
+            unless self.class.slug_scope.blank?
+              potential_duplicates = potential_duplicates.where(self.class.slug_scope => self.send(self.class.slug_scope) )
+            end
+            potential_duplicates = potential_duplicates.all
+            potential_duplicates = potential_duplicates.find_all{|obj| obj.id != self.id}
+            potential_duplicates
           end
 
       end
