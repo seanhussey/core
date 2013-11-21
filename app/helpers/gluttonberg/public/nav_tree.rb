@@ -60,6 +60,8 @@ module Gluttonberg
           url = Rails.application.routes.recognize_path(path_or_page.description.rewrite_route)
           url[:host] = Rails.configuration.host_name
           Rails.application.routes.url_for(url)
+        elsif path_or_page.rewrite_required?
+          "#{path_or_page.description.rewrite_route}"
         else
           if Gluttonberg.localized? && !opts[:slug].blank?
             "/#{opts[:slug]}/#{path_or_page.path}"
