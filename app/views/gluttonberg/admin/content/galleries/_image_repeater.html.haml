@@ -1,3 +1,5 @@
+%legend
+  Images/Videos
 .form-repeater-wrapper.form_field_wrapper{"data-field" => "gallery_images"}
   %ul
     - index = 0
@@ -25,4 +27,4 @@
           = link_to "Remove", "Javascript:;", :class => "_destroy_button btn btn-danger"
           
 
-  = link_to "Add Image", "Javascript:;", "data-count" => @gallery.gallery_images.length, :class => "btn add_gallery_image"
+  = link_to "Add Image/Video", "Javascript:;", "data-count" => @gallery.gallery_images.length, :class => "btn add_gallery_image"

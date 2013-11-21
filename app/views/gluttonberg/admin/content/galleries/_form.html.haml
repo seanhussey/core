@@ -56,8 +56,6 @@
     = form_controls(admin_galleries_path)
 
   %div
-    %legend
-      Images/Videos
     = render :partial => "image_repeater", :locals => {:f => f}
     .clear
     %br
