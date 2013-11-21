@@ -187,7 +187,11 @@ module Gluttonberg
             file = File.new(file_path, "w")
 
             page_localization.contents.each do |content|
-              file.puts("= @page.easy_contents(:#{content.section_name})")
+              if content.kind_of?(Gluttonberg::TextareaContent) || content.kind_of?(Gluttonberg::HtmlContent) || content.kind_of?(Gluttonberg::TextareaContentLocalization) || content.kind_of?(Gluttonberg::HtmlContentLocalization)
+                file.puts("= shortcode_safe @page.easy_contents(:#{content.section_name})")
+              else
+                file.puts("= @page.easy_contents(:#{content.section_name})")
+              end
             end
             file.close
           end
