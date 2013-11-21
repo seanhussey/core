@@ -1,42 +1,64 @@
 = form_for(@gallery, :url => url , :html => {:class => "validation"}) do  |f|
-  = gb_error_messages_for(@gallery)
-  .row-fluid
-    .span5
+
+  - unless @gallery.errors.full_messages.blank?
+    .model-error.alert.alert-block.alert-error
+      %h4.alert-heading
+        Sorry there was an error
+      %ul
+        - @gallery.errors.full_messages.each_with_index do |error, index|
+          %li
+            - if error == "Gallery images asset can't be blank"
+              Gallery image/video can't be blank
+            - else
+              = error
+  .span5
+    %p
+      = f.label :title
+      = f.text_field(:title, :id => "page_title" , :class => "required span5")
+    %p
+      = f.label :description
+      = f.text_area(:description , :class => "jwysiwyg span5" )
+
+    - if @gallery.collection_imported == false || @gallery.gallery_images.length == 0
       %p
-        = f.label :title
-        = f.text_field(:title, :id => "page_title" , :class => "required span5")
+        = label_tag "Asset Collection"
+        = select_tag(:collection_id , options_from_collection_for_select(Gluttonberg::AssetCollection.all , "id" , "name_with_number_of_images") , :include_blank => true)
+        .help
+          Use care when selecting a collection to add to a gallery. Once a collection is added it cannot be deleted, and you will need to individually delete images.
+
+  .span4
+
+    %legend{ :class => "expandable" , "rel"=>".seo_body"}
+      SEO
+    .seo_body
       %p
         = f.label :slug
-        = f.text_field(:slug, :id => 'page_slug' , :class => "required span5")
+        = f.text_field :slug , :class => "span4 " , :id => "page_slug" , :donotmodify => slug_donotmodify_val
       %p
-        = f.label :description
-        = f.text_area(:description , :class => "jwysiwyg span5" )
-
-      - if @gallery.collection_imported == false || @gallery.gallery_images.length == 0
-        %p
-          = label_tag "Asset Collection"
-          = select_tag(:collection_id , options_from_collection_for_select(Gluttonberg::AssetCollection.all , "id" , "name_with_number_of_images") , :include_blank => true)
-          .help
-            Use care when selecting a collection to add to a gallery. Once a collection is added it cannot be deleted, and you will need to individually delete images.
-
-  .row-fluid
+        = f.label :seo_title
+        = f.text_field :seo_title , :class => "span4 "
+      %p
+        = f.label :seo_keywords , "Keywords"
+        = f.text_area :seo_keywords , :class => "span4 "   , :rows => 3
+      %p
+        = f.label :seo_description , "Description"
+        = f.text_area :seo_description , :class => "span4 " , :rows => 3
+      %p
+        = f.label :fb_icon_id , "Facebook Icon"
+        = f.asset_browser :fb_icon_id , :class => "" , :filter => "image"
+    
     %legend
-      Images/Videos
-    .span8
-      = render :partial => "image_repeater", :locals => {:f => f}
+      Publishing
+    - if can? :publish , Gluttonberg::Gallery
+      %p
+        #publish_meta
+          = f.publisable_dropdown
+    = form_controls(admin_galleries_path)
+
+  %div
+    = render :partial => "image_repeater", :locals => {:f => f}
     .clear
     %br
-
-  .row-fluid
-    .span4
-      - if can? :publish , Gluttonberg::Gallery
-        %p
-          #publish_meta
-            = f.publisable_dropdown
-      = form_controls(admin_galleries_path)
-
-
-  .clear
 
 = enable_redactor("jwysiwyg")
 :javascript

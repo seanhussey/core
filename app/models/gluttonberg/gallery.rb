@@ -10,6 +10,9 @@ module Gluttonberg
     attr_accessible :gallery_images, :gallery_images_attributes
     accepts_nested_attributes_for :gallery_images, :allow_destroy => true
 
+    attr_accessible :seo_title, :seo_keywords, :seo_description, :fb_icon_id
+    belongs_to :fb_icon , :class_name => "Gluttonberg::Asset" , :foreign_key => "fb_icon_id"
+
     belongs_to :user
     alias_attribute :name, :title
     validates_presence_of :user_id

@@ -53,6 +53,18 @@ Gluttonberg::PageDescription.add do
       type :html_content
     end
 
+    # section :excerpt do
+    #   label "Excerpt"
+    #   type :textarea_content
+    # end
+
+    # section :theme do
+    #   label "Theme"
+    #   type :select_content
+    #   select_options_data lambda{ THEMES }
+    #   select_options_default_value lambda{ THEMES.first.last }
+    # end
+
   end
 
 end

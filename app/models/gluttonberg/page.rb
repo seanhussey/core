@@ -6,9 +6,10 @@ module Gluttonberg
     include Content::Publishable
     include Content::SlugManagement
     include Content::PageFinder
+    self.slug_scope = :parent_id
 
     belongs_to :user
-    has_many :localizations, :class_name => "Gluttonberg::PageLocalization"   , :dependent => :destroy
+    has_many :localizations, :class_name => "Gluttonberg::PageLocalization", :dependent => :destroy
     has_and_belongs_to_many :groups, :class_name => "Group" , :join_table => "gb_groups_pages"
 
     attr_protected :user_id , :state , :published_at
@@ -42,8 +43,12 @@ module Gluttonberg
             content.asset.url_for opts[:url_for]
           when "Gluttonberg::HtmlContent"
             content.current_localization.text.html_safe
+          when "Gluttonberg::TextareaContent"
+            content.current_localization.text.html_safe
           when "Gluttonberg::PlainTextContent"
             content.current_localization.text
+          when "Gluttonberg::SelectContent"
+            content.text
         end
       rescue
       end

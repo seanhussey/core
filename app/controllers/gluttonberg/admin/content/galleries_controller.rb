@@ -24,6 +24,7 @@ module Gluttonberg
         end
 
         def create
+          clean_empty_repeater
           @gallery = Gallery.new(params[:gluttonberg_gallery])
           @gallery.user_id = current_user.id if @gallery.user_id.blank?
           if @gallery.save
@@ -32,7 +33,7 @@ module Gluttonberg
             redirect_to edit_admin_gallery_path(@gallery)
           else
             prepare_repeaters
-            render :edit
+            render :new
           end
         end
 
@@ -41,6 +42,7 @@ module Gluttonberg
         end
 
         def update
+          clean_empty_repeater
           if @gallery.update_attributes(params[:gluttonberg_gallery])
             @gallery.save_collection_images(params, current_user)
             flash[:notice] = "The gallery was successfully updated."
@@ -108,6 +110,16 @@ module Gluttonberg
 
           def prepare_repeaters
             @gallery.gallery_images.build if @gallery.gallery_images.blank?
+          end
+
+          def clean_empty_repeater
+            unless params[:gluttonberg_gallery].blank? || params[:gluttonberg_gallery][:gallery_images_attributes].blank?
+              params[:gluttonberg_gallery][:gallery_images_attributes].each do |key, val|
+                if val[:asset_id].blank? || val[:caption].blank? || val[:credits].blank? || val[:link].blank? || val[:id].blank?
+                  params[:gluttonberg_gallery][:gallery_images_attributes].delete(key)
+                end
+              end
+            end
           end
 
       end

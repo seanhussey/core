@@ -1,7 +1,9 @@
 - gallery.gallery_images.each do |g_image|
-  %li{:id => "image_#{g_image.id}"}
-    = link_to(asset_tag(g_image.image , gallery_thumb_image).html_safe , asset_url(g_image.image , :thumb_name => gallery_large_image) , :class => "thumb")
-    - unless g_image.image.alt.blank?
-      .caption
-        .image-desc
-          = g_image.image.alt
+  - html_opts_for_li[:id] = "gallery_item_#{g_image.id}"
+
+  %li{html_opts_for_li}
+    - if g_image.asset.type_name == 'video'
+    - else
+      - image = g_image.asset
+      %a{html_opts_for_a, :href => image.url_for(gallery_large_image), :rel => "gallery_#{gallery.slug}", "data-fancybox-title" => "<div class='caption'>#{g_image.caption}</div><div class='credit'>#{g_image.credits}</div>"}
+        = asset_tag(image, gallery_thumb_image)

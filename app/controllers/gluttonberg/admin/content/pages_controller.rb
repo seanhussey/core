@@ -18,7 +18,7 @@ module Gluttonberg
         end
 
         def new
-          @page = Page.new
+          @page = Page.new(:parent_id => params[:parent_id])
           @page_localization = PageLocalization.new
           prepare_to_edit
         end

@@ -121,8 +121,14 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.string   "state"
     t.datetime "published_at"
     t.boolean  "collection_imported", :default => false
+    t.string :seo_title , :limit => 255
+    t.text :seo_keywords
+    t.text :seo_description
+    t.integer :fb_icon_id
+    t.string :previous_path
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
+  
   end
 
   create_table "gb_gallery_images", :force => true do |t|
@@ -156,6 +162,21 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.integer "group_id", :null => false
   end
 
+  create_table :gb_textarea_contents do |t|
+    t.boolean :orphaned, :default => false
+    t.string :section_name, :limit => 50
+    t.integer :page_id
+    t.timestamps
+  end
+
+  create_table :gb_textarea_content_localizations do |t|
+    t.text :text
+    t.integer :textarea_content_id
+    t.integer :page_localization_id
+    t.integer :version
+    t.timestamps
+  end
+
   create_table "gb_html_content_localizations", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -182,6 +203,16 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.integer  "page_id"
     t.integer  "version"
   end
+
+  create_table :gb_select_contents do |t|
+    t.boolean :orphaned, :default => false
+    t.string :section_name, :limit => 50
+    t.string :text
+    t.integer :page_id
+    t.integer :version
+    t.timestamps
+  end
+
 
   create_table "gb_locales", :force => true do |t|
     t.string  "name",      :limit => 70,                    :null => false
@@ -469,6 +500,18 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.integer :parent_id
     t.integer :locale_id
     t.timestamps
+  end
+
+  begin
+    Gluttonberg::TextareaContentLocalization.create_versioned_table
+  rescue => e
+    puts e
+  end
+
+  begin
+    Gluttonberg::SelectContent.create_versioned_table
+  rescue => e
+    puts e
   end
 
 end
