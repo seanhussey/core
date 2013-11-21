@@ -291,6 +291,11 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.column :state , :string
       t.datetime :published_at
       t.boolean :collection_imported , :default => false
+      t.string :seo_title , :limit => 255
+      t.text :seo_keywords
+      t.text :seo_description
+      t.integer :fb_icon_id
+      t.string :previous_path
       t.timestamps
     end
 
