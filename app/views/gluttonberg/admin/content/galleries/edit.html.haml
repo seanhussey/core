@@ -8,8 +8,5 @@
         %h1
           = @page_title.html_safe
       .subnav
-
       = render :partial => "form", :locals => {:url => admin_gallery_path(@gallery)}
 
-:javascript
-  initEditGalleryList();

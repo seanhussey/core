@@ -30,7 +30,7 @@
             - @galleries.each do |gallery|
               %tr
                 %td
-                  = gallery.title
+                  = link_to gallery.title, edit_admin_gallery_path(gallery)
                 %td
                   = gallery.slug
                 %td

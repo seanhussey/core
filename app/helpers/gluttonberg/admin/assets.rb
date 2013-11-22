@@ -45,13 +45,6 @@ module Gluttonberg
         }
       end
 
-      def add_image_to_gallery_tag( button_text , add_url, gallery_id , opts = {})
-        opts[:class] = "" if opts[:class].blank?
-        opts[:class] << " add_image_to_gallery choose_button btn button  #{opts[:button_class]}"
-        link_contents = link_to(button_text, admin_asset_browser_url + "?filter=image" , opts.merge( :data_url => add_url ))
-        content_tag(:span , link_contents , { :class => "assetBrowserLink" } )
-      end
-
       def clear_asset_tag( field_id , opts = {} )
         asset_id = opts[:asset_id]
         if opts[:id].blank?
