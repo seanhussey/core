@@ -18,7 +18,9 @@ module Gluttonberg
           page_depth = 1
           page.load_localization(@locale)
           li_opts = {:class => page.slug + "-nav"}
-          li_opts[:class] += " active" if page == @page || children_active?(page)
+          unless Gluttonberg::Page.home_page == page
+            li_opts[:class] += " active" if page == @page || children_active?(page)
+          end
           li_content = build_page(page, opts)
           unless Gluttonberg::Page.home_page == page
             li_content << find_children(page, page_depth, opts) if opts[:max_depth] >= page_depth
