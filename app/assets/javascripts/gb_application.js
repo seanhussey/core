@@ -111,9 +111,6 @@ var AssetBrowser = {
       AssetBrowser.target = null;
       AssetBrowser.nameDisplay = p.find("h5");
     }
-    if(AssetBrowser.actualLink.hasClass("add_image_to_gallery")){
-      AssetBrowser.target = null;
-    }
 
     threeSixtyPlayer.init();
 
@@ -277,6 +274,7 @@ var AssetBrowser = {
       // assets only
       if (AssetBrowser.target !== null) {
         AssetBrowser.actualLink.parents(".caption").find(".choose_asset_hidden_field").attr("value", id);
+        AssetBrowser.actualLink.parents(".caption").find(".choose_asset_hidden_field").trigger( "selected", [target.attr("data-title"), target.attr("data-credits")] );
         var image_src = target.attr("data-thumb");
 
         image_url = target.attr("data-jwysiwyg");
@@ -311,23 +309,7 @@ var AssetBrowser = {
 
         autoSaveAsset(AssetBrowser.logo_setting_url, id); //auto save if it is required
       } else {
-        if (AssetBrowser.actualLink.hasClass("add_image_to_gallery")) {
-
-          $.ajax({
-            url: AssetBrowser.actualLink.attr("data_url"),
-            data: 'asset_id=' + id,
-            type: "GET",
-            success: function(data) {
-              $("#images_container").html(data);
-              initEditGalleryList();
-              dragTreeManager.init();
-              AssetBrowser.close();
-            },
-            error: function(data) {
-              AssetBrowser.close();
-            }
-          });
-        }
+        
       }
 
       AssetBrowser.close();
@@ -530,21 +512,6 @@ function ajaxFileUploadForAssetLibrary(link) {
       url = AssetBrowser.logo_setting_url;
       autoSaveAsset(url, new_id); // only if autosave is required
 
-      if (AssetBrowser.actualLink.hasClass("add_image_to_gallery")) {
-        $.ajax({
-          url: AssetBrowser.actualLink.attr("data_url"),
-          data: 'asset_id=' + new_id,
-          type: "GET",
-          success: function(data) {
-            $("#images_container").html(data);
-            initEditGalleryList();
-            dragTreeManager.init();
-          },
-          error: function(data) {
-          }
-        });
-      }
-
       AssetBrowser.close();
     },
     error: function(data, status, e) {
@@ -593,24 +560,6 @@ function initPublishedDateTime() {
   updatePublishedDateField();
 }
 
-/* Setup Gallery */
-
-function initEditGalleryList() {
-  $(".delete_gallery_item").click(deleteEventHandlerForGalleryList)
-
-}
-
-function deleteEventHandlerForGalleryList() {
-  id = $(this).attr("rel")
-  $("#progress_" + id).show("fast");
-  $.ajax({
-    url: $(this).attr("data-url"),
-    type: "GET",
-    success: function(data) {
-      $("#node-" + id).remove();
-    }
-  });
-}
 
 /* Setup Bulk actions for asset library */
 
@@ -918,10 +867,24 @@ function initGalleryImageRepeater(){
     HtmlFormRepeater.add(containerselector, rowSelector, this, function(newElement){
       initClickEventsForAssetLinks(newElement);
       newElement.find(".remove").click();
+      initHiddenFieldListner(newElement);
     });
     e.preventDefault();
   });
 
   HtmlFormRepeater.initRemoveButton(containerselector, rowSelector);
   HtmlFormRepeater.initSorter(containerselector, rowSelector);
+
+  initHiddenFieldListner($("body"));
+  function initHiddenFieldListner(container){
+    container.find(".choose_asset_hidden_field").on('selected', function(event, title, credits){
+      var formRow = $(this).parents("li.gallery_image_repeater_form");
+      if(!blank(title) && blank(formRow.find(".caption-field").val())){
+        formRow.find(".caption-field").val(title)  
+      }
+      if(!blank(credits) && blank(formRow.find(".credits-field").val())){
+        formRow.find(".credits-field").val(credits)  
+      }
+    });
+  }
 }

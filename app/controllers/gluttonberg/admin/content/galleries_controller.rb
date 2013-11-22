@@ -71,22 +71,6 @@ module Gluttonberg
           })
         end
 
-        def remove_image
-          item = GalleryImage.where(:id => params[:id]).first
-          Gluttonberg::Feed.log(current_user,item.gallery, item.gallery.title , "removed image '#{item.image.name}'")
-          item.delete
-          render :text => "{success:true}"
-        end
-
-        def add_image
-          @gallery = Gallery.where(:id => params[:id]).first
-          max_position = @gallery.gallery_images.length
-          @gallery_item = @gallery.gallery_images.create(:asset_id => params[:asset_id] , :position => (max_position )  )
-          @gallery_images = @gallery.gallery_images.order("position ASC")
-          Gluttonberg::Feed.log(current_user,@gallery, @gallery.title , "added image '#{@gallery_item.image.name}'")
-          render :layout => false
-        end
-
         protected
 
           def is_gallery_enabled
@@ -115,7 +99,7 @@ module Gluttonberg
           def clean_empty_repeater
             unless params[:gluttonberg_gallery].blank? || params[:gluttonberg_gallery][:gallery_images_attributes].blank?
               params[:gluttonberg_gallery][:gallery_images_attributes].each do |key, val|
-                if val[:asset_id].blank? || val[:caption].blank? || val[:credits].blank? || val[:link].blank? || val[:id].blank?
+                if val[:asset_id].blank? && val[:caption].blank? && val[:credits].blank? && val[:link].blank? && val[:id].blank?
                   params[:gluttonberg_gallery][:gallery_images_attributes].delete(key)
                 end
               end
