@@ -16,29 +16,31 @@ module Gluttonberg
         pages.insert(0, Gluttonberg::Page.home_page) if opts[:include_home] == true
         pages.each do |page|
           page_depth = 1
-          li_opts = {:id => page.slug + "-nav"}
-          li_opts[:class] = "active" if page == @page
           page.load_localization(@locale)
+          li_opts = {:class => page.slug + "-nav"}
+          li_opts[:class] += " active" if page == @page || children_active?(page)
           li_content = build_page(page, opts)
-          li_content << find_children(page, page_depth, opts) if opts[:max_depth] >= page_depth
+          unless Gluttonberg::Page.home_page == page
+            li_content << find_children(page, page_depth, opts) if opts[:max_depth] >= page_depth
+          end
           content << content_tag(:li, li_content.html_safe, li_opts).html_safe
         end
 
         return content_tag(:ul, content.html_safe, opts).html_safe
       end
 
-      def find_children(page, page_depth, opts)
+      def find_children(parent, page_depth, opts)
         content = ""
-        page.children.published.each do |child|
+        parent.children.published.each do |page|
           child_depth = page_depth + 1
-          li_opts = {:id => page.slug + "-nav"}
-          li_opts[:class] = "current" if page == @page
           page.load_localization(@locale)
-          li_content = build_page(child, opts)
-          li_content << find_children(child, child_depth, opts) if opts[:max_depth] >= child_depth
+          li_opts = {:class => page.slug + "-nav"}
+          li_opts[:class] += " active" if page == @page  || children_active?(page)
+          li_content = build_page(page, opts)
+          li_content << find_children(page, child_depth, opts) if opts[:max_depth] >= child_depth
           content << content_tag(:li, li_content.html_safe, li_opts).html_safe
         end
-        return content_tag(:ul, content.html_safe, opts).html_safe
+        return content_tag(:ul, content.html_safe, opts).html_safe if !content.blank?
       end
 
       # build each page and returns an li
@@ -53,6 +55,16 @@ module Gluttonberg
             return content_tag(:a, span, :href => page_url(page , opts)).html_safe
           end
         end
+      end
+
+      def children_active?(parent)
+        active = false
+        active = true if parent == @page
+        parent.children.each do |page|
+          active = true if children_active?(page) == true
+          active = true if page == @page
+        end
+        return active
       end
 
       # finds the correct url for a page.
