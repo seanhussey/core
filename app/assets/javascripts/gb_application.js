@@ -111,9 +111,9 @@ var AssetBrowser = {
       AssetBrowser.target = null;
       AssetBrowser.nameDisplay = p.find("h5");
     }
-    if(AssetBrowser.actualLink.hasClass("add_image_to_gallery")){
-      AssetBrowser.target = null;
-    }
+    // if(AssetBrowser.actualLink.hasClass("add_image_to_gallery")){
+    //   AssetBrowser.target = null;
+    // }
 
     threeSixtyPlayer.init();
 
@@ -313,20 +313,20 @@ var AssetBrowser = {
       } else {
         if (AssetBrowser.actualLink.hasClass("add_image_to_gallery")) {
 
-          $.ajax({
-            url: AssetBrowser.actualLink.attr("data_url"),
-            data: 'asset_id=' + id,
-            type: "GET",
-            success: function(data) {
-              $("#images_container").html(data);
-              initEditGalleryList();
-              dragTreeManager.init();
-              AssetBrowser.close();
-            },
-            error: function(data) {
-              AssetBrowser.close();
-            }
-          });
+          // $.ajax({
+          //   url: AssetBrowser.actualLink.attr("data_url"),
+          //   data: 'asset_id=' + id,
+          //   type: "GET",
+          //   success: function(data) {
+          //     $("#images_container").html(data);
+          //     initEditGalleryList();
+          //     dragTreeManager.init();
+          //     AssetBrowser.close();
+          //   },
+          //   error: function(data) {
+          //     AssetBrowser.close();
+          //   }
+          // });
         }
       }
 
@@ -530,20 +530,20 @@ function ajaxFileUploadForAssetLibrary(link) {
       url = AssetBrowser.logo_setting_url;
       autoSaveAsset(url, new_id); // only if autosave is required
 
-      if (AssetBrowser.actualLink.hasClass("add_image_to_gallery")) {
-        $.ajax({
-          url: AssetBrowser.actualLink.attr("data_url"),
-          data: 'asset_id=' + new_id,
-          type: "GET",
-          success: function(data) {
-            $("#images_container").html(data);
-            initEditGalleryList();
-            dragTreeManager.init();
-          },
-          error: function(data) {
-          }
-        });
-      }
+      // if (AssetBrowser.actualLink.hasClass("add_image_to_gallery")) {
+      //   $.ajax({
+      //     url: AssetBrowser.actualLink.attr("data_url"),
+      //     data: 'asset_id=' + new_id,
+      //     type: "GET",
+      //     success: function(data) {
+      //       $("#images_container").html(data);
+      //       initEditGalleryList();
+      //       dragTreeManager.init();
+      //     },
+      //     error: function(data) {
+      //     }
+      //   });
+      // }
 
       AssetBrowser.close();
     },
@@ -593,24 +593,6 @@ function initPublishedDateTime() {
   updatePublishedDateField();
 }
 
-/* Setup Gallery */
-
-function initEditGalleryList() {
-  $(".delete_gallery_item").click(deleteEventHandlerForGalleryList)
-
-}
-
-function deleteEventHandlerForGalleryList() {
-  id = $(this).attr("rel")
-  $("#progress_" + id).show("fast");
-  $.ajax({
-    url: $(this).attr("data-url"),
-    type: "GET",
-    success: function(data) {
-      $("#node-" + id).remove();
-    }
-  });
-}
 
 /* Setup Bulk actions for asset library */
 
