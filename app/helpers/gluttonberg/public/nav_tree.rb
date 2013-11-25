@@ -17,7 +17,7 @@ module Gluttonberg
         pages.each do |page|
           page_depth = 1
           page.load_localization(@locale)
-          li_opts = {:class => page.slug + "-nav"}
+          li_opts = {:class => page.localizations[0] ? page.localizations[0].slug + "-nav" : page.slug + "-nav"}
           unless Gluttonberg::Page.home_page == page
             li_opts[:class] += " active" if page == @page || children_active?(page)
           end
@@ -36,7 +36,7 @@ module Gluttonberg
         parent.children.published.each do |page|
           child_depth = page_depth + 1
           page.load_localization(@locale)
-          li_opts = {:class => page.slug + "-nav"}
+          li_opts = {:class => page.localizations[0] ? page.localizations[0].slug + "-nav" : page.slug + "-nav"}
           li_opts[:class] += " active" if page == @page  || children_active?(page)
           li_content = build_page(page, opts)
           li_content << find_children(page, child_depth, opts) if opts[:max_depth] >= child_depth
