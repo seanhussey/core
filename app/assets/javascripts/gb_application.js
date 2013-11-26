@@ -856,8 +856,6 @@ function initNestable(){
     var change = JSON.stringify(window.nestableSerializedDataOnPageLoad[list.attr('data-id')]) != JSON.stringify(list.nestable('serialize'));
     return change;
   }
-
-
 }
 
 function initGalleryImageRepeater(){

@@ -71,7 +71,7 @@ module Gluttonberg
 
       def shortcode_safe(str)
         temp_string = str
-        temp_string = temp_string.gsub(/\[(\w|\s)*\]/) do |match|
+        temp_string = temp_string.gsub(/\[(\w|\s|-|_)*\]/) do |match|
           shortcode = match.gsub("[","").gsub("]","")
           shortcode_tokens = shortcode.split(" ")
           shortcode_method = "#{shortcode_tokens.first}_shortcode"
@@ -80,7 +80,7 @@ module Gluttonberg
           if respond_to?(shortcode_method)
             send(shortcode_method, shortcode_args)
           else
-            temp_string
+            match
           end
         end
         temp_string.html_safe
