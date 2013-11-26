@@ -24,6 +24,8 @@
       %p
         = f.label :password
         = f.password_field(:password, :class => "large ")
+        %p.help-block
+          Password #{Rails.configuration.password_pattern}
       
       %p
         = f.label :password_confirmation

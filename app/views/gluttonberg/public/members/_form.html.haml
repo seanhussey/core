@@ -24,6 +24,9 @@
       = f.label :password
       = f.password_field :password  , :class => "required" , :id => "password"
 
+      %p.help-block
+        Password #{Rails.configuration.password_pattern}
+
     .form_element
       = f.label :password_confirmation
       = f.password_field :password_confirmation  , :class => "required"  , :id => "password_confirmation" , :equalto => "#password"

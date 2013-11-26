@@ -13,6 +13,8 @@
     %fieldset.form_element
       = f.label :password
       = f.password_field :password, :class => "text_field"
+      %p.help-block
+        Password #{Rails.configuration.password_pattern}
   
     %fieldset.form_element
       = f.label :password_confirmation
