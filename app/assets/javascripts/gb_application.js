@@ -777,14 +777,6 @@ function enable_slug_management_on(src_class){
 function initNestable(){
   window.nestableSerializedDataOnPageLoad = [];
 
-  // $('.dd').nestable({ /* config options */
-  // }).on('change', function(e) {
-  //   /* on change event */
-  //   var list   = e.length ? e : $(e.target),
-  //   output = list.data('output'),
-  //   url = list.attr('data-url');
-  // });
-
   $('.dd').each(function(){
     var $list = $(this);
     var $saveButton = $($list.attr('data-saveButton'));
