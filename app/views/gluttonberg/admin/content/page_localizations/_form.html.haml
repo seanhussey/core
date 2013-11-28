@@ -44,6 +44,8 @@
                 = f.text_field(:slug, :id => 'page_hidden_slug')
                 .edit.btn.btn-mini
                   Edit URL
+
+                = link_to("View Page", @page.current_localization.public_path, :class => "btn btn-mini", :target => "_blank")
           .clear
           %p
             = f.label :navigation_label
