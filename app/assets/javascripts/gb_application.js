@@ -370,7 +370,8 @@ function insertImageInWysiwyg(image_url,file_type,title) {
     }
     description = "";
     style = "";
-    if(file_type == "image"){
+    console.log(AssetBrowser.actualLink)
+    if(file_type == "image" && !AssetBrowser.actualLink.hasClass("attach")){
       image = "<img src='" + image_url + "' title='" + title + "' alt='" + description + "'" + style + "/>";
     }else{
       image = " <a href='"+image_url+"' >"+title+"</a> ";
@@ -660,9 +661,9 @@ function enableRedactor(selector, _linkCount) {
         'italic', 'underline',  '|', 'alignment', '|',
         'unorderedlist', 'orderedlist',
         'outdent', 'indent', '|', 'video',
-        'table', '|',  'html'
+        'table', '|', 'html', '|', 'fullscreen'
       ],
-      plugins: ['asset_library_image', 'gluttonberg_pages']
+      plugins: ['asset_library_image', 'gluttonberg_pages', 'fullscreen']
     });
 
   });
