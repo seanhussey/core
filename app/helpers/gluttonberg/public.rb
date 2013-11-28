@@ -70,20 +70,24 @@ module Gluttonberg
       end
 
       def shortcode_safe(str)
-        temp_string = str
-        temp_string = temp_string.gsub(/\[(\w|\s|-|_)*\]/) do |match|
-          shortcode = match.gsub("[","").gsub("]","")
-          shortcode_tokens = shortcode.split(" ")
-          shortcode_method = "#{shortcode_tokens.first}_shortcode"
-          shortcode_args = shortcode_tokens.length > 1 ? shortcode_tokens[1..-1] : []
+        unless str.blank? || str.nil?
+          temp_string = str
+          temp_string = temp_string.gsub(/\[(\w|\s|-|_)*\]/) do |match|
+            shortcode = match.gsub("[","").gsub("]","")
+            shortcode_tokens = shortcode.split(" ")
+            shortcode_method = "#{shortcode_tokens.first}_shortcode"
+            shortcode_args = shortcode_tokens.length > 1 ? shortcode_tokens[1..-1] : []
 
-          if respond_to?(shortcode_method)
-            send(shortcode_method, shortcode_args)
-          else
-            match
+            if respond_to?(shortcode_method)
+              send(shortcode_method, shortcode_args)
+            else
+              match
+            end
           end
+          temp_string.html_safe
+        else
+          str
         end
-        temp_string.html_safe
       end
 
     end # Public
