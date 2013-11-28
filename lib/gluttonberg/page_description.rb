@@ -29,7 +29,8 @@ module Gluttonberg
         :behaviour  => :default,
         :layout     => "public",
         :view       => "default",
-        :page_options => {}
+        :page_options => {},
+        :group => nil
       }
       @sections = {}
       @@_descriptions[name] = self
@@ -160,6 +161,10 @@ module Gluttonberg
 
     def page_options(opts = {})
       @options[:page_options] = opts
+    end
+
+    def group(grp)
+      @options[:group] = grp
     end
 
     # Configures the page to act as a rewrite to named route. This doesn’t

@@ -112,5 +112,15 @@ module Gluttonberg
         end
       end
 
+      def page_description_options
+        @descriptions = {}
+        Gluttonberg::PageDescription.all.each do |name, desc|
+          group = desc[:group].blank? ? "" : desc[:group]
+          @descriptions[group] = [] if @descriptions[group].blank?
+          @descriptions[group] << [desc[:description], name]
+        end
+        @descriptions
+      end
+
     end # Admin
 end # Gluttonberg
