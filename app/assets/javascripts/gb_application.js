@@ -1,3 +1,4 @@
+var editingInProgress = false;
 $(document).ready(function() {
   dragTreeManager.init();
   initNestable();
@@ -10,6 +11,7 @@ $(document).ready(function() {
   initGluttonbergUI();
   initFormValidation();
   setUpAudio();
+  WarnNavigateAway.init();
   $(".chzn-select").chosen();
 });
 
@@ -374,7 +376,7 @@ function insertImageInWysiwyg(image_url,file_type,title) {
     if(file_type == "image" && !AssetBrowser.actualLink.hasClass("attach")){
       image = "<img src='" + image_url + "' title='" + title + "' alt='" + description + "'" + style + "/>";
     }else{
-      image = " <a href='"+image_url+"' >"+title+"</a> ";
+      image = " <a href='"+image_url+"' target='_blank' >"+title+"</a> ";
     }
     Wysiwyg.insertHtml(image);
   }
@@ -663,7 +665,8 @@ function enableRedactor(selector, _linkCount) {
         'outdent', 'indent', '|', 'video',
         'table', '|', 'html', '|', 'fullscreen'
       ],
-      plugins: ['asset_library_image', 'gluttonberg_pages', 'fullscreen']
+      plugins: ['asset_library_image', 'gluttonberg_pages', 'fullscreen'],
+      keyupCallback : WarnNavigateAway.changeEventHandler
     });
 
   });
@@ -777,14 +780,6 @@ function enable_slug_management_on(src_class){
 function initNestable(){
   window.nestableSerializedDataOnPageLoad = [];
 
-  // $('.dd').nestable({ /* config options */
-  // }).on('change', function(e) {
-  //   /* on change event */
-  //   var list   = e.length ? e : $(e.target),
-  //   output = list.data('output'),
-  //   url = list.attr('data-url');
-  // });
-
   $('.dd').each(function(){
     var $list = $(this);
     var $saveButton = $($list.attr('data-saveButton'));
@@ -840,11 +835,13 @@ function initNestable(){
   }
 
   function enableButton(saveButton){
+    WarnNavigateAway.changeEventHandler();
     saveButton.removeAttr('disabled');
     saveButton.addClass('btn-primary');
   }
 
   function disableButton(saveButton){
+    WarnNavigateAway.removeEventHandler();
     saveButton.attr('disabled', 'disabled');
     saveButton.removeClass('btn-primary');
   }
@@ -858,6 +855,34 @@ function initNestable(){
     return change;
   }
 }
+
+var WarnNavigateAway = {
+  init: function(){
+    $('input:not(:button,:submit),textarea,select').each(function(){
+      $(this).change(WarnNavigateAway.changeEventHandler);
+      $(this).keydown(WarnNavigateAway.changeEventHandler);
+    });
+
+    $('form').submit(WarnNavigateAway.removeEventHandler);
+  },
+  
+  changeEventHandler : function(e){
+    if(!editingInProgress){
+      setNavigationAwayConfirm();
+    }
+    editingInProgress = true;
+    function setNavigationAwayConfirm(){
+      window.onbeforeunload = function() {
+        return "Any changes to this page will not be saved.";
+      }; 
+    }
+  },
+  removeEventHandler : function(){
+    editingInProgress = false;
+    window.onbeforeunload = function() { };
+  }
+};
+
 
 function initGalleryImageRepeater(){
   var containerselector = ".form_field_wrapper[data-field='gallery_images'] ul:first";
