@@ -19,9 +19,9 @@
           %label Please select a page template
           - if( action_name == "new" )
             %br
-            = f.select(:description_name, page_description_options , { :include_blank => true } , {:class => "required chzn-select"} ) 
+            = f.select(:description_name, page_description_options , { :prompt => "Select Page Template" } , {:class => "required chzn-select"} ) 
           - else
-            = f.select(:description_name, page_description_options , { :include_blank => true } , {:disabled => "disabled", :class => "chzn-select"})
+            = f.select(:description_name, page_description_options , { :prompt => "Select Page Template" } , {:disabled => "disabled", :class => "chzn-select"})
 
       - unless @pages.blank?
         %fieldset
