@@ -7,8 +7,6 @@ module Gluttonberg
         val = object.state
         if val == "not_ready"
           val = "ready"
-        else
-          val = "published"
         end
         @@workflow_states = [  ['Published' , "published" ] ,[ 'Draft' , 'ready' ] , [ "Archived" , 'archived' ]  ]
         object.published_at = Time.zone.now if object.published_at.blank?
