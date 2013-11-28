@@ -1,3 +1,4 @@
+var editingInProgress = false;
 $(document).ready(function() {
   dragTreeManager.init();
   initNestable();
@@ -10,6 +11,7 @@ $(document).ready(function() {
   initGluttonbergUI();
   initFormValidation();
   setUpAudio();
+  WarnNavigateAway.init();
   $(".chzn-select").chosen();
 });
 
@@ -663,7 +665,8 @@ function enableRedactor(selector, _linkCount) {
         'outdent', 'indent', '|', 'video',
         'table', '|', 'html', '|', 'fullscreen'
       ],
-      plugins: ['asset_library_image', 'gluttonberg_pages', 'fullscreen']
+      plugins: ['asset_library_image', 'gluttonberg_pages', 'fullscreen'],
+      keyupCallback : WarnNavigateAway.changeEventHandler
     });
 
   });
@@ -832,11 +835,13 @@ function initNestable(){
   }
 
   function enableButton(saveButton){
+    WarnNavigateAway.changeEventHandler();
     saveButton.removeAttr('disabled');
     saveButton.addClass('btn-primary');
   }
 
   function disableButton(saveButton){
+    WarnNavigateAway.removeEventHandler();
     saveButton.attr('disabled', 'disabled');
     saveButton.removeClass('btn-primary');
   }
@@ -850,6 +855,34 @@ function initNestable(){
     return change;
   }
 }
+
+var WarnNavigateAway = {
+  init: function(){
+    $('input:not(:button,:submit),textarea,select').each(function(){
+      $(this).change(WarnNavigateAway.changeEventHandler);
+      $(this).keydown(WarnNavigateAway.changeEventHandler);
+    });
+
+    $('form').submit(WarnNavigateAway.removeEventHandler);
+  },
+  
+  changeEventHandler : function(e){
+    if(!editingInProgress){
+      setNavigationAwayConfirm();
+    }
+    editingInProgress = true;
+    function setNavigationAwayConfirm(){
+      window.onbeforeunload = function() {
+        return "Any changes to this page will not be saved.";
+      }; 
+    }
+  },
+  removeEventHandler : function(){
+    editingInProgress = false;
+    window.onbeforeunload = function() { };
+  }
+};
+
 
 function initGalleryImageRepeater(){
   var containerselector = ".form_field_wrapper[data-field='gallery_images'] ul:first";
