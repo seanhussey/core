@@ -28,7 +28,7 @@
             = f.password_field :password, :class => "span4"
 
             %p.help-block
-              Password #{Rails.configuration.password_pattern}
+              Password #{Rails.configuration.password_validation_message}
         
           .control-group
             = f.label :password_confirmation, :class=>"control-label"

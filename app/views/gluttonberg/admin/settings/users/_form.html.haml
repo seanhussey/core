@@ -40,7 +40,7 @@
       = f.label :password , "Password"
       = f.password_field(:password, :class => "medium", :label => "Password")
       %p.help-block
-        Password #{Rails.configuration.password_pattern}
+        Password #{Rails.configuration.password_validation_message}
     %p
       = f.label :password_confirmation , "Confirm Password"
       = f.password_field(:password_confirmation, :class => "medium", :label => "Confirm Password")

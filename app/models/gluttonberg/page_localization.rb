@@ -25,7 +25,7 @@ module Gluttonberg
     # value. This stops it being overwritten with an empty string.
     def slug=(new_slug)
       unless new_slug.blank?
-        write_attribute(:slug, new_slug.sluglize)
+        write_attribute(:slug, new_slug.to_s.sluglize)
         page_temp_slug = self.page.slug
         self.page.slug = self.slug
         write_attribute(:slug, self.page.slug)

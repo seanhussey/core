@@ -28,7 +28,7 @@ module Gluttonberg
 
     private
       def _prepare_options_for_asset_tag(asset , options = {} , thumbnail_type = nil)
-        options[:class] = (options[:class].blank? ? asset.name.sluglize : "#{options[:class]} #{asset.name.sluglize}" )
+        options[:class] = (options[:class].blank? ? asset.name.to_s.sluglize : "#{options[:class]} #{asset.name.sluglize}" )
         options[:title] = asset.name  unless options.has_key?(:title)
         options[:alt] = asset.alt.blank? ? asset.name : asset.alt unless options.has_key?(:alt)
         options[:src] = asset.url_for(thumbnail_type)
