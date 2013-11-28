@@ -19,16 +19,16 @@
           %label Please select a page template
           - if( action_name == "new" )
             %br
-            = f.select(:description_name, page_description_options , { :prompt => "Select Page Template" } , {:class => "required chzn-select"} ) 
+            = f.select(:description_name, page_description_options , { :prompt => "Select Page Template" } , {:class => "required chzn-select span5"} ) 
           - else
-            = f.select(:description_name, page_description_options , { :prompt => "Select Page Template" } , {:disabled => "disabled", :class => "chzn-select"})
+            = f.select(:description_name, page_description_options , { :prompt => "Select Page Template" } , {:disabled => "disabled", :class => "chzn-select span5"})
 
       - unless @pages.blank?
         %fieldset
           %p
             = f.label :parent_id , "Parent page", :class => "block_label"
             %br
-            = f.select(:parent_id, pages_lists_options(@pages), {:prompt => "No Parent"}, {:class=>" chzn-select"})
+            = f.select(:parent_id, pages_lists_options(@pages), {:prompt => "No Parent"}, {:class=>" chzn-select span5"})
       %hr
       %p
         - if @page.published?
