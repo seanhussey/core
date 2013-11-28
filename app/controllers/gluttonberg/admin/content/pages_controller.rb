@@ -103,10 +103,6 @@ module Gluttonberg
 
         def prepare_to_edit
           @pages  = params[:id] ? Page.where("id  != ? " , params[:id]).all : Page.all
-          @descriptions = []
-          Gluttonberg::PageDescription.all.each do |name, desc|
-            @descriptions << [desc[:description], name]
-          end
         end
 
         def find_page

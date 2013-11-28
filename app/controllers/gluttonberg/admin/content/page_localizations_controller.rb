@@ -42,10 +42,6 @@ module Gluttonberg
 
           def prepare_to_edit
             @pages  = Page.where("id != ? AND parent_id IS NULL" , @page.id).all
-            @descriptions = []
-            Gluttonberg::PageDescription.all.each do |name, desc|
-              @descriptions << [desc[:description], name]
-            end
           end
 
           def fix_nav_label_and_slug
