@@ -59,7 +59,7 @@ module Gluttonberg
 
         def slug=(new_slug)
           current_slug = self.slug
-          new_slug = new_slug.sluglize unless new_slug.blank?
+          new_slug = new_slug.to_s.sluglize unless new_slug.blank?
           new_slug = unique_slug(new_slug)
           write_attribute(:slug, new_slug)
           if self.respond_to?(:previous_slug) && self.slug_changed? && self.slug != current_slug
