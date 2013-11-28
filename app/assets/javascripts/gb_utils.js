@@ -1529,6 +1529,7 @@ RedactorPlugins.asset_library_image = {
   }
 }
 
+
 RedactorPlugins.gluttonberg_pages = {
 
   init: function()
@@ -1555,7 +1556,24 @@ RedactorPlugins.gluttonberg_pages = {
       exec: 'unlink'
     };
 
+    dropdown["gluttonberg_files"] = {
+        title: 'Attach file',
+        callback: function(){
+          self.showAssetSelector(self);
+        }
+      };
+
     this.buttonAddAfter('table', 'gb_link', 'Link', false, dropdown);
+  },
+  showAssetSelector : function(self){
+    var url = "/admin/browser?size_selector=true";
+    var link = $("<a href='"+url+"' class='attach'/>");
+    var p = $("<p> </p>");
+    $.get(url, null,
+      function(markup) {
+        AssetBrowser.load(p, link, markup, self );
+      }
+    );
   },
   showModal: function(self){
     self.selectionSave();
