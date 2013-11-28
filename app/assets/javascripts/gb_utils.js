@@ -945,7 +945,7 @@ function checkTimeFormat(timeField,error_label)
     // regular expression to match required time format
     re = /^(\d{1,2}):(\d{2})(\s){0,1}([a|p]m)?$/i;
 
-    if(time.value != '') {
+    if(!blank(time)) {
       if(regs = time.match(re)) {
         if(regs[3]) {
           // 12-hour value between 1 and 12
