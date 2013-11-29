@@ -33,10 +33,9 @@ module Gluttonberg
           end
 
           def make_backup
-            unless File.exist?(original_file_on_disk)
-              FileUtils.cp location_on_disk, original_file_on_disk
-              FileUtils.chmod(0755,original_file_on_disk)
-            end
+            FileUtils.rm(original_file_on_disk) if File.exist?(original_file_on_disk)
+            FileUtils.cp location_on_disk, original_file_on_disk
+            FileUtils.chmod(0755,original_file_on_disk)
           end
 
           def remove_file_from_storage
@@ -56,6 +55,7 @@ module Gluttonberg
           def update_file_on_storage
             if file
               FileUtils.mkdir(directory) unless File.exists?(directory)
+              FileUtils.rm(location_on_disk) if File.exists?(location_on_disk)
               FileUtils.cp file.tempfile.path, location_on_disk
               FileUtils.chmod(0755, location_on_disk)
 

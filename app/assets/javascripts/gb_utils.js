@@ -1515,6 +1515,7 @@ RedactorPlugins.asset_library_image = {
   {
     this.buttonAddBefore('video', 'asset_library_image', 'Insert image', function()
     {
+      this.selectionSave();
       var self = this;
       var url = "/admin/browser?filter=image&size_selector=true";
       var link = $("<a href='"+url+"'/>");
@@ -1559,6 +1560,7 @@ RedactorPlugins.gluttonberg_pages = {
     dropdown["gluttonberg_files"] = {
         title: 'Attach file',
         callback: function(){
+          this.selectionSave();
           self.showAssetSelector(self);
         }
       };

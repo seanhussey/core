@@ -172,8 +172,8 @@ var AssetBrowser = {
       if($(element).height() > row_max_height){
         row_max_height = $(element).height();
       }
-      if(row_max_height < 240){
-        row_max_height = 240;
+      if(row_max_height < 210){
+        row_max_height = 210;
       }
 
       $(element).attr('data-row' , row_num);
@@ -367,6 +367,7 @@ function insertImageInWysiwyg(image_url,file_type,title) {
     if(title == undefined){
       title = "";
     }
+    Wysiwyg.selectionRestore();
     if(!blank(Wysiwyg.getSelectionText())){
       title = Wysiwyg.getSelectionText();
     }
@@ -376,7 +377,7 @@ function insertImageInWysiwyg(image_url,file_type,title) {
     if(file_type == "image" && !AssetBrowser.actualLink.hasClass("attach")){
       image = "<img src='" + image_url + "' title='" + title + "' alt='" + description + "'" + style + "/>";
     }else{
-      image = " <a href='"+image_url+"' target='_blank' >"+title+"</a> ";
+      image = "<a href='"+image_url+"' target='_blank' >"+title+"</a>";
     }
     Wysiwyg.insertHtml(image);
   }

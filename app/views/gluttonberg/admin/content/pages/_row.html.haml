@@ -18,7 +18,7 @@
             %li= link_to("Edit #{locale.name} Content", edit_admin_page_page_localization_path( :page_id => page.id, :id => localization.id), :class => "")
         - else
           %li= link_to("Edit", edit_admin_page_page_localization_path( :page_id => page.id, :id => page.current_localization.id), :class => "")
-          %li= link_to("Preview", page.current_localization.public_path, :class => "", :target => "_blank")
+          %li= link_to("View Page", page.current_localization.public_path, :class => "", :target => "_blank")
 
         %li.divider
         %li= link_to("Duplicate", duplicate_admin_page_path( :id => page.id), :class => "")
