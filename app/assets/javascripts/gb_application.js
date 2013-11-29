@@ -172,8 +172,8 @@ var AssetBrowser = {
       if($(element).height() > row_max_height){
         row_max_height = $(element).height();
       }
-      if(row_max_height < 240){
-        row_max_height = 240;
+      if(row_max_height < 210){
+        row_max_height = 210;
       }
 
       $(element).attr('data-row' , row_num);
