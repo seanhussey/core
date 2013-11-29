@@ -376,7 +376,7 @@ function insertImageInWysiwyg(image_url,file_type,title) {
     if(file_type == "image" && !AssetBrowser.actualLink.hasClass("attach")){
       image = "<img src='" + image_url + "' title='" + title + "' alt='" + description + "'" + style + "/>";
     }else{
-      image = " <a href='"+image_url+"' target='_blank' >"+title+"</a> ";
+      image = "<a href='"+image_url+"' target='_blank' >"+title+"</a>";
     }
     Wysiwyg.insertHtml(image);
   }
