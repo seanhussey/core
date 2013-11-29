@@ -367,6 +367,7 @@ function insertImageInWysiwyg(image_url,file_type,title) {
     if(title == undefined){
       title = "";
     }
+    Wysiwyg.selectionRestore();
     if(!blank(Wysiwyg.getSelectionText())){
       title = Wysiwyg.getSelectionText();
     }
