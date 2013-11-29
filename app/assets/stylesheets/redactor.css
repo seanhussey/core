@@ -16,10 +16,10 @@ body .redactor_air {
 body .redactor_box_fullscreen {
     position: fixed;
     top: 0;
-    left: 0;
+    left: 25%;
     z-index: 2000;
     overflow: hidden;
-    width: 100%;
+    width: 50%;
 }
 
 

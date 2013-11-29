@@ -131,7 +131,7 @@ RedactorPlugins.fullscreen = {
 
     var pad = this.$editor.css('padding-top').replace('px', '');
     var height = $(window).height() - toolbarHeight;
-    this.$box.width($(window).width() - 2).height(height + toolbarHeight);
+    this.$box.width($(window).width()/2.0).height(height + toolbarHeight);
 
     if (this.opts.toolbarExternal)
     {
