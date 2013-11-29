@@ -28,10 +28,10 @@
             - unless asset.poster_image.blank?
               %img{:src => "#{asset.poster_image.thumb_small_url}"}
           .caption
-            %h5
+            %h5{:class => (asset.category == 'image' || (asset.category == 'video' && !asset.poster_image.blank?) ? '' : 'asset-without-image' )}
               = asset.name
             %p
-              = "Added #{asset.created_at}"
+              = "#{asset.created_at.strftime("%d/%m/%y %I:%M %p")}"
             %p
               - if params[:open_link].blank?
                 - if asset.category == "image" && !params[:size_selector].blank?

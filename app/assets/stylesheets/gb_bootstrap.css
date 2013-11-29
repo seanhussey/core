@@ -3567,6 +3567,11 @@ a.thumbnail:hover {
   height: 18px;
   overflow: hidden;
 }
+.thumbnail .caption h5.asset-without-image {
+  height: auto;
+  overflow: hidden;
+}
+
 .label {
   padding: 1px 4px 2px;
   font-size: 10.998px;
