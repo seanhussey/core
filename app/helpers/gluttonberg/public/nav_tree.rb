@@ -14,6 +14,12 @@ module Gluttonberg
         pages = Gluttonberg::Page.where(:parent_id => nil, :state => "published").order("position ASC") if pages.nil?
         pages = pages.to_a
         pages.insert(0, Gluttonberg::Page.home_page) if opts[:include_home] == true
+
+        # if opts[:path]
+        #   content_ul = Rails.cache.read("nav-#{opts[:path]}")
+        #   return content_ul if content_ul
+        # end
+
         pages.each do |page|
           page_depth = 1
           page.load_localization(@locale)
@@ -28,7 +34,11 @@ module Gluttonberg
           content << content_tag(:li, li_content.html_safe, li_opts).html_safe
         end
 
-        return content_tag(:ul, content.html_safe, opts).html_safe
+        content_ul = content_tag(:ul, content.html_safe, opts).html_safe
+
+        # Rails.cache.write("nav-#{opts[:path]}", content_ul, :expires_in => 5.minutes) if opts[:path]
+
+        return content_ul
       end
 
       def find_children(parent, page_depth, opts)
@@ -54,7 +64,7 @@ module Gluttonberg
           if page.description && page.description.top_level_page?
             return content_tag(:a, span, :href=>"javascript:;", :class => "menu_disabled").html_safe
           else
-            return content_tag(:a, span, :href => page_url(page , opts)).html_safe
+            return content_tag(:a, span, :href => page_url(page , opts), :target => "#{page.redirect_required? ? '_blank' : ''}").html_safe
           end
         end
       end
@@ -72,9 +82,7 @@ module Gluttonberg
       # finds the correct url for a page.
       def page_url(path_or_page , opts = {})
         if path_or_page.redirect_required?
-          url = Rails.application.routes.recognize_path(path_or_page.description.rewrite_route)
-          url[:host] = Rails.configuration.host_name
-          Rails.application.routes.url_for(url)
+          path_or_page.redirect_url
         elsif path_or_page.rewrite_required?
           "#{path_or_page.description.rewrite_route}"
         else
