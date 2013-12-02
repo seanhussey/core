@@ -1311,7 +1311,7 @@ var dragTreeManager = {
 
       var remote_move_node = function(source, destination, mode){
 
-        var ids = get_sorted_element_ids(".drag-tree").toString();
+        var ids = get_sorted_element_ids(dragTree).toString();
         $.ajax({
             type: "POST",
             url: dragTree.attr("rel"),
@@ -1471,10 +1471,10 @@ var dragTreeManager = {
 
 // it take ids of all ".orderable-list-item" inside container (wrapper_id)
 // and returns array of all ids
-function get_sorted_element_ids(wrapper_id)
+function get_sorted_element_ids(wrapper)
 {
    try{
-      var items = $(wrapper_id).find("tbody tr.ui-droppable");
+      var items = wrapper.find("tbody tr.ui-droppable");
       items = $.map(items, function(value){
         return value.id.replace("node-","");
       });
