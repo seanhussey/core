@@ -7,6 +7,8 @@ class User < ActiveRecord::Base
   validates_presence_of :first_name , :email , :role
   validates_format_of :password, :with => Rails.configuration.password_pattern , :if => :require_password?, :message => Rails.configuration.password_validation_message
 
+  has_many :collapsed_pages, :class_name => "Gluttonberg::CollapsedPage", :dependent => :destroy
+
   clean_html [:bio]
 
   acts_as_authentic do |c|

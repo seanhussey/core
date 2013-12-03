@@ -99,6 +99,20 @@ module Gluttonberg
           end
         end
 
+        def collapse
+          @page = Page.find(params[:id])
+          collapse = CollapsedPage.where(:page_id => @page.id, :user_id => current_user.id).first
+          if collapse.blank?
+            CollapsedPage.create(:page_id => @page.id, :user_id => current_user.id)
+          end
+          render :json => {:status => true}
+        end
+
+        def expand
+          CollapsedPage.delete_all(:page_id => params[:id], :user_id => current_user.id)
+          render :json => {:status => true}
+        end
+
         private
 
         def prepare_to_edit
