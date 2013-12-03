@@ -11,7 +11,7 @@ module Gluttonberg
         record_history :@page
 
         def index
-          @pages = Page.where(:parent_id => nil).includes(:user, :localizations).order('position').all
+          @pages = Page.where(:parent_id => nil).includes(:user, :localizations, :collapsed_pages).order('position').all
         end
 
         def show
@@ -97,6 +97,20 @@ module Gluttonberg
             flash[:error] = "There was an error duplicating the page."
             redirect_to admin_pages_path
           end
+        end
+
+        def collapse
+          @page = Page.find(params[:id])
+          collapse = CollapsedPage.where(:page_id => @page.id, :user_id => current_user.id).first
+          if collapse.blank?
+            CollapsedPage.create(:page_id => @page.id, :user_id => current_user.id)
+          end
+          render :json => {:status => true}
+        end
+
+        def expand
+          CollapsedPage.delete_all(:page_id => params[:id], :user_id => current_user.id)
+          render :json => {:status => true}
         end
 
         private

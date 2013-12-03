@@ -318,6 +318,11 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.integer :user_id
       t.timestamps
     end
+
+    create_table :gb_collapsed_pages do |t|
+      t.integer :page_id
+      t.integer :user_id
+    end
   end
 
 end

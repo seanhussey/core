@@ -801,6 +801,20 @@ function initNestable(){
     });
 
     updateCurrentState($list);
+
+    $(".nestable_dragtree button[data-action='collapse']").click(function(e){
+      var pageID = $(this).parents(".dd-item").attr('data-id');
+      $.get( "/admin/pages/"+pageID+"/collapse", function( data ) {
+        
+      });
+    });
+
+    $(".nestable_dragtree button[data-action='expand']").click(function(e){
+      var pageID = $(this).parents(".dd-item").attr('data-id');
+      $.get( "/admin/pages/"+pageID+"/expand", function( data ) {
+        
+      });
+    });
   });
 
   function saveNestableData(list, saveButton){
