@@ -214,7 +214,7 @@ module Gluttonberg
     end
 
     def collapsed?(current_user)
-      !self.collapsed_pages.where(:user_id => current_user.id).first.blank?
+      !self.collapsed_pages.find_all{|page| page.user_id == current_user.id}.blank?
     end
 
 
