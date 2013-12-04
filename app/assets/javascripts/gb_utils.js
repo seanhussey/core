@@ -1360,7 +1360,7 @@ var dragTreeManager = {
               bottomOffset = height / 2;
             }
 
-            $("#"+$(this).attr('rel')).addClass("ui-draggable-dragging")
+            dragTree.find("#"+$(this).attr('rel')).addClass("ui-draggable-dragging")
 
             if( dragManager.dropSite.attr('id') != $(this).attr('rel')){
               if (mouseTop < (top + topOffset)){
