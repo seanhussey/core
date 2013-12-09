@@ -113,6 +113,24 @@ module Gluttonberg
           render :json => {:status => true}
         end
 
+        def collapse_all
+          @pages = Page.all
+          @pages.each do |page|
+            if page.children.count > 0
+              collapse = CollapsedPage.where(:page_id => page.id, :user_id => current_user.id).first
+              if collapse.blank?
+                CollapsedPage.create(:page_id => page.id, :user_id => current_user.id)
+              end
+            end
+          end
+          render :json => {:status => true}
+        end
+
+        def expand_all
+          CollapsedPage.delete_all(:user_id => current_user.id)
+          render :json => {:status => true}
+        end
+
         private
 
         def prepare_to_edit
