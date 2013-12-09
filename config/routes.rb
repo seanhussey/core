@@ -13,6 +13,8 @@ Rails.application.routes.draw do
           get 'duplicate', :on => :member
           get 'collapse', :on => :member
           get 'expand', :on => :member
+          get 'collapse_all', :on => :collection
+          get 'expand_all', :on => :collection
           resources :page_localizations
           get 'edit_home' => "pages#edit_home", :as =>  :edit_home
           post 'update_home' => "pages#update_home", :as =>  :update_home

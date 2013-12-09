@@ -780,12 +780,25 @@ function enable_slug_management_on(src_class){
 
 function initNestable(){
   window.nestableSerializedDataOnPageLoad = [];
+  $(".collapse_all").click(function(e){
+    $.get("/admin/pages/collapse_all", function( data ) {
+    });
+    $('.dd').nestable('collapseAll');
+    e.preventDefault();
+  });
+
+  $(".expand_all").click(function(e){
+    $.get("/admin/pages/expand_all", function( data ) {
+    });
+    $('.dd').nestable('expandAll');
+    e.preventDefault();
+  });
 
   $('.dd').each(function(){
     var $list = $(this);
     var $saveButton = $($list.attr('data-saveButton'));
     $saveButton.attr('disabled', 'disabled');
-    $list.nestable({
+    $listNestable = $list.nestable({
       /* config options */
     }).on("change", function(){
       if(doesListReallyChanged($list) ){
