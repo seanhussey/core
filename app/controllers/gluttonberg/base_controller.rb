@@ -24,7 +24,7 @@ module Gluttonberg
         unless current_user
           store_location
           flash[:error] = "You must be logged in to access this page"
-          redirect_to admin_login_url
+          redirect_to admin_login_path
           return false
         end
         true
@@ -33,7 +33,7 @@ module Gluttonberg
       def require_backend_access
         _require_x_user(:have_backend_access?)
       end
-      
+
       def require_super_admin_user
         _require_x_user(:super_admin?)
       end
@@ -73,7 +73,7 @@ module Gluttonberg
         unless current_user.send(authentication_method)
           store_location
           flash[:error] = "You dont have privilege to access this page"
-          redirect_to admin_login_url
+          redirect_to admin_login_path
           return false
         end
       end

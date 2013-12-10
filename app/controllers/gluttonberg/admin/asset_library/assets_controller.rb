@@ -92,7 +92,7 @@ module Gluttonberg
           @asset.user_id = current_user.id
           if @asset.save
             flash[:notice] = "The asset was successfully created."
-            redirect_to(admin_asset_url(@asset))
+            redirect_to(admin_asset_path(@asset))
           else
             prepare_to_edit
             render :new
@@ -106,7 +106,7 @@ module Gluttonberg
 
           if @asset.update_attributes(params[:asset])
             flash[:notice] = "The asset was successfully updated."
-            redirect_to(admin_asset_url(@asset))
+            redirect_to(admin_asset_path(@asset))
           else
             prepare_to_edit
             flash[:error] = "Sorry, The asset could not be updated."

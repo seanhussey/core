@@ -20,7 +20,7 @@ module Gluttonberg
           if @collection.save
             flash[:notice] = "The collection was successfully created."
             # library home page
-            redirect_to admin_assets_url
+            redirect_to admin_assets_path
           else
             render :new
           end
@@ -29,7 +29,7 @@ module Gluttonberg
         def update
           if @collection.update_attributes(params[:collection])
             flash[:notice] = "The collection was successfully updated."
-            redirect_to admin_assets_url
+            redirect_to admin_assets_path
           else
             flash[:error] = "Sorry, The collection could not be updated."
             render :new
@@ -47,8 +47,8 @@ module Gluttonberg
         def destroy
           generic_destroy(@collection, {
             :name => "collection",
-            :success_path => admin_assets_url,
-            :failure_path => admin_assets_url
+            :success_path => admin_assets_path,
+            :failure_path => admin_assets_path
           })
         end
 
