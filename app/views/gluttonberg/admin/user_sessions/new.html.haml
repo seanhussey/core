@@ -6,9 +6,9 @@
     = backend_logo("/assets/gb_logo.png" , {:height => "46px"})
     %h1#login_title
       = website_title
-    
+
     %div#form.well
-      = form_for(@user_session, :url => admin_login_url, :method => :post, :html => {:class => ""}) do |f|   
+      = form_for(@user_session, :url => admin_login_path, :method => :post, :html => {:class => ""}) do |f|
         - unless flash.blank?
           = render "/layouts/flash_messages", :locals => {:close_button => true}
 
@@ -20,28 +20,28 @@
               - @user_session.errors.full_messages.each do |msg|
                 %li
                   = msg
-        
-        
+
+
 
         %fieldset
           .control-group
             = f.label :email, :class => "control-label"
             .controls
               = f.text_field :email, :class => "span4"
-              
+
           .control-group
             = f.label :password, :class => "control-label"
             .controls
               = f.password_field :password, :class => "span4"
-              
+
           .control-group
             .controls
               = f.submit "Log in", :class => "btn btn-success", :disable_with => "Logging you in..."
               %a{:href => new_admin_password_reset_path, :class => "btn"}
                 Forgot your password?
-            
-    &copy; 
+
+    &copy;
     %a{:href => "http://freerangefuture.com", :target => "_blank"}
       Freerange Future
     2012
-    
+

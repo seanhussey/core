@@ -3,7 +3,7 @@ module Gluttonberg
     class ArticlesController <   Gluttonberg::Public::BaseController
       before_filter :is_blog_enabled
       before_filter :find_blog, :only => [:index, :show, :preview]
-      
+
       def index
         @articles = @blog.articles.published
         respond_to do |format|
@@ -39,7 +39,7 @@ module Gluttonberg
         unless @subscription.blank?
           @subscription.destroy
           flash[:notice] = "You are successfully unsubscribe from comments of \"#{@subscription.article.title}\""
-          redirect_to blog_article_url(@subscription.article.blog.slug, @subscription.article.slug)
+          redirect_to blog_article_path(@subscription.article.blog.slug, @subscription.article.slug)
         end
         respond_to do |format|
           format.html

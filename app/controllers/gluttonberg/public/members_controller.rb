@@ -37,12 +37,12 @@ module Gluttonberg
           @member.profile_confirmed = true
           @member.save
           flash[:notice] = "Your registration is now complete."
-          redirect_to root_url
+          redirect_to root_path
         else
           flash[:notice] = "We're sorry, but we could not locate your account. " +
           "If you are having issues try copying and pasting the URL " +
           "from your email into your browser."
-          redirect_to root_url
+          redirect_to root_path
         end
       end
 
@@ -53,7 +53,7 @@ module Gluttonberg
         end
         MemberNotifier.confirmation_instructions(current_member.id,current_localization_slug).deliver if current_member && !current_member.profile_confirmed
         flash[:notice] = "Please check your email for a confirmation."
-        redirect_to member_profile_url
+        redirect_to member_profile_path
       end
 
       def update

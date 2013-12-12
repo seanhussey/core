@@ -65,11 +65,11 @@ module Gluttonberg
           if current_member.blank?
             store_location
             flash[:error] = "You must be logged in to access this page"
-            redirect_to member_login_url
+            redirect_to member_login_path
             return false
           elsif current_member.profile_confirmed != true && controller_name != "members"
             flash[:error] = "Your account has not been verified. Please check your email for your verification link. If you did not receive your verification email, Please click <a href='#{member_resend_confirmation_path}' >here</a> to resend it."
-            redirect_to member_profile_url
+            redirect_to member_profile_path
             return false
           end
           true
