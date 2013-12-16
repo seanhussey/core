@@ -91,15 +91,19 @@ module Gluttonberg
 
 
 
-    it "should load contents (html_contents, image_contents, plain_text_contents)" do
+    it "should load contents (html_contents, image_contents, plain_text_contents, select_contents, textarea_contents)" do
       @page.respond_to?(:html_contents).should == true
       @page.respond_to?(:image_contents).should == true
       @page.respond_to?(:plain_text_contents).should == true
+      @page.respond_to?(:textarea_contents).should == true
+      @page.respond_to?(:select_contents).should == true
 
       #in my example generic_page has one content for each type
       @page.html_contents.length.should == 1
       @page.image_contents.length.should == 1
       @page.plain_text_contents.length.should == 1
+      @page.textarea_contents.length.should == 1
+      @page.select_contents.length.should == 1
     end
 
     it "should have parent and children assoications" do

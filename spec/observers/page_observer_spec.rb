@@ -24,6 +24,18 @@ require 'spec_helper'
 #     type  :image_content
 #   end
 
+#   section :excerpt do
+#     label "Excerpt"
+#     type :textarea_content
+#   end
+
+#   section :theme do
+#     label "Theme"
+#     type :select_content
+#     select_options_data lambda{ ["Theme 1", "Theme 2"] }
+#     select_options_default_value lambda{ "Theme 1" }
+#   end
+
 # end
 
 
@@ -60,18 +72,24 @@ module Gluttonberg
 
     it "should create page sections and their localizations when page is created given that locale and dialect exist. This is also testing their associations" do
       @page2.localizations.length.should == 1
-      @page2.localizations.first.contents.length.should == 3
+      @page2.localizations.first.contents.length.should == 5
       @page2.respond_to?(:plain_text_contents).should == true
       @page2.respond_to?(:html_contents).should == true
       @page2.respond_to?(:image_contents).should == true
+      @page2.respond_to?(:textarea_contents).should == true
+      @page2.respond_to?(:select_contents).should == true
 
       @page2.plain_text_contents.length.should == 1
       @page2.html_contents.length.should == 1
       @page2.image_contents.length.should == 1
+      @page2.textarea_contents.length.should == 1
+      @page2.select_contents.length.should == 1
 
       @page2.plain_text_contents.first.localizations.length.should == 1
       @page2.html_contents.first.localizations.length.should == 1
+      @page2.textarea_contents.first.localizations.length.should == 1
       @page2.image_contents.first.respond_to?(:localizations).should == false #Images are not localized
+      @page2.select_contents.first.respond_to?(:localizations).should == false #select_contents are not localized
     end
 
 

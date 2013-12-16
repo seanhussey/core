@@ -15,11 +15,14 @@ module Gluttonberg
     end
 
     it "should repair exiting pages when new section is added to page description" do
-      @page.current_localization.contents.length.should == 3
+      @page.current_localization.contents.length.should == 5
       @page.current_localization.contents[0].parent.section_name.should == "title"
       @page.current_localization.contents[1].parent.section_name.should == "description"
       @page.current_localization.contents[2].section_name.should == "image"
-    
+      @page.current_localization.contents[3].parent.section_name.should == "excerpt"
+      @page.current_localization.contents[4].section_name.should == "theme"
+      
+
       PageDescription[:generic_page].section :image2 do
         label "Image2"
         type  :image_content
@@ -27,25 +30,29 @@ module Gluttonberg
       PageDescription[:generic_page].contains_section?(:image2 , :image_content).should == true
       Page.repair_pages_structure
       @page = Page.where(:id => @page.id).first
-      @page.current_localization.contents.length.should == 4
-      @page.current_localization.contents[3].section_name.should == "image2"
+      @page.current_localization.contents.length.should == 6
+      @page.current_localization.contents[5].section_name.should == "image2"
       PageDescription.clear!
       PageDescription.setup
     end
 
     it "should repair exiting pages when section is deleted from page description" do
-      @page.current_localization.contents.length.should == 3
+      @page.current_localization.contents.length.should == 5
       @page.current_localization.contents[0].parent.section_name.should == "title"
       @page.current_localization.contents[1].parent.section_name.should == "description"
       @page.current_localization.contents[2].section_name.should == "image"
+      @page.current_localization.contents[3].parent.section_name.should == "excerpt"
+      @page.current_localization.contents[4].section_name.should == "theme"
     
       PageDescription[:generic_page].remove_section :image
       PageDescription[:generic_page].contains_section?(:image , :image_content).should == false
       Page.repair_pages_structure
       @page = Page.where(:id => @page.id).first
-      @page.current_localization.contents.length.should == 2
+      @page.current_localization.contents.length.should == 4
       @page.current_localization.contents[0].parent.section_name.should == "title"
       @page.current_localization.contents[1].parent.section_name.should == "description"
+      @page.current_localization.contents[2].parent.section_name.should == "excerpt"
+      @page.current_localization.contents[3].section_name.should == "theme"
       PageDescription.clear!
       PageDescription.setup
     end

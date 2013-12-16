@@ -76,6 +76,10 @@ module Gluttonberg
             content.text.should == "Newsletter Title"
           elsif content.association_name == :html_content_localizations
             content.text.should == "<p>Newsletter Description</p>"
+          elsif content.association_name == :textarea_content_localizations
+            content.text.should == "Newsletter Excerpt"
+          elsif content.association_name == :select_contents
+            content.text.should == "Theme 1"
           end
         end
       end
@@ -85,6 +89,8 @@ module Gluttonberg
         page.easy_contents(:description).should == "<p>Newsletter Description</p>"
         page.easy_contents(:image).should == asset.url
         page.easy_contents(:image, :url_for => :fixed_image).should == asset.url_for(:fixed_image)
+        page.easy_contents(:excerpt).should == "Newsletter Excerpt"
+        page.easy_contents(:theme).should == "Theme 1"
       end
   end #PageLocalization
 end
