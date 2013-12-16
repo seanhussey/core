@@ -525,6 +525,9 @@ function ajaxFileUploadForAssetLibrary(link) {
   });
 
   $(".ajax-upload-progress").show();
+  window.setTimeout(function(){
+    $("#ajax_asset_file").blur();  
+  }, 10);  
 
   return false;
 
