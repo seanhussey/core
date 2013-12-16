@@ -37,9 +37,9 @@ def clean_all_data
   
   Gluttonberg::Setting.all.each{|setting| setting.destroy}
 
+  Gluttonberg::Asset.all.each{|asset| asset.destroy}
   Gluttonberg::Library.flush_asset_types
   Gluttonberg::AssetCategory.all.each{|asset_category| asset_category.destroy}
-  Gluttonberg::Asset.all.each{|asset| asset.destroy}
   Gluttonberg::AssetCollection.all.each{|collection| collection.destroy}
 
   User.all.each{|user| user.destroy}
@@ -64,6 +64,10 @@ def prepare_content_data(contents, asset)
       contents_data[content.association_name][content.id.to_s][:text] = "Newsletter Title"
     elsif content.association_name == :html_content_localizations
       contents_data[content.association_name][content.id.to_s][:text] = "<p>Newsletter Description</p>"
+    elsif content.association_name == :textarea_content_localizations
+      contents_data[content.association_name][content.id.to_s][:text] = "Newsletter Excerpt"
+    elsif content.association_name == :select_contents
+      contents_data[content.association_name][content.id.to_s][:text] = "Theme 1"
     end
   end
   contents_data

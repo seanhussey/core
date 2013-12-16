@@ -58,7 +58,11 @@ module Gluttonberg
             c.page_id == duplicated_page.id &&
             c.section_name ==  content.section_name
           end
-          dup_content.update_attributes(:asset_id => content.asset_id)
+          if dup_content.respond_to? :asset_id
+            dup_content.update_attributes(:asset_id => content.asset_id)
+          elsif dup_content.respond_to? :text
+            dup_content.update_attributes(:text => content.text)
+          end
         end
   end
 end

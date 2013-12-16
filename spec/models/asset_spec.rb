@@ -101,7 +101,7 @@ module Gluttonberg
 
     #garbage collection
     it "should clean its garbage (asset directory is deleted) when asset is actually deleted." do
-      asset = Asset.new( @param )
+      asset = Asset.new(@param)
       status = asset.save
       status.should == true
       url = asset.url

@@ -1,5 +1,5 @@
 - @window_title = "Content"
-- @page_title = "#{link_to "Content", admin_content_path} > #{link_to "Pages", admin_pages_path} > #{@page.name}"
+- @page_title = "#{link_to "Pages", admin_pages_path} > #{@page.name}"
 
 = sub_nav do
   - if can? :destroy , Gluttonberg::Page
