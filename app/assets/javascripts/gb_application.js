@@ -138,9 +138,9 @@ var AssetBrowser = {
 
     AssetBrowser.browser.find("#ajax_new_asset_form").submit(function(e) {
       if($("#ajax_new_asset_form #ajax_asset_file").val() != null && $("#ajax_new_asset_form #asset_name").val() != null && $("#ajax_new_asset_form #ajax_asset_file").val() != "" && $("#ajax_new_asset_form #asset_name").val() != ""){
+        $("#ajax_new_asset_form").addClass('uploading');
         ajaxFileUploadForAssetLibrary(link);
       }
-
       e.preventDefault();
     });
 
@@ -458,7 +458,7 @@ function ajaxFileUploadForAssetLibrary(link) {
   });
   link = $(link);
 
-  $("#progress_ajax_upload").show();
+  
 
   asset_name = $('#ajax_new_asset_form input[name$="asset[name]"]').val();
   var formData = {
@@ -522,7 +522,9 @@ function ajaxFileUploadForAssetLibrary(link) {
       console.log(data);
       console.log(e);
     }
-  })
+  });
+
+  $(".ajax-upload-progress").show();
 
   return false;
 

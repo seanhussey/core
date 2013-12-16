@@ -58,7 +58,7 @@
     = form_for( @asset , :as => :asset , :url => admin_add_asset_using_ajax_path  ,  :html => { :multipart=>true  , :method => "POST", :class => "nosubnav " , :id => "ajax_new_asset_form"} ) do |asset_form|
       %legend
         Upload
-      %p
+      %p.file_to_upload
         = asset_form.label :file , "File to upload"
         = asset_form.file_field(:file , :class => "required", :id => "ajax_asset_file")
       %p
@@ -68,7 +68,10 @@
       = render :partial => "collection_select_form" , :locals => {:asset_form => asset_form }
 
       .controls
-        = asset_form.submit("Upload" , :id => "ajax_image_upload", :class => "button button_upload" )
+        = asset_form.submit("Upload" , :id => "ajax_image_upload", :class => "btn btn-success button_upload" )
+        %span.ajax-upload-progress
+          Please wait while file is uploading. 
+          = image_tag("/assets/gb_spinner.gif" )
   #search_tab.tab-pane
     = render :partial => "search_form"
     #search_tab_results

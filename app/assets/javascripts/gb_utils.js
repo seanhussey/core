@@ -85,6 +85,7 @@ jQuery.extend({
     	var io = jQuery.createUploadIframe(id, s.secureuri);
     	var frameId = 'jUploadFrame' + id;
     	var formId = 'jUploadForm' + id;
+
       // Watch for a new set of requests
       if ( s.global && ! jQuery.active++ )
 	    {
@@ -199,7 +200,7 @@ jQuery.extend({
         jQuery.handleError(s, xml, null, e);
       }
 
-    	jQuery('#' + frameId).load(uploadCallback	);
+    	jQuery('#' + frameId).load(uploadCallback);
       return {abort: function () {}};
   },
 
