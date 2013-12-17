@@ -73,6 +73,7 @@ class BlogMigration < ActiveRecord::Migration
     end
 
     begin
+      Gluttonberg::Article # make sure article model is loaded.
       Gluttonberg::ArticleLocalization.create_versioned_table
     rescue => e
       puts e
@@ -86,5 +87,7 @@ class BlogMigration < ActiveRecord::Migration
     drop_table :gb_article_localizations
     drop_table :gb_blogs
     drop_table :gb_comment_subscriptions
+    Gluttonberg::Article # make sure article model is loaded.
+    Gluttonberg::ArticleLocalization.drop_versioned_table
   end
 end

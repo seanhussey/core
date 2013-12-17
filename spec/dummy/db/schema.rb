@@ -471,6 +471,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
   end
 
   begin
+    Gluttonberg::Article # make sure article model is loaded.
     Gluttonberg::ArticleLocalization.create_versioned_table
   rescue => e
     puts e
