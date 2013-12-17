@@ -122,5 +122,29 @@ module Gluttonberg
         @descriptions
       end
 
+      def auto_save(object)
+        "#{auto_save_js_tag(object)} \n #{auto_save_version(object)}".html_safe
+      end
+
+      def auto_save_js_tag(object)
+        delay = Gluttonberg::Setting.get_setting('auto_save_time')
+        unless delay.blank?
+          javascript_tag do
+            %{
+              $(document).ready(function(){
+                AutoSave.save("/admin/autosave/#{object.class.name}/#{object.id}", #{delay});
+              });
+            }.html_safe
+          end
+        end
+      end
+
+      def auto_save_version(object)
+        auto_save = AutoSave.where(:auto_save_able_id => object.id, :auto_save_able_type => object.class.name).first
+        if !auto_save.blank? && auto_save.updated_at > object.updated_at
+          render :partial => "/gluttonberg/admin/shared/auto_save_version" , :locals => {:object => object} , :formats => [:html]
+        end
+      end
+
     end # Admin
 end # Gluttonberg

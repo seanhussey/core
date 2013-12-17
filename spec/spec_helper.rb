@@ -59,7 +59,7 @@ def prepare_content_data(contents, asset)
     contents_data[content.association_name] = {} unless contents_data.has_key?(content.association_name)
     contents_data[content.association_name][content.id.to_s] = {} unless contents_data[content.association_name].has_key?(content.id.to_s)
     if content.association_name == :image_contents
-      contents_data[content.association_name][content.id.to_s][:asset_id] = asset.id
+      contents_data[content.association_name][content.id.to_s][:asset_id] = asset.id.to_s
     elsif content.association_name == :plain_text_content_localizations
       contents_data[content.association_name][content.id.to_s][:text] = "Newsletter Title"
     elsif content.association_name == :html_content_localizations
@@ -71,4 +71,20 @@ def prepare_content_data(contents, asset)
     end
   end
   contents_data
+end
+
+def create_image_asset
+  file = Gluttonberg::GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/gb_banner.jpg"))
+  file.original_filename = "gluttonberg_banner.jpg"
+  file.content_type = "image/jpeg"
+  file.size = 300
+  param = {
+    :name=>"temp file",
+    :file=> file,
+    :description=>"<p>test</p>"
+  }
+  Gluttonberg::Library.bootstrap
+  asset = Gluttonberg::Asset.new( param )
+  asset.save
+  asset
 end

@@ -1,4 +1,6 @@
 var editingInProgress = false;
+var changedSinceLastAutoSave = false;
+
 $(document).ready(function() {
   dragTreeManager.init();
   initNestable();
@@ -12,6 +14,7 @@ $(document).ready(function() {
   initFormValidation();
   setUpAudio();
   WarnNavigateAway.init();
+  AutoSave.init();
   $(".chzn-select").chosen();
 });
 
@@ -373,7 +376,6 @@ function insertImageInWysiwyg(image_url,file_type,title) {
     }
     description = "";
     style = "";
-    console.log(AssetBrowser.actualLink)
     if(file_type == "image" && !AssetBrowser.actualLink.hasClass("attach")){
       image = "<img src='" + image_url + "' title='" + title + "' alt='" + description + "'" + style + "/>";
     }else{
@@ -672,7 +674,10 @@ function enableRedactor(selector, _linkCount) {
         'table', '|', 'html', '|', 'fullscreen'
       ],
       plugins: ['asset_library_image', 'gluttonberg_pages', 'fullscreen'],
-      keyupCallback : WarnNavigateAway.changeEventHandler
+      keyupCallback : function(){
+        WarnNavigateAway.changeEventHandler();
+        AutoSave.changeEventHandler();
+      } 
     });
 
   });
@@ -906,6 +911,7 @@ var WarnNavigateAway = {
     editingInProgress = true;
     function setNavigationAwayConfirm(){
       window.onbeforeunload = function() {
+        AutoSave.save_now();
         return "Any changes to this page will not be saved.";
       }; 
     }
@@ -945,3 +951,136 @@ function initGalleryImageRepeater(){
     });
   }
 }
+
+var AutoSave = {
+  init : function(class_name){
+    $(".retreive_changes").click(AutoSave.retrieve);
+    $(".cancel_changes").click(AutoSave.destroy);
+    $('input:not(:button,:submit),textarea,select').each(function(){
+      $(this).change(AutoSave.changeEventHandler);
+      $(this).keydown(AutoSave.changeEventHandler);
+    });
+  },
+  changeEventHandler: function(e){
+    changedSinceLastAutoSave = true;
+  },
+  save_now: function(){
+    if(changedSinceLastAutoSave){
+      var form = AutoSave.formObj;
+      if(form == undefined){
+        form = $("form.auto_save");
+      }
+      if(form != null && form.length > 0 ){
+        $.ajax({
+          url: AutoSave.autosave_url,
+          data: form.serialize(),
+          type: "POST",
+          success: function(data) {
+          },
+          complete: function(){
+          }
+        });
+      }
+    }
+  },
+  save : function(autosave_url, delay , form){
+    AutoSave.autosave_url = autosave_url;
+    AutoSave.delay = delay;
+    AutoSave.formObj = form;
+    setTimeout(function(){
+      if(changedSinceLastAutoSave){
+        if(form == undefined){
+          form = $("form.auto_save");
+        }
+        if(form != null && form.length > 0 ){
+          $.ajax({
+            url: autosave_url,
+            data: form.serialize(),
+            type: "POST",
+            success: function(data) {
+              changedSinceLastAutoSave =  false;
+            },
+            complete: function(){
+              AutoSave.save(autosave_url,delay , form);
+            }
+          });
+        }
+      }else{
+        AutoSave.save(autosave_url,delay , form);
+      }
+    },delay * 1000);
+  },
+  retrieve : function(e){
+    var self = $(this);
+    $.getJSON(self.attr("href"), function(data) {
+      updateForm(data, self.attr("data-param-name"));
+    });
+
+    function updateForm(data, prefix){
+
+      for(index in data){
+        var val = data[index];
+        var name = prefix + "["+ index +"]";
+        if((typeof val) == "object"){
+          if(val instanceof Array){
+            var element = $("[name='"+name+"']");
+            if(element.length == 0){
+              element = $("[name='"+name+"[]']");
+            }
+            if(element.length >= 1 && element.is("select")){
+              element.find("option").prop("selected", false);
+              for(option in val){
+                element.find("option[value='"+val[option]+"']").prop("selected", true);
+              }
+            }
+
+          }else{
+            updateForm(val, name);
+          }
+        }else{
+          var element = $("[name='"+name+"']");
+          if(element.length >= 1){
+            if(element.hasClass("jwysiwyg")){
+              element.redactor('set', val);
+            }else if(element.attr("type") == "file"){
+              // ignore
+            }else if(element.attr("type") == "password"){
+              // ignore
+            }else if(element.attr("type") == "checkbox"){
+              element.attr("checked", "checked");
+            }else if(element.attr("type") == "radio"){
+              // ignore
+            }else if(element.is(".choose_asset_hidden_field")){
+              element.val(val);
+              if(!blank(val)){
+                $.getJSON("/admin/assets/"+val+".json", function(data){
+                  data = data["asset"];
+                  if (element.parents(".asset_selector_wrapper").find("img").length > 0) {
+                    element.parents(".asset_selector_wrapper").find("img").attr('src', data["small_thumb"]);
+                  } else {
+                    element.parents(".asset_selector_wrapper").prepend("<img src='" + data["small_thumb"] + "' />");
+                  }
+                  element.parents(".caption").find("h5").html(data["name"]);
+                });
+              }else{
+                //delete
+              }
+              
+            }else{
+              element.val(val);
+            }
+          }
+        }
+      }
+    }//updateForm
+
+    e.preventDefault();
+  },
+  destroy: function(e){
+    $.getJSON($(this).attr("href"), function(data) {
+      $(".restore-auto-save").hide();
+    });
+    e.preventDefault();
+  }
+};
+

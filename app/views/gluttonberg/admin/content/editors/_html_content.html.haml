@@ -3,5 +3,5 @@
   - unique_class =  "gb_page_contents_content_#{content.id}"
 
   %label.block_label= content.section_label
-  = text_area_tag(id_of_text_area , content.text, :class => "large tall #{unique_class}", :width => "490", :height => "400")
+  = text_area_tag(id_of_text_area , content.text, :class => "large tall jwysiwyg #{unique_class}", :width => "490", :height => "400")
   = enable_redactor(unique_class)

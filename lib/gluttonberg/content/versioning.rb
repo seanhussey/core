@@ -5,20 +5,17 @@ module Gluttonberg
     # retrieving different versions of a record.
     # In reality this is behaving like a wrapper on acts_as_versioned
     module Versioning
+      extend ActiveSupport::Concern
 
       def self.setup
         ::ActiveRecord::Base.send :include, Gluttonberg::Content::Versioning
       end
 
-      def self.included(klass)
-        klass.class_eval do
-          extend  ClassMethods
-          include InstanceMethods
-        end
+      def versioned?
+        self.class.versioned?
       end
 
       module ClassMethods
-
         def is_versioned(options = {}, &extension)
           excluded_columns = options.delete(:non_versioned_columns)
           acts_as_versioned( options.merge( :limit => Gluttonberg::Setting.get_setting("number_of_revisions") ) , &extension )
@@ -29,13 +26,6 @@ module Gluttonberg
 
         def versioned?
           self.respond_to?(:versioned_class_name)
-        end
-
-      end
-
-      module InstanceMethods
-        def versioned?
-          self.class.versioned?
         end
       end
 
