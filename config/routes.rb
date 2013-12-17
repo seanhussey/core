@@ -14,37 +14,56 @@ Rails.application.routes.draw do
         
         get "/flagged_contents" => "flag#index" , :as => :flagged_contents
         get '/flagged_contents/moderation/:id/:moderation' => "flag#moderation", :as => :flagged_contents_moderation
-        resources :pages do
-          get 'delete', :on => :member
-          get 'duplicate', :on => :member
-          get 'collapse', :on => :member
-          get 'expand', :on => :member
-          get 'collapse_all', :on => :collection
-          get 'expand_all', :on => :collection
-          resources :page_localizations
-          get 'edit_home' => "pages#edit_home", :as =>  :edit_home
-          post 'update_home' => "pages#update_home", :as =>  :update_home
-        end
+        
 
+        resources :pages do
+          member do
+            get 'delete'
+            get 'duplicate'
+            get 'collapse'
+            get 'expand'
+          end
+          collection do
+            post 'move' =>  :move_node, :as => :move
+            post 'update_home', :as =>  :update_home
+            match 'import'
+            get 'export'
+            get 'collapse_all'
+            get 'expand_all'
+          end
+          
+          resources :page_localizations
+        end
         get "pages_list_for_tinymce" => "pages#pages_list_for_tinymce" , :as => :pages_list_for_tinymce
-        get "/comments/spam_detection_for_all_pending" => "comments#spam_detection_for_all_pending" , :as => :spam_detection_for_all_pending_comments
-        get "/comments/pending" => "comments#pending" , :as => :pending_comments
-        get "/comments/spam" => "comments#spam" , :as => :spam_comments
-        get "/comments/approved" => "comments#approved" , :as => :approved_comments
-        get "/comments/rejected" => "comments#rejected" , :as => :rejected_comments
-        get "/comments/moderation/:id" => "comments#moderation" , :as => :comment_moderation
-        get "/comments/delete/:id" => "comments#delete" , :as => :comment_delete
-        delete "/comments/destroy/:id" => "comments#destroy" , :as => :comment_destroy
-        get "/comments/block_comment_author/:id" => "comments#block_comment_author" , :as => :block_comment_author
+        
+        scope 'comments', :controller => :comments, :as => :comments do
+          get 'spam_detection_for_all_pending' , :as => :spam_detection_for_all_pending
+          get 'pending', :as => :pending
+          get 'spam' , :as => :spam
+          get 'approved' , :as => :approved
+          get 'rejected' => :rejected , :as => :rejected
+          get '/moderation/:id' => :moderation , :as => :moderation
+          get '/delete/:id' => :delete , :as => :delete
+          delete '/destroy/:id' => :destroy , :as => :destroy
+          get '/block_author/:id' => :block_author , :as => :block_author
+        end
 
         resources :blogs do
           get 'delete', :on => :member
           resources :articles do
-            get 'delete', :on => :member
-            get 'duplicate', :on => :member
+            member do
+              get 'delete'
+              get 'duplicate'
+            end
+            collection do
+              match 'import'
+              get 'export'
+            end
             resources :comments do
-              get 'delete', :on => :member
-              get 'moderation', :on => :member
+              member do
+                get 'delete'
+                get 'moderation'
+              end
             end
           end
         end

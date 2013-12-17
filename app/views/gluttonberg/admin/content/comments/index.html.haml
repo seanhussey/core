@@ -10,10 +10,10 @@
       .subnav
         - if action_name != "index"
           = sub_nav do
-            = nav_link("Pending (#{Gluttonberg::Comment.all_pending.count})", admin_pending_comments_path)
-            = nav_link("Approved (#{Gluttonberg::Comment.all_approved.count})", admin_approved_comments_path)
-            = nav_link("Rejected (#{Gluttonberg::Comment.all_rejected.count})", admin_rejected_comments_path)
-            = nav_link("Spam (#{Gluttonberg::Comment.all_spam.count})", admin_spam_comments_path)
+            = nav_link("Pending (#{Gluttonberg::Comment.all_pending.count})", admin_comments_pending_path)
+            = nav_link("Approved (#{Gluttonberg::Comment.all_approved.count})", admin_comments_approved_path)
+            = nav_link("Rejected (#{Gluttonberg::Comment.all_rejected.count})", admin_comments_rejected_path)
+            = nav_link("Spam (#{Gluttonberg::Comment.all_spam.count})", admin_comments_spam_path)
 
 
       - if @comments.empty?

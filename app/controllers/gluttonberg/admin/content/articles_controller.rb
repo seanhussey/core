@@ -10,11 +10,13 @@ module Gluttonberg
         before_filter :authorize_user , :except => [:destroy , :delete]
         before_filter :authorize_user_for_destroy , :only => [:destroy , :delete]
         record_history :@article , :title
+        before_filter :all_articles, :only => [:index, :export]
 
         def index
-          conditions = {:blog_id => @blog.id}
-          conditions[:user_id] = current_user.id unless current_user.super_admin?
-          @articles = Article.where( conditions).order("created_at DESC").paginate(:per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), :page => params[:page])
+          @articles = @articles.paginate({
+            :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), 
+            :page => params[:page]
+          })
         end
 
         def show
@@ -93,6 +95,29 @@ module Gluttonberg
           end
         end
 
+        def import
+          unless params[:csv].blank?
+            @feedback = Article.importCSV(params[:csv].tempfile.path, {
+              :additional_attributes => {
+                :blog_id => @blog.id,
+                :author_id => current_user.id,
+                :user_id => current_user.id
+              }
+            })
+            if @feedback == true
+              flash[:notice] = "All contacts were successfully imported."
+              redirect_to admin_blog_articles_path(@blog)
+            end
+          end
+        end
+
+        def export
+          csv_data = Article.exportCSV(@articles.all)
+          unless csv_data.blank?
+            send_data csv_data, :type => 'text/csv; charset=utf-8' , :disposition => 'attachment' , :filename => "#{@blog.name} posts at #{Time.now.strftime('%Y-%m-%d')}.csv"
+          end
+        end
+
         protected
 
           def find_blog
@@ -125,6 +150,12 @@ module Gluttonberg
             if Gluttonberg.localized?
               Gluttonberg::Feed.log(current_user,@article_localization,"#{@article_localization.title}#{localization_detail}" , "updated")
             end
+          end
+
+          def all_articles
+            conditions = {:blog_id => params[:blog_id]}
+            conditions[:user_id] = current_user.id unless current_user.super_admin?
+            @articles = Article.where( conditions).order("created_at DESC")
           end
 
       end
