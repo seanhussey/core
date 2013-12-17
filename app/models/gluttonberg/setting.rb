@@ -59,7 +59,8 @@ module Gluttonberg
         :comment_blacklist => ["" , 19 , "When a comment contains any of these words in its comment, Author Name, Author website, Author e-mail, it will be marked as spam. It will match inside words, so \"able\" will match \"comparable\". Please separate words with a comma."],
         :comment_email_as_spam => ["Yes" , 20 , "Do you want to mark those comments as spam which only contains emails and urls?" , "Yes;No" ],
         :comment_number_of_emails_allowed => ["2" , 21 , "How many email addresses should a comment include to be marked as spam?" ],
-        :comment_number_of_urls_allowed => ["2" , 21 , "How many URLs should a comment include to be marked as spam?" ]
+        :comment_number_of_urls_allowed => ["2" , 21 , "How many URLs should a comment include to be marked as spam?" ],
+        :auto_save_time => ["30" , 22 , "If editing is in progress then gluttonberg will auto save the form in XX seconds" ]
       }
       self.generate_or_update_settings(settings)
     end

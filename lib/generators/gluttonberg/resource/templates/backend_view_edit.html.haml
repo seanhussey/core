@@ -20,9 +20,12 @@
               %li{:class => "#{ (@<%= singular_name %>.current_localization.locale_id ==  locale.id ) ? 'active' : '' }"}
                 %a{:href => edit_admin_<%= singular_name %>_path( :id => @<%= singular_name %>.id, :locale_id => locale.id) }
                   = "Edit #{locale.name} Content"
+      = auto_save(@<%= singular_name %>.current_localization)
+      <% else %>
+      = auto_save(@<%= singular_name %>)
       <%end%>
 
-      = form_for(@<%= singular_name %>, :url => admin_<%= singular_name %>_path(@<%= singular_name %>)) do  |f|
+      = form_for(@<%= singular_name %>, :url => admin_<%= singular_name %>_path(@<%= singular_name %>), :html => {:class => "auto_save"}) do  |f|
         <% if localized? %>= hidden_field_tag :locale_id , @<%= singular_name %>.current_localization.locale_id<%end%>
         = gb_error_messages_for(@<%= singular_name %>)
         = render :partial => "form", :locals => {:f => f}

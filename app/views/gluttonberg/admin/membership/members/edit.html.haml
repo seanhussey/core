@@ -9,4 +9,5 @@
         %h1
           = @page_title.html_safe
       .subnav
+      = auto_save(@member)
       = render :partial => "form" , :locals => { :url => admin_membership_member_path(@member.id) }

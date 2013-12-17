@@ -52,21 +52,6 @@ module Gluttonberg
     end
 
     private
-      def create_image_asset
-        file = GbFile.new(File.join(RSpec.configuration.fixture_path, "assets/gb_banner.jpg"))
-        file.original_filename = "gluttonberg_banner.jpg"
-        file.content_type = "image/jpeg"
-        file.size = 300
-        param = {
-          :name=>"temp file",
-          :file=> file,
-          :description=>"<p>test</p>"
-        }
-        Gluttonberg::Library.bootstrap
-        asset = Asset.new( param )
-        asset.save
-        asset
-      end
 
       def compare_data(contents, asset)
         contents.each do |content|
