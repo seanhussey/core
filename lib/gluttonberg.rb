@@ -18,6 +18,7 @@ module Gluttonberg
     require 'sidekiq'
     require 'sitemap_generator'
     require 'jeditable-rails'
+    require 'rabl'
   end
 
   def self.require_gluttonberg_components

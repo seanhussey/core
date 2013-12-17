@@ -27,7 +27,7 @@
             %td.first_column
               Select Home Page
             %td.second_column
-              = select_tag :home , options_from_collection_for_select(@pages, "id", "name" , selected = @current_home_page_id.to_s )  ,  { :include_blank => true , :class => "home_page_setting_dropdown"  , :rel => admin_page_update_home_path(1)  }
+              = select_tag :home , options_from_collection_for_select(@pages, "id", "name" , selected = @current_home_page_id.to_s )  ,  { :include_blank => true , :class => "home_page_setting_dropdown"  , :rel => update_home_admin_pages_path  }
               = image_tag("/assets/gb_spinner.gif" , :id => "progress_home_page" , :style => "display:none")
             - if has_deletable_settings
               %td.controls
@@ -46,7 +46,7 @@
                 - elsif setting.name == "fb_icon"
                   = asset_browser_tag( "gluttonberg_setting[value]" ,  opts = {:button_class => "logo_setting button" , :filter => "image" ,  :id => "gluttonberg_setting_fb_icon", :asset_id => setting.value  , :data_url => admin_configuration_path( setting) } )
                 - elsif setting.name == "backend_logo"
-                  = asset_browser_tag( "gluttonberg_setting[value]" ,  opts = {:button_class => "logo_setting button" , :filter => "image" ,  :id => "gluttonberg_setting_backend_logo", :asset_id => setting.value  , :data_url => admin_configuration_path( setting) } )
+                  = asset_browser_tag( "gluttonberg_setting[value]" ,  opts = {:button_class => "logo_setting button" , :filter => "image" ,  :id => "gluttonberg_setting_backend_logo", :asset_id => setting.value  , :data_url => admin_configuration_path( setting)  } )
 
                 - else
                   = gb_editable_field setting, :value , :update_url => admin_configuration_path(setting)
