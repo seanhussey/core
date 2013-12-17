@@ -6,9 +6,7 @@ module Gluttonberg
     end
 
     module ActionController
-      def self.included(base)
-        base.extend(ClassMethods)
-      end
+      extend ActiveSupport::Concern
 
 
       module ClassMethods
@@ -80,12 +78,8 @@ module Gluttonberg
             end
           end
         end
-
       end #ControllerHelperClassMethods
-
-
     end
-
   end #RecordHistory
 end #Gluttonberg
 
