@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.test_files = Dir["spec/**/*"]
 
   s.add_dependency 'authlogic', "3.3.0"
-  s.add_dependency 'will_paginate' , '3.0.4'
+  s.add_dependency 'will_paginate' , '3.0.5'
   s.add_dependency 'rubyzip', '0.9.9'
   s.add_dependency 'acts_as_tree', '1.4.0'
   s.add_dependency 'freerange_acts_as_versioned', '1.0.0'

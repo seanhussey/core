@@ -24,7 +24,7 @@ PATH
       sitemap_generator (= 4.1.1)
       texticle (= 1.0.4.20101004123327)
       unicorn (= 4.6.3)
-      will_paginate (= 3.0.4)
+      will_paginate (= 3.0.5)
 
 GEM
   remote: http://rubygems.org/
@@ -203,7 +203,7 @@ GEM
       rack
       raindrops (~> 0.7)
     uuidtools (2.1.4)
-    will_paginate (3.0.4)
+    will_paginate (3.0.5)
 
 PLATFORMS
   ruby
