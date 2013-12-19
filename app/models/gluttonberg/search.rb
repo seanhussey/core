@@ -68,11 +68,14 @@ module Gluttonberg
     def self.index_data_using_texticle
       if Gluttonberg.dbms_name == "postgresql"
         Rails.configuration.search_models.each do |model , columns|
-          model =  eval(model)
-          model.index do
-            columns.each do |column|
-              send(column)
+          begin
+            model =  eval(model)
+            model.index do
+              columns.each do |column|
+                send(column)
+              end
             end
+          rescue
           end
         end
       end
