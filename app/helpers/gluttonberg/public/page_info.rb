@@ -4,7 +4,7 @@ module Gluttonberg
   module Public
     module PageInfo
       def page_title
-        title_setting = Gluttonberg::Setting.get_setting("title")
+        title_setting = Gluttonberg::Setting.get_setting("title", current_site_config_name)
         page_title = _prepare_page_title
 
         if page_title.blank?
@@ -18,7 +18,7 @@ module Gluttonberg
 
       def page_description
         object = find_current_object_for_meta_tags
-        description_settings = Gluttonberg::Setting.get_setting("description")
+        description_settings = Gluttonberg::Setting.get_setting("description", current_site_config_name)
         page_description = if !object.blank? && object.respond_to?(:seo_description)
           object.seo_description
         end
@@ -32,7 +32,7 @@ module Gluttonberg
 
       def page_keywords
         object = find_current_object_for_meta_tags
-        keywords_settings = Gluttonberg::Setting.get_setting("keywords")
+        keywords_settings = Gluttonberg::Setting.get_setting("keywords", current_site_config_name)
         page_keywords = if !object.blank? && object.respond_to?(:seo_keywords)
           object.seo_keywords
         end
@@ -47,7 +47,7 @@ module Gluttonberg
       def page_fb_icon_path
         path = nil
         object = find_current_object_for_meta_tags
-        fb_icon_id = Gluttonberg::Setting.get_setting("fb_icon")
+        fb_icon_id = Gluttonberg::Setting.get_setting("fb_icon", current_site_config_name)
 
         if !object.blank? && object.respond_to?(:fb_icon_id) && !object.fb_icon_id.blank?
           fb_icon_id = object.fb_icon_id
@@ -99,6 +99,8 @@ module Gluttonberg
             end
           end
         end
+
+        
     end
   end
 end

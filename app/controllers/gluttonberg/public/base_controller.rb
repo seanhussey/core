@@ -24,7 +24,7 @@ module Gluttonberg
 
         def verify_site_access
           unless action_name == "restrict_site_access"
-            setting = Gluttonberg::Setting.get_setting("restrict_site_access")
+            setting = Gluttonberg::Setting.get_setting("restrict_site_access", current_site_config_name)
             if !setting.blank? && cookies[:restrict_site_access] != "allowed"
               if env['GLUTTONBERG.PAGE'].blank?
                 return_url = request.url

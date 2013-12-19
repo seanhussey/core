@@ -299,6 +299,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.integer "row"
     t.boolean "delete_able",               :default => true
     t.boolean "enabled",                   :default => true
+    t.string  "site"
     t.text    "help"
     t.text    "values_list"
   end

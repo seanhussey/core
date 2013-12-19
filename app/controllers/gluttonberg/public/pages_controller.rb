@@ -24,7 +24,7 @@ module Gluttonberg
       end
 
       def restrict_site_access
-        setting = Gluttonberg::Setting.get_setting("restrict_site_access")
+        setting = Gluttonberg::Setting.get_setting("restrict_site_access", current_site_config_name)
         if setting == params[:password]
           cookies[:restrict_site_access] = "allowed"
           redirect_to( params[:return_url] || "/")

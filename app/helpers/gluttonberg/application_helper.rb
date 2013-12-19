@@ -13,9 +13,9 @@ module Gluttonberg
 
     def current_localization_slug
       if @locale
-       @locale.slug
+        @locale.slug
       elsif Gluttonberg::Locale.first_default
-       Gluttonberg::Locale.first_default.slug
+        Gluttonberg::Locale.first_default.slug
       end
     end
 
@@ -26,5 +26,24 @@ module Gluttonberg
     def _render(opts)
       render(opts)
     end
+
+    def website_title
+      title = Gluttonberg::Setting.get_setting("title", current_site_config_name)
+      (title.blank?)? "Gluttonberg" : title.html_safe
+    end
+
+    def current_site_config_name
+      if Rails.configuration.multisite == false
+        nil
+      else
+        config  = Rails.configuration.multisite.find{|key, val| val == request.host_with_port}
+        if config.blank?
+          nil
+        else
+          config.first
+        end
+      end
+    end
+
   end
 end

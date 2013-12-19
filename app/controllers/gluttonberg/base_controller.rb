@@ -7,7 +7,7 @@ module Gluttonberg
       rescue_from ActionController::RoutingError, :with => :not_found
       rescue_from CanCan::AccessDenied, :with => :access_denied
     end
-
+    
     protected
       # Below is all the required methods for backend user authentication
       def current_user_session
@@ -75,6 +75,19 @@ module Gluttonberg
           flash[:error] = "You dont have privilege to access this page"
           redirect_to admin_login_path
           return false
+        end
+      end
+
+      def current_site_config_name
+        if Rails.configuration.multisite == false
+          nil
+        else
+          config  = Rails.configuration.multisite.find{|key, val| val == request.host_with_port}
+          if config.blank?
+            nil
+          else
+            config.first
+          end
         end
       end
 
