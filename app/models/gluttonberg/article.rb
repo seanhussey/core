@@ -18,29 +18,31 @@ module Gluttonberg
     attr_accessible :user, :blog, :author
     validates_presence_of :user_id, :author_id, :blog_id
 
-    is_localized(:parent_key => :article_id) do
-      self.table_name = "gb_article_localizations"
-      belongs_to :article  , :class_name => "Gluttonberg::Article"
-      belongs_to :locale
+    if ActiveRecord::Base.connection.table_exists?('gb_article_localizations')
+      is_localized(:parent_key => :article_id) do
+        self.table_name = "gb_article_localizations"
+        belongs_to :article  , :class_name => "Gluttonberg::Article"
+        belongs_to :locale
 
-      belongs_to :fb_icon , :class_name => "Gluttonberg::Asset" , :foreign_key => "fb_icon_id"
-      belongs_to :featured_image , :foreign_key => :featured_image_id , :class_name => "Gluttonberg::Asset"
+        belongs_to :fb_icon , :class_name => "Gluttonberg::Asset" , :foreign_key => "fb_icon_id"
+        belongs_to :featured_image , :foreign_key => :featured_image_id , :class_name => "Gluttonberg::Asset"
 
-      is_versioned :non_versioned_columns => ['state' , 'disable_comments' , 'published_at' , 'article_id' , 'locale_id']
+        is_versioned :non_versioned_columns => ['state' , 'disable_comments' , 'published_at' , 'article_id' , 'locale_id']
 
-      validates_presence_of :title
-      attr_accessible :article, :locale_id, :title, :featured_image_id, :excerpt, :body, :seo_title, :seo_keywords, :seo_description, :fb_icon_id, :article_id
+        validates_presence_of :title
+        attr_accessible :article, :locale_id, :title, :featured_image_id, :excerpt, :body, :seo_title, :seo_keywords, :seo_description, :fb_icon_id, :article_id
 
-      clean_html [:excerpt , :body]
+        clean_html [:excerpt , :body]
 
-      def name
-        title
-      end
+        def name
+          title
+        end
 
-      def slug
-        self.article.slug
-      end
-    end #is_localized
+        def slug
+          self.article.slug
+        end
+      end #is_localized
+    end
 
     import_export_csv([:id, :slug, :title, :seo_title, :seo_description, :seo_keywords, :state], [:excerpt, :body])
 
