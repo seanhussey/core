@@ -3,4 +3,6 @@ rvm:
   - 1.9.3
 
 before_script:
+  - gem install bundler
+  - bundle install
   - RAILS_ENV=test rake db:create db:schema:load --trace
