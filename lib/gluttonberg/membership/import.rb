@@ -1,11 +1,7 @@
 module Gluttonberg
   module Membership
     module Import
-      def self.included(klass)
-        klass.class_eval do
-          extend ClassMethods
-        end
-      end
+      extend ActiveSupport::Concern
 
       module ClassMethods
         ###############################

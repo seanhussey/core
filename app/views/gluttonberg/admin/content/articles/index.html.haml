@@ -10,6 +10,8 @@
       .subnav
         = sub_nav do
           = nav_link('Add New Post', new_admin_blog_article_path)
+          = nav_link('Import', import_admin_blog_articles_path(@blog.id))
+          = nav_link('Export', export_admin_blog_articles_path(@blog.id))
 
       - if @articles.empty?
         %p.empty No Articles

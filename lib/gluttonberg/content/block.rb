@@ -4,34 +4,25 @@ module Gluttonberg
     # block. A content block is a class that can be associated with a section
     # on in a page description.
     module Block
+      extend ActiveSupport::Concern
       # A collection of the classes which have this module included in it.
       @classes = []
 
       # This included hook is used to declare the various properties and class
       # ivars we need.
-      def self.included(klass)
+      included do
+        cattr_accessor :localized, :label, :content_type, :association_name
+        @localized = false
+        attr_reader :current_localization
 
-        klass.class_eval do
-          extend Block::ClassMethods
-          include Block::InstanceMethods
+        belongs_to :page
 
-          cattr_accessor :localized, :label, :content_type, :association_name
-          @localized = false
-
-          attr_reader :current_localization
-
-          belongs_to :page
-
-          # Generate the various names to be used in associations
-          type = self.name.demodulize.underscore
-          self.association_name = type.pluralize.to_sym
-          self.content_type = type.to_sym
-          # Let's generate a label from the class — this might be over-ridden later
-          self.label = type.humanize
-
-        end
-
-
+        # Generate the various names to be used in associations
+        type = self.name.demodulize.underscore
+        self.association_name = type.pluralize.to_sym
+        self.content_type = type.to_sym
+        # Let's generate a label from the class — this might be over-ridden later
+        self.label = type.humanize
       end
 
       # register content classes. We can do this inside included block, but in rails lazyloading behavior it is not properly working.
@@ -110,61 +101,59 @@ module Gluttonberg
           end
       end
 
-      module InstanceMethods
-        # Returns the section this content instance is associated with. It does
-        # this by looking at the associated page, it’s description then the
-        # matching section.
-        def section
-          @section ||= page.description.sections[section_name.to_sym]
+      # Returns the section this content instance is associated with. It does
+      # this by looking at the associated page, it’s description then the
+      # matching section.
+      def section
+        @section ||= page.description.sections[section_name.to_sym]
+      end
+
+      # Checks to see if this content class has localized properties.
+      def localized?
+        self.class.localized?
+      end
+
+      # The name of the generated association. This is the association that
+      def association_name
+        self.class.association_name
+      end
+
+
+      def section_label
+        section[:label]
+      end
+
+      def select_options_data
+        unless section[:select_options_data].blank?
+          section[:select_options_data].call
+        else
+          []
         end
+      end
 
-        # Checks to see if this content class has localized properties.
-        def localized?
-          self.class.localized?
+      def select_options_default_value
+        unless section[:select_options_default_value].blank?
+          section[:select_options_default_value].call
         end
+      end
 
-        # The name of the generated association. This is the association that
-        def association_name
-          self.class.association_name
-        end
+      def section_position
+        section[:position]
+      end
 
+      # Content type is simply the inflected version of the content class
+      # name, e.g. FooContent becomes :foo_content
+      def content_type
+        self.class.content_type
+      end
 
-        def section_label
-          section[:label]
-        end
-
-        def select_options_data
-          unless section[:select_options_data].blank?
-            section[:select_options_data].call
-          else
-            []
-          end
-        end
-
-        def select_options_default_value
-          unless section[:select_options_default_value].blank?
-            section[:select_options_default_value].call
-          end
-        end
-
-        def section_position
-          section[:position]
-        end
-
-        # Content type is simply the inflected version of the content class
-        # name, e.g. FooContent becomes :foo_content
-        def content_type
-          self.class.content_type
-        end
-
-        # Loads a localized version based on the specified page localization,
-        # then stashes it in an accessor
-        def load_localization(id_or_model)
-          if localized?
-            localization_id = id_or_model.is_a?(Numeric) ? id_or_model : id_or_model.id
-            conditions = {:page_localization_id => localization_id, :"#{self.class.content_type}_id" => id}
-            @current_localization = localizations.find(:first , :conditions => conditions)
-          end
+      # Loads a localized version based on the specified page localization,
+      # then stashes it in an accessor
+      def load_localization(id_or_model)
+        if localized?
+          localization_id = id_or_model.is_a?(Numeric) ? id_or_model : id_or_model.id
+          conditions = {:page_localization_id => localization_id, :"#{self.class.content_type}_id" => id}
+          @current_localization = localizations.find(:first , :conditions => conditions)
         end
       end
     end

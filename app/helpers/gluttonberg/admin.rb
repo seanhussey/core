@@ -32,11 +32,6 @@ module Gluttonberg
         content_tag(:li, active_link_to(args[0] , args[1] , :title => args[0]), :class => class_names)
       end
 
-      def website_title
-        title = Gluttonberg::Setting.get_setting("title")
-        (title.blank?)? "Gluttonberg" : title.html_safe
-      end
-
       # Writes out a row for each page and then for each page's children,
       # iterating down through the heirarchy.
       def page_table_rows(pages, output = "", inset = 0 , row = 0)

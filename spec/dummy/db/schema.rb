@@ -299,6 +299,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.integer "row"
     t.boolean "delete_able",               :default => true
     t.boolean "enabled",                   :default => true
+    t.string  "site"
     t.text    "help"
     t.text    "values_list"
   end
@@ -471,6 +472,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
   end
 
   begin
+    Gluttonberg::Article # make sure article model is loaded.
     Gluttonberg::ArticleLocalization.create_versioned_table
   rescue => e
     puts e
@@ -479,6 +481,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
   create_table :staff_profiles, :force => true do |t|
     t.string :name
     t.integer :face_id
+    t.decimal :package, :precision => 6, :scale => 3
 
     t.string :slug
     t.string :previous_slug

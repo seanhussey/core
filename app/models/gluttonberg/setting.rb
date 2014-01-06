@@ -5,19 +5,20 @@ module Gluttonberg
 
     before_destroy :destroy_cache
     attr_accessible :name, :value, :values_list, :help, :category
-    attr_accessible :row, :delete_able, :enabled
+    attr_accessible :row, :delete_able, :enabled, :site
 
-    def self.generate_or_update_settings(settings={})
+    def self.generate_or_update_settings(settings, site=nil)
       settings.each do |key , val |
         obj = self.where(:name => key).first
-        if obj.blank?
+        if obj.blank? || obj.site != site
           obj = self.new({
             :name=> key,
             :value => val[0],
             :row => val[1],
             :delete_able => false,
             :help => val[2],
-            :values_list => val[3]
+            :values_list => val[3],
+            :site => site
           })
           obj.save!
         else
@@ -25,7 +26,8 @@ module Gluttonberg
             :name=> key,
             :row => val[1],
             :delete_able => false,
-            :help => val[2]
+            :help => val[2],
+            :site => site
           })
         end
       end
@@ -36,20 +38,16 @@ module Gluttonberg
     end
 
     def self.generate_common_settings
-      settings = {
-        :title => [ "" , 0, "Website Title"],
-        :keywords => ["" , 1, "Please separate keywords with a comma."],
-        :description => ["" ,2 , "The Description will appear in search engine's result list."],
-        :fb_icon => ["" , 3 , "Facebook Icon for the website"],
-        :google_analytics => ["", 4, "Google Analytics ID"],
-        :comment_notification => ["No" , 5 , "Enable comment notification" , "Yes;No" ],
+      cms_settings = {
         :number_of_revisions => ["10" , 6 , "Number of revisions to maintain for versioned contents."],
         :library_number_of_recent_assets => ["15" , 7 , "Number of recent assets in asset library."],
         :number_of_per_page_items => ["20" , 8 , "Number of per page items for any paginated content."],
         :enable_WYSIWYG => ["Yes" , 9 , "Enable WYSIWYG on textareas" , "Yes;No" ],
         :backend_logo => ["" , 10 , "Logo for backend" ] ,
-        :restrict_site_access => ["" , 11 , "If this setting is provided then user needs to enter password to access public site."]  ,
-        :from_email => ["" , 12 , "This email address is used for 'from' email address for all emails sent through system."],
+        :auto_save_time => ["30" , 22 , "If editing is in progress then gluttonberg will auto save the form in XX seconds" ]
+      }
+
+      settings = {
         :video_assets => ["" , 13 , "FFMPEG settings" , "Enable;Disable"],
         :s3_key_id => ["" , 14 , "S3 Key ID"],
         :s3_access_key => ["" , 15 , "S3 Access Key"],
@@ -59,10 +57,29 @@ module Gluttonberg
         :comment_blacklist => ["" , 19 , "When a comment contains any of these words in its comment, Author Name, Author website, Author e-mail, it will be marked as spam. It will match inside words, so \"able\" will match \"comparable\". Please separate words with a comma."],
         :comment_email_as_spam => ["Yes" , 20 , "Do you want to mark those comments as spam which only contains emails and urls?" , "Yes;No" ],
         :comment_number_of_emails_allowed => ["2" , 21 , "How many email addresses should a comment include to be marked as spam?" ],
-        :comment_number_of_urls_allowed => ["2" , 21 , "How many URLs should a comment include to be marked as spam?" ],
-        :auto_save_time => ["30" , 22 , "If editing is in progress then gluttonberg will auto save the form in XX seconds" ]
+        :comment_number_of_urls_allowed => ["2" , 21 , "How many URLs should a comment include to be marked as spam?" ] 
       }
+
+      sitewise_settings = {
+        :title => [ "" , 0, "Website Title"],
+        :keywords => ["" , 1, "Please separate keywords with a comma."],
+        :description => ["" ,2 , "The Description will appear in search engine's result list."],
+        :fb_icon => ["" , 3 , "Facebook Icon for the website"],
+        :google_analytics => ["", 4, "Google Analytics ID"],
+        :from_email => ["" , 12 , "This email address is used for 'from' email address for all emails sent through system."],
+        :restrict_site_access => ["" , 11 , "If this setting is provided then user needs to enter password to access public site."],
+        :comment_notification => ["No" , 5 , "Enable comment notification" , "Yes;No" ]
+      }
+      
+      self.generate_or_update_settings(cms_settings)
       self.generate_or_update_settings(settings)
+      if Rails.configuration.multisite == false
+        self.generate_or_update_settings(sitewise_settings)
+      else
+        Rails.configuration.multisite.each do |key, val|
+          self.generate_or_update_settings(sitewise_settings, key)
+        end
+      end
     end
 
     def self.has_deletable_settings?
@@ -79,17 +96,20 @@ module Gluttonberg
       end
     end
 
-    def self.get_setting(key)
+    def self.get_setting(key, site='')
       if Gluttonberg::Setting.table_exists?
+        cache_key = (site.blank? ? "setting_#{key}" : "setting_#{key}_#{site}")
         data  = nil
         begin
-          data = Rails.cache.read("setting_#{key}")
+          data = Rails.cache.read(cache_key)
         rescue
         end
         if data.blank?
-          setting = Setting.where(:name => key).first
+          setting = Setting.where(:name => key)
+          setting = setting.where(:site => site) unless site.blank?
+          setting = setting.first
           data = ( (!setting.blank? && !setting.value.blank?) ? setting.value : "" )
-           Rails.cache.write("setting_#{key}" , (data.blank? ? "~" : data))
+           Rails.cache.write(cache_key , (data.blank? ? "~" : data))
            data
         elsif data == "~" # empty setting
           ""
@@ -111,15 +131,16 @@ module Gluttonberg
 
     def update_settings_in_config
       begin
-        setting = self
-        Rails.cache.write("setting_#{setting.name}" , setting.value)
+        cache_key = (self.site.blank? ? "setting_#{self.name}" : "setting_#{self.name}_#{self.site}")
+        Rails.cache.write(cache_key , self.value)
       rescue => e
         Rails.logger.info e
       end
     end
 
     def destroy_cache
-      Rails.cache.write("setting_#{self.name}" , "")
+      cache_key = (self.site.blank? ? "setting_#{self.name}" : "setting_#{self.name}_#{self.site}")
+      Rails.cache.write(cache_key , "")
     end
   end
 end

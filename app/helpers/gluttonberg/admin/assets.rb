@@ -53,7 +53,8 @@ module Gluttonberg
         end
         html_id = opts[:id]
         link_to("Remove", "Javascript:;" , {
-          :class => "btn btn-danger button remove #{opts[:button_class]}"
+          :class => "btn btn-danger button remove #{opts[:button_class]}",
+          :data_url => opts[:data_url]
         })
       end
 

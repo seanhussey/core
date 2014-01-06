@@ -1,16 +1,9 @@
 module Gluttonberg
   module Content
-
     module CleanHtml
-
+      extend ActiveSupport::Concern
       def self.setup
         ::ActiveRecord::Base.send :include, Gluttonberg::Content::CleanHtml
-      end
-
-      def self.included(klass)
-        klass.class_eval do
-          extend  ClassMethods
-        end
       end
 
       module ClassMethods
@@ -61,12 +54,10 @@ module Gluttonberg
         end
       end
 
-      module InstanceMethods
-        def clean_all_html_content
-          unless self.class.html_columns_list.blank?
-            self.class.html_columns_list.each do |field|
-              write_attribute(field , self.class.clean_tags(read_attribute(field)) )
-            end
+      def clean_all_html_content
+        unless self.class.html_columns_list.blank?
+          self.class.html_columns_list.each do |field|
+            write_attribute(field , self.class.clean_tags(read_attribute(field)) )
           end
         end
       end

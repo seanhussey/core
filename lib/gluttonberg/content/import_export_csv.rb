@@ -5,66 +5,73 @@ module Gluttonberg
     # it adds importCSV(file_path , local_options = {})
     # and exportCSV(records , local_options = {})
     module ImportExportCSV
-
+      extend ActiveSupport::Concern
       def self.setup
         ::ActiveRecord::Base.send :include, Gluttonberg::Content::ImportExportCSV
-      end
-
-      def self.included(klass)
-        klass.class_eval do
-          extend  ClassMethods
-          cattr_accessor :import_export_columns , :wysiwyg_columns
-        end
       end
 
       module ClassMethods
 
         def import_export_csv(import_export_columns=nil,wysiwyg_columns=nil)
+          include ImportExportHelpers          
           if import_export_columns.blank?
             self.import_export_columns = self.new.attributes.keys
+            if self.localized?
+              self.import_export_columns += self.new_with_localization.current_localization.attributes.keys
+              self.import_export_columns.uniq!
+            end
           else
             self.import_export_columns = import_export_columns
           end
           self.wysiwyg_columns = (wysiwyg_columns.blank? ? [] : wysiwyg_columns)
         end
 
-
-        # takes complete path to csv file.
-        # if all records are created successfully then return true
-        # otherwise returns array of feedback. each value represents the feedback for respective row in csv
-        # sample feedback array : [true , true , [active_record error array...] , true]
-        # sample local_options
-        # {
-        #   :import_columns => [:name, :face_id, :handwritting_id], 
-        #   :wysiwyg_columns => [:bio],
-        #   :unique_key => :name
-        # }
-        def importCSV(file_path , local_options = {})
-          begin
-            require 'csv'
-            csv_table = CSV.read(file_path)
-          rescue => e
-            return "Please provide a valid CSV file with correct column names."
+        module ImportExportHelpers
+          extend ActiveSupport::Concern
+          included do
+            cattr_accessor :import_export_columns , :wysiwyg_columns
           end
-          ImportUtils.import(file_path, local_options, self, csv_table)
-        end
 
-        class GlosentryHelper
-          include ActionView::Helpers::TagHelper
-          include ActionView::Helpers::TextHelper
-        end
+          module ClassMethods
+            # takes complete path to csv file.
+            # if all records are created successfully then return true
+            # otherwise returns array of feedback. each value represents the feedback for respective row in csv
+            # sample feedback array : [true , true , [active_record error array...] , true]
+            # sample local_options
+            # {
+            #   :import_columns => [:name, :face_id, :handwritting_id], 
+            #   :wysiwyg_columns => [:bio],
+            #   :unique_key => :name,
+            #   :additional_attributes => {}
+            # }
+            def importCSV(file_path , local_options = {})
+              begin
+                require 'csv'
+                csv_table = CSV.read(file_path, "r:UTF-8")
+              rescue => e
+                return "Please provide a valid CSV file with correct column names."
+              end
+              ImportUtils.import(file_path, local_options, self, csv_table)
+            end
 
-        def helper
-          @h ||= GlosentryHelper.new
-        end
+            class GlosentryHelper
+              include ActionView::Helpers::TagHelper
+              include ActionView::Helpers::TextHelper
+            end
 
-        # sample local_options
-        # {
-        #   :import_columns => [:name, :face_id, :handwritting_id], 
-        #   :wysiwyg_columns => [:bio]
-        # }
-        def exportCSV(all_records , local_options = {})
-          ExportUtils.export(all_records, local_options, self)
+            def helper
+              @h ||= GlosentryHelper.new
+            end
+
+            # sample local_options
+            # {
+            #   :import_columns => [:name, :face_id, :handwritting_id], 
+            #   :wysiwyg_columns => [:bio]
+            # }
+            def exportCSV(all_records , local_options = {})
+              ExportUtils.export(all_records, local_options, self)
+            end
+          end
         end
 
       end #ClassMethods
@@ -114,9 +121,10 @@ module Gluttonberg
         def all_export_columns
           temp_columns = self.export_column_names.blank? ? [] : self.export_column_names.dup
           temp_columns << self.export_wysiwyg_columns.dup unless self.export_wysiwyg_columns.blank?
-          temp_columns << "published_at"
-          temp_columns << "updated_at"
+          temp_columns << :published_at
+          temp_columns << :updated_at
           temp_columns = temp_columns.flatten
+          temp_columns.uniq!
           temp_columns
         end
 
@@ -127,7 +135,14 @@ module Gluttonberg
               if record.send(column).blank?
                 row << ""
               else
-                row << record.send(column).html_safe
+                val = record.send(column)
+                if val.is_a? String
+                  row << val.html_safe
+                elsif val.is_a? String
+                  row << val.collect{|v| v.is_a? String ? v.html_safe : v}
+                else
+                  row << val
+                end
               end
             else
               row << record.send(column)
@@ -240,6 +255,12 @@ module Gluttonberg
             end
           end
 
+          unless self.local_options[:additional_attributes].blank?
+            self.local_options[:additional_attributes].each do |key, val|
+              record_info[key] = (val.kind_of?(String) ? val.force_encoding("UTF-8") : val)
+            end
+          end
+
           record_info
         end
 
@@ -256,9 +277,8 @@ module Gluttonberg
           end
 
           record_info.each do |field,val|
-            record.send("#{field}=",val)
+            record.send("#{field}=",val) unless field.to_s == "id"
           end
-
           record
         end
 
@@ -292,4 +312,3 @@ module Gluttonberg
     end #ImportExportCSV
   end
 end
-

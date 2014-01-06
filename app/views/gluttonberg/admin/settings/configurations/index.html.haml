@@ -1,7 +1,7 @@
 - @window_title = "Settings"
 - @page_title = "Configuration"
 
-- has_deletable_settings = Gluttonberg::Setting.has_deletable_settings?
+- @has_deletable_settings = Gluttonberg::Setting.has_deletable_settings?
 .row-fluid
   = render :partial => "/gluttonberg/admin/settings/main/sidebar"
   .span9
@@ -14,47 +14,18 @@
           - if can? :create_or_destroy, Gluttonberg::Setting
             = nav_link('Add New Setting', new_admin_configuration_path)
 
-      %table{:cellspacing => 0, :cellpadding => 0, :summary => "List of Settings", :class => "table table-bordered"}
-        %thead
-          %tr
-            %th Name
-            %th Value (Click to edit)
-            - if has_deletable_settings
-              %th.controls Controls
-        %tbody
-          - i = 1
-          %tr{ :class => ""}
-            %td.first_column
-              Select Home Page
-            %td.second_column
-              = select_tag :home , options_from_collection_for_select(@pages, "id", "name" , selected = @current_home_page_id.to_s )  ,  { :include_blank => true , :class => "home_page_setting_dropdown"  , :rel => admin_page_update_home_path(1)  }
-              = image_tag("/assets/gb_spinner.gif" , :id => "progress_home_page" , :style => "display:none")
-            - if has_deletable_settings
-              %td.controls
-          - for setting in @settings
-            - i += 1
-            %tr{ :class => "#{cycle("even", "odd")}"}
-              %td.first_column{ :style => 'width:220px' }
-                = setting.user_friendly_name
-              %td.second_column
-                - unless setting.help.blank?
-                  %i{ :style => "font-size: 90%;" }= setting.help
-                  %span{:style => "height: 10px; display: block;"}
+      
+      - if @multisite
+        - Rails.configuration.multisite.each do |key, val|
+          %h2
+            #{val} Configuration
+  
+          = render :partial => "settings_table", :locals => {:settings => @site_wise_settings[key]}
+      
 
-                - if setting.dropdown_required?
-                  = select_tag(:value , options_for_select( setting.parsed_values_list_for_dropdown , setting.value  ) , { :include_blank => true , :data_id => setting.id  , :rel => admin_configuration_path( setting) , :class => "setting_dropdown"   })
-                - elsif setting.name == "fb_icon"
-                  = asset_browser_tag( "gluttonberg_setting[value]" ,  opts = {:button_class => "logo_setting button" , :filter => "image" ,  :id => "gluttonberg_setting_fb_icon", :asset_id => setting.value  , :data_url => admin_configuration_path( setting) } )
-                - elsif setting.name == "backend_logo"
-                  = asset_browser_tag( "gluttonberg_setting[value]" ,  opts = {:button_class => "logo_setting button" , :filter => "image" ,  :id => "gluttonberg_setting_backend_logo", :asset_id => setting.value  , :data_url => admin_configuration_path( setting) } )
-
-                - else
-                  = gb_editable_field setting, :value , :update_url => admin_configuration_path(setting)
-
-                = image_tag("/assets/gb_spinner.gif" , :id => "progress_#{setting.id}" , :style => "display:none")
-              - if has_deletable_settings
-                %td.controls
-                  - if setting.delete_able
-                    = link_to 'Delete', delete_admin_configuration_path(setting)
+        %h2
+          Global Configuration
+          
+      = render :partial => "settings_table", :locals => {:settings => @cms_settings}
 
 

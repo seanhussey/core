@@ -6,54 +6,52 @@ require File.join(image, "image", "serialization")
 
 module Gluttonberg
   module Library
-
     module QuickMagick
-
       class Image
         include Draw
         include OperatorsAndSettings
         include Serialization
 
-        class << self
+        # Creates a new image initially set to gradient
+        # Default gradient is linear gradient from black to white
+        def self.gradient(width, height, type=QuickMagick::LinearGradient, color1=nil, color2=nil)
+          template_name = type + ":"
+          template_name << color1.to_s if color1
+          template_name << '-' << color2.to_s if color2
+          i = self.new(template_name, 0, nil, true)
+          i.size = QuickMagick::geometry(width, height)
+          yield(i) if block_given?
+          i
+        end
 
-          # Creates a new image initially set to gradient
-          # Default gradient is linear gradient from black to white
-          def gradient(width, height, type=QuickMagick::LinearGradient, color1=nil, color2=nil)
-            template_name = type + ":"
-            template_name << color1.to_s if color1
-            template_name << '-' << color2.to_s if color2
-            i = self.new(template_name, 0, nil, true)
-            i.size = QuickMagick::geometry(width, height)
-            yield(i) if block_given?
-            i
-          end
+        # Creates an image with solid color
+        def self.solid(width, height, color=nil)
+          template_name = QuickMagick::SolidColor+":"
+          template_name << color.to_s if color
+          i = self.new(template_name, 0, nil, true)
+          i.size = QuickMagick::geometry(width, height)
+          yield(i) if block_given?
+          i
+        end
 
-          # Creates an image with solid color
-          def solid(width, height, color=nil)
-            template_name = QuickMagick::SolidColor+":"
-            template_name << color.to_s if color
-            i = self.new(template_name, 0, nil, true)
-            i.size = QuickMagick::geometry(width, height)
-            yield(i) if block_given?
-            i
-          end
+        # Creates an image from pattern
+        def self.pattern(width, height, pattern)
+          raise QuickMagick::QuickMagickError, "Invalid pattern '#{pattern.to_s}'" unless QuickMagick::Patterns.include?(pattern.to_s)
+          template_name = "pattern:#{pattern.to_s}"
+          i = self.new(template_name, 0, nil, true)
+          i.size = QuickMagick::geometry(width, height)
+          yield(i) if block_given?
+          i
+        end
 
-          # Creates an image from pattern
-          def pattern(width, height, pattern)
-            raise QuickMagick::QuickMagickError, "Invalid pattern '#{pattern.to_s}'" unless QuickMagick::Patterns.include?(pattern.to_s)
-            template_name = "pattern:#{pattern.to_s}"
-            i = self.new(template_name, 0, nil, true)
-            i.size = QuickMagick::geometry(width, height)
-            yield(i) if block_given?
-            i
-          end
+        # returns info for an image using <code>identify</code> command
+        def self.identify(filename)
+          QuickMagick.exec3 "identify #{QuickMagick.c filename}"
+        end
 
-          # returns info for an image using <code>identify</code> command
-          def identify(filename)
-            QuickMagick.exec3 "identify #{QuickMagick.c filename}"
-          end
+        # ClassMethods
 
-        end # self
+        #instance methods
 
         # append the given option, value pair to the settings of the current image
         def append_to_settings(arg, value=nil)
@@ -93,7 +91,7 @@ module Gluttonberg
 
         # Enables/Disables flood fill. Pass a boolean argument.
         def antialias=(flag)
-        	append_basic flag ? '-antialias' : '+antialias'
+          append_basic flag ? '-antialias' : '+antialias'
         end
 
         # define attribute readers (getters)

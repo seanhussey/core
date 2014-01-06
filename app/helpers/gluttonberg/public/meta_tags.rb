@@ -13,7 +13,7 @@ module Gluttonberg
 
       private
         def _meta_tag(setting_name, tag_name)
-          value = Gluttonberg::Setting.get_setting(setting_name)
+          value = Gluttonberg::Setting.get_setting(setting_name, current_site_config_name)
           unless value.blank?
             tag("meta",{:content =>  value, :name => tag_name } ) 
           else

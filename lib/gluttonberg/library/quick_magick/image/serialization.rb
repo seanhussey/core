@@ -2,12 +2,7 @@ module Gluttonberg
   module Library
     module QuickMagick
       module Serialization
-        def self.included(klass)
-          klass.class_eval do
-            extend  ClassMethods
-            include InstanceMethods
-          end
-        end
+        extend ActiveSupport::Concern
 
         module ClassMethods
           # create an array of images from the given blob data
@@ -34,51 +29,50 @@ module Gluttonberg
           alias open read
         end #ClassMethods
 
-        module InstanceMethods
-          # saves the current image to the given filename
-          def save(output_filename)
-            result = QuickMagick.exec3 "convert #{command_line} #{QuickMagick.c output_filename} "#-quality 92"
-            if @pseudo_image
-              # since it's been saved, convert it to normal image (not pseudo)
-              initialize(output_filename)
-              revert!
-            end
-            return result
-          end
-
-          alias write save
-          alias convert save
-
-          # saves the current image overwriting the original image file
-          def save!
-            raise QuickMagick::QuickMagickError, "Cannot mogrify a pseudo image" if @pseudo_image
-            result = QuickMagick.exec3 "mogrify #{command_line}"
-            # remove all operations to avoid duplicate operations
+        # InstanceMethods
+        # saves the current image to the given filename
+        def save(output_filename)
+          result = QuickMagick.exec3 "convert #{command_line} #{QuickMagick.c output_filename} "#-quality 92"
+          if @pseudo_image
+            # since it's been saved, convert it to normal image (not pseudo)
+            initialize(output_filename)
             revert!
-            return result
           end
+          return result
+        end
 
-          alias write! save!
-          alias mogrify! save!
+        alias write save
+        alias convert save
 
-          def to_blob
-            tmp_file = Tempfile.new(QuickMagick::random_string)
-            if command_line =~ /-format\s(\S+)\s/
-              # use format set up by user
-              blob_format = $1
-            elsif !@pseudo_image
-              # use original image format
-              blob_format = self.format
-            else
-              # default format is jpg
-              blob_format = 'jpg'
-            end
-            save "#{blob_format}:#{tmp_file.path}"
-            blob = nil
-            File.open(tmp_file.path, 'rb') { |f| blob = f.read}
-            blob
+        # saves the current image overwriting the original image file
+        def save!
+          raise QuickMagick::QuickMagickError, "Cannot mogrify a pseudo image" if @pseudo_image
+          result = QuickMagick.exec3 "mogrify #{command_line}"
+          # remove all operations to avoid duplicate operations
+          revert!
+          return result
+        end
+
+        alias write! save!
+        alias mogrify! save!
+
+        def to_blob
+          tmp_file = Tempfile.new(QuickMagick::random_string)
+          if command_line =~ /-format\s(\S+)\s/
+            # use format set up by user
+            blob_format = $1
+          elsif !@pseudo_image
+            # use original image format
+            blob_format = self.format
+          else
+            # default format is jpg
+            blob_format = 'jpg'
           end
-        end #
+          save "#{blob_format}:#{tmp_file.path}"
+          blob = nil
+          File.open(tmp_file.path, 'rb') { |f| blob = f.read}
+          blob
+        end
       end #Settings
     end #QuickMagick
   end

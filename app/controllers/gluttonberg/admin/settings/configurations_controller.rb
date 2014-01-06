@@ -10,6 +10,14 @@ module Gluttonberg
         record_history :@setting
 
         def index
+          @multisite = Rails.configuration.multisite.kind_of?(Hash)
+          @cms_settings = Setting.where("site is NULL or site=''").order("row asc").all
+          @site_wise_settings = {}
+          if @multisite
+            Rails.configuration.multisite.each do |key, val|
+              @site_wise_settings[key] = Setting.where(:site => key).order("row asc").all
+            end
+          end
           @settings = Setting.order("row asc").all
           @current_home_page_id  = Page.home_page.id unless Page.home_page.blank?
           @pages = Page.all
