@@ -50,15 +50,24 @@
                       Actions
                       %span.caret
                     %ul.dropdown-menu
-                      %li
-                        - if Gluttonberg.localized? &&  article.localizations.length > 1
-                          - for locale in Gluttonberg::Locale.all
-                            - localization = Gluttonberg::ArticleLocalization.find(:first , :conditions => { :article_id => article.id , :locale_id => locale.id } )
-                            %li
-                              %a{:href => edit_admin_blog_article_path(@blog, article , :localization_id => localization.id) ,:id=>"edit_content_tab",:class=>"button"}
-                                = "Edit #{localization.locale.name}"
-                        - else
-                          = link_to "Edit", edit_admin_blog_article_path(@blog, article) , :class => " "
+
+                      - if Gluttonberg.localized? &&  article.localizations.length > 1
+                        - Gluttonberg::Locale.all.each_with_index do |locale, index|
+                          - if index > 0
+                            %li.divider
+                          - localization = Gluttonberg::ArticleLocalization.find(:first , :conditions => { :article_id => article.id , :locale_id => locale.id } )
+                          %li.menu-section-title
+                            = locale.name
+                          %li
+                            %a{:href => edit_admin_blog_article_path(@blog, article , :localization_id => localization.id) ,:id=>"edit_content_tab",:class=>"button"}
+                              = "Edit Post"
+                          %li
+                            = link_to("View Post", blog_article_path(current_localization_slug ,@blog.slug, article.slug), :class => "", :target => "_blank")
+                      - else
+                        %li
+                          = link_to "Edit Post", edit_admin_blog_article_path(@blog, article) , :class => " "
+                        %li
+                          = link_to("View Post", blog_article_path(:blog_id => @blog.slug, :id => article.slug), :class => "", :target => "_blank")
 
 
                       %li.divider
