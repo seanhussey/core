@@ -66,10 +66,12 @@ module Gluttonberg
         if !page.blank?
          "page #{page.current_localization.slug.blank? ? page.slug : page.current_localization.slug} #{page.home? ? 'home' : ''}"
         else
-          object = find_current_object_for_meta_tags
-          unless object.blank?
-            class_name = (object.kind_of?(Gluttonberg::ArticleLocalization) ? 'post' : object.class.name.demodulize.downcase)
-            "#{class_name} #{object.slug}"
+          if Gluttonberg::Article.table_exists?
+            object = find_current_object_for_meta_tags
+            unless object.blank?
+              class_name = (object.kind_of?(Gluttonberg::ArticleLocalization) ? 'post' : object.class.name.demodulize.downcase)
+              "#{class_name} #{object.slug}"
+            end
           end
         end
       end
@@ -100,7 +102,7 @@ module Gluttonberg
           end
         end
 
-        
+
     end
   end
 end
