@@ -46,6 +46,7 @@
                     %span{:donotedit => true}
                       = @article.slug
                     = f.text_field(:slug, :id => 'page_hidden_slug')
+                = link_to("Preview", "Javascript:;", :class => "btn btn-mini preview-page", :target => "_blank", "data-url" => "#{blog_article_path(@article_localization.locale.slug ,@blog.slug, @article.slug)}?preview=true")
               .clear
 
 
