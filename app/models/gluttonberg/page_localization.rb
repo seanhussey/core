@@ -78,7 +78,9 @@ module Gluttonberg
     def contents=(params)
       self.content_needs_saving = true
       contents.each do |content|
-        update = params[content.association_name][content.id.to_s]
+        content_association = params[content.association_name]
+        content_association = params[content.association_name.to_s] if content_association.blank?
+        update = content_association[content.id.to_s]
         content.attributes = update if update
       end
     end
@@ -109,7 +111,7 @@ module Gluttonberg
       page.reload #forcing that do not take cached page object
       slug = nil if slug.blank?
       new_path = prepare_new_path
-      
+
       self.previous_path = self.current_path
       write_attribute(:path, new_path)
     end

@@ -19,6 +19,10 @@ module Gluttonberg
           return
         end
         @article.load_localization(env['GLUTTONBERG.LOCALE'])
+        if current_user && params[:preview].to_s == "true"
+          Gluttonberg::AutoSave.load_version(@article.current_localization)
+        end
+
         @comments = @article.comments.where(:approved => true)
         @comment = Comment.new(:subscribe_to_comments => true)
         respond_to do |format|
@@ -55,7 +59,8 @@ module Gluttonberg
 
       private
         def find_blog
-          @blog = Gluttonberg::Blog.published.where(:slug => params[:blog_id]).includes([:articles]).first
+          @blog = Gluttonberg::Blog.where(:slug => params[:blog_id]).includes([:articles]).first
+          @blog = nil if @blog && current_user.blank? && !@blog.published?
           if @blog.blank?
             @blog = Gluttonberg::Blog.published.where(:previous_slug => params[:blog_id]).first
           end
@@ -63,7 +68,8 @@ module Gluttonberg
         end
 
         def find_article
-          @article = Gluttonberg::Article.published.where(:slug => params[:id], :blog_id => @blog.id).first
+          @article = Gluttonberg::Article.where(:slug => params[:id], :blog_id => @blog.id).first
+          @article = nil if @article && current_user.blank? && !@article.published?
           if @article.blank?
             @article = Gluttonberg::Article.published.where(:previous_slug => params[:id], :blog_id => @blog.id).first
           end

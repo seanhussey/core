@@ -11,10 +11,10 @@ Rails.application.routes.draw do
           get "/remove_autosaved_version/:model_name/:id" => :destroy , :as => :remove_autosaved_version
           get "/retreive_changes/:model_name/:id" => :retreive_changes , :as => :retreive_changes
         end
-        
+
         get "/flagged_contents" => "flag#index" , :as => :flagged_contents
         get '/flagged_contents/moderation/:id/:moderation' => "flag#moderation", :as => :flagged_contents_moderation
-        
+
 
         resources :pages do
           member do
@@ -31,11 +31,11 @@ Rails.application.routes.draw do
             get 'collapse_all'
             get 'expand_all'
           end
-          
+
           resources :page_localizations
         end
         get "pages_list_for_tinymce" => "pages#pages_list_for_tinymce" , :as => :pages_list_for_tinymce
-        
+
         scope 'comments', :controller => :comments, :as => :comments do
           get 'spam_detection_for_all_pending' , :as => :spam_detection_for_all_pending
           get 'pending', :as => :pending

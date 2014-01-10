@@ -13,11 +13,16 @@
         %span.caret
       %ul.dropdown-menu
         - if Gluttonberg.localized? &&  page.localizations.length > 1
-          - for locale in Gluttonberg::Locale.all
+          - Gluttonberg::Locale.all.each_with_index do |locale, index|
+            - if index > 0
+              %li.divider
             - localization = Gluttonberg::PageLocalization.find(:first , :conditions => { :page_id => page.id , :locale_id => locale.id } )
-            %li= link_to("Edit #{locale.name} Content", edit_admin_page_page_localization_path( :page_id => page.id, :id => localization.id), :class => "")
+            %li.menu-section-title
+              = locale.name
+            %li= link_to("Edit Page", edit_admin_page_page_localization_path( :page_id => page.id, :id => localization.id), :class => "")
+            %li= link_to("View Page", page.current_localization.public_path, :class => "", :target => "_blank")
         - else
-          %li= link_to("Edit", edit_admin_page_page_localization_path( :page_id => page.id, :id => page.current_localization.id), :class => "")
+          %li= link_to("Edit Page", edit_admin_page_page_localization_path( :page_id => page.id, :id => page.current_localization.id), :class => "")
           %li= link_to("View Page", page.current_localization.public_path, :class => "", :target => "_blank")
 
         %li.divider

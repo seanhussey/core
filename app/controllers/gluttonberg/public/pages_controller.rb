@@ -3,11 +3,14 @@ module Gluttonberg
     class PagesController < Gluttonberg::Public::BaseController
       before_filter :retrieve_page , :only => [ :show ]
 
-      # If localized template file exist then render 
+      # If localized template file exist then render
       # that file otherwise render non-localized template
       # for ajax request do not render layout
       def show
         return unless verify_page_access
+        if current_user && params[:preview].to_s == "true"
+          Gluttonberg::AutoSave.load_version(@page.current_localization)
+        end
         template = @page.view
         template_path = "pages/#{template}"
 
