@@ -19,6 +19,10 @@ module Gluttonberg
           return
         end
         @article.load_localization(env['GLUTTONBERG.LOCALE'])
+        if current_user && params[:preview].to_s == "true"
+          Gluttonberg::AutoSave.load_version(@article.current_localization)
+        end
+
         @comments = @article.comments.where(:approved => true)
         @comment = Comment.new(:subscribe_to_comments => true)
         respond_to do |format|
