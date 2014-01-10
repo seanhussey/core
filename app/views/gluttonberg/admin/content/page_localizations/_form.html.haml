@@ -46,6 +46,7 @@
                   Edit URL
 
                 = link_to("View Page", @page.current_localization.public_path, :class => "btn btn-mini", :target => "_blank")
+                = link_to("Preview", "Javascript:;", :class => "btn btn-mini preview-page", :target => "_blank", "data-url" => "#{@page.current_localization.public_path}?preview=true")
           .clear
           %p
             = f.label :navigation_label

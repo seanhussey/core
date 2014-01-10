@@ -23,7 +23,7 @@ module Gluttonberg
         pages.each do |page|
           page_depth = 1
           page.load_localization(@locale)
-          li_opts = {:class => page.localizations[0] ? page.localizations[0].slug + "-nav" : page.slug + "-nav"}
+          li_opts = {:class => page.localizations[0] ? "#{page.localizations[0].slug}-nav" : "#{page.slug}-nav"}
           unless Gluttonberg::Page.home_page == page
             li_opts[:class] += " active" if page == @page || children_active?(page)
           end

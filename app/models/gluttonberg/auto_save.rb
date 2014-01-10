@@ -8,5 +8,17 @@ module Gluttonberg
     def self.param_name_for(class_name)
       ActiveModel::Naming.param_key(class_name.constantize).to_sym
     end
+
+    def self.load_version(object)
+      auto_save_obj = self.where({:auto_save_able_id => object.id, :auto_save_able_type => object.class.name}).first
+      unless auto_save_obj.blank?
+        hash = JSON.parse(auto_save_obj.data)
+        if object.class.name == "Gluttonberg::PageLocalization"
+          hash.delete('page')
+        end
+        object.assign_attributes(hash)
+      end
+
+    end
   end
 end
