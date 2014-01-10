@@ -13,15 +13,13 @@ module Gluttonberg
       auto_save_obj = self.where({:auto_save_able_id => object.id, :auto_save_able_type => object.class.name}).first
       unless auto_save_obj.blank?
         hash = JSON.parse(auto_save_obj.data)
-        removed_hash = nil
         if object.class.name == "Gluttonberg::PageLocalization"
-          removed_hash = hash.delete('page')
+          hash.delete('page')
         elsif object.class.name == "Gluttonberg::ArticleLocalization"
-          removed_hash = hash.delete('article')
+          hash.delete('article')
         end
         object.assign_attributes(hash)
       end
-
     end
   end
 end
