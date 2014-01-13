@@ -217,7 +217,7 @@ module Gluttonberg
       !self.collapsed_pages.find_all{|page| page.user_id == current_user.id}.blank?
     end
 
-    def self.fix_children_counter
+    def self.fix_children_count
       self.all.each do |page|
         self.reset_counters(page.id, :children)
       end

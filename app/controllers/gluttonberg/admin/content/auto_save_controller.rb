@@ -5,6 +5,7 @@ module Gluttonberg
     module Content
       class AutoSaveController < Gluttonberg::Admin::BaseController
         before_filter :find_auto_save, :except => [:create]
+        layout nil
         def create
           auto_save = AutoSave.where(prepare_opts).first_or_initialize
           auto_save.data = params[AutoSave.param_name_for(params[:model_name])].to_json
