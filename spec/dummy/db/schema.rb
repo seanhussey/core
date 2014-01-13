@@ -128,7 +128,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.string :previous_path
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
-  
+
   end
 
   create_table "gb_gallery_images", :force => true do |t|
@@ -273,6 +273,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.string   "state"
     t.boolean  "hide_in_nav"
     t.datetime "published_at"
+    t.integer  "children_count", :default => 0
   end
 
   create_table "gb_plain_text_content_localizations", :force => true do |t|
