@@ -34,14 +34,15 @@ module Gluttonberg
 
       # Writes out a row for each page and then for each page's children,
       # iterating down through the heirarchy.
-      def page_table_rows(pages, output = "", inset = 0 , row = 0)
-        pages.each do |page|
+      def page_table_rows(pages, parent_id=nil, output = "", inset = 0 , row = 0)
+        filtered_pages = pages.find_all{|page| page.parent_id == parent_id}
+        filtered_pages.each do |page|
           row += 1
           output << "<li class='dd-item #{page.collapsed?(current_user) ? 'page-collapsed' : ''}' data-id='#{page.id}' >"
             output << render( :partial => "gluttonberg/admin/content/pages/row", :locals => { :page => page, :inset => inset , :row => row })
             if page.number_of_children > 0
               output << "<ol class='dd-list'>"
-                page_table_rows(page.children.includes(:user, :localizations, :collapsed_pages), output, inset + 1 , row)
+                page_table_rows(pages, page.id, output, inset + 1 , row)
               output << "</ol>"
             end
           output << "</li>"
