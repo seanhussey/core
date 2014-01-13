@@ -29,7 +29,7 @@ module Gluttonberg
           end
           li_content = build_page(page, opts)
           unless Gluttonberg::Page.home_page == page
-            li_content << find_children(page, page_depth, opts) if opts[:max_depth] >= page_depth
+            li_content << find_children(page, page_depth, opts) if opts[:max_depth] >= page_depth && page.number_of_children > 0
           end
           content << content_tag(:li, li_content.html_safe, li_opts).html_safe
         end
