@@ -125,13 +125,13 @@ module Gluttonberg
           end
 
           def find_article
+            @article = Article.where(:id => params[:id]).first
             if params[:localization_id].blank?
               conditions = { :article_id => params[:id] , :locale_id => Locale.first_default.id}
               @article_localization = ArticleLocalization.where(conditions).first
             else
               @article_localization = ArticleLocalization.where(:id => params[:localization_id]).first
             end
-            @article = Article.where(:id => params[:id]).first
           end
 
           def authorize_user
@@ -155,7 +155,7 @@ module Gluttonberg
           def all_articles
             conditions = {:blog_id => params[:blog_id]}
             conditions[:user_id] = current_user.id unless current_user.super_admin?
-            @articles = Article.where( conditions).order("created_at DESC")
+            @articles = Article.where(conditions).includes(:localizations).order("created_at DESC")
           end
 
       end

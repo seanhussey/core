@@ -5,7 +5,7 @@ module Gluttonberg
       before_filter :find_blog, :only => [:index, :show, :preview]
 
       def index
-        @articles = @blog.articles.published
+        @articles = @blog.articles.published.includes(:localizations)
         respond_to do |format|
           format.html
           format.rss { render :layout => false }

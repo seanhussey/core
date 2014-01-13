@@ -70,19 +70,19 @@ module Gluttonberg
       if locale.blank? || locale.id.blank?
         @current_localization = load_default_localizations
       else
-        @current_localization = localizations.where("locale_id = ?", locale.id).first
+        @current_localization = localizations.find_all{|l| l.locale_id == locale.id}.first
       end
       @current_localization
     end
 
     def load_default_localizations
-      @current_localization = localizations.where(:locale_id => Locale.first_default.id).first
+      @current_localization = localizations.find_all{ |l| l.locale_id == Locale.first_default.id }.first
     end
 
     def create_localizations(params)
       Locale.all.each do |locale|
         article_localization = ArticleLocalization.create(params.merge({
-          :locale_id => locale.id, 
+          :locale_id => locale.id,
           :article_id => self.id
         }))
       end
