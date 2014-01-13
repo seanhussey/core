@@ -39,7 +39,8 @@
               %p
                 #page_slug_holder
                   #{current_domain}#{@article.slug}
-                  = link_to("Preview", "Javascript:;", :class => "btn btn-mini preview-page", :target => "_blank", "data-url" => "#{blog_article_path(@article_localization.locale.slug ,@blog.slug, @article.slug)}?preview=true")
+                  - unless @article.new_record?
+                    = link_to("Preview", "Javascript:;", :class => "btn btn-mini preview-page", :target => "_blank", "data-url" => "#{blog_article_path(@article_localization.locale.slug ,@blog.slug, @article.slug)}?preview=true")
               .clear
 
 
