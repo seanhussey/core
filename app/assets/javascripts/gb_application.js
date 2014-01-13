@@ -965,14 +965,16 @@ var AutoSave = {
     changedSinceLastAutoSave = true;
   },
   save_now: function(successCallback){
-    if(changedSinceLastAutoSave){
+    var version = getParameterByName(window.location, 'version');
+
+    if(!blank(version) || changedSinceLastAutoSave){
       var form = AutoSave.formObj;
       if(form == undefined){
         form = $("form.auto_save");
       }
       if(form != null && form.length > 0 ){
         $.ajax({
-          url: AutoSave.autosave_url,
+          url: AutoSave.autosave_url+(blank(version) ? '' : '?version='+version),
           data: form.serialize(),
           type: "POST",
           success: function(data) {

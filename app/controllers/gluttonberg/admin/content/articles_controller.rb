@@ -14,7 +14,7 @@ module Gluttonberg
 
         def index
           @articles = @articles.paginate({
-            :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), 
+            :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"),
             :page => params[:page]
           })
         end
@@ -46,7 +46,7 @@ module Gluttonberg
           @authors = User.all
           unless params[:version].blank?
             @version = params[:version]
-            @article.revert_to(@version)
+            @article_localization.revert_to(@version)
           end
         end
 
