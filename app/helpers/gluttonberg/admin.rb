@@ -141,5 +141,14 @@ module Gluttonberg
         end
       end
 
+      def previous_version_warning(versions , selected_version_num)
+        if !versions.blank? && !selected_version_num.blank?
+          versions = versions.sort{|x,y| y.version <=> x.version}
+          if selected_version_num.to_i < versions.first.version
+            render :partial => "/gluttonberg/admin/shared/previous_version_warning" , :locals => {:selected_version_num => selected_version_num} , :formats => [:html]
+          end
+        end
+      end
+
     end # Admin
 end # Gluttonberg
