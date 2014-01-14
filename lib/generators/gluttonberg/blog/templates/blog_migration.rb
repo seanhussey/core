@@ -25,6 +25,7 @@ class BlogMigration < ActiveRecord::Migration
       t.column :disable_comments , :boolean , :default => false
       t.datetime :published_at
       t.string :previous_slug
+      t.integer :comments_count, :default => 0
       t.timestamps
     end
 

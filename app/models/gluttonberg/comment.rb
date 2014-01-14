@@ -4,7 +4,7 @@ module Gluttonberg
 
     attr_accessible :body , :author_name , :author_email , :author_website  , :subscribe_to_comments , :blog_slug
 
-    belongs_to :commentable, :polymorphic => true
+    belongs_to :commentable, :polymorphic => true, :counter_cache => true
     belongs_to :author, :class_name => "Gluttonberg::Member"
 
     before_save :init_moderation
@@ -132,7 +132,7 @@ module Gluttonberg
         self.class._concat(str1, str2)
       end
 
-      
+
       def check_author_details_for_spam
         unless self.spam
           naughty_word_parser = Gluttonberg::Content::DespamilatorFilter::NaughtyWords.new
