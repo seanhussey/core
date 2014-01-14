@@ -26,7 +26,7 @@ module Gluttonberg
                 return redirect_param_array(page.public_path)
               end
             end
-          end
+          end # rails route
         end
 
         @app.call(env)
@@ -38,7 +38,15 @@ module Gluttonberg
         end
 
         def rails_route?(path)
-          Rails.application.routes.recognize_path(path)
+          begin
+            route = Rails.application.routes.recognize_path(path)
+          rescue
+          end
+          if route.blank?
+            false
+          else
+            route[:action] != "error_404"
+          end
         end
 
     end # Rewriter
