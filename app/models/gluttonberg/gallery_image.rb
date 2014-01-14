@@ -6,5 +6,6 @@ module Gluttonberg
     is_drag_tree :scope => :gallery_id , :flat => true , :order => "position"
     attr_accessible :asset_id, :position, :caption, :credits, :link
     validates :asset_id, presence: true
+    MixinManager.load_mixins(self)
   end
 end

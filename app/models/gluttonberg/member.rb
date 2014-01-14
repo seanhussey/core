@@ -18,12 +18,7 @@ module Gluttonberg
     attr_accessor :return_url , :term_and_conditions
     attr_accessor :image_delete
 
-    member_mixins = Rails.configuration.member_mixins
-    unless member_mixins.blank?
-      member_mixins.each do |mixin|
-        include mixin
-      end
-    end
+    MixinManager.load_mixins(self)
 
     include Membership::Import
     include Membership::Export

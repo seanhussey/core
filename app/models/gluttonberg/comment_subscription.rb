@@ -6,6 +6,7 @@ module Gluttonberg
     belongs_to     :article
 
     attr_accessible :article_id , :author_email , :author_name
+    MixinManager.load_mixins(self)
 
     def self.notify_subscribers_of(article , comment)
       subscribers = self.where(:article_id => article.id).all

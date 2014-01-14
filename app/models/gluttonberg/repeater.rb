@@ -7,6 +7,7 @@ module Gluttonberg
     attr_accessible :repeatable, :repeatable_type, :repeatable_id
     attr_accessible :title
     attr_accessible :position
+    MixinManager.load_mixins(self)
 
     def duplicate!(dup_repeatable)
       @cloned_repeater = self.dup

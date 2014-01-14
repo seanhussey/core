@@ -5,6 +5,7 @@ module Gluttonberg
     validates_uniqueness_of :name
     validates_presence_of :name
     attr_accessible :name
+    MixinManager.load_mixins(self)
 
     def images
       data = assets.includes([:asset_type]).all
