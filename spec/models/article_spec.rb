@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 module Gluttonberg
-  describe Member do
+  describe Article do
     before :all do
       @locale = Gluttonberg::Locale.generate_default_locale
       @user = User.new({
@@ -15,7 +15,7 @@ module Gluttonberg
       @user.role = "super_admin"
       @user.save
       @blog = Blog.create({
-        :name => "The Futurist", 
+        :name => "The Futurist",
         :description => "Freerange Blog",
         :user => @user
       })
@@ -31,7 +31,7 @@ module Gluttonberg
       @blog.id.should_not be_nil
       @article.valid?.should == true
       @article.id.should_not be_nil
-      @article.current_localization.should_not be_nil 
+      @article.current_localization.should_not be_nil
 
       @article.title.should == "Gluttonberg"
       @article.excerpt.should == "intro"
@@ -47,9 +47,9 @@ module Gluttonberg
 
     it "moderation_required" do
       @article.moderation_required.should == true #defaults to true
-      
+
       blog2 = Blog.create({
-        :name => "The Futurist", 
+        :name => "The Futurist",
         :description => "Freerange Blog",
         :user => @user,
         :moderation_required => true
@@ -59,7 +59,7 @@ module Gluttonberg
       article2.save
 
       blog3 = Blog.create({
-        :name => "The Futurist", 
+        :name => "The Futurist",
         :description => "Freerange Blog",
         :user => @user,
         :moderation_required => false
@@ -112,19 +112,19 @@ module Gluttonberg
     it "comments spam and blacklisting" do
       member = create_member
       comment = prepare_comment(member)
-      comment.body = "Привет!Хотите заказать одежду на выгодных условиях? Тогда читайте новость  -  <a href=http://satdigital.org.ua/novosty/user/Snogeoren/>пальто больших размеров купить </a>  кеды мужские  <a href=http://ozox.su/>Перейдите на сайт</a>  сумки селин купить  <a href=http://www.lamoda.kiev.ua/>Нажмите для перехода</a>  юбки  ... Успехов Вам! 
+      comment.body = "Привет!Хотите заказать одежду на выгодных условиях? Тогда читайте новость  -  <a href=http://satdigital.org.ua/novosty/user/Snogeoren/>пальто больших размеров купить </a>  кеды мужские  <a href=http://ozox.su/>Перейдите на сайт</a>  сумки селин купить  <a href=http://www.lamoda.kiev.ua/>Нажмите для перехода</a>  юбки  ... Успехов Вам!
 <a href=http://super-kamagra.blog.hr/>Click here</a> - Cheap Generic Kamagra silagra  ::<a href=http://eurovids.us/>Click here</a> - gia porn clips  "
       comment.save
       comment.spam.should == true
 
       comment = prepare_comment(member)
-      comment.body = "cheap [URL=http://louivuittonoutlet.posterous.com/ - louis vuitton outlet online[/URL -  at my estore bbkMjMSY [URL=http://louivuittonoutlet.posterous.com/  -  http://louisvuittonoutlet.tsublog.tsukaeru.net/ [/URL -   
+      comment.body = "cheap [URL=http://louivuittonoutlet.posterous.com/ - louis vuitton outlet online[/URL -  at my estore bbkMjMSY [URL=http://louivuittonoutlet.posterous.com/  -  http://louisvuittonoutlet.tsublog.tsukaeru.net/ [/URL -
 "
       comment.save
       comment.spam.should == true
 
       comment = prepare_comment(member)
-      comment.body = "I'm sure the best for you http://www.chanel-outletbags.com/ - chanel handbags outlet to your friends 
+      comment.body = "I'm sure the best for you http://www.chanel-outletbags.com/ - chanel handbags outlet to your friends
 "
       comment.save
       comment.spam.should == false
