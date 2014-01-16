@@ -104,6 +104,7 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.string :state
       t.boolean :hide_in_nav
       t.datetime :published_at
+      t.integer :children_count, :default => 0
       t.timestamps
     end
 
@@ -192,7 +193,7 @@ class GluttonbergMigration < ActiveRecord::Migration
     end
 
 
-    
+
 
     create_table :tags do |t|
       t.string :name

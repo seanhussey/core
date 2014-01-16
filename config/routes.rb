@@ -36,38 +36,6 @@ Rails.application.routes.draw do
         end
         get "pages_list_for_tinymce" => "pages#pages_list_for_tinymce" , :as => :pages_list_for_tinymce
 
-        scope 'comments', :controller => :comments, :as => :comments do
-          get 'spam_detection_for_all_pending' , :as => :spam_detection_for_all_pending
-          get 'pending', :as => :pending
-          get 'spam' , :as => :spam
-          get 'approved' , :as => :approved
-          get 'rejected' => :rejected , :as => :rejected
-          get '/moderation/:id' => :moderation , :as => :moderation
-          get '/delete/:id' => :delete , :as => :delete
-          delete '/destroy/:id' => :destroy , :as => :destroy
-          get '/block_author/:id' => :block_author , :as => :block_author
-        end
-
-        resources :blogs do
-          get 'delete', :on => :member
-          resources :articles do
-            member do
-              get 'delete'
-              get 'duplicate'
-            end
-            collection do
-              match 'import'
-              get 'export'
-            end
-            resources :comments do
-              member do
-                get 'delete'
-                get 'moderation'
-              end
-            end
-          end
-        end
-
         post "/pages/move(.:format)" => "pages#move_node" , :as=> :page_move
         resources :galleries do
           get 'delete', :on => :member
@@ -148,22 +116,9 @@ Rails.application.routes.draw do
       get "/_public/page" => "pages#show"
       get "/restrict_site_access" => "pages#restrict_site_access" , :as => :restrict_site_access
       get "sitemap" => "pages#sitemap" , :as => :sitemap
-      # Blog Stuff
-
-      scope "(/:locale)" do
-        resources :blogs do
-          resources :articles do
-            resources :comments
-            get "preview"
-          end
-        end
-      end
-
 
       get "/mark_as_flag/:flaggable_type/:flaggable_id" => "flag#new" , :as => :mark_as_flag
       post "/save_mark_as_flag" => "flag#create" , :as => :save_mark_as_flag
-      get "/articles/tag/:tag" => "articles#tag" , :as => :articles_by_tag
-      get "/articles/unsubscribe/:reference" => "articles#unsubscribe" , :as => :unsubscribe_article_comments
       get "(/:locale)/member/login" => "member_sessions#new" , :as => :member_login
       post "(/:locale)/member/login" => "member_sessions#create"  , :as => :member_login
       get "(/:locale)/member/logout" => "member_sessions#destroy", :as => :member_logout

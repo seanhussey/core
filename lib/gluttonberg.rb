@@ -23,6 +23,7 @@ module Gluttonberg
 
   def self.require_gluttonberg_components
     require 'gluttonberg/components'
+    require 'gluttonberg/mixin_manager'
     require 'gluttonberg/content'
     require 'gluttonberg/drag_tree'
     require 'gluttonberg/extensions'

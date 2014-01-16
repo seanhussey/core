@@ -56,47 +56,7 @@ describe Notifier do
     reset_from_email_setting
   end
 
-  it "comment_notification" do
-    set_site_title
-    set_from_email_setting
-    @blog = Gluttonberg::Blog.create({
-      :name => "The Futurist", 
-      :description => "Freerange Blog",
-      :user => @user
-    })
-    create_member
-    @article = create_article
-    comment = create_comment
-    comment
 
-    subscription = Gluttonberg::CommentSubscription.create( {
-      :article_id => @article.id, 
-      :author_email => comment.writer_email,
-      :author_name => comment.writer_name 
-    })
-
-    mail_object = Notifier.comment_notification(subscription , @article , comment)
-    mail_object.to.should eql(["author@test.com"])
-    mail_object.subject.should eql("Re: [Gluttonberg Test] Article")
-    mail_object.from.should eql(["from@test.com"])
-    message_object = mail_object.deliver
-    message_object.class.should == Mail::Message
-
-    
-    mail_object = Notifier.comment_notification_for_admin(@user , @article , comment)
-    mail_object.to.should eql([@user.email])
-    mail_object.subject.should eql("Re: [Gluttonberg Test] Article")
-    mail_object.from.should eql(["from@test.com"])
-    message_object = mail_object.deliver
-    message_object.class.should == Mail::Message
-
-    Gluttonberg::CommentSubscription.notify_subscribers_of(@article , comment)
-
-    reset_site_title
-    reset_from_email_setting
-  end
-
-  
   private
     def set_from_email_setting
       Gluttonberg::Setting.update_settings({"from_email" => "from@test.com"})
@@ -112,24 +72,6 @@ describe Notifier do
 
     def reset_site_title
       Gluttonberg::Setting.update_settings({"title" => ""})
-    end
-
-    def create_article
-      @article_params = {
-        :name => "Article",
-        :author => @user,
-        :user => @user,
-        :blog => @blog
-      }
-      @article_loc_params = {
-        :title => "Article",
-        :excerpt => "intro",
-        :body => "Introduction",
-      }
-      article = Gluttonberg::Article.new(@article_params)
-      article.save
-      article.create_localizations(@article_loc_params)
-      article
     end
 
     def create_member

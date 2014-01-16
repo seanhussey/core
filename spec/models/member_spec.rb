@@ -119,5 +119,10 @@ module Gluttonberg
 
     end
 
+    it "extend model" do
+      valid_member = Member.new(@params)
+      valid_member.my_name.should == "First - "
+    end
+
   end
 end

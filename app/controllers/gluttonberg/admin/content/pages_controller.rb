@@ -11,7 +11,7 @@ module Gluttonberg
         record_history :@page
 
         def index
-          @pages = Page.where(:parent_id => nil).includes(:user, :localizations, :collapsed_pages).order('position').all
+          @pages = Page.includes(:user, :localizations, :collapsed_pages).order('position').all
         end
 
         def show
@@ -78,9 +78,9 @@ module Gluttonberg
           @pages = Page.published.where("not(description_name = 'top_level_page')").order('position' )
 
           @articles_count = 0
-          if Blog.table_exists?
-            @articles_count = Article.published.count
-            @blogs = Blog.published.order("name ASC")
+          if Gluttonberg.constants.include?(:Blog)
+            @articles_count = Gluttonberg::Blog::Article.published.count
+            @blogs = Gluttonberg::Blog::Weblog.published.order("name ASC")
           end
 
           render :layout => false

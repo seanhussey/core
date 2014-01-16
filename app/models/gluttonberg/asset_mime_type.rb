@@ -4,5 +4,6 @@ module Gluttonberg
       belongs_to :asset_type, :class_name => "AssetType"
       validates_uniqueness_of :mime_type
       attr_accessible :mime_type, :asset_type_id
+      MixinManager.load_mixins(self)
   end
 end

@@ -22,6 +22,8 @@ module Gluttonberg
       has_many klass.association_name, :class_name => klass.name, :dependent => :destroy
     end
 
+    MixinManager.load_mixins(self)
+
     has_many :collapsed_pages, :class_name => "Gluttonberg::CollapsedPage", :dependent => :destroy
 
     validates_presence_of :name , :description_name
@@ -30,7 +32,7 @@ module Gluttonberg
 
     after_save   :check_for_home_update
 
-    is_drag_tree :scope => :parent_id, :flat => false , :order => "position"
+    is_drag_tree :scope => :parent_id, :flat => false , :order => "position", :counter_cache => :children_count
 
     attr_accessor :current_localization, :locale_id, :paths_need_recaching
 
@@ -217,6 +219,19 @@ module Gluttonberg
       !self.collapsed_pages.find_all{|page| page.user_id == current_user.id}.blank?
     end
 
+    def self.fix_children_count
+      self.all.each do |page|
+        self.reset_counters(page.id, :children)
+      end
+    end
+
+    def number_of_children
+      if self.respond_to?(:children_count)
+        self.children_count
+      else
+        self.children.count
+      end
+    end
 
     private
 

@@ -34,14 +34,15 @@ module Gluttonberg
 
       # Writes out a row for each page and then for each page's children,
       # iterating down through the heirarchy.
-      def page_table_rows(pages, output = "", inset = 0 , row = 0)
-        pages.each do |page|
+      def page_table_rows(pages, parent_id=nil, output = "", inset = 0 , row = 0)
+        filtered_pages = pages.find_all{|page| page.parent_id == parent_id}
+        filtered_pages.each do |page|
           row += 1
           output << "<li class='dd-item #{page.collapsed?(current_user) ? 'page-collapsed' : ''}' data-id='#{page.id}' >"
             output << render( :partial => "gluttonberg/admin/content/pages/row", :locals => { :page => page, :inset => inset , :row => row })
-            if page.children.count > 0
+            if page.number_of_children > 0
               output << "<ol class='dd-list'>"
-                page_table_rows(page.children.includes(:user, :localizations, :collapsed_pages), output, inset + 1 , row)
+                page_table_rows(pages, page.id, output, inset + 1 , row)
               output << "</ol>"
             end
           output << "</li>"
@@ -138,6 +139,15 @@ module Gluttonberg
         auto_save = AutoSave.where(:auto_save_able_id => object.id, :auto_save_able_type => object.class.name).first
         if !auto_save.blank? && auto_save.updated_at > object.updated_at
           render :partial => "/gluttonberg/admin/shared/auto_save_version" , :locals => {:object => object} , :formats => [:html]
+        end
+      end
+
+      def previous_version_warning(versions , selected_version_num)
+        if !versions.blank? && !selected_version_num.blank?
+          versions = versions.sort{|x,y| y.version <=> x.version}
+          if selected_version_num.to_i < versions.first.version
+            render :partial => "/gluttonberg/admin/shared/previous_version_warning" , :locals => {:selected_version_num => selected_version_num} , :formats => [:html]
+          end
         end
       end
 

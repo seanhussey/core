@@ -5,7 +5,7 @@
       %span.caret
     %ul.dropdown-menu
       - collection.each do |c|
-        %li
+        %li{:class => "#{c[1].to_s == selected.to_s ? 'active' : ''}" }
           = link_to c[0] , "?version=#{c[1]}" , :class => "#{c[1].to_s == selected.to_s ? 'active' : '' }"
 .clear
 %br/

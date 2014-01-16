@@ -81,12 +81,6 @@ module Gluttonberg
           end
         end
 
-        def is_blog_enabled
-          unless Gluttonberg::Comment.table_exists? == true
-            raise ActiveRecord::RecordNotFound
-          end
-        end
-
         def store_location
           @page = env['GLUTTONBERG.PAGE']
           if @page.blank?

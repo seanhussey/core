@@ -45,6 +45,11 @@ namespace :gluttonberg do
     Gluttonberg::Page.repair_pages_structure
   end
 
+  desc "Update page fix_children_count"
+  task :fix_page_children_count => :environment do
+    Gluttonberg::Page.fix_children_count
+  end
+
   desc "Copies missing assets from Railties (e.g. plugins, engines). You can specify Railties to use with FROM=railtie1,railtie2"
   task :copy_assets => :rails_env do
     begin

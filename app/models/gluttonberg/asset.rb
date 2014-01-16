@@ -10,12 +10,7 @@ module Gluttonberg
     acts_as_taggable_on :locations , :characters , :themes, :photographers
 
     include Library::AttachmentMixin
-    asset_mixins = Rails.configuration.asset_mixins
-    unless asset_mixins.blank?
-      asset_mixins.each do |mixin|
-        include mixin
-      end
-    end
+    MixinManager.load_mixins(self)
 
     has_and_belongs_to_many :asset_collections     , :join_table => "gb_asset_collections_assets"
     belongs_to  :asset_type

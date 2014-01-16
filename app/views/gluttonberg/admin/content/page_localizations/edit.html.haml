@@ -13,4 +13,6 @@
 
     .row-fluid
       = auto_save(@page_localization)
+      - unless @page_localization.contents.blank?
+        = previous_version_warning(@page_localization.contents.first.versions , @version)
       = render :partial => "form" , :locals => { :url => admin_page_page_localization_path( :page_id => params[:page_id], :id => @page_localization) }
