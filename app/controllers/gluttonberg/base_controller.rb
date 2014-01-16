@@ -7,7 +7,7 @@ module Gluttonberg
       rescue_from ActionController::RoutingError, :with => :not_found
       rescue_from CanCan::AccessDenied, :with => :access_denied
     end
-    
+
     protected
       # Below is all the required methods for backend user authentication
       def current_user_session
@@ -36,12 +36,6 @@ module Gluttonberg
 
       def require_super_admin_user
         _require_x_user(:super_admin?)
-      end
-
-      def is_blog_enabled
-        unless Gluttonberg::Comment.table_exists? == true
-          raise CanCan::AccessDenied
-        end
       end
 
       def redirect_back_or_default(default)

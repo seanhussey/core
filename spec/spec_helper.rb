@@ -34,7 +34,7 @@ def clean_all_data
   Gluttonberg::Locale.all.each{|locale| locale.destroy}
 
   Gluttonberg::Page.all.each{|page| page.destroy}
-  
+
   Gluttonberg::Setting.all.each{|setting| setting.destroy}
 
   Gluttonberg::Asset.all.each{|asset| asset.destroy}
@@ -44,12 +44,8 @@ def clean_all_data
 
   User.all.each{|user| user.destroy}
   Gluttonberg::Member.all.each{|obj| obj.destroy}
-  Gluttonberg::Blog.all.each{|obj| obj.destroy}
-  Gluttonberg::Article.all.each{|obj| obj.destroy}
-  Gluttonberg::Comment.all.each{|obj| obj.destroy}
   StaffProfile.all.each{|staff| staff.destroy}
   Gluttonberg::Gallery.all.each{|obj| obj.destroy}
-  Gluttonberg::CommentSubscription.all.each{|obj| obj.destroy}
   Gluttonberg::Feed.all.each{|obj| obj.destroy}
 end
 

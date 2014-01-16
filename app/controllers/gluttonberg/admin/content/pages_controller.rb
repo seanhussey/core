@@ -78,7 +78,7 @@ module Gluttonberg
           @pages = Page.published.where("not(description_name = 'top_level_page')").order('position' )
 
           @articles_count = 0
-          if Blog.table_exists?
+          if Gluttonberg.constants.include?(:Blog)
             @articles_count = Article.published.count
             @blogs = Blog.published.order("name ASC")
           end
