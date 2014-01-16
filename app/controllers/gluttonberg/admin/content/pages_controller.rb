@@ -79,8 +79,8 @@ module Gluttonberg
 
           @articles_count = 0
           if Gluttonberg.constants.include?(:Blog)
-            @articles_count = Article.published.count
-            @blogs = Blog.published.order("name ASC")
+            @articles_count = Gluttonberg::Blog::Article.published.count
+            @blogs = Gluttonberg::Blog::Weblog.published.order("name ASC")
           end
 
           render :layout => false
