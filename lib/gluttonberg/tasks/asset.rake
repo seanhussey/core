@@ -48,12 +48,15 @@ namespace :gluttonberg do
 
     desc "Migrate assets from public/user_assets folder to S3"
     task :migrate_assets_to_s3 => :environment do
+      class S3Storage
+        include Gluttonberg::Library::Storage::S3
+      end
       Dir.entries("public/user_assets").each do |asset_folder|
         if !asset_folder.include?(".DS_Store") && File.directory?("public/user_assets/" + asset_folder)
           Dir.entries("public/user_assets/"+asset_folder).each do |asset_file|
             if !asset_file.include?(".DS_Store") && !File.directory?("public/user_assets/" + asset_folder+"/"+asset_file)
               begin
-                Gluttonberg::Library::Storage::S3::ClassMethods.migrate_file_to_s3(asset_folder , asset_file)
+                S3Storage.migrate_file_to_s3(asset_folder , asset_file)
               rescue => e
                 puts "Error: #{e.message}"
               end

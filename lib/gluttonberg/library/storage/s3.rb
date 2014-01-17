@@ -38,9 +38,9 @@ module Gluttonberg
             s3_server_url = self.s3_server_url
             s3_bucket = self.s3_bucket_name
             if !key_id.blank? && !key_val.blank? && !s3_server_url.blank? && !s3_bucket.blank?
-              s3 = AWS::S3.new({ 
-                :access_key_id => key_id, 
-                :secret_access_key => key_val, 
+              s3 = AWS::S3.new({
+                :access_key_id => key_id,
+                :secret_access_key => key_val,
                 :server => s3_server_url
               })
               bucket = s3.buckets[s3_bucket]
@@ -66,16 +66,20 @@ module Gluttonberg
 
           def upload_file_to(asset, bucket_key, mime_type, local_file)
             options = {
-              :expires => (Time.now+1.years).rfc2822, 
-              :acl => :public_read 
+              :expires => (Time.now+1.years).rfc2822,
+              :acl => :public_read
             }
             mime_type = asset.mime_type if mime_type.blank?
             options[:content_type] = mime_type unless mime_type.blank?
-            response = bucket_key.write(File.open(local_file), options)
+            response = bucket_key.write(File.open(File.join(Rails.root,local_file)), options)
             puts "Copied"
-          end 
+          end
+
+          # module_function :storage_setup, :s3_server_url, :s3_bucket_name, :s3_server_key_id, :s3_server_access_key
+          # module_function :bucket_handle, :upload_file_to, :migrate_file_to_s3
 
         end
+
 
         # InstanceMethods
 
@@ -162,7 +166,7 @@ module Gluttonberg
 
         # This method is used for delayed job
         def copy_audios_to_s3
-          copy_file_to_s3(self.file_name)            
+          copy_file_to_s3(self.file_name)
         end
 
         # TODO
@@ -186,7 +190,7 @@ module Gluttonberg
           _download_file_from_s3(self.original_file_on_disk, self.tmp_original_file_on_disk)
         end
 
-        private 
+        private
           def _download_file_from_s3(src, dest)
             FileUtils.mkdir(self.tmp_directory) unless File.exists?(self.tmp_directory)
             bucket = bucket_handle

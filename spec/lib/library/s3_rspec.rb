@@ -1,5 +1,7 @@
 require 'spec_helper'
 
+# remember to run fakes3 https://github.com/jubos/fake-s3
+# run it on ENGINE_RAILS_ROOT,"spec/dummy/tmp/fakes3_root
 module Gluttonberg
   describe Library::Storage::S3 do
 
@@ -16,9 +18,9 @@ module Gluttonberg
       Setting.update_settings({"s3_server_url" => "localhost:4567"})
       Setting.update_settings({"s3_bucket" => "local-bucket"})
 
-      @s3_bucket_handle = AWS::S3.new({ 
-        :access_key_id => Setting.get_setting("s3_key_id"), 
-        :secret_access_key => Setting.get_setting("s3_key_id"), 
+      @s3_bucket_handle = AWS::S3.new({
+        :access_key_id => Setting.get_setting("s3_key_id"),
+        :secret_access_key => Setting.get_setting("s3_key_id"),
         :s3_endpoint => 'local.s3.endpoint',
         :s3_port => 4567,
         :use_ssl => false
@@ -60,7 +62,7 @@ module Gluttonberg
       asset.bucket_handle = @s3_bucket_handle
       status = asset.save
       status.should == true
-      
+
       temp_asset_directory = File.join(S3_DUMMY_ROOT, asset.asset_hash)
       temp_file_path = File.join(temp_asset_directory, asset.file_name)
       File.exists?(temp_file_path).should == true
