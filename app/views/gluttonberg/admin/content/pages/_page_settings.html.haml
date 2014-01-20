@@ -8,10 +8,7 @@
   Page Template
 %fieldset
   %p
-    - if( action_name == "new" )
-      = f.select(:description_name, page_description_options , { :prompt => "Select Page Template" } , {:class => "required chzn-select"} ) 
-    - else
-      = f.select(:description_name, page_description_options , { :prompt => "Select Page Template" } , {:disabled => "disabled", :class => "chzn-select"})  
+    = f.select(:description_name, page_description_options , { :prompt => "Select Page Template" } , {:class => "required chzn-select"} ) 
 
 - if Gluttonberg::Member.enable_members == true && action_name != "new"
   %fieldset
