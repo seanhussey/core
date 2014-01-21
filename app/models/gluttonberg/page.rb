@@ -185,8 +185,10 @@ module Gluttonberg
     # file will be created in host appliation/app/views/pages/template_name.locale-slug.html.haml
     def create_default_template_file
       unless self.description.redirection_required? || self.description.rewrite_required?
+        pages_root = File.join(Rails.root, "app", "views" , "pages")
+        FileUtils.mkdir(pages_root) unless File.exists?(pages_root)
         self.localizations.each do |page_localization|
-          file_path = File.join(Rails.root, "app", "views" , "pages" , "#{self.view}.#{page_localization.locale.slug}.html.haml"  )
+          file_path = File.join(pages_root , "#{self.view}.#{page_localization.locale.slug}.html.haml"  )
           unless File.exists?(file_path)
             file = File.new(file_path, "w")
 
