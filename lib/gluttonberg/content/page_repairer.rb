@@ -64,7 +64,7 @@ module Gluttonberg
         if old_description && new_description
           used_sections = []
           new_description.sections.each do |section_name,  section_info|
-            matched_type_section = old_description.sections.find_all{|old_section_name, old_section_info| !used_sections.include?(old_section_name) &&  old_section_name != section_name && old_section_info[:type] == section_info[:type] }.first
+            matched_type_section = old_description.sections.find_all{|old_section_name, old_section_info| !used_sections.include?(old_section_name) &&  old_section_name == section_name && old_section_info[:type] == section_info[:type] }.first
             association = page.send(section_info[:type].to_s.pluralize)
             unless matched_type_section.blank?
               content = association.where(:section_name => matched_type_section.first.to_s).first
