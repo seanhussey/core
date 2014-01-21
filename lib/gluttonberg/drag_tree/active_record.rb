@@ -9,6 +9,7 @@ module Gluttonberg
           self.send(:include, Gluttonberg::DragTree::ActiveRecord::ModelHelpersClassMethods)
           unless options[:flat]
             acts_as_tree options
+            self.is_flat_drag_tree = false
           else
             self.make_flat_drag_tree
           end
@@ -18,8 +19,7 @@ module Gluttonberg
         def repair_list(list)
           unless list.blank?
             list.each_with_index do |sibling , index|
-              sibling.position = index
-              sibling.save
+              sibling.update_attributes(:position => index)
             end
           end
         end
@@ -33,7 +33,7 @@ module Gluttonberg
             id = id.to_i
             sorted_elements << elements.find{ |x| x.id == id }
           end
-          sorted_elements
+          sorted_elements.blank? ? sorted_elements : sorted_elements.uniq
         end
 
       end #module ClassMethods
@@ -43,7 +43,7 @@ module Gluttonberg
 
         included do
           cattr_accessor :is_flat_drag_tree, :drag_tree_scope_column
-          before_save :set_position
+          before_validation :set_position
         end
 
         module ClassMethods
@@ -61,18 +61,20 @@ module Gluttonberg
 
           def repair_drag_tree
             if self.drag_tree_scope_column.blank?
-              repair_list(self.order("position ASC").all)
+              repair_list(self.all_sorted.all)
             else
-              unique_scope_ids = self.select(self.drag_tree_scope_column).uniq
+              unique_scope_ids = self.select(self.drag_tree_scope_column).uniq.all
               unique_scope_ids.each do |scope_id|
                 scope_id = scope_id.send(self.drag_tree_scope_column)
-                items = self.where(self.drag_tree_scope_column => scope_id).order("position ASC").all
+                items = self.all_sorted(self.drag_tree_scope_column => scope_id).all
                 repair_list(items)
               end
             end
           end
           def all_sorted(query={})
-            where(query).order("position asc")
+            objs = self.order("position asc")
+            objs = objs.where(query) unless query.blank?
+            objs
           end
         end #ClassMethods
       end #ModelHelpersClassMethods
@@ -82,12 +84,8 @@ module Gluttonberg
           if self.class.drag_tree_scope_column.blank?
             self.position = self.class.count + 1
           else
-            unique_scope_ids = self.class.select(self.class.drag_tree_scope_column).uniq
-            unique_scope_ids.each do |scope_id|
-              scope_id = scope_id.send(self.class.drag_tree_scope_column)
-              items_count = self.class.where(self.class.drag_tree_scope_column => scope_id).count
-              self.position = items_count + (self.new_record? ? 0 : -1)
-            end
+            items_count = self.class.where(self.class.drag_tree_scope_column => self.parent_id).count
+            self.position = items_count + (self.new_record? ? 0 : -1)
           end
         end
       end
