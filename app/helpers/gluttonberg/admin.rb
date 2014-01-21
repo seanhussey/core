@@ -36,6 +36,9 @@ module Gluttonberg
       # iterating down through the heirarchy.
       def page_table_rows(pages, parent_id=nil, output = "", inset = 0 , row = 0)
         filtered_pages = pages.find_all{|page| page.parent_id == parent_id}
+        filtered_pages.each do |page|
+          page.position = filtered_pages.length + 1 if page.position.blank?
+        end
         filtered_pages = filtered_pages.sort{|x,y| x.position <=> y.position} unless filtered_pages.blank?
         filtered_pages.each do |page|
           row += 1
