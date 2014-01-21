@@ -6,6 +6,15 @@
       - if @has_deletable_settings
         %th.controls Controls
   %tbody
+    - unless @multisite
+      %tr{ :class => ""}
+        %td.first_column
+          Select Home Page
+        %td.second_column
+          = select_tag :home , options_from_collection_for_select(@pages, "id", "name" , selected = @current_home_page_id.to_s )  ,  { :include_blank => true , :class => "home_page_setting_dropdown"  , :rel => update_home_admin_pages_path  }
+          = image_tag("/assets/gb_spinner.gif" , :id => "progress_home_page" , :style => "display:none")
+        - if @has_deletable_settings
+          %td.controls
     - for setting in settings
       %tr{ :class => "#{cycle("even", "odd")}"}
         %td.first_column{ :style => 'width:220px' }
