@@ -810,6 +810,7 @@ function initNestable(){
     $saveButton.attr('disabled', 'disabled');
     $listNestable = $list.nestable({
       /* config options */
+      maxDepth: 10
     }).on("change", function(){
       if(doesListReallyChanged($list) ){
         enableButton($saveButton);
