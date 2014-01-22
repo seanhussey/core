@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-
   mount_at = Gluttonberg::Engine.config.mount_at
 
   scope :module => 'gluttonberg' do
@@ -14,7 +13,6 @@ Rails.application.routes.draw do
 
         get "/flagged_contents" => "flag#index" , :as => :flagged_contents
         get '/flagged_contents/moderation/:id/:moderation' => "flag#moderation", :as => :flagged_contents_moderation
-
 
         resources :pages do
           member do
@@ -46,7 +44,6 @@ Rails.application.routes.draw do
 
       # Settings
       scope :module => 'settings' do
-        get 'settings' => "main#index",      :as => :settings
         get 'history' => "global_history#index",      :as => :global_history
         resources :locales do
           get 'delete', :on => :member
@@ -64,6 +61,10 @@ Rails.application.routes.draw do
           get 'delete', :on => :member
         end
         post "/stylesheets/move(.:format)" => "stylesheets#move_node" , :as=> :stylesheet_move
+
+        resources :embeds do
+          get 'delete', :on => :member
+        end
       end
 
       namespace :membership do

@@ -90,5 +90,11 @@ module Gluttonberg
         end
       end
 
+      def embed_shortcode(args)
+        if args.length == 1
+          gallery_ul(args.first, :people_thumbnail, :lightbox_image, {:class => "gallery-ul-class"}, {:class => "gallery-li-class"}, {:class => "gallery-a-class"})
+        end
+      end
+
     end # Public
 end # Gluttonberg

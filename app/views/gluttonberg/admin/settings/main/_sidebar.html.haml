@@ -9,6 +9,8 @@
       - if can? :manage, Gluttonberg::Locale
         - if Gluttonberg.localized?
           %li= active_link_to("Locales", admin_locales_path , :id => "localesNav" , :title => "Locales")
+      - if can? :manage , Gluttonberg::Embed
+        %li= active_link_to("Embeds", admin_embeds_path , :title => "Embed")
 
       - if can? :manage, Gluttonberg::Setting
         %li= active_link_to("Configuration", admin_configurations_path , :id => "metadataNav"  , :title => "Configurations")
