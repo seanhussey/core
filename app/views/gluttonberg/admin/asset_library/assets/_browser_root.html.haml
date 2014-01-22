@@ -40,10 +40,7 @@
     - unless @collections.empty?
       .accordion#accordion_for_collections
         - for collection in @collections
-          - unless @category.blank? || @category.asset_type_ids.blank?
-            - assets = collection.assets.where({:asset_type_id => @category.asset_type_ids })
-          - else
-            - assets = collection.assets
+          - assets = Gluttonberg::AssetCategory.find_assets_by_category_and_collection(@category_filter, collection)
           - if assets.count > 0
             .accordion-group
               .accordion-heading
