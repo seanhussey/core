@@ -17,8 +17,15 @@ module Gluttonberg
           page_attributes = params["gluttonberg_page_localization"].delete(:page)
 
           if @page_localization.update_attributes(params["gluttonberg_page_localization"]) || !@page_localization.changed?
+            old_description_name = @page_localization.page.description_name
+            new_description_name = page_attributes[:description_name]
 
-            @page_localization.page.update_attributes(page_attributes)
+            if(old_description_name != new_description_name)
+              PageRepairer.change_page_description(@page_localization.page, old_description_name, new_description_name, page_attributes)
+            else
+              @page_localization.page.update_attributes(page_attributes)
+            end
+
             update_publish_state
 
             flash[:notice] = "The page was successfully updated."

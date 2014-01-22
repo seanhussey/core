@@ -27,7 +27,7 @@ module Gluttonberg
       PageDescription.clear!
       PageDescription.all.length.should == 0
       PageDescription.setup
-      PageDescription.all.length.should == 6
+      PageDescription.all.length.should == 7
     end
     
     it "behaviour(name)" do
@@ -39,7 +39,7 @@ module Gluttonberg
       redirect_to_descriptions.length.should == 2
 
       redirect_to_descriptions = PageDescription.behaviour(:default) 
-      redirect_to_descriptions.length.should == 3
+      redirect_to_descriptions.length.should == 4
     end
 
     it "names_for()" do
@@ -53,7 +53,7 @@ module Gluttonberg
       redirect_to_descriptions.include?(:redirect_to_path).should == true
 
       redirect_to_descriptions = PageDescription.names_for(:default) 
-      redirect_to_descriptions.length.should == 3
+      redirect_to_descriptions.length.should == 4
     end
 
     it "contain sections" do

@@ -59,6 +59,7 @@ module Gluttonberg
         contents_data = Gluttonberg::Content.localization_associations.inject([]) do |memo, assoc|
           memo += send(assoc).all
         end
+        contents_data = contents_data.delete_if {|a| a.section_position.blank? }
         contents_data = contents_data.sort{|a,b| a.section_position <=> b.section_position}
       end
       @localized_contents
@@ -71,6 +72,7 @@ module Gluttonberg
         contents_data = Gluttonberg::Content.non_localized_associations.inject([]) do |memo, assoc|
           memo += page.send(assoc).all
         end
+        contents_data = contents_data.delete_if {|a| a.section_position.blank? }
         contents_data = contents_data.sort{|a,b| a.section_position <=> b.section_position}
       end
       @non_localized_contents

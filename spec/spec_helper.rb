@@ -47,6 +47,7 @@ def clean_all_data
   StaffProfile.all.each{|staff| staff.destroy}
   Gluttonberg::Gallery.all.each{|obj| obj.destroy}
   Gluttonberg::Feed.all.each{|obj| obj.destroy}
+  FileUtils.rm_rf(Dir.glob("#{Rails.root}/app/views/pages/*"))
 end
 
 def prepare_content_data(contents, asset)
