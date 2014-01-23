@@ -114,6 +114,7 @@ namespace :gluttonberg do
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "bootstrap.min.js"), File.join(Rails.root, "app", "assets", "javascripts", "bootstrap.min.js"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "application_helper.rb"), File.join(Rails.root, "app", "helpers", "application_helper.rb"))
       FileUtils.rm(File.join(Rails.root, "public", "index.html"))
+      FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "500.html"), File.join(Rails.root, "public", "500.html"))
       return true
     rescue => e
       line.say("<%= color('Failure!', RED) %>")
