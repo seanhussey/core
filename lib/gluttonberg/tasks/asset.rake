@@ -7,7 +7,7 @@ namespace :gluttonberg do
 
     desc "Regenerate all thumbnails for all assets"
     task :create_thumbnails => :environment do
-      category = Gluttonberg::AssetCategory.find( :first , :conditions =>{  :name => "image" } )
+      category = Gluttonberg::AssetCategory.where{ :name => "image" }.first
       if category
         assets = category.assets
         assets.each do |asset|
