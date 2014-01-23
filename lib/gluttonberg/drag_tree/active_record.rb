@@ -84,7 +84,7 @@ module Gluttonberg
           if self.class.drag_tree_scope_column.blank?
             self.position = self.class.count + 1
           else
-            items_count = self.class.where(self.class.drag_tree_scope_column => self.parent_id).count
+            items_count = self.class.where(self.class.drag_tree_scope_column => self.send(self.class.drag_tree_scope_column)).count
             self.position = items_count + (self.new_record? ? 0 : -1)
           end
         end
