@@ -116,9 +116,9 @@ namespace :gluttonberg do
       FileUtils.rm(File.join(Rails.root, "public", "index.html"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "500.html"), File.join(Rails.root, "public", "500.html"))
 
-      FileUtils.mkdir_p(File.join(Rails.root, "app", "views", "gluttonberg", "public", "exceptions"))
-      FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "not_found.html.haml"), File.join(Rails.root, "app", "views", "gluttonberg", "public", "exceptions", "not_found.html.haml"))
-      FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "access_denied.html.haml"), File.join(Rails.root, "app", "views", "gluttonberg", "public", "exceptions", "access_denied.html.haml"))
+      FileUtils.mkdir_p(File.join(Rails.root, "app", "views", "exceptions"))
+      FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "not_found.html.haml"), File.join(Rails.root, "app", "views", "exceptions", "not_found.html.haml"))
+      FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "access_denied.html.haml"), File.join(Rails.root, "app", "views", "exceptions", "access_denied.html.haml"))
       return true
     rescue => e
       line.say("<%= color('Failure!', RED) %>")
