@@ -77,8 +77,11 @@ module Gluttonberg
             shortcode_tokens = shortcode.split(" ")
             shortcode_method = "#{shortcode_tokens.first}_shortcode"
             shortcode_args = shortcode_tokens.length > 1 ? shortcode_tokens[1..-1] : []
+            embed_obj = Embed.where(:shortcode => shortcode_tokens.first).first 
 
-            if respond_to?(shortcode_method)
+            if !embed_obj.blank?
+              embed_shortcode(embed_obj)
+            elsif respond_to?(shortcode_method)
               send(shortcode_method, shortcode_args)
             else
               match
@@ -90,9 +93,9 @@ module Gluttonberg
         end
       end
 
-      def embed_shortcode(args)
-        if args.length == 1
-          gallery_ul(args.first, :people_thumbnail, :lightbox_image, {:class => "gallery-ul-class"}, {:class => "gallery-li-class"}, {:class => "gallery-a-class"})
+      def embed_shortcode(embed_obj)
+        unless embed_obj.blank? || embed_obj.body.blank?
+          embed_obj.body.html_safe
         end
       end
 

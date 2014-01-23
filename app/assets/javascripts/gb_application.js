@@ -17,6 +17,7 @@ $(document).ready(function() {
   AutoSave.init();
   $(".chzn-select").chosen();
   initPreview();
+  shortcodeNameValidation();
 });
 
 
@@ -1110,4 +1111,16 @@ function initPreview(){
     });
     e.preventDefault();
   })
+}
+
+function shortcodeNameValidation() {
+  var regex = /[\!\*'"″′‟‛„‚”“”˝\(\);:.@&=+$,\/?%#\[\]]/gim;
+  var field = $("#gluttonberg_embed_shortcode");
+  
+  field.bind("blur", function() {
+    field.val(field.val().toLowerCase().replace(/\s/gim, '-').replace(regex, ''));
+  });
+  field.bind("keyup", function() {
+    field.val(field.val().toLowerCase().replace(/\s/gim, '-').replace(regex, ''));
+  });
 }
