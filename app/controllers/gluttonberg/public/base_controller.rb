@@ -103,10 +103,6 @@ module Gluttonberg
           render :layout => "bare" , :template => 'gluttonberg/public/exceptions/access_denied' , :status => 403, :handlers => [:haml], :formats => [:html]
         end
 
-        def internal_server_error
-          render :layout => "bare" , :template => 'gluttonberg/public/exceptions/internal_server_error' , :status => 500, :handlers => [:haml], :formats => [:html]
-        end
-
         def current_localization_slug
           if @locale
             @locale.slug

@@ -104,10 +104,6 @@ module Gluttonberg
           render :layout => "bare" , :template => 'gluttonberg/admin/exceptions/access_denied' , :status => 403, :handlers => [:haml], :formats => [:html]
         end
 
-        def internal_server_error
-          render :layout => "bare" , :template => 'gluttonberg/admin/exceptions/internal_server_error' , :status => 500, :handlers => [:haml], :formats => [:html]
-        end
-
       private
         def generic_create_or_update(object, opts)
           message = object.new_record? ? "created" : "updated"
