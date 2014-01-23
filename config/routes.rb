@@ -64,6 +64,7 @@ Rails.application.routes.draw do
 
         resources :embeds do
           get 'delete', :on => :member
+          get 'list-for-redactor' => :list_for_redactor, :on => :collection
         end
       end
 

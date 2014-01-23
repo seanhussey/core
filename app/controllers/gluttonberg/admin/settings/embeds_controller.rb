@@ -53,6 +53,11 @@ module Gluttonberg
           })
         end
 
+        def list_for_redactor
+          @embeds = Embed.order("created_at ASC")
+          render :layout => false
+        end
+
         protected
 
           def find_embed

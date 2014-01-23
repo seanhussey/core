@@ -77,7 +77,7 @@ module Gluttonberg
             shortcode_tokens = shortcode.split(" ")
             shortcode_method = "#{shortcode_tokens.first}_shortcode"
             shortcode_args = shortcode_tokens.length > 1 ? shortcode_tokens[1..-1] : []
-            embed_obj = Embed.where(:shortcode => shortcode_tokens.first).first 
+            embed_obj = Gluttonberg::Embed.where(:shortcode => shortcode_tokens.first).first 
 
             if !embed_obj.blank?
               embed_shortcode(embed_obj)
