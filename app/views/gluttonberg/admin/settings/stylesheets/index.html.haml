@@ -43,6 +43,6 @@
                   = stylesheet.version
                 %td.controls
                   - if can? :manage , Gluttonberg::Stylesheet
-                    = link_to "Edit", edit_admin_stylesheet_path(stylesheet)
+                    = link_to "Edit", edit_admin_stylesheet_path(stylesheet), :class => "btn"
                     - if can? :destroy , Gluttonberg::Stylesheet
-                      = link_to "Delete", delete_admin_stylesheet_path(stylesheet)
+                      = link_to "Delete", delete_admin_stylesheet_path(stylesheet), :class => "btn btn-danger"

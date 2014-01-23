@@ -48,6 +48,8 @@ def clean_all_data
   Gluttonberg::Gallery.all.each{|obj| obj.destroy}
   Gluttonberg::Feed.all.each{|obj| obj.destroy}
   FileUtils.rm_rf(Dir.glob("#{Rails.root}/app/views/pages/*"))
+
+  Gluttonberg::Embed.all.each{|obj| obj.destroy}
 end
 
 def prepare_content_data(contents, asset)

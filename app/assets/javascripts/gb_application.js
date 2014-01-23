@@ -17,6 +17,7 @@ $(document).ready(function() {
   AutoSave.init();
   $(".chzn-select").chosen();
   initPreview();
+  shortcodeNameValidation();
 });
 
 
@@ -676,7 +677,7 @@ function enableRedactor(selector, _linkCount) {
         'outdent', 'indent', '|', 'video',
         'table', '|', 'html', '|', 'fullscreen'
       ],
-      plugins: ['asset_library_image', 'gluttonberg_pages', 'fullscreen'],
+      plugins: ['asset_library_image', 'gluttonberg_embeds', 'gluttonberg_pages', 'fullscreen'],
       keyupCallback : function(){
         WarnNavigateAway.changeEventHandler();
         AutoSave.changeEventHandler();
@@ -810,6 +811,7 @@ function initNestable(){
     $saveButton.attr('disabled', 'disabled');
     $listNestable = $list.nestable({
       /* config options */
+      maxDepth: 10
     }).on("change", function(){
       if(doesListReallyChanged($list) ){
         enableButton($saveButton);
@@ -1109,4 +1111,16 @@ function initPreview(){
     });
     e.preventDefault();
   })
+}
+
+function shortcodeNameValidation() {
+  var regex = /[\!\*'"″′‟‛„‚”“”˝\(\);:.@&=+$,\/?%#\[\]]/gim;
+  var field = $("#gluttonberg_embed_shortcode");
+  
+  field.bind("blur", function() {
+    field.val(field.val().toLowerCase().replace(/\s/gim, '-').replace(regex, ''));
+  });
+  field.bind("keyup", function() {
+    field.val(field.val().toLowerCase().replace(/\s/gim, '-').replace(regex, ''));
+  });
 }

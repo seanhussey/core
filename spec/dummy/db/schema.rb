@@ -452,4 +452,11 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.timestamps
   end
 
+  create_table :gb_embeds do |t|
+    t.string :title
+    t.string :shortcode
+    t.text :body
+    t.timestamps
+  end
+
 end

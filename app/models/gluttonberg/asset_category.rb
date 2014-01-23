@@ -42,11 +42,6 @@ module Gluttonberg
         if req_categories.blank?
           raise ActiveRecord::RecordNotFound
         else
-          # assets = []
-          # req_categories.each do |req_category|
-          #   assets << req_category.assets.includes(:asset_type).all
-          # end
-          # assets = assets.sort{|x,y| y <=> x}
           asset_types = []
           req_categories.each do |req_category|
             asset_types << req_category.asset_types.all.collect{|type| type.id}
@@ -61,8 +56,17 @@ module Gluttonberg
       if category_name == "all" || category_name.blank? then
         collection.assets
       else
-        category = AssetCategory.where(:name => category_name).first
-        collection.assets.where({:asset_type_id => category.asset_type_ids }) unless category.blank? || category.asset_type_ids.blank?
+        req_categories = AssetCategory.where(:name => category_name.split(",")).all
+        # if category is not found then raise exception
+        if req_categories.blank?
+          raise ActiveRecord::RecordNotFound
+        else
+          asset_types = []
+          req_categories.each do |req_category|
+            asset_types << req_category.asset_types.all.collect{|type| type.id}
+          end
+          collection.assets.where({:asset_type_id => asset_types }) unless asset_types.blank?
+        end
       end
     end
 

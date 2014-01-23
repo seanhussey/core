@@ -1,0 +1,19 @@
+= form_for(@embed, :url => url , :html => {:class => "validation"}) do  |f|
+  = gb_error_messages_for(@embed)
+
+  .span5
+    %p
+      = f.label :title
+      = f.text_field(:title , :class => "required")
+
+    %p
+      = f.label :shortcode
+      = f.text_field(:shortcode, :class => 'required')
+
+    %p
+      = f.label :body
+      = f.text_area(:body , :class => "fullscreen" )
+
+    = form_controls(admin_embeds_path)
+
+= enable_redactor("jwysiwyg")

@@ -25,16 +25,19 @@ class Ability
       cannot :publish , Gluttonberg::Page
       cannot :reorder , Gluttonberg::Page
       
-      #cannot :manage , Gluttonberg::Blog
-      cannot :publish , Gluttonberg::Blog
-      cannot :destroy , Gluttonberg::Blog
       
-      #cannot :manage , Gluttonberg::Article
-      #cannot :publish , Gluttonberg::Article
-      #cannot :destroy , Gluttonberg::Article
-      
-      #cannot :manage , Gluttonberg::Comment
-      #cannot :moderate , Gluttonberg::Comment
+      if Gluttonberg.constants.include?(:Blog)
+        #cannot :manage , Gluttonberg::Blog::Weblog
+        cannot :publish , Gluttonberg::Blog::Weblog
+        cannot :destroy , Gluttonberg::Blog::Weblog
+        
+        #cannot :manage , Gluttonberg::Blog::Article
+        #cannot :publish , Gluttonberg::Blog::Article
+        #cannot :destroy , Gluttonberg::Blog::Article
+        
+        #cannot :manage , Gluttonberg::Blog::Comment
+        #cannot :moderate , Gluttonberg::Blog::Comment
+      end
     end
     
   end
