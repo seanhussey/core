@@ -5,17 +5,14 @@ class Ability
   def initialize(user)
     
     user ||= User.new # guest user (not logged in)
+    can :manage, :all
     if user.super_admin?
-      can :manage, :all
     elsif user.admin?
-      can :manage, :all
       restricted_features_for_admin
+    elsif user.editor?
+      restricted_features_for_editors
     else
-      can :manage, :all
-      restricted_features_for_admin
-      
-      cannot :manage , User
-      cannot :manage , Gluttonberg::Setting
+      restricted_features_for_editors
       cannot :destroy , Gluttonberg::Asset
       
       #page roles
@@ -42,5 +39,12 @@ class Ability
   def restricted_features_for_admin
     cannot :manage , Gluttonberg::Locale
     cannot :create_or_destroy , Gluttonberg::Setting
+  end
+
+  def restricted_features_for_editors
+    restricted_features_for_admin
+    cannot :manage , User
+    cannot :manage , Gluttonberg::Member
+    cannot :manage , Gluttonberg::Setting
   end
 end

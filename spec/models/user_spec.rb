@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe User do
   before :all do
-    @all_roles = ["super_admin" , "admin" , "contributor", "sales", "accounts"]
+    @all_roles = ["super_admin" , "admin", 'editor' , "contributor", "sales", "accounts"]
     @params = {
       :first_name => "First",
       :email => "valid_user@test.com",
@@ -89,7 +89,7 @@ describe User do
     current_user.user_valid_roles(current_user).should == []
 
     current_user.role = "admin"
-    current_user.user_valid_roles(user).should == ["admin", "contributor", "sales", "accounts"]
+    current_user.user_valid_roles(user).should == ["admin", 'editor', "contributor", "sales", "accounts"]
     current_user.user_valid_roles(current_user).should == []
 
     current_user.role = "contributor"

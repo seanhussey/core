@@ -32,15 +32,23 @@ class User < ActiveRecord::Base
     self.role == "admin"
   end
 
+  def editor?
+    self.role == "editor"
+  end
+
+  def contributor?
+    self.role == "contributor"
+  end
+
   def self.user_roles
-    @roles ||= (["super_admin" , "admin" , "contributor"] << (Rails.configuration.user_roles) ).flatten
+    @roles ||= (["super_admin" , "admin", 'editor' , "contributor"] << (Rails.configuration.user_roles) ).flatten
   end
 
   def user_valid_roles(user)
     if user.id == self.id
       []
     else
-      roles = (["super_admin" , "admin" , "contributor"] << (Rails.configuration.user_roles) ).flatten
+      roles = (["super_admin" , "admin", 'editor' , "contributor"] << (Rails.configuration.user_roles) ).flatten
       roles.delete("super_admin") unless self.super_admin?
       if !self.super_admin? && !self.admin?
         [self.role]
@@ -51,11 +59,15 @@ class User < ActiveRecord::Base
   end
 
   def have_backend_access?
-    ["super_admin" , "admin" , "contributor"].include?(self.role)
+    ["super_admin" , "admin", 'editor' , "contributor"].include?(self.role)
   end
 
   def self.all_super_admin_and_admins
     self.where(:role => ["super_admin" , "admin"]).all
+  end
+
+  def self.all_super_admin_and_admins_editors
+    self.where(:role => ["super_admin" , "admin", 'editor']).all
   end
 
   def self.search_users(query, current_user, get_order)
