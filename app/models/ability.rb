@@ -28,7 +28,14 @@ class Ability
   def restricted_features_for_contributors
     restricted_features_for_editors
     cannot :publish, :all
-    cannot :destroy, :all
+    cannot :destroy, :all do |object|
+      if object.responds_to?(:user_id) && object.responds_to?(:state)
+        ["published", "archive"].include?(object.state) || object.user_id != user.id
+      else
+        true
+      end 
+    end
+    #can :destroy, :all, :state => ["not_ready", "ready"], :user_id => user.id
     cannot :moderate, :all
     cannot :reorder, :all
   end
