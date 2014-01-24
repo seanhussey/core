@@ -101,7 +101,7 @@ module Gluttonberg
         end
 
         def access_denied
-          render :layout => "bare" , :template => 'gluttonberg/admin/exceptions/access_denied' , :status => 403, :handlers => [:haml], :formats => [:html]
+          render :layout => "bare" , :template => 'gluttonberg/admin/exceptions/not_found' , :status => 403, :handlers => [:haml], :formats => [:html]
         end
 
         def internal_server_error
