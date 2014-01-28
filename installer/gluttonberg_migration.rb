@@ -287,7 +287,7 @@ class GluttonbergMigration < ActiveRecord::Migration
     create_table :gb_galleries do |t|
       t.column :title , :string , :limit => 255
       t.column :description, :text
-      t.integer :user_id, :null => false
+      t.integer :user_id
       t.column :slug , :string
       t.column :state , :string
       t.datetime :published_at

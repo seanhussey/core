@@ -1,5 +1,6 @@
 module Admin
   class <%= plural_class_name %>Controller < Gluttonberg::Admin::BaseController
+    before_filter :find_<%= singular_name %>, :only => [:show, :edit, :update, :delete, :destroy, :duplicate]
     before_filter :authorize_user , :except => [:destroy , :delete]
     before_filter :authorize_user_for_destroy , :only => [:destroy , :delete]
     <%if draggable? %>
@@ -18,7 +19,6 @@ module Admin
     end
 
     def show
-      @<%= singular_name %> = <%= class_name %>.find(params[:id])
     end
 
     def new
@@ -26,7 +26,6 @@ module Admin
     end
 
     def edit
-      @<%= singular_name %> = <%= class_name %>.find(params[:id])
       <% if localized? %>@<%= singular_name %>.load_localization(params[:locale_id]) unless params[:locale_id].blank? <%end%>
     end
 
@@ -41,7 +40,6 @@ module Admin
     end
 
     def update
-      @<%= singular_name %> = <%= class_name %>.find(params[:id])
       <% if localized? %>@<%= singular_name %>.load_localization(params[:locale_id]) unless params[:locale_id].blank? <%end%>
       if @<%= singular_name %>.update_attributes(params[:<%= singular_name %>])
         flash[:notice] = "The <%= singular_name.titleize.downcase %> was successfully updated."
@@ -53,7 +51,6 @@ module Admin
     end
 
     def delete
-      @<%= singular_name %> = <%= class_name %>.find(params[:id])
       display_delete_confirmation(
         :title      => "Delete <%= class_name %> '#{@<%= singular_name %>.id}'?",
         :url        => admin_<%= singular_name %>_path(@<%= singular_name %>),
@@ -63,7 +60,6 @@ module Admin
     end
 
     def destroy
-      @<%= singular_name %> = <%= class_name %>.find(params[:id])
       if @<%= singular_name %>.destroy
         flash[:notice] = "The <%= singular_name.titleize.downcase %> was successfully deleted."
         redirect_to admin_<%= plural_name %>_path
@@ -92,7 +88,6 @@ module Admin
     <% end %>
 
     def duplicate
-      @<%= singular_name %> = <%= class_name %>.find(params[:id])
       @cloned_<%= singular_name %> = @<%= singular_name %>.duplicate!
       if @cloned_<%= singular_name %>
         flash[:notice] = "The <%= singular_name.titleize.downcase %> was successfully duplicated."
@@ -105,12 +100,17 @@ module Admin
 
     private
 
+      def find_<%= singular_name %>
+        @<%= singular_name %> = <%= class_name %>.find(params[:id])
+        raise ActiveRecord::RecordNotFound.new if @<%= singular_name %>.blank?
+      end
+
       def authorize_user
         authorize! :manage, <%= class_name %>
       end
 
       def authorize_user_for_destroy
-        authorize! :destroy, <%= class_name %>
+        authorize! :destroy, @<%= singular_name %>
       end
 
       <%unless draggable? %>

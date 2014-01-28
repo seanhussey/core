@@ -798,7 +798,7 @@ function initNestable(){
     e.preventDefault();
   });
 
-  $('.dd').each(function(){
+  $('.dd.dd-sortable').each(function(){
     var $list = $(this);
     var $saveButton = $($list.attr('data-saveButton'));
     $saveButton.attr('disabled', 'disabled');

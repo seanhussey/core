@@ -18,6 +18,7 @@ class Create<%= class_name %> < ActiveRecord::Migration
       t.integer :parent_id
       t.integer :locale_id
       <%end%>
+      t.integer :user_id
       t.timestamps
     end
     <% if localized? %>

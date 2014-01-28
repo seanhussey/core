@@ -28,6 +28,7 @@ class <%= class_name %> < ActiveRecord::Base
   <% unless localized? %><% attributes.find_all{|attr| ['asset', 'image','video','document', 'audio'].include?(attr.type.to_s) }.each do |attr| %>
   belongs_to :<%=attr_name_wrapper(attr)%> , :foreign_key => "<%=attr_db_name_wrapper(attr)%>" , :class_name => "Gluttonberg::Asset"
   <% end %><% end %>
+  belongs_to :user
 
   def title_or_name?
     <% if attributes.find{|attr| attr.name == "name"}.blank?  %><% if attributes.find{|attr| attr.name == "title"}.blank?  %>id<%else%>title<%end%><%else%>name<%end%>
