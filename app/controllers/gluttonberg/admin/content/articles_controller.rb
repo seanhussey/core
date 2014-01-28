@@ -9,6 +9,7 @@ module Gluttonberg
         before_filter :find_article, :only => [:show, :edit, :update, :delete, :destroy , :duplicate]
         before_filter :authorize_user , :except => [:destroy , :delete]
         before_filter :authorize_user_for_destroy , :only => [:destroy , :delete]
+        before_filter :authorize_blog_for_current_user
         record_history :@article , :title
         before_filter :all_articles, :only => [:index, :export]
 
@@ -140,6 +141,10 @@ module Gluttonberg
 
           def authorize_user_for_destroy
             authorize! :destroy, Gluttonberg::Article
+          end
+
+          def authorize_blog_for_current_user
+            authorize! :manage_object, @blog
           end
 
           def _log_article_changes

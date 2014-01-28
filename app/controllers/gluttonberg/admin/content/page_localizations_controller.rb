@@ -38,6 +38,7 @@ module Gluttonberg
 
           def authorize_user
             authorize! :manage, Gluttonberg::Page
+            authorize! :manage_object, @page_localization.page
           end
 
           def prepare_to_edit

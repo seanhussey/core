@@ -12,6 +12,7 @@ module Gluttonberg
 
         def index
           @pages = Page.where(:parent_id => nil).includes(:user, :localizations, :collapsed_pages).order('position').all
+          @pages = @pages.find_all{|page| current_user.can_view_page(page) } 
         end
 
         def show

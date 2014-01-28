@@ -41,7 +41,8 @@ module Gluttonberg
             output << render( :partial => "gluttonberg/admin/content/pages/row", :locals => { :page => page, :inset => inset , :row => row })
             if page.children.count > 0
               output << "<ol class='dd-list'>"
-                page_table_rows(page.children.includes(:user, :localizations, :collapsed_pages), output, inset + 1 , row)
+                children = page.children.find_all{|page| current_user.can_view_page(page) } 
+                page_table_rows(children, output, inset + 1 , row)
               output << "</ol>"
             end
           output << "</li>"

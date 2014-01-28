@@ -103,16 +103,33 @@ class User < ActiveRecord::Base
     status = case object.class.name.to_s
     when "Gluttonberg::Page"
       auth = self.authorizations.where(:authorizable_type => object.class.name).first
-      auth.authorizable_id == object.id || auth.authorizable_id == object.parent_id unless auth.blank? #TODO grand child of
+      auth.authorizable_id == object.id || object.grand_child_of?(auth.authorizable) unless auth.blank? 
     when "Gluttonberg::Blog"
       auth = self.authorizations.where(:authorizable_type => object.class.name, :authorizable_id => object.id).first
-      auth.authorizable_id == object.id && auth.allow == true unless auth.blank?
+      auth.allow == true unless auth.blank?
     else
       auth = self.authorizations.where(:authorizable_type => object.class.name).first
       auth.allow == true unless auth.blank?
     end
     status = true if auth.blank?
     status
+  end
+
+  def can_view_page(object)
+    if self.contributor?
+      if object.class.name == "Gluttonberg::Page"
+        auth = self.authorizations.where(:authorizable_type => object.class.name).first
+        unless auth.blank? || auth.authorizable.blank?
+          object.id == auth.authorizable.id || object.grand_child_of?(auth.authorizable) || object.grand_parent_of?(auth.authorizable)
+        else
+          false
+        end
+      else
+        false
+      end
+    else
+      true
+    end
   end
 
 end

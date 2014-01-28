@@ -77,6 +77,7 @@ module Gluttonberg
 
           def find_blog
             @blog = Blog.where(:id => params[:id]).first
+            authorize! :manage_object, @blog
           end
 
           def authorize_user

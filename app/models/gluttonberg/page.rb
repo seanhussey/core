@@ -217,6 +217,17 @@ module Gluttonberg
       !self.collapsed_pages.find_all{|page| page.user_id == current_user.id}.blank?
     end
 
+    def grand_child_of?(page)
+      if self.parent_id.blank?
+        false
+      else
+        self.parent_id == page.id || self.parent.grand_child_of?(page)
+      end
+    end
+
+    def grand_parent_of?(page)
+      page.grand_child_of?(self)
+    end
 
     private
 

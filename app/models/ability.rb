@@ -3,6 +3,7 @@ class Ability
   def initialize(user)
     user ||= User.new # guest user (not logged in)
     can :manage, :all
+    can :manage_object, :all
     if user.super_admin?
     elsif user.admin?
       restricted_features_for_admin(user)
