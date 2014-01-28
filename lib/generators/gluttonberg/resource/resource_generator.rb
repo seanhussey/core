@@ -52,7 +52,7 @@ class Gluttonberg::ResourceGenerator < Rails::Generators::Base
 
   def add_config
     menu_config_filename = "config/initializers/gluttonberg_menu_settings.rb"
-    code =  "Gluttonberg::Components.register(:#{plural_name}, :label => '#{plural_class_name}', :admin_url => :admin_#{plural_name})\n"
+    code =  "Gluttonberg::Components.register(:#{plural_name}, :label => '#{plural_class_name}', :admin_url => :admin_#{plural_name}, :can_model_name => '#{class_name}')\n"
     File.open(menu_config_filename, "a+") { |file| file.write(code) }
   end
 

@@ -42,7 +42,7 @@
           = auth_form.check_box :allow
           = auth_form.hidden_field :authorizable_id
         - else
-          = auth_form.label :allow , auth_form.object.authorizable_type
+          = auth_form.label :allow , auth_form.object.authorizable_type.to_s.demodulize
           = auth_form.check_box :allow
 
 

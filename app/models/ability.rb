@@ -4,6 +4,7 @@ class Ability
     user ||= User.new # guest user (not logged in)
     can :manage, :all
     can :manage_object, :all
+    can :manage_model, :all
     if user.super_admin?
     elsif user.admin?
       restricted_features_for_admin(user)
@@ -45,6 +46,11 @@ class Ability
 
     # cannot manage unauthorized objects
     cannot :manage_object, :all do |object|
+      !user.authorized?(object)
+    end
+
+    # cannot manage unauthorized custom models (make sure pass custom model name (only for manage_model) as string.)
+    cannot :manage_model, :all do |object|
       !user.authorized?(object)
     end
 

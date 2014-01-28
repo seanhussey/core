@@ -87,6 +87,7 @@ module Gluttonberg
 
           def authorize_user
             authorize! :manage, Gluttonberg::Gallery
+            authorize! :manage_model, "Gluttonberg::Gallery"
           end
 
           def authorize_user_for_destroy

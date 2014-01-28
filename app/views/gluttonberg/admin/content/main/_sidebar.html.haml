@@ -18,13 +18,14 @@
           %li
             = active_link_to("Comments", admin_comments_pending_path, :title => "Comments", :class => "comments", :active => /^\/admin\/comments/)
 
-        - if Rails.configuration.enable_gallery == true
+        - if Rails.configuration.enable_gallery == true && can?(:manage_model , "Gluttonberg::Gallery")
           %li
             = active_link_to("Galleries", admin_galleries_path, :title => "Galleries", :class => "gallery")
         - for entry in Gluttonberg::Components.nav_entries
-          -if entry[3].blank? || entry[3]==false || (entry[3]==true && session.user.is_super_admin)
-            %li
-              = active_link_to(entry[0], url_for(entry[2]),  {:id => (entry[0].to_s.underscore).gsub(/\s/, '_') + "Nav" , :title => entry[0] } )
+          - if entry[3].blank? || entry[3]==false || (entry[3]==true && session.user.is_super_admin)
+            - if (entry[4].blank? || can?(:manage_model , entry[4]))  
+              %li
+                = active_link_to(entry[0], url_for(entry[2]),  {:id => (entry[0].to_s.underscore).gsub(/\s/, '_') + "Nav" , :title => entry[0] } )
         - if Rails.configuration.flagged_content == true
           %li
             = active_link_to("Flagged Content", admin_flagged_contents_path, :id => "flaggedNav" , :title => "Flagged Content")

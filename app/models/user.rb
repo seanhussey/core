@@ -103,15 +103,33 @@ class User < ActiveRecord::Base
     status = case object.class.name.to_s
     when "Gluttonberg::Page"
       auth = self.authorizations.where(:authorizable_type => object.class.name).first
-      auth.authorizable_id == object.id || object.grand_child_of?(auth.authorizable) unless auth.blank? 
+      unless auth.blank? 
+        auth.authorizable_id == object.id || object.grand_child_of?(auth.authorizable) 
+      else
+        false
+      end
     when "Gluttonberg::Blog"
       auth = self.authorizations.where(:authorizable_type => object.class.name, :authorizable_id => object.id).first
-      auth.allow == true unless auth.blank?
+      unless auth.blank?
+        auth.allow == true
+      else
+        false
+      end
+    when "String"
+      auth = self.authorizations.where(:authorizable_type => object).first
+      unless auth.blank?
+        auth.allow == true 
+      else
+        false
+      end
     else
       auth = self.authorizations.where(:authorizable_type => object.class.name).first
-      auth.allow == true unless auth.blank?
+      unless auth.blank?
+        auth.allow == true
+      else
+        true
+      end
     end
-    status = true if auth.blank?
     status
   end
 

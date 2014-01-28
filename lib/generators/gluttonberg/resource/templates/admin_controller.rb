@@ -107,6 +107,7 @@ module Admin
 
       def authorize_user
         authorize! :manage, <%= class_name %>
+        authorize! :manage_model, "<%= class_name %>"
       end
 
       def authorize_user_for_destroy
