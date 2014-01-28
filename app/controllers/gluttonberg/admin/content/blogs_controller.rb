@@ -12,10 +12,12 @@ module Gluttonberg
         record_history :@blog
 
         def index
-          @blogs = Blog.paginate(:per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), :page => params[:page])
+          @blogs = Blog.all
+          @blogs = @blogs.find_all{|blog| can?(:manage_object, blog) } 
           if @blogs && @blogs.size == 1
             redirect_to admin_blog_articles_path(@blogs.first)
           end
+          @blogs = @blogs.paginate(:per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"), :page => params[:page])
         end
 
         def show

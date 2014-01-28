@@ -8,6 +8,9 @@ class User < ActiveRecord::Base
   validates_format_of :password, :with => Rails.configuration.password_pattern , :if => :require_password?, :message => Rails.configuration.password_validation_message
 
   has_many :collapsed_pages, :class_name => "Gluttonberg::CollapsedPage", :dependent => :destroy
+  has_many :authorizations, :class_name => "Gluttonberg::Authorization"
+  attr_accessible :authorizations, :authorizations_attributes
+  accepts_nested_attributes_for :authorizations, :allow_destroy => false
 
   clean_html [:bio]
 
@@ -93,6 +96,23 @@ class User < ActiveRecord::Base
       user = user.where(:id => current_user.id)
     end
     user.first
+  end
+
+  def authorized?(object)
+    auth = nil
+    status = case object.class.name.to_s
+    when "Gluttonberg::Page"
+      auth = self.authorizations.where(:authorizable_type => object.class.name).first
+      auth.authorizable_id == object.id || auth.authorizable_id == object.parent_id unless auth.blank? #TODO grand child of
+    when "Gluttonberg::Blog"
+      auth = self.authorizations.where(:authorizable_type => object.class.name, :authorizable_id => object.id).first
+      auth.authorizable_id == object.id && auth.allow == true unless auth.blank?
+    else
+      auth = self.authorizations.where(:authorizable_type => object.class.name).first
+      auth.allow == true unless auth.blank?
+    end
+    status = true if auth.blank?
+    status
   end
 
 end

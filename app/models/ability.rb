@@ -39,9 +39,13 @@ class Ability
     cannot :edit, Gluttonberg::Asset do |object|
       object.user_id != user.id
     end
-
-    #can :destroy, :all, :state => ["not_ready", "ready"], :user_id => user.id
     cannot :moderate, :all
     cannot :reorder, :all
+
+    # cannot manage unauthorized objects
+    cannot :manage_object, :all do |object|
+      !user.authorized?(object)
+    end
+
   end
 end

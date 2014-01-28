@@ -135,7 +135,7 @@ module Gluttonberg
         private
           def find_asset
             @asset = Asset.where(:id => params[:id]).first
-            raise ActiveRecord::RecordNotFound  if @asset.blank?
+            raise ActiveRecord::RecordNotFound if @asset.blank?
           end
 
           def authorize_user

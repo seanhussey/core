@@ -154,7 +154,6 @@ module Gluttonberg
 
           def all_articles
             conditions = {:blog_id => params[:blog_id]}
-            conditions[:user_id] = current_user.id unless current_user.super_admin?
             @articles = Article.where( conditions).order("created_at DESC")
           end
 
