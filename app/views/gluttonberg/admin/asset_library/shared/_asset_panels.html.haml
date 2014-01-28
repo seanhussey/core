@@ -34,9 +34,7 @@
             - unless breadcrumbs_val.blank?
               = check_box_tag "select_asset_#{asset.id}" , nil, false, :rel => "#{asset.id}" , :class => "select_asset_checkbox"
           %td
-
             - if asset.category == 'audio'
-              /.sm2-inline-block
               .ui360
                 %a{:href => "#{asset_url(asset)}", :target => "_blank" , :class => ""}
                   Play
@@ -58,12 +56,14 @@
           %td.date
             %span.controls
               - unless breadcrumbs_val.blank?
-                %a{:href => "#{edit_admin_asset_url(asset)}#{breadcrumbs_val}" , :class => "assetLink btn"}
-                  Edit
-                %a{:href => "#{crop_admin_asset_url(asset)}#{breadcrumbs_val}" , :class => "assetLink btn"}
-                  Crop
-                %a{:href => "#{delete_admin_asset_url(asset)}#{breadcrumbs_val}" , :class => "assetLink btn btn-danger"}
-                  Delete
+                - if can? :edit , asset
+                  %a{:href => "#{edit_admin_asset_url(asset)}#{breadcrumbs_val}" , :class => "assetLink btn"}
+                    Edit
+                  %a{:href => "#{crop_admin_asset_url(asset)}#{breadcrumbs_val}" , :class => "assetLink btn"}
+                    Crop
+                - if can? :destroy , asset
+                  %a{:href => "#{delete_admin_asset_url(asset)}#{breadcrumbs_val}" , :class => "assetLink btn btn-danger"}
+                    Delete
 
 %a{:href => "#",  :class => "delete_selected_assets btn btn-danger"} Delete Selected Assets
 %form#delete_selected_assets_form{ :action =>admin_destroy_assets_in_bulk_path , :method => "POST" }

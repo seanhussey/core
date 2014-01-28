@@ -29,12 +29,17 @@ class Ability
     restricted_features_for_editors(user)
     cannot :publish, :all
     cannot :destroy, :all do |object|
-      if object.respond_to?(:user_id) && object.respond_to?(:state)
-        ["published", "archived"].include?(object.state) || object.user_id != user.id
+      if object.respond_to?(:user_id)
+        (object.respond_to?(:state) && ["published", "archived"].include?(object.state)) || object.user_id != user.id
       else
         true
       end 
     end
+
+    cannot :edit, Gluttonberg::Asset do |object|
+      object.user_id != user.id
+    end
+
     #can :destroy, :all, :state => ["not_ready", "ready"], :user_id => user.id
     cannot :moderate, :all
     cannot :reorder, :all
