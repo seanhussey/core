@@ -36,7 +36,7 @@
         - if auth_form.object.authorizable_type == "Gluttonberg::Page"
           %label
             Page
-          = auth_form.select(:authorizable_id, pages_lists_options(Gluttonberg::Page.all), {:prompt => "Select Page"}, {:class=>" chzn-select"})
+          = auth_form.select(:authorizable_id, pages_lists_options, {:prompt => "Select Page"}, {:class=>" chzn-select"})
         - elsif auth_form.object.authorizable_type == "Gluttonberg::Blog"            
           = auth_form.label :allow , "Blog (#{auth_form.object.authorizable.name})"
           = auth_form.check_box :allow
@@ -44,7 +44,6 @@
         - else
           = auth_form.label :allow , auth_form.object.authorizable_type.to_s.demodulize
           = auth_form.check_box :allow
-
 
   .span4
     %legend 

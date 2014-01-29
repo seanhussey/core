@@ -218,7 +218,7 @@ module Gluttonberg
     end
 
     def grand_child_of?(page)
-      if self.parent_id.blank?
+      if self.parent_id.blank? || page.blank?
         false
       else
         self.parent_id == page.id || self.parent.grand_child_of?(page)

@@ -8,7 +8,7 @@ class User < ActiveRecord::Base
   validates_format_of :password, :with => Rails.configuration.password_pattern , :if => :require_password?, :message => Rails.configuration.password_validation_message
 
   has_many :collapsed_pages, :class_name => "Gluttonberg::CollapsedPage", :dependent => :destroy
-  has_many :authorizations, :class_name => "Gluttonberg::Authorization"
+  has_many :authorizations, :class_name => "Gluttonberg::Authorization", :dependent => :destroy
   attr_accessible :authorizations, :authorizations_attributes
   accepts_nested_attributes_for :authorizations, :allow_destroy => false
 
@@ -25,6 +25,10 @@ class User < ActiveRecord::Base
   def deliver_password_reset_instructions!
     reset_perishable_token!
     Notifier.password_reset_instructions(self.id).deliver
+  end
+
+  def ability
+    @ability ||= Ability.new(self)
   end
 
   def super_admin?

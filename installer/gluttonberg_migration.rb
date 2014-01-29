@@ -331,6 +331,14 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.text :data
       t.timestamps
     end
+
+    create_table :gb_authorizations do |t|
+      t.string :authorizable_type
+      t.integer :authorizable_id
+      t.integer :user_id
+      t.boolean :allow
+      t.timestamps
+    end
   end
 
 end
