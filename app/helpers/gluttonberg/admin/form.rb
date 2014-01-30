@@ -44,41 +44,38 @@ module Gluttonberg
         content.html_safe
       end
 
-      def contributor_form_controls(cancel_url , opts={})
+      def contributor_form_controls(opts={})
         html = submit_tag("Save draft" , :id => opts[:draft_id], :class => "btn ").html_safe
         html += " ".html_safe +  submit_tag("Submit for approval" , :id => opts[:approval_id], :class => "btn btn-success").html_safe
-        html += link_to(" Cancel", cancel_url).html_safe
         content_tag(:p, html.html_safe, :class => "controls")
       end
 
-      def admin_form_controls_for_draft_objects(cancel_url , opts={})
+      def admin_form_controls_for_draft_objects(opts={})
         html = submit_tag("Save draft" , :id => opts[:draft_id], :class => "btn ").html_safe
         html += " ".html_safe +  submit_tag("Publish" , :id => opts[:publish_id], :class => "btn btn-success").html_safe
-        html += link_to(" Cancel", cancel_url).html_safe
         content_tag(:p, html.html_safe, :class => "controls")
       end
 
-      def admin_form_controls_for_published_objects(cancel_url , opts={})
+      def admin_form_controls_for_published_objects(opts={})
         html = submit_tag("Save revision" , :id => opts[:revision_id], :class => "btn").html_safe
         html += " ".html_safe +  submit_tag("Update" , :id => opts[:update_id], :class => "btn btn-success").html_safe
         html += " ".html_safe +  submit_tag("Unpublish" , :id => opts[:unpublish_id], :class => "btn btn-danger").html_safe
-        html += link_to(" Cancel", cancel_url).html_safe
         content_tag(:p, html.html_safe, :class => "controls")
       end
 
       # new form controls based on new logic of authorization and publishing workflow
-      def submit_and_publish_controls(form, object, cancel_url, can_publish, schedule_field=true, opts={})
+      def submit_and_publish_controls(form, object, can_publish, schedule_field=true, opts={})
         html = content_tag("legend", "Publish").html_safe
         html += form.publishing_schedule if schedule_field
 
         html += if can_publish
           if object.published?
-            admin_form_controls_for_published_objects(cancel_url)
+            admin_form_controls_for_published_objects(opts)
           else
-            admin_form_controls_for_draft_objects(cancel_url)
+            admin_form_controls_for_draft_objects(opts)
           end
         else
-          contributor_form_controls(cancel_url , opts)
+          contributor_form_controls(opts)
         end
         html.html_safe
       end
