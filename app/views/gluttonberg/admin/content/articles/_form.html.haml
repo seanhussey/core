@@ -102,9 +102,7 @@
       %p
         = article_form.label :disable_comments
         = article_form.check_box(:disable_comments)
-      -# - unless @article.blank?
-      -#   %p
-      -#     = link_to "View Comments", admin_blog_article_comments_path(@blog, @article) , :class => "btn"
+      
     - if can? :publish , Gluttonberg::Article
       %legend
         Publish

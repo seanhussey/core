@@ -18,6 +18,17 @@ module Gluttonberg
         html.html_safe
       end
 
+      def publishing_schedule
+        object = self.object
+        object.published_at = Time.zone.now if object.published_at.blank?
+        #html = "<fieldset id='publish_meta'><div class='publishing_block' > "
+        html = hidden_field( :state , :class => "publishing_state" )
+        html += datetime_field("published_at")
+        #html += "</div></fieldset>"
+
+        html.html_safe
+      end
+
       def datetime_field(field_name,date_field_html_opts = {},time_field_html_opts = {})
         date_field_html_opts["data-datepicker"] = "bsdatepicker"
         unique_field_name = "#{field_name}_#{Gluttonberg::Member.generateRandomString}"
