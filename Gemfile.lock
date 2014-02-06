@@ -11,7 +11,6 @@ PATH
       cancan (= 1.6.10)
       domainatrix (= 0.0.11)
       foreman (= 0.63.0)
-      freerange_acts_as_versioned (= 1.0.0)
       haml (= 4.0.3)
       highline (= 1.6.19)
       jeditable-rails (= 0.1.1)
@@ -25,6 +24,12 @@ PATH
       texticle (= 1.0.4.20101004123327)
       unicorn (= 4.6.3)
       will_paginate (= 3.0.5)
+
+PATH
+  remote: ../third_party_library/acts_as_versioned
+  specs:
+    freerange_acts_as_versioned (1.0.0)
+      activerecord (~> 3.2)
 
 GEM
   remote: http://rubygems.org/
@@ -94,8 +99,6 @@ GEM
     foreman (0.63.0)
       dotenv (>= 0.7)
       thor (>= 0.13.6)
-    freerange_acts_as_versioned (1.0.0)
-      activerecord (~> 3.2)
     haml (4.0.3)
       tilt
     highline (1.6.19)
@@ -149,7 +152,7 @@ GEM
     rake (10.0.4)
     rdoc (3.12.2)
       json (~> 1.4)
-    redis (3.0.6)
+    redis (3.0.7)
     redis-namespace (1.4.1)
       redis (~> 3.0.4)
     rspec-core (2.14.4)
@@ -210,6 +213,7 @@ PLATFORMS
 
 DEPENDENCIES
   fakes3 (= 0.1.5)
+  freerange_acts_as_versioned!
   gluttonberg-core!
   jquery-rails (= 3.0.4)
   pg (~> 0.16)
