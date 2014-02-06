@@ -47,20 +47,21 @@ module Gluttonberg
           @authors = User.all
           unless params[:version].blank?
             @version = params[:version]
-            @article.revert_to(@version)
+            @article_localization.revert_to(@version)
           end
         end
 
         def update
           article_attributes = params["gluttonberg_article_localization"].delete(:article)
+          article = @article_localization.article
+          article.assign_attributes(article_attributes)
           if @article_localization.update_attributes(params[:gluttonberg_article_localization])
-            article = @article_localization.article
             article.update_attributes(article_attributes)
 
             _log_article_changes
 
             flash[:notice] = "The article was successfully updated."
-            redirect_to edit_admin_blog_article_path(@article.blog, @article)
+            redirect_to edit_admin_blog_article_path(@article.blog, @article) + (@article_localization.reload && @article_localization.versions.latest.version != @article_localization.version ? "?version=#{@article_localization.versions.latest.version}" : "")
           else
             flash[:error] = "Sorry, The article could not be updated."
             render :edit
@@ -77,6 +78,7 @@ module Gluttonberg
         end
 
         def destroy
+          @article.current_localization
           generic_destroy(@article, {
             :name => "article",
             :success_path => admin_blog_articles_path(@blog),
@@ -133,6 +135,8 @@ module Gluttonberg
               @article_localization = ArticleLocalization.where(:id => params[:localization_id]).first
             end
             @article = Article.where(:id => params[:id]).first
+            @article.instance_variable_set(:@current_localization, @article_localization)
+            @article
           end
 
           def authorize_user

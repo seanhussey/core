@@ -7,6 +7,10 @@ module Gluttonberg
     module Versioning
       extend ActiveSupport::Concern
 
+      included do
+        attr_accessor :current_user_id
+      end
+
       def self.setup
         ::ActiveRecord::Base.send :include, Gluttonberg::Content::Versioning
       end
@@ -47,6 +51,7 @@ module Gluttonberg
            self.class.max_version_limit = tmp_number_of_revisions.to_i unless tmp_number_of_revisions.blank?
           end
         end 
+
       end
 
     end

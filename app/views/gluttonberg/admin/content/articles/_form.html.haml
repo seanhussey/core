@@ -1,6 +1,6 @@
 
 - unless @article_localization.blank?
-  /= version_listing(@article_localization.versions , @article_localization )
+  = version_listing(@article_localization.versions , @article_localization.version)
 
 = form_for(@article_localization, :url => url , :html => {:class => "validation auto_save"}) do  |f|
   = gb_error_messages_for(@article_localization)
@@ -103,11 +103,6 @@
         = article_form.label :disable_comments
         = article_form.check_box(:disable_comments)
       
-    - if can? :publish , Gluttonberg::Article
-      %legend
-        Publish
-      = f.fields_for :article , @article do |article_form|
-        = article_form.publisable_dropdown
-    = form_controls(admin_blog_articles_path(@blog))
+      = submit_and_publish_controls(article_form, @article, can?(:publish , Gluttonberg::Article))
 
 = enable_redactor("jwysiwyg")

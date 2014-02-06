@@ -17,6 +17,7 @@ module Gluttonberg
     attr_accessible :user_id, :blog_id, :author_id, :slug, :article_category_list, :tag_list, :disable_comments, :state, :published_at, :name
     attr_accessible :user, :blog, :author
     validates_presence_of :user_id, :author_id, :blog_id
+    delegate :version, :loaded_version,  :to => :current_localization
 
     if ActiveRecord::Base.connection.table_exists?('gb_article_localizations')
       is_localized(:parent_key => :article_id) do
@@ -31,6 +32,7 @@ module Gluttonberg
 
         validates_presence_of :title
         attr_accessible :article, :locale_id, :title, :featured_image_id, :excerpt, :body, :seo_title, :seo_keywords, :seo_description, :fb_icon_id, :article_id
+        delegate :state, :_publish_status, :state_changed?, :to => :parent
 
         clean_html [:excerpt , :body]
 

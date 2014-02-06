@@ -18,14 +18,11 @@ module Gluttonberg
         html.html_safe
       end
 
-      def publishing_schedule
+      def publishing_schedule(schedule_field)
         object = self.object
         object.published_at = Time.zone.now if object.published_at.blank?
-        #html = "<fieldset id='publish_meta'><div class='publishing_block' > "
-        html = hidden_field( :state , :class => "publishing_state" )
-        html += datetime_field("published_at")
-        #html += "</div></fieldset>"
-
+        html = ""
+        html += schedule_field ? datetime_field("published_at") : hidden_field("published_at")
         html.html_safe
       end
 

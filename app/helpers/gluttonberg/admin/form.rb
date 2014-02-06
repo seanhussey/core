@@ -44,65 +44,94 @@ module Gluttonberg
         content.html_safe
       end
 
-      def contributor_form_controls(opts={})
-        html = submit_tag("Save draft" , :id => opts[:draft_id], :class => "btn ").html_safe
-        html += " ".html_safe +  submit_tag("Submit for approval" , :id => opts[:approval_id], :class => "btn btn-success").html_safe
+      def contributor_form_controls(published, opts={})
+        html = submit_tag("Save draft" , :id => "#{published ? 'revision_btn' : 'draft_btn'}", :class => "btn publishing_btn").html_safe
+        html += " ".html_safe +  submit_tag("Submit for approval" , :id => "approval_btn", :class => "btn btn-success publishing_btn").html_safe
         content_tag(:p, html.html_safe, :class => "controls")
       end
 
       def admin_form_controls_for_draft_objects(opts={})
-        html = submit_tag("Save draft" , :id => opts[:draft_id], :class => "btn ").html_safe
-        html += " ".html_safe +  submit_tag("Publish" , :id => opts[:publish_id], :class => "btn btn-success").html_safe
+        html = submit_tag("Save draft" , :id => "draft_btn", :class => "btn publishing_btn").html_safe
+        html += " ".html_safe +  submit_tag("Publish" , :id => "publish_btn", :class => "btn btn-success publishing_btn").html_safe
         content_tag(:p, html.html_safe, :class => "controls")
       end
 
       def admin_form_controls_for_published_objects(opts={})
-        html = submit_tag("Save revision" , :id => opts[:revision_id], :class => "btn").html_safe
-        html += " ".html_safe +  submit_tag("Update" , :id => opts[:update_id], :class => "btn btn-success").html_safe
-        html += " ".html_safe +  submit_tag("Unpublish" , :id => opts[:unpublish_id], :class => "btn btn-danger").html_safe
+        html = submit_tag("Save revision" , :id => "revision_btn", :class => "btn publishing_btn").html_safe
+        html += " ".html_safe +  submit_tag("Update" , :id => "update_btn", :class => "btn btn-success publishing_btn").html_safe
+        html += " ".html_safe +  submit_tag("Unpublish" , :id => "unpublish_btn", :class => "btn btn-danger publishing_btn").html_safe
+        content_tag(:p, html.html_safe, :class => "controls")
+      end
+
+      def admin_form_controls_for_approving_or_decling_objects(opts={})
+        html = submit_tag("Approve" , :id => "publish_btn", :class => "btn btn-success publishing_btn").html_safe
+        html += " ".html_safe +  submit_tag("Decline" , :id => "decline_btn", :class => "btn btn-danger publishing_btn").html_safe
         content_tag(:p, html.html_safe, :class => "controls")
       end
 
       # new form controls based on new logic of authorization and publishing workflow
       def submit_and_publish_controls(form, object, can_publish, schedule_field=true, opts={})
+        version_status = object.loaded_version.blank? ? '' : object.loaded_version.version_status
+        puts "-submit_and_publish_controls-#{object.version}--#{version_status}  #{object.loaded_version}"
         html = content_tag("legend", "Publish").html_safe
-        html += form.publishing_schedule if schedule_field
-
+        html += form.publishing_schedule(schedule_field)
+        html += form.hidden_field(:state, :class => "_publish_state") 
+        html += form.hidden_field(:_publish_status, :class => "_publish_status") 
         html += if can_publish
-          if object.published?
+          if version_status == 'submitted_for_approval'
+            admin_form_controls_for_approving_or_decling_objects(opts)
+          elsif object.published?
             admin_form_controls_for_published_objects(opts)
           else
             admin_form_controls_for_draft_objects(opts)
           end
         else
-          contributor_form_controls(opts)
+          contributor_form_controls(object.published?, opts)
         end
         html.html_safe
       end
 
       def version_listing(versions , selected_version_num)
         unless versions.blank?
+          versions = versions.order("version DESC")
           selected = versions.last.version
           selected_version = versions.first
-          collection = []
           versions.each do |version|
-            link = version.version
-            snippet = version.updated_at.blank? ? "" : "Version #{version.version} - #{version.updated_at.to_s(:long)}  " 
             if version.version.to_i == selected_version_num.to_i
-              selected = link
+              selected = version.version
               selected_version = version
             end
-            collection << [snippet , link]
           end
           render :partial => "/gluttonberg/admin/shared/version_listing", :locals => {
             :versions => versions,
             :selected_version_num => selected_version_num,
-            :collection => collection,
             :selected => selected,
             :selected_version => selected_version
           }
         end
       end #version_listing
+
+      def version_alerts(versions , selected_version_num, can_publish)
+        unless versions.blank?
+          versions = versions.order("version DESC")
+          your_revisions = []
+          submitted_for_approval = []
+          published_version = nil
+          versions.each do |version|
+            published_version = version if version.version_status == "published"
+            if (published_version.blank? || published_version.version < version.version) && version.version != selected_version_num.to_i
+              submitted_for_approval << version if version.version_status == "submitted_for_approval"
+              your_revisions << version if version.version_status == "revision" && version.version_user_id == current_user.id
+            end
+          end
+          render :partial => "/gluttonberg/admin/shared/version_alerts", :locals => {
+            :submitted_for_approval => submitted_for_approval,
+            :your_revisions => your_revisions,
+            :can_publish => can_publish
+          }
+        end
+      end #version_alerts
+
 
       # Creates an editable span for the given property of the given object.
       #

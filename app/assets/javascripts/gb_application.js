@@ -16,6 +16,7 @@ $(document).ready(function() {
   WarnNavigateAway.init();
   AutoSave.init();
   $(".chzn-select").chosen();
+  initPublishingButton();
 });
 
 
@@ -1083,3 +1084,19 @@ var AutoSave = {
   }
 };
 
+
+function initPublishingButton(){
+  $(".publishing_btn").click(function(e){
+    var id = $(this).attr('id');
+    if(id == "draft_btn" || id == "unpublish_btn"){
+      $("._publish_state").val("draft");
+    } else if(id == "publish_btn" || id == "update_btn"){
+      $("._publish_state").val("published");
+    } else if(id == "approval_btn"){
+      $("._publish_status").val("submitted_for_approval");
+    } else if(id  == "revision_btn"){
+      $("._publish_status").val("revision");
+    }
+
+  });
+}
