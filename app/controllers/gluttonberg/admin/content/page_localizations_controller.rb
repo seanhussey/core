@@ -6,23 +6,25 @@ module Gluttonberg
         before_filter :authorize_user
 
         def edit
-          @page = @page_localization.page
           fix_nav_label_and_slug
-          @version = params[:version]  unless params[:version].blank?
+          @version = params[:version]  
           prepare_to_edit
         end
 
         def update
           update_updated_at
           page_attributes = params["gluttonberg_page_localization"].delete(:page)
-
+          @page_localization.page.current_user_id = current_user.id
+          state = page_attributes.delete(:state)
+          published_at = page_attributes.delete(:published_at)
+          @page_localization.page.state = state unless state.blank?
+          @page_localization.page.published_at = published_at unless published_at.blank?
+          @page_localization.page._publish_status = page_attributes[:_publish_status]
           if @page_localization.update_attributes(params["gluttonberg_page_localization"]) || !@page_localization.changed?
-
             @page_localization.page.update_attributes(page_attributes)
-            update_publish_state
 
             flash[:notice] = "The page was successfully updated."
-            redirect_to edit_admin_page_page_localization_path( :page_id => params[:page_id], :id =>  @page_localization.id)
+            redirect_to edit_admin_page_page_localization_path( :page_id => params[:page_id], :id =>  @page_localization.id)+ (@page_localization.reload && @page_localization.versions.latest.version != @page_localization.version ? "?version=#{@page_localization.versions.latest.version}" : "")
           else
             flash[:error] = "Sorry, The page could not be updated."
             prepare_to_edit
@@ -34,6 +36,8 @@ module Gluttonberg
           def find_localization
             @page_localization = PageLocalization.where(:id => params[:id]).first
             raise ActiveRecord::RecordNotFound  unless @page_localization
+            @page = @page_localization.page
+            @page.instance_variable_set(:@current_localization, @page_localization)
           end
 
           def authorize_user
@@ -57,14 +61,6 @@ module Gluttonberg
             # update localization updated_at value so that all contents have same version number.
             @page_localization.contents.each do |content|
               content.updated_at = Time.now
-            end
-          end
-
-          def update_publish_state
-            if params[:commit] && ["Publish", "Update"].include?(params[:commit])
-              publish!
-            else
-              unpublish!
             end
           end
 

@@ -34,6 +34,9 @@ module Gluttonberg
 
     attr_accessor :current_localization, :locale_id, :paths_need_recaching
 
+    delegate :version, :loaded_version,  :to => :current_localization
+    attr_accessor :current_user_id
+
     def easy_contents(section_name, opts = {})
       begin
         prepared_content = nil

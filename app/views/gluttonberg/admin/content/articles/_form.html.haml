@@ -1,5 +1,6 @@
 
 - unless @article_localization.blank?
+  = version_alerts(@article_localization.versions , @article_localization.version, can?(:publish , Gluttonberg::Article) )
   = version_listing(@article_localization.versions , @article_localization.version)
 
 = form_for(@article_localization, :url => url , :html => {:class => "validation auto_save"}) do  |f|

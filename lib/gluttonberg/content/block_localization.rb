@@ -10,6 +10,7 @@ module Gluttonberg
       included do
         cattr_accessor :content_type, :association_name
         belongs_to :page_localization
+        delegate :state, :_publish_status, :state_changed?, :to => :page
       end
       
       def association_name
@@ -30,6 +31,10 @@ module Gluttonberg
       
       def section_label
         parent.section[:label] unless parent.blank?
+      end
+
+      def page
+        self.page_localization.page
       end
     end
   end

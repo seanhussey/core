@@ -28,7 +28,7 @@ PATH
 PATH
   remote: ../third_party_library/acts_as_versioned
   specs:
-    freerange_acts_as_versioned (1.0.0)
+    freerange_acts_as_versioned (1.0.1)
       activerecord (~> 3.2)
 
 GEM

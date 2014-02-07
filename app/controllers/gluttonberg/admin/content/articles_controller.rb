@@ -53,6 +53,7 @@ module Gluttonberg
 
         def update
           article_attributes = params["gluttonberg_article_localization"].delete(:article)
+          @article_localization.current_user_id = current_user.id
           article = @article_localization.article
           article.assign_attributes(article_attributes)
           if @article_localization.update_attributes(params[:gluttonberg_article_localization])

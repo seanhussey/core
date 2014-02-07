@@ -72,7 +72,6 @@ module Gluttonberg
       # new form controls based on new logic of authorization and publishing workflow
       def submit_and_publish_controls(form, object, can_publish, schedule_field=true, opts={})
         version_status = object.loaded_version.blank? ? '' : object.loaded_version.version_status
-        puts "-submit_and_publish_controls-#{object.version}--#{version_status}  #{object.loaded_version}"
         html = content_tag("legend", "Publish").html_safe
         html += form.publishing_schedule(schedule_field)
         html += form.hidden_field(:state, :class => "_publish_state") 
