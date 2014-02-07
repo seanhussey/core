@@ -30,7 +30,6 @@ module Gluttonberg
       end
 
       def og_image
-        path = nil
         object = find_current_object_for_meta_tags
         fb_icon_id = Gluttonberg::Setting.get_setting("fb_icon", current_site_config_name)
 
@@ -42,8 +41,11 @@ module Gluttonberg
           Asset.where(:id => fb_icon_id).first
         end
 
-        path = asset.url unless asset.blank?
-        "http://#{request.host_with_port}#{path}" if path
+        if asset
+          return "http://#{request.host_with_port}#{asset.url}"
+        else
+          return nil
+        end
       end
 
       alias_method :page_fb_icon_path, :og_image
