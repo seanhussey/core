@@ -21,10 +21,12 @@
                 %a{:href => edit_admin_<%= singular_name %>_path( :id => @<%= singular_name %>.id, :locale_id => locale.id) }
                   = "Edit #{locale.name} Content"
       = auto_save(@<%= singular_name %>.current_localization)
-      <% else %>
-      = auto_save(@<%= singular_name %>)
+      <% else %>= auto_save(@<%= singular_name %>)<%end%>
+      <% if versioned? %>
+      - unless @<%= singular_name %>.blank?
+        = version_alerts(@<%= singular_name %>.versions , @<%= singular_name %>.version, can?(:publish , @<%= class_name %>) )
+        = version_listing(@<%= singular_name %>.versions , @<%= singular_name %>.version )
       <%end%>
-
       = form_for(@<%= singular_name %>, :url => admin_<%= singular_name %>_path(@<%= singular_name %>), :html => {:class => "auto_save"}) do  |f|
         <% if localized? %>= hidden_field_tag :locale_id , @<%= singular_name %>.current_localization.locale_id<%end%>
         = gb_error_messages_for(@<%= singular_name %>)

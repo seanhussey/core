@@ -23,6 +23,7 @@ module Gluttonberg
         def is_versioned(options = {}, &extension)
           excluded_columns = options.delete(:non_versioned_columns)
           acts_as_versioned( options.merge( :limit => Gluttonberg::Setting.get_setting("number_of_revisions") ) , &extension )
+          self.non_versioned_columns << ['state' ,'published_at', 'user_id', 'locale_id', 'position']
           self.non_versioned_columns << excluded_columns
           self.non_versioned_columns.flatten!
           include OverrideActsAsVersioned

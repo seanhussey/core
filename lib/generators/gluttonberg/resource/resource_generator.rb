@@ -13,6 +13,7 @@ class Gluttonberg::ResourceGenerator < Rails::Generators::Base
   class_option :draggable, :aliases => "-d" , :type => :boolean
   class_option :importable, :aliases => "-i" , :type => :boolean
   class_option :localized, :aliases => "-l" , :type => :boolean
+  class_option :without_versioning, :aliases => "-w" , :type => :boolean
 
   def initialize(args, *options)
     super(args, *options)
@@ -90,6 +91,10 @@ class Gluttonberg::ResourceGenerator < Rails::Generators::Base
       ([file_name]).map!{ |m| m.camelize }.join('::')
     end
 
+    def versioned_class_name
+      localized? ? class_name + "Localization" : class_name
+    end
+
     def plural_class_name
       ([plural_name]).map!{ |m| m.camelize }.join('::')
     end
@@ -129,6 +134,11 @@ class Gluttonberg::ResourceGenerator < Rails::Generators::Base
 
     def localized?
       !(options[:localized].blank?)
+    end
+
+    # by default models are versioned
+    def versioned?
+      options[:without_versioning].blank?
     end
 
     def attr_db_type_wrapper(attr)
