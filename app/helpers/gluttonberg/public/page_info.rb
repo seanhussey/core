@@ -43,7 +43,7 @@ module Gluttonberg
         end
 
         path = asset.url unless asset.blank?
-        "http://#{request.host_with_port}#{path}"
+        "http://#{request.host_with_port}#{path}" if path
       end
 
       alias_method :page_fb_icon_path, :og_image
