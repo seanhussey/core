@@ -17,8 +17,8 @@
     - if !page_description.blank?
       %meta{:content=>"#{page_description}",:property=>"description"}
       %meta{:content=>"#{page_description}",:property=>"og:description"}
-    - if !page_fb_icon_path.blank?
-      %meta{:content=>"#{page_fb_icon_path}",:property=>"og:image"}
+    - if !og_image.blank?
+      %meta{:content=>"#{og_image}",:property=>"og:image"}
     - if !og_site_name.blank?
       %meta{:content=>"#{og_site_name}",:property=>"og:site_name"}
     - if !page_title.blank?
