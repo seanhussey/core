@@ -11,8 +11,6 @@ gem 'rails', '~> 3.2'
 gem 'pg', '~> 0.16'
 gem 'jquery-rails', '3.0.4'
 gem 'simplecov', :require => false, :group => :test
-gem 'freerange_acts_as_versioned', :path => '../third_party_library/acts_as_versioned', :require => 'acts_as_versioned'
-
 
 group :assets do
   gem 'sass-rails',   '3.2.6'

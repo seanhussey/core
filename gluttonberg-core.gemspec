@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'will_paginate' , '3.0.5'
   s.add_dependency 'rubyzip', '0.9.9'
   s.add_dependency 'acts_as_tree', '1.4.0'
-  #s.add_dependency 'freerange_acts_as_versioned', '1.0.0'
+  s.add_dependency 'freerange_acts_as_versioned', '2.0.0'
   s.add_dependency 'acts-as-taggable-on', '2.4.1'
   s.add_dependency 'sidekiq', '2.16.0'
   s.add_dependency 'jeditable-rails', '0.1.1'
