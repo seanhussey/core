@@ -34,12 +34,10 @@ module Gluttonberg
       # shows publish message if object's currect version is published
       def publish_message(object , versions)
         content = msg = ""
-
         if versions.length > 1
           msg = content_tag(:a,  "Click here to see other versions" , :onclick => "$('#select-version').toggle();" , :href => "javascript:;"  , :title => "Click here to see other versions").html_safe
           msg = content_tag(:span , msg , :class => "view-versions").html_safe
         end
-
         content = content_tag(:div , "Updated on #{object.updated_at.to_s(:long)}    #{msg}".html_safe , :class => "unpublish_message") unless object.updated_at.blank?
         content.html_safe
       end
@@ -73,7 +71,11 @@ module Gluttonberg
       def submit_and_publish_controls(form, object, can_publish, schedule_field=true, opts={})
         version_status = object.loaded_version.blank? ? '' : object.loaded_version.version_status
         html = content_tag("legend", "Publish").html_safe
-        html += form.publishing_schedule(schedule_field)
+        if object.published?
+          html += content_tag(:p, "<span class='date'>Published on #{object.published_at.strftime("%d/%m/%Y")}</span>".html_safe)
+        else
+          html += form.publishing_schedule(schedule_field)
+        end
         html += form.hidden_field(:state, :class => "_publish_state") 
         html += form.hidden_field(:_publish_status, :class => "_publish_status") 
         html += if can_publish
