@@ -34,7 +34,6 @@ module Gluttonberg
         options[:src] = asset.url_for(thumbnail_type)
       end
 
-
   end # Assets
 end # Gluttonberg
 

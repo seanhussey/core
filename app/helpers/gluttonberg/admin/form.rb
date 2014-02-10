@@ -15,22 +15,6 @@ module Gluttonberg
         content_tag(:p, content.html_safe, :class => "controls")
       end
 
-      # Controls for publishable forms. Writes out a draft ,  publish/unpublish button and a cancel link
-      def publishable_form_controls(return_url , object_name , is_published )
-        content = hidden_field(:published , :value => false)
-        content += "#{link_to("<strong>Cancel</strong>", return_url)}"
-        content += " or #{submit_tag("draft")}"
-        content += " or #{submit_tag("publish" , :onclick => "publish('#{object_name}_published')" )}"
-        content_tag(:p, content, :class => "controls")
-      end
-
-      def publisable_dropdown(form ,object)
-        val = object.state
-        val = "ready" if val.blank? || val == "not_ready"
-        @@workflow_states = [  [ 'Draft' , 'ready' ] , ['Published' , "published" ] , [ "Archived" , 'archived' ]  ]
-        form.select( :state, options_for_select(@@workflow_states , val)   )
-      end
-
       # shows publish message if object's currect version is published
       def publish_message(object , versions)
         content = msg = ""
@@ -54,8 +38,9 @@ module Gluttonberg
         content_tag(:p, html.html_safe, :class => "controls")
       end
 
-      def admin_form_controls_for_published_objects(opts={})
-        html = submit_tag("Save revision" , :id => "revision_btn", :class => "btn publishing_btn").html_safe
+      def admin_form_controls_for_published_objects(revisions=true, opts={})
+        html =  ""
+        html += submit_tag("Save revision" , :id => "revision_btn", :class => "btn publishing_btn").html_safe if revisions == true
         html += " ".html_safe +  submit_tag("Update" , :id => "update_btn", :class => "btn btn-success publishing_btn").html_safe
         html += " ".html_safe +  submit_tag("Unpublish" , :id => "unpublish_btn", :class => "btn btn-danger publishing_btn").html_safe
         content_tag(:p, html.html_safe, :class => "controls")
@@ -68,7 +53,7 @@ module Gluttonberg
       end
 
       # new form controls based on new logic of authorization and publishing workflow
-      def submit_and_publish_controls(form, object, can_publish, schedule_field=true, opts={})
+      def submit_and_publish_controls(form, object, can_publish, schedule_field=true, revisions=true, opts={})
         version_status = object.loaded_version.blank? ? '' : object.loaded_version.version_status
         html = content_tag("legend", "Publish").html_safe
         if object.published?
@@ -82,7 +67,7 @@ module Gluttonberg
           if version_status == 'submitted_for_approval'
             admin_form_controls_for_approving_or_decling_objects(opts)
           elsif object.published?
-            admin_form_controls_for_published_objects(opts)
+            admin_form_controls_for_published_objects(revisions, opts)
           else
             admin_form_controls_for_draft_objects(opts)
           end

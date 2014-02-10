@@ -34,6 +34,7 @@ module Gluttonberg
 
         def create
           @blog = Blog.new(params[:gluttonberg_blog])
+          @blog.current_user_id = current_user.id
           generic_create(@blog, {
             :name => "blog",
             :success_path => admin_blogs_path
@@ -49,6 +50,7 @@ module Gluttonberg
 
         def update
           @blog.assign_attributes(params[:gluttonberg_blog])
+          @blog.current_user_id = current_user.id
           generic_update(@blog, {
             :name => "blog",
             :success_path => admin_blogs_path

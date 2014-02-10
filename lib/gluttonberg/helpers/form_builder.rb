@@ -3,6 +3,7 @@ module Gluttonberg
     module FormBuilder
       include ActionView::Helpers
       def publisable_dropdown
+        ActiveSupport::Deprecation.warn "f.publisable_dropdown is deprecated and will be removed in Gluttonberg 4.0, use submit_and_publish_controls(form, object, can_publish, schedule_field=true, revisions=true, opts={}) instead."
         object = self.object
         val = object.state
         if val == "not_ready"
@@ -101,6 +102,7 @@ module Gluttonberg
           view.extend ApplicationHelper
           view.render(:partial => partial, :locals => assigns)
         end
+
     end #FormBuilder
 
     ActionView::Helpers::FormBuilder.send(:include , Gluttonberg::Helpers::FormBuilder)
