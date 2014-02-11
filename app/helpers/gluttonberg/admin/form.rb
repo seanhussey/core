@@ -54,7 +54,7 @@ module Gluttonberg
 
       # new form controls based on new logic of authorization and publishing workflow
       def submit_and_publish_controls(form, object, can_publish, schedule_field=true, revisions=true, opts={})
-        version_status = object.loaded_version.blank? ? '' : object.loaded_version.version_status
+        version_status = !object.respond_to?(:loaded_version) || object.loaded_version.blank? ? '' : object.loaded_version.version_status
         html = content_tag("legend", "Publish").html_safe
         if object.published?
           html += content_tag(:p, "<span class='date'>Published on #{object.published_at.strftime("%d/%m/%Y")}</span>".html_safe)
