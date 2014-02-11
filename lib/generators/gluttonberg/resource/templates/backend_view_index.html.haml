@@ -73,7 +73,7 @@
                       %li= link_to "Edit", edit_admin_<%= singular_name %>_path(<%= singular_name %>) , :class => ""
                       %li.divider
                       %li= link_to "Duplicate", duplicate_admin_<%= singular_name %>_path(<%= singular_name %>) , :class => ""
-                      - if can? :destroy , <%= class_name %>
+                      - if can? :destroy , <%= singular_name %>
                         %li.divider
                         %li.danger
                           = link_to "Delete", delete_admin_<%= singular_name %>_path(<%= singular_name %>)  , :class => ""

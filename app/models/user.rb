@@ -8,6 +8,9 @@ class User < ActiveRecord::Base
   validates_format_of :password, :with => Rails.configuration.password_pattern , :if => :require_password?, :message => Rails.configuration.password_validation_message
 
   has_many :collapsed_pages, :class_name => "Gluttonberg::CollapsedPage", :dependent => :destroy
+  has_many :authorizations, :class_name => "Gluttonberg::Authorization", :dependent => :destroy
+  attr_accessible :authorizations, :authorizations_attributes
+  accepts_nested_attributes_for :authorizations, :allow_destroy => false
 
   clean_html [:bio]
 
@@ -24,6 +27,10 @@ class User < ActiveRecord::Base
     Notifier.password_reset_instructions(self.id).deliver
   end
 
+  def ability
+    @ability ||= Ability.new(self)
+  end
+
   def super_admin?
     self.role == "super_admin"
   end
@@ -32,15 +39,23 @@ class User < ActiveRecord::Base
     self.role == "admin"
   end
 
+  def editor?
+    self.role == "editor"
+  end
+
+  def contributor?
+    self.role == "contributor"
+  end
+
   def self.user_roles
-    @roles ||= (["super_admin" , "admin" , "contributor"] << (Rails.configuration.user_roles) ).flatten
+    @roles ||= (["super_admin" , "admin", 'editor' , "contributor"] << (Rails.configuration.user_roles) ).flatten
   end
 
   def user_valid_roles(user)
     if user.id == self.id
       []
     else
-      roles = (["super_admin" , "admin" , "contributor"] << (Rails.configuration.user_roles) ).flatten
+      roles = (["super_admin" , "admin", 'editor' , "contributor"] << (Rails.configuration.user_roles) ).flatten
       roles.delete("super_admin") unless self.super_admin?
       if !self.super_admin? && !self.admin?
         [self.role]
@@ -51,11 +66,15 @@ class User < ActiveRecord::Base
   end
 
   def have_backend_access?
-    ["super_admin" , "admin" , "contributor"].include?(self.role)
+    ["super_admin" , "admin", 'editor' , "contributor"].include?(self.role)
   end
 
   def self.all_super_admin_and_admins
     self.where(:role => ["super_admin" , "admin"]).all
+  end
+
+  def self.all_super_admin_and_admins_editors
+    self.where(:role => ["super_admin" , "admin", 'editor']).all
   end
 
   def self.search_users(query, current_user, get_order)
@@ -81,6 +100,58 @@ class User < ActiveRecord::Base
       user = user.where(:id => current_user.id)
     end
     user.first
+  end
+
+  def authorized?(object)
+    auth = nil
+    status = case object.class.name.to_s
+    when "Gluttonberg::Page"
+      auth = self.authorizations.where(:authorizable_type => object.class.name).first
+      unless auth.blank? 
+        auth.authorizable_id == object.id || object.grand_child_of?(auth.authorizable) 
+      else
+        false
+      end
+    when "Gluttonberg::Blog"
+      auth = self.authorizations.where(:authorizable_type => object.class.name, :authorizable_id => object.id).first
+      unless auth.blank?
+        auth.allow == true
+      else
+        false
+      end
+    when "String"
+      auth = self.authorizations.where(:authorizable_type => object).first
+      unless auth.blank?
+        auth.allow == true 
+      else
+        false
+      end
+    else
+      auth = self.authorizations.where(:authorizable_type => object.class.name).first
+      unless auth.blank?
+        auth.allow == true
+      else
+        true
+      end
+    end
+    status
+  end
+
+  def can_view_page(object)
+    if self.contributor?
+      if object.class.name == "Gluttonberg::Page"
+        auth = self.authorizations.where(:authorizable_type => object.class.name).first
+        unless auth.blank? || auth.authorizable.blank?
+          object.id == auth.authorizable.id || object.grand_child_of?(auth.authorizable) || object.grand_parent_of?(auth.authorizable)
+        else
+          false
+        end
+      else
+        false
+      end
+    else
+      true
+    end
   end
 
 end

@@ -81,15 +81,17 @@ module Gluttonberg
 
           def find_gallery
             @gallery = Gallery.where(:id => params[:id]).first
+            raise ActiveRecord::RecordNotFound if @gallery.blank?
             @gallery_images = @gallery.gallery_images.order("position ASC")
           end
 
           def authorize_user
             authorize! :manage, Gluttonberg::Gallery
+            authorize! :manage_model, "Gluttonberg::Gallery"
           end
 
           def authorize_user_for_destroy
-            authorize! :destroy, Gluttonberg::Gallery
+            authorize! :destroy, @gallery
           end
 
           def prepare_repeaters

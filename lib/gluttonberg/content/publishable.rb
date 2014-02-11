@@ -12,7 +12,10 @@ module Gluttonberg
         scope :archived, lambda { where(:state => "archived") }
         scope :draft, lambda { where( :state => "draft") }
         scope :non_published, lambda { where("state != 'published'") }
+        before_validation :set_status 
         before_validation :clean_published_date 
+        attr_accessor :_publish_status
+        attr_accessible :_publish_status
       end
 
       # Change the publish state to true and save the record.
@@ -71,6 +74,16 @@ module Gluttonberg
         end  
       end
       
+      def set_status
+        if ["draft", "ready", "not_ready"].include?(self.state) || self.state.blank?
+          self.state = "draft"
+        elsif ["published", "archived"].include?(self.state) 
+          self.state = self.state
+        else
+          #self.state = "draft"
+        end
+      end
+
       def clean_published_date
         if self.state != "published"
           self.published_at = nil

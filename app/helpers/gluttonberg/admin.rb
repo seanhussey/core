@@ -41,7 +41,8 @@ module Gluttonberg
             output << render( :partial => "gluttonberg/admin/content/pages/row", :locals => { :page => page, :inset => inset , :row => row })
             if page.children.count > 0
               output << "<ol class='dd-list'>"
-                page_table_rows(page.children.includes(:user, :localizations, :collapsed_pages), output, inset + 1 , row)
+                children = page.children.find_all{|page| current_user.can_view_page(page) } 
+                page_table_rows(children, output, inset + 1 , row)
               output << "</ol>"
             end
           output << "</li>"
@@ -90,22 +91,20 @@ module Gluttonberg
         action_name == "edit"  || action_name == "update"
       end
 
-      def pages_lists_options(pages)
-        array = []
+      def pages_lists_options(pages=nil, array=[], level=0)
+        if pages.blank? && level==0
+          pages = Gluttonberg::Page.where(:parent_id => nil).order("position ASC").all
+        end
+        pages = pages.find_all{|page| current_user.can_view_page(page) } 
         pages.each do |page|
-          sub_array = [[page.name, page.id]]
-          _add_option(sub_array, page) unless page.children.blank?
-          array << [page.name , sub_array]
+          array << [page.name, page.id, {class: "level-#{level}"}.merge(current_user.ability.can?(:manage_object, page) ? {} : {:disabled => :disabled})]
+          unless page.children.blank?
+            pages_lists_options(page.children, array, level+1)
+          end
         end
         array
       end
 
-      def _add_option(array, page)
-        page.children.each do |child|
-          array << [child.name, child.id]
-          _add_option(array, child)
-        end
-      end
 
       def page_description_options
         @descriptions = {}

@@ -30,8 +30,20 @@
       = f.label :image_id , "Image"
       = f.asset_browser( :image_id ,  opts = { :filter => "image"   } )  
     
-
-      
+    = f.fields_for :authorizations do |auth_form|
+      %p
+        = auth_form.hidden_field :authorizable_type
+        - if auth_form.object.authorizable_type == "Gluttonberg::Page"
+          %label
+            Page
+          = auth_form.select(:authorizable_id, pages_lists_options, {:prompt => "Select Page"}, {:class=>" chzn-select"})
+        - elsif auth_form.object.authorizable_type == "Gluttonberg::Blog"            
+          = auth_form.label :allow , "Blog (#{auth_form.object.authorizable.name})"
+          = auth_form.check_box :allow
+          = auth_form.hidden_field :authorizable_id
+        - else
+          = auth_form.label :allow , auth_form.object.authorizable_type.to_s.demodulize
+          = auth_form.check_box :allow
 
   .span4
     %legend 

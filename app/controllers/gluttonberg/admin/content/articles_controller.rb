@@ -9,6 +9,7 @@ module Gluttonberg
         before_filter :find_article, :only => [:show, :edit, :update, :delete, :destroy , :duplicate]
         before_filter :authorize_user , :except => [:destroy , :delete]
         before_filter :authorize_user_for_destroy , :only => [:destroy , :delete]
+        before_filter :authorize_blog_for_current_user
         record_history :@article , :title
         before_filter :all_articles, :only => [:index, :export]
 
@@ -46,20 +47,22 @@ module Gluttonberg
           @authors = User.all
           unless params[:version].blank?
             @version = params[:version]
-            @article.revert_to(@version)
+            @article_localization.revert_to(@version)
           end
         end
 
         def update
           article_attributes = params["gluttonberg_article_localization"].delete(:article)
+          @article_localization.current_user_id = current_user.id
+          article = @article_localization.article
+          article.assign_attributes(article_attributes)
           if @article_localization.update_attributes(params[:gluttonberg_article_localization])
-            article = @article_localization.article
             article.update_attributes(article_attributes)
 
             _log_article_changes
 
             flash[:notice] = "The article was successfully updated."
-            redirect_to edit_admin_blog_article_path(@article.blog, @article)
+            redirect_to edit_admin_blog_article_path(@article.blog, @article) + (@article_localization.reload && @article_localization.versions.latest.version != @article_localization.version ? "?version=#{@article_localization.versions.latest.version}" : "")
           else
             flash[:error] = "Sorry, The article could not be updated."
             render :edit
@@ -76,6 +79,7 @@ module Gluttonberg
         end
 
         def destroy
+          @article.current_localization
           generic_destroy(@article, {
             :name => "article",
             :success_path => admin_blog_articles_path(@blog),
@@ -132,6 +136,8 @@ module Gluttonberg
               @article_localization = ArticleLocalization.where(:id => params[:localization_id]).first
             end
             @article = Article.where(:id => params[:id]).first
+            @article.instance_variable_set(:@current_localization, @article_localization)
+            @article
           end
 
           def authorize_user
@@ -140,6 +146,10 @@ module Gluttonberg
 
           def authorize_user_for_destroy
             authorize! :destroy, Gluttonberg::Article
+          end
+
+          def authorize_blog_for_current_user
+            authorize! :manage_object, @blog
           end
 
           def _log_article_changes
@@ -154,7 +164,6 @@ module Gluttonberg
 
           def all_articles
             conditions = {:blog_id => params[:blog_id]}
-            conditions[:user_id] = current_user.id unless current_user.super_admin?
             @articles = Article.where( conditions).order("created_at DESC")
           end
 

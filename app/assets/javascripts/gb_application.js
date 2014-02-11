@@ -16,6 +16,7 @@ $(document).ready(function() {
   WarnNavigateAway.init();
   AutoSave.init();
   $(".chzn-select").chosen();
+  initPublishingButton();
 });
 
 
@@ -798,7 +799,7 @@ function initNestable(){
     e.preventDefault();
   });
 
-  $('.dd').each(function(){
+  $('.dd.dd-sortable').each(function(){
     var $list = $(this);
     var $saveButton = $($list.attr('data-saveButton'));
     $saveButton.attr('disabled', 'disabled');
@@ -1083,3 +1084,19 @@ var AutoSave = {
   }
 };
 
+
+function initPublishingButton(){
+  $(".publishing_btn").click(function(e){
+    var id = $(this).attr('id');
+    if(id == "draft_btn" || id == "unpublish_btn"){
+      $("._publish_state").val("draft");
+    } else if(id == "publish_btn" || id == "update_btn"){
+      $("._publish_state").val("published");
+    } else if(id == "approval_btn"){
+      $("._publish_status").val("submitted_for_approval");
+    } else if(id  == "revision_btn"){
+      $("._publish_status").val("revision");
+    }
+
+  });
+}

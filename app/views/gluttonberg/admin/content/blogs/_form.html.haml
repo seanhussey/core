@@ -1,5 +1,5 @@
 - unless @blog.blank?
-  = version_listing(@blog.versions , @version )
+  = version_listing(@blog.versions , @blog.version )
 
 = form_for(@blog, :url => url , :html => {:class => "validation"}) do  |f|
   = gb_error_messages_for(@blog)
@@ -47,10 +47,7 @@
 
 
   .span4
-    %legend Publish
-    - if can? :publish , Gluttonberg::Blog
-      = f.publisable_dropdown
-    = form_controls(admin_blogs_path)
+    = submit_and_publish_controls(f, @blog, can?(:publish , Gluttonberg::Blog))
 
 
 = enable_redactor("jwysiwyg")
