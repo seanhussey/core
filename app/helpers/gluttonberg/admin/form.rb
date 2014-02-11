@@ -46,9 +46,9 @@ module Gluttonberg
         content_tag(:p, html.html_safe, :class => "controls")
       end
 
-      def admin_form_controls_for_approving_or_decling_objects(opts={})
+      def admin_form_controls_for_approving_or_decling_objects(version, opts={})
         html = submit_tag("Approve" , :id => "publish_btn", :class => "btn btn-success publishing_btn").html_safe
-        html += " ".html_safe +  submit_tag("Decline" , :id => "decline_btn", :class => "btn btn-danger publishing_btn").html_safe
+        html += " ".html_safe +  link_to("Decline", admin_decline_content_path(version.class.name.gsub("::Version",""), version.id) , :id => "decline_btn", :class => "btn btn-danger ").html_safe
         content_tag(:p, html.html_safe, :class => "controls")
       end
 
@@ -65,7 +65,7 @@ module Gluttonberg
         html += form.hidden_field(:_publish_status, :class => "_publish_status") 
         html += if can_publish
           if version_status == 'submitted_for_approval'
-            admin_form_controls_for_approving_or_decling_objects(opts)
+            admin_form_controls_for_approving_or_decling_objects(object.loaded_version, opts)
           elsif object.published?
             admin_form_controls_for_published_objects(revisions, opts)
           else
@@ -160,7 +160,7 @@ module Gluttonberg
                 published_version = version if version.version_status == "published"
                 if (published_version.blank? || published_version.version < version.version) 
                   if version.version_status == "submitted_for_approval"
-                    path = edit_admin_blog_article_path( :blog_id => object.article.blog_id, :localization_id => object.id, :id => object.article.id) + "?version=#{version.version}"
+                    path = edit_admin_blog_article_path( :blog_id => object.article.blog_id, :localization_id => object.id, :id => object.article.id, :version => version.version)
                     submitted_content << [object.title, path, version] 
                     break
                   end

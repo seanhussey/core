@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     namespace :admin do
       root :to => "main#index"
       get "waiting-for-approval" => "main#waiting_for_approval" , :as => :waiting_for_approval
-      get "decline-content/:version_class/:version_id" => "main#decline_content" , :as => :decline_content
+      get "decline-content/:object_class/:version_id" => "main#decline_content" , :as => :decline_content
       
 
       scope :module => 'content' do

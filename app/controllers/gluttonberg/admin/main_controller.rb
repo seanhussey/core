@@ -33,11 +33,18 @@ module Gluttonberg
 
       def decline_content
         status = false
-        version = Kernel.const_get(params[:version_class]).where(:id => params[:version_class]).first
+        version = params[:object_class].constantize::Version.where(:id => params[:version_id]).first
         unless version.blank?
-          status = version.update_attributes(:version_status => 'declined') if version.version_status == 'submitted_for_approval'
+          if version.version_status == 'submitted_for_approval'
+            version.version_status = 'declined'
+            status = version.save
+          end
         end
-        #render :text => (status ? "OK" : "Error")
+        if status
+          flash[:notice] = "The version was successfully declined."
+        else
+          flash[:notice] = "The version was failed to decline."
+        end
         redirect_to :back
       end
 
