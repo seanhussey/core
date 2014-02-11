@@ -41,6 +41,20 @@ module Gluttonberg
           end
         end
         if status
+          unless version.user.blank?
+            title = if Gluttonberg::Content::actual_content_classes.map{|obj| obj.name}.include?(params[:object_class])
+              object_id = (version.respond_to?(:page_localization_id) ? version.page_localization_id : version.page_id)
+              object = Gluttonberg::PageLocalization.where(:id => object_id).first
+              object.name unless object.blank?
+            elsif params[:object_class] == "Gluttonberg::ArticleLocalization"
+              object = version.article_localization
+              object.title unless object.blank?
+            else
+              object = version.send(params[:object_class].demodulize.underscore.to_sym)
+              object.title_or_name? unless object.blank?
+            end
+            Notifier.version_declined(current_user, version, request.referer, title).deliver 
+          end
           flash[:notice] = "The version was successfully declined."
         else
           flash[:notice] = "The version was failed to decline."

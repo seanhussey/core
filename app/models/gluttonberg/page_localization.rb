@@ -87,6 +87,7 @@ module Gluttonberg
         unless content_page.blank?
           content_page.state = self.page.state
           content_page._publish_status = self.page._publish_status
+          content_page.current_user_id = self.page.current_user_id
         end
         update = params[content.association_name][content.id.to_s]
         content.attributes = update if update

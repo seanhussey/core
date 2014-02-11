@@ -206,7 +206,7 @@ module Gluttonberg
         if current_user.ability.can?(:publish, :any)
           submitted_content = version_dashboard_notifications_data
 
-          more = submitted_content.length > 5
+          more = (submitted_content.length > 5)
           submitted_content = submitted_content[0..4] if more
           render :partial => "/gluttonberg/admin/shared/version_dashboard_notifications", :locals => {
             :submitted_content => submitted_content,

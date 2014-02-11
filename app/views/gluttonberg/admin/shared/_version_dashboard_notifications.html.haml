@@ -7,5 +7,5 @@
           - unless content[0].blank?
             = truncate(content[0].to_s, :length => 30)
           = link_to("Review", content[1], :class => " ")
-      - if
+      - if more
         = link_to "More", admin_waiting_for_approval_path

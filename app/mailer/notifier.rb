@@ -31,5 +31,16 @@ class Notifier < Gluttonberg::BaseNotifier
     
     mail(:to => @admin.email, :subject => "Re: [#{@website_title}] #{@article.title}")
   end
+
+  def version_declined(current_user, version, url, title)
+    user = version.user if version && version.user
+    @current_user = current_user
+    @version = version
+    @title = title.blank? ? 'Page/Post' : title
+    setup_email
+    @subject += "Website Publishing"
+    @url = url
+    mail(:to => user.email, :subject => @subject) unless user.blank?
+  end
     
 end
