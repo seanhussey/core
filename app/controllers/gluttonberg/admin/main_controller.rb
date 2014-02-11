@@ -2,6 +2,7 @@ module Gluttonberg
   module Admin
     class MainController < Gluttonberg::Admin::BaseController
       unloadable
+      before_filter :authorizer_for_publish , :only => [:waiting_for_approval , :decline_content]
 
       def index
         @categories_count = ActsAsTaggableOn::Tag.find_by_sql(%{
@@ -26,6 +27,24 @@ module Gluttonberg
 
       def show
       end
+
+      def waiting_for_approval
+      end
+
+      def decline_content
+        status = false
+        version = Kernel.const_get(params[:version_class]).where(:id => params[:version_class]).first
+        unless version.blank?
+          status = version.update_attributes(:version_status => 'declined') if version.version_status == 'submitted_for_approval'
+        end
+        #render :text => (status ? "OK" : "Error")
+        redirect_to :back
+      end
+
+      private
+        def authorizer_for_publish
+          authorize! :publish, :any
+        end
 
     end
   end

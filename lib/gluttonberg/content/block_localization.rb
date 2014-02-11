@@ -10,7 +10,7 @@ module Gluttonberg
       included do
         cattr_accessor :content_type, :association_name
         belongs_to :page_localization
-        delegate :state, :_publish_status, :state_changed?, :to => :page
+        delegate :state, :_publish_status, :state_changed?, :to => :page, :allow_nil => true
       end
       
       def association_name

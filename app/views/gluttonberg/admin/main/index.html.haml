@@ -37,6 +37,7 @@
       Edit Your Site
     %br
     .row-fluid.dashboard
+      = version_dashboard_notifications
       - if Gluttonberg::Blog.table_exists?
         - @blog = Gluttonberg::Blog.first
         - if @blog

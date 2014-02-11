@@ -35,6 +35,7 @@ module Gluttonberg
       end
 
       module OverrideActsAsVersioned
+        
         # Clears old revisions if a limit is set with the :limit option in <tt>acts_as_versioned</tt>.
         # Override this method to set your own criteria for clearing old versions.
         def clear_old_versions

@@ -187,23 +187,31 @@ body
   background-position: 15px -32px
   background-repeat: no-repeat
 
-.dashboard.well
-  background-color: #fff
+.dashboard
+  .well
+    background-color: #fff
 
-.dashboard .nav-list
-  margin: 0
-  padding: 0
+  &.row-fluid
+    .span3
+      :min-width 200px
 
-.dashboard a
-  display: block
-  margin: 0 0 3px 0
+  .nav-list
+    margin: 0
+    padding: 0
 
-.dashboard a.edit
-  background-image: url(/assets/gb_icon_blog.png)
+  a
+    display: block
+    margin: 0 0 3px 0
 
-.dashboard a.add
-  background-image: url(/assets/gb_icon_add.png)
+    &.edit
+      background-image: url(/assets/gb_icon_blog.png)
 
+    &.add
+      background-image: url(/assets/gb_icon_add.png)
+
+  .waiting_for_approval
+    a  
+      display: inline
 
 
 a
