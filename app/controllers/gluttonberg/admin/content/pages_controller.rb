@@ -134,7 +134,7 @@ module Gluttonberg
         private
 
         def prepare_to_edit
-          @pages  = params[:id] ? Page.where("id  != ? " , params[:id]).all : Page.all
+          @pages  = Page.where("parent_id IS NULL ").order("position ASC").all
         end
 
         def find_page

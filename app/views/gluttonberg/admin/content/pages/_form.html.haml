@@ -9,7 +9,7 @@
               = f.label :name
               = f.text_field(:name, :id => "page_title", :class=>"span5 required")
                     
-            -#- if Gluttonberg::Member.enable_members == true
+            - if Gluttonberg::Member.enable_members == true
               %p
                 = f.label :groups 
                 = f.select("group_ids" ,  Gluttonberg::Group.order("position ASC").collect{|cc| [cc.name , cc.id] }   , { :include_blank => true  } , { :multiple => true , :class => "large" } )
