@@ -1017,3 +1017,15 @@ select.size_selector
 
 body .redactor_toolbar li a.redactor_btn_gluttonberg_embeds
   :background-position -600px
+
+
+ul.chosen-results
+  @for $i from 0 through 10
+    li.level-#{$i}
+      padding-left: 6px + 12px * $i
+.span4
+  .chzn-select
+    :width 100%
+.home_page_setting_dropdown.chzn-select
+  :width 100%
+  :max-width 500px

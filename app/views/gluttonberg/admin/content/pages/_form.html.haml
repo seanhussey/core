@@ -23,12 +23,11 @@
           - else
             = f.select(:description_name, page_description_options , { :prompt => "Select Page Template" } , {:disabled => "disabled", :class => "chzn-select span5"})
 
-      - unless @pages.blank?
-        %fieldset
-          %p
-            = f.label :parent_id , "Parent page", :class => "block_label"
-            %br
-            = f.select(:parent_id, pages_lists_options(@pages), {:prompt => "No Parent"}, {:class=>" chzn-select span5"})
+      %fieldset
+        %p
+          = f.label :parent_id , "Parent page", :class => "block_label"
+          %br
+          = f.select(:parent_id, pages_lists_options, {:prompt => "No Parent"}, {:class=>" chzn-select span5"})
       %hr
       %p
         - if @page.published?

@@ -95,21 +95,18 @@ module Gluttonberg
         action_name == "edit"  || action_name == "update"
       end
 
-      def pages_lists_options(pages)
-        array = []
+      def pages_lists_options(pages=nil, array=[], level=0)
+        puts "----------"
+        if pages.blank? && level==0
+          pages = Gluttonberg::Page.where(:parent_id => nil).order("position ASC").all
+        end
         pages.each do |page|
-          sub_array = [[page.name, page.id]]
-          _add_option(sub_array, page) unless page.children.blank?
-          array << [page.name , sub_array]
+          array << [page.name, page.id, {class: "level-#{level}"}]
+          unless page.children.blank?
+            pages_lists_options(page.children, array, level+1)
+          end
         end
         array
-      end
-
-      def _add_option(array, page)
-        page.children.each do |child|
-          array << [child.name, child.id]
-          _add_option(array, child)
-        end
       end
 
       def page_description_options

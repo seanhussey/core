@@ -48,7 +48,7 @@ module Gluttonberg
           end
 
           def prepare_to_edit
-            @pages  = Page.where("id != ? AND parent_id IS NULL" , @page.id).all
+            @pages  = Page.where("id != ? AND parent_id IS NULL" , @page.id).order("position asc").all
           end
 
           def fix_nav_label_and_slug

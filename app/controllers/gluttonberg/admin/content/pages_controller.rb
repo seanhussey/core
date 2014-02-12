@@ -20,7 +20,6 @@ module Gluttonberg
         def new
           @page = Page.new(:parent_id => params[:parent_id])
           @page_localization = PageLocalization.new
-          prepare_to_edit
         end
 
         def delete
@@ -42,7 +41,6 @@ module Gluttonberg
             flash[:notice] = "The page was successfully created."
             redirect_to edit_admin_page_page_localization_path( :page_id => @page.id, :id => @page.current_localization.id)
           else
-            prepare_to_edit
             render :new
           end
         end
@@ -54,11 +52,6 @@ module Gluttonberg
             :success_path => admin_pages_path,
             :failure_path => admin_pages_path
           })
-        end
-
-        def edit_home
-          @current_home_page_id  = Page.home_page.id unless Page.home_page.blank?
-          @pages = Page.all
         end
 
         def update_home
@@ -132,10 +125,6 @@ module Gluttonberg
         end
 
         private
-
-        def prepare_to_edit
-          @pages  = Page.where("parent_id IS NULL ").order("position ASC").all
-        end
 
         def find_page
           @page = Page.find( params[:id])
