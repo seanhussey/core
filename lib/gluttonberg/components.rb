@@ -17,7 +17,7 @@ module Gluttonberg
 
     def self.init_main_nav
       unless @@cleared
-        Gluttonberg::Components.register_for_main_nav("Dashboard", "/admin")
+        Gluttonberg::Components.register_for_main_nav("Dashboard", "/admin", :can_model_name => "Gluttonberg::Page")
         Gluttonberg::Components.register_for_main_nav("Content", "/admin/pages", :can_model_name => "Gluttonberg::Page")
         Gluttonberg::Components.register_for_main_nav("Library", "/admin/assets/all/page/1", :can_model_name => "Gluttonberg::Asset")
         Gluttonberg::Components.register_for_main_nav("Members", "/admin/membership/members", :can_model_name => "Gluttonberg::Member")
