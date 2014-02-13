@@ -109,9 +109,11 @@ module Gluttonberg
       def page_description_options
         @descriptions = {}
         Gluttonberg::PageDescription.all.each do |name, desc|
-          group = desc[:group].blank? ? "" : desc[:group]
-          @descriptions[group] = [] if @descriptions[group].blank?
-          @descriptions[group] << [desc[:description], name]
+          if !current_user.contributor? || desc.contributor_access? || (@page && name.to_s == @page.description_name)
+            group = desc[:group].blank? ? "" : desc[:group]
+            @descriptions[group] = [] if @descriptions[group].blank?
+            @descriptions[group] << [desc[:description], name]
+          end
         end
         @descriptions
       end
