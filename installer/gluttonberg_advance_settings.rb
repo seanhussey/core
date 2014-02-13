@@ -58,9 +58,9 @@
         :bio => "BIO"
       }
     # Register Gluttonberg Model Mixin
-    # It enables you to extend any gluttonberg model
-    # Following example is adding vendormix which is defined in rails application to Gluttonberg member model
-    # Gluttonberg::MixinManager.register_mixin("Gluttonberg::Member", VendorMixin)
+      # It enables you to extend any gluttonberg model
+      # Following example is adding vendormix which is defined in rails application to Gluttonberg member model
+      # Gluttonberg::MixinManager.register_mixin("Gluttonberg::Member", VendorMixin)
 
     # Password pattern and validation message applies on both members and backend users
     Rails.configuration.password_pattern = /^(?=.*\d)(?=.*[a-zA-Z])(?!.*[^\w\S\s]).{6,}$/

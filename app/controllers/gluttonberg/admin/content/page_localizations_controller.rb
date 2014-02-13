@@ -21,7 +21,16 @@ module Gluttonberg
           @page_localization.page.published_at = published_at unless published_at.blank?
           @page_localization.page._publish_status = page_attributes[:_publish_status]
           if @page_localization.update_attributes(params["gluttonberg_page_localization"]) || !@page_localization.changed?
-            @page_localization.page.update_attributes(page_attributes)
+            old_description_name = @page_localization.page.description_name
+            new_description_name = page_attributes[:description_name]
+
+            if(old_description_name != new_description_name)
+              PageRepairer.change_page_description(@page_localization.page, old_description_name, new_description_name, page_attributes)
+            else
+              @page_localization.page.update_attributes(page_attributes)
+            end
+
+            update_publish_state
 
             flash[:notice] = "The page was successfully updated."
             redirect_to edit_admin_page_page_localization_path( :page_id => params[:page_id], :id =>  @page_localization.id)+ (@page_localization.reload && @page_localization.versions && @page_localization.versions.latest.version != @page_localization.version ? "?version=#{@page_localization.versions.latest.version}" : "")

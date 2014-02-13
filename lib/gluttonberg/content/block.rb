@@ -140,7 +140,7 @@ module Gluttonberg
       end
 
       def section_position
-        section[:position]
+        section[:position] if section
       end
 
       # Content type is simply the inflected version of the content class

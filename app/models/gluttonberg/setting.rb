@@ -58,7 +58,7 @@ module Gluttonberg
         :comment_blacklist => ["" , 19 , "When a comment contains any of these words in its comment, Author Name, Author website, Author e-mail, it will be marked as spam. It will match inside words, so \"able\" will match \"comparable\". Please separate words with a comma."],
         :comment_email_as_spam => ["Yes" , 20 , "Do you want to mark those comments as spam which only contains emails and urls?" , "Yes;No" ],
         :comment_number_of_emails_allowed => ["2" , 21 , "How many email addresses should a comment include to be marked as spam?" ],
-        :comment_number_of_urls_allowed => ["2" , 21 , "How many URLs should a comment include to be marked as spam?" ] 
+        :comment_number_of_urls_allowed => ["2" , 21 , "How many URLs should a comment include to be marked as spam?" ]
       }
 
       sitewise_settings = {
@@ -71,7 +71,7 @@ module Gluttonberg
         :restrict_site_access => ["" , 11 , "If this setting is provided then user needs to enter password to access public site."],
         :comment_notification => ["No" , 5 , "Enable comment notification" , "Yes;No" ]
       }
-      
+
       self.generate_or_update_settings(cms_settings)
       self.generate_or_update_settings(settings)
       if Rails.configuration.multisite == false

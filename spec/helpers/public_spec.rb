@@ -81,6 +81,34 @@ module Gluttonberg
       Rails.configuration.cms_based_public_css.should eql(false)
 
     end
+
+    it "shortcode_safe" do
+      shortcode_safe("test").should == "test"
+      shortcode_safe("test [test_shortcode] sentence").should == "test [test_shortcode] sentence"
+      
+      Gluttonberg::Embed.create(:title => "Test", :shortcode => "test_shortcode", :body => "<p>test</p>")
+
+      shortcode_safe("test [test_shortcode] sentence").should == "test <p>test</p> sentence"
+      shortcode_safe("test[test_shortcode]sentence").should == "test<p>test</p>sentence"
+      shortcode_safe("[gallery test]").should == "[gallery test]"
+
+      gallery = Gluttonberg::Gallery.new(:title => "test")
+      gallery.user_id = 1
+      gallery.save
+      asset  = create_image_asset
+
+      def gallery_shortcode(args)
+        if args.length == 1
+          gallery_ul(args.first, :jwysiwyg_image, :fixed_image, {:class => "gallery-ul-class"}, {:class => "gallery-li-class"}, {:class => "gallery-a-class"})
+        end
+      end
+
+      shortcode_safe("[gallery test]").should == ""
+      gallery.gallery_images.create(:asset_id => asset.id)
+      shortcode_safe("[gallery test]").should == ""
+      gallery.publish!
+      shortcode_safe("[gallery test]").should == gallery_ul(gallery.slug, :jwysiwyg_image, :fixed_image, {:class => "gallery-ul-class"}, {:class => "gallery-li-class"}, {:class => "gallery-a-class"}).html_safe
+    end
     
   end #public helpers
 end

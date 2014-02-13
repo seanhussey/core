@@ -3,11 +3,14 @@ module Gluttonberg
     class PagesController < Gluttonberg::Public::BaseController
       before_filter :retrieve_page , :only => [ :show ]
 
-      # If localized template file exist then render 
+      # If localized template file exist then render
       # that file otherwise render non-localized template
       # for ajax request do not render layout
       def show
         return unless verify_page_access
+        if current_user && params[:preview].to_s == "true"
+          Gluttonberg::AutoSave.load_version(@page.current_localization)
+        end
         template = @page.view
         template_path = "pages/#{template}"
 
@@ -41,7 +44,7 @@ module Gluttonberg
         begin
           SitemapGenerator::Interpreter.respond_to?(:run)
         rescue
-          render :layout => "bare" , :template => 'gluttonberg/public/exceptions/not_found' , :status => 404, :handlers => [:haml], :formats => [:html]
+          render :layout => "bare" , :template => 'exceptions/not_found' , :status => 404, :handlers => [:haml], :formats => [:html]
         end
       end
 
@@ -59,7 +62,7 @@ module Gluttonberg
       end
 
       def error_404
-        render :layout => "bare" , :template => 'gluttonberg/public/exceptions/not_found' , :status => 404, :handlers => [:haml], :formats => [:html]
+        render :layout => "bare" , :template => 'exceptions/not_found' , :status => 404, :handlers => [:haml], :formats => [:html]
       end
 
 

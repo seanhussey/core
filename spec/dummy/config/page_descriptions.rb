@@ -67,6 +67,24 @@ Gluttonberg::PageDescription.add do
 
   end
 
+  page :about2 do
+    label "About2"
+    description "About2 Page"
+    view "about2"
+    layout "public"
+
+    section :left_content do
+      label "Left Sidebar"
+      type :html_content
+    end
+
+    section :top_content do
+      label "Content"
+      type :html_content
+    end
+
+  end
+
 
   # redirect to remote
   page :redirect_to_remote do

@@ -17,6 +17,8 @@ $(document).ready(function() {
   AutoSave.init();
   $(".chzn-select").chosen();
   initPublishingButton();
+  initPreview();
+  shortcodeNameValidation();
 });
 
 
@@ -62,12 +64,17 @@ function initClickEventsForAssetLinks(element) {
     parent.find('.choose_asset_hidden_field').val('');
     parent.find('h5').html('');
     parent.find('img').remove();
-    $.ajax({
-      url: link.attr('data_url'),
-      data: 'gluttonberg_setting[value]=',
-      type: "PUT",
-      success: function(data) {}
-    });
+    if(!blank(link.attr('data_url'))){
+      $.ajax({
+        url: link.attr('data_url'),
+        data: 'gluttonberg_setting[value]=',
+        type: "PUT",
+        success: function(data) {}
+      });
+    }else{
+      changedSinceLastAutoSave = true;
+    }
+
     e.preventDefault();
   });
 
@@ -143,7 +150,7 @@ var AssetBrowser = {
     AssetBrowser.display.find("a").click(AssetBrowser.click);
     // Capture size selector change
     AssetBrowser.display.find("select.size_selector").change(AssetBrowser.sizeSelectHandler);
-    
+
     $("#assetsDialog form#asset_search_form").submit(AssetBrowser.search_submit);
 
     AssetBrowser.browser.find("#ajax_new_asset_form").submit(function(e) {
@@ -314,10 +321,10 @@ var AssetBrowser = {
             AssetBrowser.nameDisplay.html('');
           }
         }
-
+        changedSinceLastAutoSave = true;
         autoSaveAsset(AssetBrowser.logo_setting_url, id); //auto save if it is required
       } else {
-        
+
       }
 
       AssetBrowser.close();
@@ -526,8 +533,8 @@ function ajaxFileUploadForAssetLibrary(link) {
 
   $(".ajax-upload-progress").show();
   window.setTimeout(function(){
-    $("#ajax_asset_file").blur();  
-  }, 10);  
+    $("#ajax_asset_file").blur();
+  }, 10);
 
   return false;
 
@@ -671,11 +678,11 @@ function enableRedactor(selector, _linkCount) {
         'outdent', 'indent', '|', 'video',
         'table', '|', 'html', '|', 'fullscreen'
       ],
-      plugins: ['asset_library_image', 'gluttonberg_pages', 'fullscreen'],
+      plugins: ['asset_library_image', 'gluttonberg_embeds', 'gluttonberg_pages', 'fullscreen'],
       keyupCallback : function(){
         WarnNavigateAway.changeEventHandler();
         AutoSave.changeEventHandler();
-      } 
+      }
     });
 
   });
@@ -765,7 +772,7 @@ function initSlugManagement() {
     if(pt.length > 0 && ps.length > 0 ){
       var regex = /[\!\*'"″′‟‛„‚”“”˝\(\);:.@&=+$,\/?%#\[\]]/gim;
       var pt_function = function() {
-        if (!donotmodify) 
+        if (!donotmodify)
           ps.val(pt.val().toLowerCase().replace(/\s/gim, '-').replace(regex, ''));
       };
 
@@ -805,6 +812,7 @@ function initNestable(){
     $saveButton.attr('disabled', 'disabled');
     $listNestable = $list.nestable({
       /* config options */
+      maxDepth: 10
     }).on("change", function(){
       if(doesListReallyChanged($list) ){
         enableButton($saveButton);
@@ -823,14 +831,14 @@ function initNestable(){
     $(".nestable_dragtree button[data-action='collapse']").click(function(e){
       var pageID = $(this).parents(".dd-item").attr('data-id');
       $.get( "/admin/pages/"+pageID+"/collapse", function( data ) {
-        
+
       });
     });
 
     $(".nestable_dragtree button[data-action='expand']").click(function(e){
       var pageID = $(this).parents(".dd-item").attr('data-id');
       $.get( "/admin/pages/"+pageID+"/expand", function( data ) {
-        
+
       });
     });
   });
@@ -898,7 +906,7 @@ var WarnNavigateAway = {
 
     $('form').submit(WarnNavigateAway.removeEventHandler);
   },
-  
+
   changeEventHandler : function(e){
     if(!editingInProgress){
       setNavigationAwayConfirm();
@@ -908,7 +916,7 @@ var WarnNavigateAway = {
       window.onbeforeunload = function() {
         AutoSave.save_now();
         return "Any changes to this page will not be saved.";
-      }; 
+      };
     }
   },
   removeEventHandler : function(){
@@ -959,22 +967,32 @@ var AutoSave = {
   changeEventHandler: function(e){
     changedSinceLastAutoSave = true;
   },
-  save_now: function(){
-    if(changedSinceLastAutoSave){
+  save_now: function(successCallback){
+    var version = getParameterByName(window.location, 'version');
+
+    if(!blank(version) || changedSinceLastAutoSave){
       var form = AutoSave.formObj;
       if(form == undefined){
         form = $("form.auto_save");
       }
       if(form != null && form.length > 0 ){
         $.ajax({
-          url: AutoSave.autosave_url,
+          url: AutoSave.autosave_url+(blank(version) ? '' : '?version='+version),
           data: form.serialize(),
           type: "POST",
           success: function(data) {
+
           },
           complete: function(){
+            if(successCallback != undefined){
+              successCallback();
+            }
           }
         });
+      }
+    }else{
+      if(successCallback != undefined){
+        successCallback();
       }
     }
   },
@@ -1061,11 +1079,11 @@ var AutoSave = {
               element.val(val);
               if(!blank(val)){
                 getAssetDetails(val, element);
-                
+
               }else{
                 //delete
               }
-              
+
             }else{
               element.val(val);
             }
@@ -1097,6 +1115,28 @@ function initPublishingButton(){
     } else if(id  == "revision_btn"){
       $("._publish_status").val("revision");
     }
+  });
+}
 
+function initPreview(){
+  $(".preview-page").click(function(e){
+    var $this = $(this);
+    var url = $this.attr('data-url');
+    AutoSave.save_now(function(){
+      window.open(url);
+    });
+    e.preventDefault();
+  })
+}
+
+function shortcodeNameValidation() {
+  var regex = /[\!\*'"″′‟‛„‚”“”˝\(\);:.@&=+$,\/?%#\[\]]/gim;
+  var field = $("#gluttonberg_embed_shortcode");
+  
+  field.bind("blur", function() {
+    field.val(field.val().toLowerCase().replace(/\s/gim, '-').replace(regex, ''));
+  });
+  field.bind("keyup", function() {
+    field.val(field.val().toLowerCase().replace(/\s/gim, '-').replace(regex, ''));
   });
 }

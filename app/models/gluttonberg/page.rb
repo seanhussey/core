@@ -32,7 +32,7 @@ module Gluttonberg
 
     after_save   :check_for_home_update
 
-    is_drag_tree :scope => :parent_id, :flat => false , :order => "position"
+    is_drag_tree :scope => :parent_id, :flat => false , :order => "position", :counter_cache => :children_count
 
     attr_accessor :current_localization, :locale_id, :paths_need_recaching
 
@@ -44,16 +44,16 @@ module Gluttonberg
         prepared_content = nil
         section_name = section_name.to_sym
         load_localization(opts[:locale]) if current_localization.blank?
-        content = localized_contents.pluck {|c| c.section[:name] == section_name}
+        content = current_localization.contents.pluck {|c| (c.respond_to?(:parent) && c.parent.section[:name] ==  section_name ) || (c.respond_to?(:section) && c.section[:name] ==  section_name ) }
         prepared_content = case content.class.name
           when "Gluttonberg::ImageContent"
-            content.asset.url_for opts[:url_for]
-          when "Gluttonberg::HtmlContent"
-            content.current_localization.text.html_safe
-          when "Gluttonberg::TextareaContent"
-            content.current_localization.text.html_safe
-          when "Gluttonberg::PlainTextContent"
-            content.current_localization.text
+            content.asset.url_for opts[:url_for] unless content.asset.blank?
+          when "Gluttonberg::HtmlContentLocalization"
+            content.text.html_safe
+          when "Gluttonberg::TextareaContentLocalization"
+            content.text.html_safe
+          when "Gluttonberg::PlainTextContentLocalization"
+            content.text
           when "Gluttonberg::SelectContent"
             content.text
         end
@@ -188,8 +188,10 @@ module Gluttonberg
     # file will be created in host appliation/app/views/pages/template_name.locale-slug.html.haml
     def create_default_template_file
       unless self.description.redirection_required? || self.description.rewrite_required?
+        pages_root = File.join(Rails.root, "app", "views" , "pages")
+        FileUtils.mkdir(pages_root) unless File.exists?(pages_root)
         self.localizations.each do |page_localization|
-          file_path = File.join(Rails.root, "app", "views" , "pages" , "#{self.view}.#{page_localization.locale.slug}.html.haml"  )
+          file_path = File.join(pages_root , "#{self.view}.#{page_localization.locale.slug}.html.haml"  )
           unless File.exists?(file_path)
             file = File.new(file_path, "w")
 
@@ -232,6 +234,20 @@ module Gluttonberg
 
     def grand_parent_of?(page)
       page.grand_child_of?(self)
+    end
+
+    def self.fix_children_count
+      self.all.each do |page|
+        self.reset_counters(page.id, :children)
+      end
+    end
+
+    def number_of_children
+      if self.respond_to?(:children_count)
+        self.children_count
+      else
+        self.children.count
+      end
     end
 
     private

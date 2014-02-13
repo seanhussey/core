@@ -1,0 +1,36 @@
+- @page_title = "Embeds"
+
+.row-fluid
+  = render :partial => "/gluttonberg/admin/settings/main/sidebar"
+  .span9
+    .row-fluid
+      .page-header
+        %h1
+          = @page_title.html_safe
+      .subnav
+        = sub_nav do
+          = sub_nav do
+            - if can? :manage, Gluttonberg::Embed
+              = nav_link('New', new_admin_embed_path)
+
+      - if @embeds.empty?
+        %p.empty No Embed
+      - else
+        %table{:class => "table table-bordered"}
+          %thead
+            %tr
+              %th Name
+              %th Shortcode
+              %th.controls Controls
+          %tbody
+            - @embeds.each do |embed|
+              %tr{:class => "#{cycle("even", "odd")}"}
+                %td
+                  = embed.title
+                %td
+                  = embed.shortcode
+                %td.controls
+                  - if can? :manage , Gluttonberg::Embed
+                    = link_to "Edit", edit_admin_embed_path(embed), :class => "btn"
+                    - if can? :destroy , Gluttonberg::Embed
+                      = link_to "Delete", delete_admin_embed_path(embed), :class => "btn btn-danger"

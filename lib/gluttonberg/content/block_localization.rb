@@ -22,11 +22,11 @@ module Gluttonberg
       end
       
       def section_name
-        parent.section[:name]
+        parent.section[:name] if parent && parent.section
       end
       
       def section_position
-        parent.section[:position]
+        parent.section[:position] if parent && parent.section
       end
       
       def section_label

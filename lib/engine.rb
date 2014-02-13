@@ -109,7 +109,7 @@ module Gluttonberg
         Gluttonberg::Content::Block.register(Gluttonberg::ImageContent)
         Gluttonberg::Content::Block.register(Gluttonberg::TextareaContent)
         Gluttonberg::Content::Block.register(Gluttonberg::SelectContent)
-        
+
 
         Gluttonberg::Content.setup
 

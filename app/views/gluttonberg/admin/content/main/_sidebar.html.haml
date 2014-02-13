@@ -12,7 +12,7 @@
       - else
         %li
           = active_link_to("Pages", admin_pages_path, :title => "Pages", :class => "pages")
-        - if Gluttonberg::Blog.table_exists?
+        - if Gluttonberg.constants.include?(:Blog)
           %li
             = active_link_to("Blogs", admin_blogs_path, :title => "Blogs", :class => "blog")
           %li

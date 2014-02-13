@@ -80,6 +80,6 @@ module Gluttonberg
       end
     end
 
-      
+
   end
 end

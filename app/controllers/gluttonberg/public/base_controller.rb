@@ -81,12 +81,6 @@ module Gluttonberg
           end
         end
 
-        def is_blog_enabled
-          unless Gluttonberg::Comment.table_exists? == true
-            raise ActiveRecord::RecordNotFound
-          end
-        end
-
         def store_location
           @page = env['GLUTTONBERG.PAGE']
           if @page.blank?
@@ -102,15 +96,11 @@ module Gluttonberg
 
         # Exception handlers
         def not_found
-          render :layout => "bare" , :template => 'gluttonberg/public/exceptions/not_found' , :status => 404, :handlers => [:haml], :formats => [:html]
+          render :layout => "bare" , :template => 'exceptions/not_found' , :status => 404, :handlers => [:haml], :formats => [:html]
         end
 
         def access_denied
-          render :layout => "bare" , :template => 'gluttonberg/public/exceptions/access_denied' , :status => 403, :handlers => [:haml], :formats => [:html]
-        end
-
-        def internal_server_error
-          render :layout => "bare" , :template => 'gluttonberg/public/exceptions/internal_server_error' , :status => 500, :handlers => [:haml], :formats => [:html]
+          render :layout => "bare" , :template => 'exceptions/access_denied' , :status => 403, :handlers => [:haml], :formats => [:html]
         end
 
         def current_localization_slug

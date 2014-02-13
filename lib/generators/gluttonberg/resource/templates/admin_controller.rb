@@ -66,6 +66,7 @@ module Admin
     end
 
     def destroy
+      <% if localized? %>@<%= singular_name %>.current_localization <% end %>
       if @<%= singular_name %>.destroy
         flash[:notice] = "The <%= singular_name.titleize.downcase %> was successfully deleted."
         redirect_to admin_<%= plural_name %>_path

@@ -15,6 +15,7 @@
           = image_tag("/assets/gb_spinner.gif" , :id => "progress_home_page" , :style => "display:none")
         - if @has_deletable_settings
           %td.controls
+
     - for setting in settings
       %tr{ :class => "#{cycle("even", "odd")}"}
         %td.first_column{ :style => 'width:220px' }

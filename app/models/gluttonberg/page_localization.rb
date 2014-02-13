@@ -21,6 +21,8 @@ module Gluttonberg
     
     MixinManager.load_mixins(self)
 
+    MixinManager.load_mixins(self)
+
     after_save :update_content_localizations
     attr_accessor :paths_need_recaching, :content_needs_saving
 
@@ -64,6 +66,7 @@ module Gluttonberg
         contents_data = Gluttonberg::Content.localization_associations.inject([]) do |memo, assoc|
           memo += send(assoc).all
         end
+        contents_data = contents_data.delete_if {|a| a.section_position.blank? }
         contents_data = contents_data.sort{|a,b| a.section_position <=> b.section_position}
       end
       @localized_contents
@@ -76,6 +79,7 @@ module Gluttonberg
         contents_data = Gluttonberg::Content.non_localized_associations.inject([]) do |memo, assoc|
           memo += page.send(assoc).all
         end
+        contents_data = contents_data.delete_if {|a| a.section_position.blank? }
         contents_data = contents_data.sort{|a,b| a.section_position <=> b.section_position}
       end
       @non_localized_contents
@@ -91,7 +95,9 @@ module Gluttonberg
           content_page._publish_status = self.page._publish_status
           content_page.current_user_id = self.page.current_user_id
         end
-        update = params[content.association_name][content.id.to_s]
+        content_association = params[content.association_name]
+        content_association = params[content.association_name.to_s] if content_association.blank?
+        update = content_association[content.id.to_s]
         content.attributes = update if update
       end
     end
@@ -122,7 +128,7 @@ module Gluttonberg
       page.reload #forcing that do not take cached page object
       slug = nil if slug.blank?
       new_path = prepare_new_path
-      
+
       self.previous_path = self.current_path
       write_attribute(:path, new_path)
     end

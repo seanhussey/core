@@ -5,7 +5,6 @@ module Gluttonberg
     include Content::Publishable
     include ActionView::Helpers::TextHelper
     MixinManager.load_mixins(self)
-
     attr_accessible :title, :slug, :description, :state, :published_at, :collection_imported
     has_many :gallery_images , :order => "position ASC", :dependent => :destroy
     attr_accessible :gallery_images, :gallery_images_attributes
