@@ -83,10 +83,12 @@ module Gluttonberg
 
     def create_localizations(params)
       Locale.all.each do |locale|
-        article_localization = ArticleLocalization.create(params.merge({
-          :locale_id => locale.id, 
+        article_localization = ArticleLocalization.new(params.merge({
+          :locale_id => locale.id,
           :article_id => self.id
         }))
+        article_localization.current_user_id = self.user_id
+        article_localization.save
       end
     end
 
