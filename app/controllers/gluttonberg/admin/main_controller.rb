@@ -19,7 +19,6 @@ module Gluttonberg
         if Gluttonberg.constants.include?(:Blog)
           @comments = Blog::Comment.all_pending.where({:commentable_type => "Gluttonberg::Article" , :moderation_required => true }).order("created_at DESC").limit(5)
           @article = Blog::Article.new
-          #@article_localization = ArticleLocalization.new(:article => @article , :locale_id => Locale.first_default.id)
           @blogs = Blog::Weblog.all
           @authors = User.all
         end

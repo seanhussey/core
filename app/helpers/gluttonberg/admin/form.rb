@@ -152,8 +152,8 @@ module Gluttonberg
           end
         end # pages
 
-        if Gluttonberg::Article.table_exists?
-          Gluttonberg::ArticleLocalization::Version.where(:version_status => ['submitted_for_approval']).includes(:article_localization).all.each do |submitted_version|
+        if Gluttonberg.constants.include?(:Blog) && Gluttonberg::Blog::Article
+          Gluttonberg::Blog::ArticleLocalization::Version.where(:version_status => ['submitted_for_approval']).includes(:article_localization).all.each do |submitted_version|
             object = submitted_version.article_localization
             versions = object.versions
             unless versions.blank?
@@ -172,7 +172,7 @@ module Gluttonberg
               end 
             end
           end
-        end
+        end # articles
 
         Gluttonberg::Components.nav_entries.each do |entry|
           unless entry[4].blank?
@@ -200,7 +200,7 @@ module Gluttonberg
               end
             end #versioned
           end
-        end
+        end # custom models
 
         submitted_content.uniq! unless submitted_content.blank?
         submitted_content = submitted_content.sort{|x,y| y[2].created_at <=>  x[2].created_at }

@@ -70,7 +70,7 @@ namespace :gluttonberg do
   desc "Clean Html for all models"
   task :clean_html_for_all_models => :environment do
     Rails.application.initialize!
-    [Gluttonberg::HtmlContentLocalization , Gluttonberg::Page , Gluttonberg::Article , Gluttonberg::Blog , Gluttonberg::Article , Theme , Idea , User , Speaker ].each do |constant|
+    [Gluttonberg::HtmlContentLocalization , Gluttonberg::Page ,  Gluttonberg::Blog::Weblog , Gluttonberg::Blog::Article, Gluttonberg::Blog::ArticleLocalization , User ].each do |constant|
       if not constant.nil? and constant.is_a? Class and constant.superclass == ActiveRecord::Base
         puts constant
         begin

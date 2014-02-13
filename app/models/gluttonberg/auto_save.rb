@@ -16,7 +16,7 @@ module Gluttonberg
         hash = JSON.parse(auto_save_obj.data)
         if object.class.name == "Gluttonberg::PageLocalization"
           hash.delete('page')
-        elsif object.class.name == "Gluttonberg::ArticleLocalization"
+        elsif object.class.name == "Gluttonberg::Blog::ArticleLocalization"
           hash.delete('article')
         end
         object.assign_attributes(hash)
