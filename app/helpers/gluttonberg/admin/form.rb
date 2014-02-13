@@ -126,14 +126,14 @@ module Gluttonberg
         submitted_content = []
 
         Gluttonberg::Content::actual_content_classes.each do |klass|
-          uniq = klass.respond_to?(:page_localization_id) ? :page_localization_id : :page_id
-          klass::Version.where(:version_status => ['submitted_for_approval']).uniq(uniq).all.each do |submitted_version|
+          uniq_key = klass.columns.map(&:name).include?('page_localization_id') ? :page_localization_id : :page_id
+          klass::Version.where(:version_status => ['submitted_for_approval']).select(uniq_key).uniq.all.each do |submitted_version|
             object_id = (submitted_version.respond_to?(:page_localization_id) ? submitted_version.page_localization_id : submitted_version.page_id)
             object = Gluttonberg::PageLocalization.where(:id => object_id).first
             unless object.blank?
               versions = object.versions
               unless versions.blank?
-                versions = versions.order{|x, y| y.version <=> x.version}
+                versions = versions.sort{|x, y| y.version <=> x.version}
                 versions = versions.find_all{|v| v.version_status == "published" ||  v.version_status == "submitted_for_approval"}
                 
                 published_version = nil
@@ -157,7 +157,7 @@ module Gluttonberg
             object = submitted_version.article_localization
             versions = object.versions
             unless versions.blank?
-              versions = versions.order{|x, y| y.version <=> x.version}
+              versions = versions.sort{|x, y| y.version <=> x.version}
               versions = versions.find_all{|v| v.version_status == "published" ||  v.version_status == "submitted_for_approval"}
               published_version = nil
               versions.each do |version|
@@ -183,7 +183,7 @@ module Gluttonberg
                 object = submitted_version.send(association)
                 versions = object.versions
                 unless versions.blank?
-                  versions = versions.order{|x, y| y.version <=> x.version}
+                  versions = versions.sort{|x, y| y.version <=> x.version}
                   versions = versions.find_all{|v| v.version_status == "published" ||  v.version_status == "submitted_for_approval"}
                   published_version = nil
                   versions.each do |version|
