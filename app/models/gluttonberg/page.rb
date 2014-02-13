@@ -22,6 +22,8 @@ module Gluttonberg
       has_many klass.association_name, :class_name => klass.name, :dependent => :destroy
     end
 
+    MixinManager.load_mixins(self)
+
     has_many :collapsed_pages, :class_name => "Gluttonberg::CollapsedPage", :dependent => :destroy
 
     validates_presence_of :name , :description_name

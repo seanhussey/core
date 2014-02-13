@@ -4,6 +4,7 @@ module Gluttonberg
     include Content::SlugManagement
     include Content::Publishable
     include Content::Localization
+    MixinManager.load_mixins(self)
 
     belongs_to :blog
     belongs_to :author, :class_name => "User"

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 module Gluttonberg
-  describe Member do
+  describe Article do
     before :all do
       @locale = Gluttonberg::Locale.generate_default_locale
       @user = User.new({
