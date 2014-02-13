@@ -18,6 +18,8 @@ module Gluttonberg
     Gluttonberg::Content.localizations.each do |assoc, klass|
       has_many  assoc, :class_name => klass.to_s
     end
+    
+    MixinManager.load_mixins(self)
 
     after_save :update_content_localizations
     attr_accessor :paths_need_recaching, :content_needs_saving

@@ -52,7 +52,7 @@ module Gluttonberg
         :groups => "GROUPS",
         :bio => "BIO"
       }
-      config.member_mixins = []
+      config.model_mixins = {}
       config.password_pattern = /^(?=.*\d)(?=.*[a-zA-Z])(?!.*[^\w\S\s]).{6,}$/
       config.password_validation_message = "must be a minimum of 6 characters in length, contain at least 1 letter and at least 1 number"
       config.multisite = false

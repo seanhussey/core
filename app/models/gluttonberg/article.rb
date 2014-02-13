@@ -4,6 +4,7 @@ module Gluttonberg
     include Content::SlugManagement
     include Content::Publishable
     include Content::Localization
+    MixinManager.load_mixins(self)
 
     belongs_to :blog
     belongs_to :author, :class_name => "User"
@@ -83,10 +84,12 @@ module Gluttonberg
 
     def create_localizations(params)
       Locale.all.each do |locale|
-        article_localization = ArticleLocalization.create(params.merge({
-          :locale_id => locale.id, 
+        article_localization = ArticleLocalization.new(params.merge({
+          :locale_id => locale.id,
           :article_id => self.id
         }))
+        article_localization.current_user_id = self.user_id
+        article_localization.save
       end
     end
 

@@ -67,11 +67,13 @@ module Gluttonberg
       end
       
       def publishing_status
-        if draft?
+        temp_status = if draft?
           "Draft"
         else  
           self.state.capitalize unless self.state.blank?
-        end  
+        end
+        # TODO support for 'submitted for approval'
+        temp_status.html_safe 
       end
       
       def set_status

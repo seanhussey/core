@@ -18,6 +18,8 @@ class User < ActiveRecord::Base
     c.login_field = "email"
   end
 
+  Gluttonberg::MixinManager.load_mixins(self)
+
   def full_name
     "#{self.first_name} #{self.last_name}".strip
   end

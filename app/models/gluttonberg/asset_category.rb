@@ -7,6 +7,7 @@ module Gluttonberg
     validates_uniqueness_of :name
     validates_presence_of :name
     attr_accessible :name , :unknown
+    MixinManager.load_mixins(self)
 
     def self.method_missing(methId, *args)
       method_info = methId.id2name.split('_')

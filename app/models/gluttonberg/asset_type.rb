@@ -9,6 +9,7 @@ module Gluttonberg
     validates_uniqueness_of :name
     validates_presence_of :name
     attr_accessible :name, :asset_category_id, :asset_category
+    MixinManager.load_mixins(self)
 
     # Take the reported mime-type and the file_name and return
     # the best AssetType to use for that file.
