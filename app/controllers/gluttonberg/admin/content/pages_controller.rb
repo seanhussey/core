@@ -20,6 +20,7 @@ module Gluttonberg
 
         def new
           @page = Page.new(:parent_id => params[:parent_id])
+          authorize! :manage_object, @page
           @page_localization = PageLocalization.new
         end
 
@@ -37,6 +38,7 @@ module Gluttonberg
           @page.state = "draft"
           @page.published_at = nil
           @page.user_id = current_user.id
+          @page.current_user_id = current_user.id
           if @page.save
             @page.create_default_template_file
             flash[:notice] = "The page was successfully created."
