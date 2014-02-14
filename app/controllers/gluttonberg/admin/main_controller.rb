@@ -55,9 +55,9 @@ module Gluttonberg
             end
             Notifier.version_declined(current_user, version, request.referer, title).deliver 
           end
-          flash[:notice] = "The version was successfully declined."
+          flash[:notice] = "You have declined this version, the contributor has been notified."
         else
-          flash[:notice] = "The version was failed to decline."
+          flash[:error] = "The version was failed to decline."
         end
         redirect_to :back
       end
