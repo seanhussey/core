@@ -7,6 +7,10 @@ module Gluttonberg
     module Versioning
       extend ActiveSupport::Concern
 
+      included do
+        attr_accessor :current_user_id
+      end
+
       def self.setup
         ::ActiveRecord::Base.send :include, Gluttonberg::Content::Versioning
       end
@@ -19,6 +23,7 @@ module Gluttonberg
         def is_versioned(options = {}, &extension)
           excluded_columns = options.delete(:non_versioned_columns)
           acts_as_versioned( options.merge( :limit => Gluttonberg::Setting.get_setting("number_of_revisions") ) , &extension )
+          self.non_versioned_columns << ['state' ,'published_at', 'user_id', 'locale_id', 'position']
           self.non_versioned_columns << excluded_columns
           self.non_versioned_columns.flatten!
           include OverrideActsAsVersioned
@@ -30,6 +35,7 @@ module Gluttonberg
       end
 
       module OverrideActsAsVersioned
+        
         # Clears old revisions if a limit is set with the :limit option in <tt>acts_as_versioned</tt>.
         # Override this method to set your own criteria for clearing old versions.
         def clear_old_versions
@@ -47,6 +53,7 @@ module Gluttonberg
            self.class.max_version_limit = tmp_number_of_revisions.to_i unless tmp_number_of_revisions.blank?
           end
         end 
+
       end
 
     end

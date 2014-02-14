@@ -7,6 +7,7 @@ module Gluttonberg
     # template. These models will be empty, but ready to be displayed in the
     # admin interface for editing.
     def after_create(page)
+      page.current_user_id = page.user_id
       create_page_localizations(page)
       create_page_contents(page)
     end
@@ -53,10 +54,13 @@ module Gluttonberg
 
       def create_page_content(page, name, section)
         association = page.send(section[:type].to_s.pluralize)
-        content = association.create(:section_name => name)
+        content = association.new(:section_name => name)
+        content.page.current_user_id = page.current_user_id
+        content.save
         # Create each localization
          if content.class.localized?
           page.localizations.all.each do |localization|
+            localization.page.current_user_id = page.current_user_id
             content.localizations.create(:parent => content, :page_localization => localization)
           end
         end

@@ -10,13 +10,13 @@
           %span.title
             = @page_title.html_safe
       .subnav.nav.nav-pills
-        - if can?(:manage, Gluttonberg::Page)
+        - if can? :manage_object , Gluttonberg::Page.new
           = link_to('Add New Page', new_admin_page_path , :class => "btn btn-primary")
-          - unless @pages.empty?
+          - if !@pages.blank? && can?(:reorder , Gluttonberg::Page)
             %a#saveNestableTree{:href => "Javascript:;", :class => "btn"}
               Save Page Order
-          = link_to('Collapse All', "Javascript:;" , :class => "btn collapse_all")
-          = link_to('Expand All', "Javascript:;" , :class => "btn expand_all")
+            = link_to('Collapse All', "Javascript:;" , :class => "btn collapse_all")
+            = link_to('Expand All', "Javascript:;" , :class => "btn expand_all")
 
       - if @pages.empty?
         %p.empty No Pages
@@ -33,7 +33,7 @@
               .dd-column.actions
                 &nbsp;
 
-          .dd{"data-id" => "pageTree", "data-url" => drag_tree_url, "data-saveButton" => "#saveNestableTree" }
+          .dd{"data-id" => "pageTree", "data-url" => drag_tree_url, "data-saveButton" => "#saveNestableTree", :class => "#{(can?(:reorder , Gluttonberg::Page) ? "dd-sortable" : " " )}" }
             %ol.dd-list
               = page_table_rows(@pages)
 

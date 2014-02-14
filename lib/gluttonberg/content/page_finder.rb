@@ -9,12 +9,10 @@ module Gluttonberg
         # search to the specified locale, otherwise it will fall back to the
         # default.
         def find_by_path(path, locale = nil , domain_name=nil)
-          path = "" if path.blank?
-          path = path.match(/^\/(\S+)/)
+          path = clean_path(path)
           locale = Gluttonberg::Locale.first_default if locale.blank?
           page = nil
           if( !locale.blank? && !path.blank?)
-            path = path[1]
             page = joins(:localizations).where("locale_id = ? AND ( gb_page_localizations.path LIKE ? OR path LIKE ? ) ", locale.id, path, path).first
             page.load_localization(locale) unless page.blank?
           elsif path.blank? #looking for home
@@ -40,14 +38,23 @@ module Gluttonberg
         # search to the specified locale, otherwise it will fall back to the
         # default.
         def find_by_previous_path(path, locale = nil , domain_name=nil)
-          path = "" if path.blank?
-          path = path.match(/^\/(\S+)/)
+          path = clean_path(path)
           locale = Gluttonberg::Locale.first_default if locale.blank?
           unless path.blank?
-            path = path[1]
             joins(:localizations).where("locale_id = ? AND ( gb_page_localizations.previous_path LIKE ?  OR previous_path LIKE ? ) ", locale.id, path, path).first
           end
         end
+
+        private
+          def clean_path(path)
+            path = "" if path.blank?
+            path = path.match(/^\/(\S+)/)
+            unless path.blank?
+              path = path[1]
+              path = path[0..-2] if !(path.blank? || path == "/") && path.last == "/"
+            end
+            path
+          end
 
       end #ClassMethods
 

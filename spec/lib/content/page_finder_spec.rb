@@ -21,6 +21,13 @@ module Gluttonberg
       page.current_localization.id.should == @page.current_localization.id
     end
 
+    it "should find_by_path when path have trailing /" do
+      page = Page.find_by_path("/first-name/")
+      page.should_not be_nil
+      page.id.should == @page.id
+      page.current_localization.id.should == @page.current_localization.id
+    end
+
     it "should find_by_previous_path using default locale" do
       page = Page.find_by_path("/first-name")
       page.should_not be_nil
@@ -32,6 +39,11 @@ module Gluttonberg
       page.current_localization.save
 
       page = Page.find_by_previous_path("/first-name")
+      page.should_not be_nil
+      page.id.should == @page.id
+      page.current_localization.id.should == @page.current_localization.id
+
+      page = Page.find_by_previous_path("/first-name/")
       page.should_not be_nil
       page.id.should == @page.id
       page.current_localization.id.should == @page.current_localization.id

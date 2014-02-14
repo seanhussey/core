@@ -187,23 +187,31 @@ body
   background-position: 15px -32px
   background-repeat: no-repeat
 
-.dashboard.well
-  background-color: #fff
+.dashboard
+  .well
+    background-color: #fff
 
-.dashboard .nav-list
-  margin: 0
-  padding: 0
+  &.row-fluid
+    .span3
+      :min-width 200px
 
-.dashboard a
-  display: block
-  margin: 0 0 3px 0
+  .nav-list
+    margin: 0
+    padding: 0
 
-.dashboard a.edit
-  background-image: url(/assets/gb_icon_blog.png)
+  a
+    display: block
+    margin: 0 0 3px 0
 
-.dashboard a.add
-  background-image: url(/assets/gb_icon_add.png)
+    &.edit
+      background-image: url(/assets/gb_icon_blog.png)
 
+    &.add
+      background-image: url(/assets/gb_icon_add.png)
+
+  .waiting_for_approval
+    a  
+      display: inline
 
 
 a
@@ -1017,3 +1025,15 @@ select.size_selector
 
 body .redactor_toolbar li a.redactor_btn_gluttonberg_embeds
   :background-position -600px
+
+
+ul.chosen-results
+  @for $i from 0 through 10
+    li.level-#{$i}
+      padding-left: 6px + 12px * $i
+.span4
+  .chzn-select
+    :width 100%
+.home_page_setting_dropdown.chzn-select
+  :width 100%
+  :max-width 500px

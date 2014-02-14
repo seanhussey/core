@@ -1,0 +1,21 @@
+%p
+  Dear #{@version.user.full_name},
+
+%p
+  The update to "#{@title}" that you submitted on #{@version.created_at.strftime("%B #{@version.created_at.day.ordinalize}")} has been declined.
+
+%p
+  Visit this URL to continue editing the version that you submitted.
+  %br
+  #{@url}
+
+%p
+  For more information on why your submission was declined please contact #{@current_user.full_name}.
+
+%p
+Thank you.
+
+%p
+  http://#{Rails.configuration.host_name}
+  %br
+  http://#{Rails.configuration.host_name}/admin

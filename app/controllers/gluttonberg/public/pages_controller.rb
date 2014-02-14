@@ -44,7 +44,7 @@ module Gluttonberg
         begin
           SitemapGenerator::Interpreter.respond_to?(:run)
         rescue
-          render :layout => "bare" , :template => 'gluttonberg/public/exceptions/not_found' , :status => 404, :handlers => [:haml], :formats => [:html]
+          render :layout => "bare" , :template => 'exceptions/not_found' , :status => 404, :handlers => [:haml], :formats => [:html]
         end
       end
 
@@ -62,7 +62,7 @@ module Gluttonberg
       end
 
       def error_404
-        render :layout => "bare" , :template => 'gluttonberg/public/exceptions/not_found' , :status => 404, :handlers => [:haml], :formats => [:html]
+        render :layout => "bare" , :template => 'exceptions/not_found' , :status => 404, :handlers => [:haml], :formats => [:html]
       end
 
 

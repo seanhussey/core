@@ -4,6 +4,10 @@ Rails.application.routes.draw do
   scope :module => 'gluttonberg' do
     namespace :admin do
       root :to => "main#index"
+      get "waiting-for-approval" => "main#waiting_for_approval" , :as => :waiting_for_approval
+      get "decline-content/:object_class/:version_id" => "main#decline_content" , :as => :decline_content
+      
+
       scope :module => 'content' do
         controller :auto_save do
           match "/autosave/:model_name/:id" => :create , :as => :autosave

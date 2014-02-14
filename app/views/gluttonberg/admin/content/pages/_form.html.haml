@@ -9,7 +9,7 @@
               = f.label :name
               = f.text_field(:name, :id => "page_title", :class=>"span5 required")
                     
-            -#- if Gluttonberg::Member.enable_members == true
+            - if Gluttonberg::Member.enable_members == true
               %p
                 = f.label :groups 
                 = f.select("group_ids" ,  Gluttonberg::Group.order("position ASC").collect{|cc| [cc.name , cc.id] }   , { :include_blank => true  } , { :multiple => true , :class => "large" } )
@@ -17,18 +17,17 @@
       %fieldset
         %p
           %label Please select a page template
-          - if( action_name == "new" )
+          - if( action_name == "new" || action_name == "create" )
             %br
             = f.select(:description_name, page_description_options , { :prompt => "Select Page Template" } , {:class => "required chzn-select span5"} ) 
           - else
             = f.select(:description_name, page_description_options , { :prompt => "Select Page Template" } , {:disabled => "disabled", :class => "chzn-select span5"})
 
-      - unless @pages.blank?
-        %fieldset
-          %p
-            = f.label :parent_id , "Parent page", :class => "block_label"
-            %br
-            = f.select(:parent_id, pages_lists_options(@pages), {:prompt => "No Parent"}, {:class=>" chzn-select span5"})
+      %fieldset
+        %p
+          = f.label :parent_id , "Parent page", :class => "block_label"
+          %br
+          = f.select(:parent_id, pages_lists_options(@pages), {:prompt => "No Parent"}, {:class=>" chzn-select span5"})
       %hr
       %p
         - if @page.published?

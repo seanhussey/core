@@ -11,6 +11,7 @@ class CreateStaffProfile < ActiveRecord::Migration
       t.integer :position
       t.column :state , :string #use for publishing
       t.datetime :published_at
+      t.integer :user_id
 
       t.timestamps
     end

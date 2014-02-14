@@ -83,17 +83,4 @@ describe Notifier do
       }
       @member = Gluttonberg::Member.create(member_params)
     end
-
-    def create_comment
-      params = {
-        :author_name => "Author Name",
-        :author_email => "author@test.com",
-        :author_website => "Author Website",
-        :commentable => @article,
-        :body => "Test comment"
-      }
-      comment = Gluttonberg::Comment.create(params)
-    end
-
-
 end

@@ -36,6 +36,9 @@ module Gluttonberg
 
     attr_accessor :current_localization, :locale_id, :paths_need_recaching
 
+    delegate :version, :loaded_version,  :to => :current_localization
+    attr_accessor :current_user_id
+
     def easy_contents(section_name, opts = {})
       begin
         prepared_content = nil
@@ -219,6 +222,18 @@ module Gluttonberg
 
     def collapsed?(current_user)
       !self.collapsed_pages.find_all{|page| page.user_id == current_user.id}.blank?
+    end
+
+    def grand_child_of?(page)
+      if self.parent_id.blank? || page.blank?
+        false
+      else
+        self.parent_id == page.id || self.parent.grand_child_of?(page)
+      end
+    end
+
+    def grand_parent_of?(page)
+      page.grand_child_of?(self)
     end
 
     def self.fix_children_count

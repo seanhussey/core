@@ -41,5 +41,5 @@
                     = gallery.created_at.strftime("%d/%m/%Y")
                 %td.controls
                   = link_to "Edit", edit_admin_gallery_path(gallery), :class => "btn "
-                  - if can? :destroy , Gluttonberg::Gallery
+                  - if can? :destroy , gallery
                     = link_to "Delete", delete_admin_gallery_path(gallery), :class => "btn btn-danger"

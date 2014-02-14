@@ -29,6 +29,10 @@ module Gluttonberg
           unless object.blank?
             if object.new_record?
             else
+              if object.respond_to?(:user_id) # record creator user id
+                object.user_id = current_user.id
+                object.save
+              end
               Gluttonberg::Feed.log(current_user, object ,object_title , "created")
             end
           end

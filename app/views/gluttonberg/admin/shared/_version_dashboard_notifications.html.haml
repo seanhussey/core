@@ -1,0 +1,11 @@
+- unless submitted_content.blank?
+  .span3.waiting_for_approval
+    .well
+      %h3 Waiting for approval
+      - submitted_content.each do |content|
+        %p
+          - unless content[0].blank?
+            = truncate(content[0].to_s, :length => 30)
+          = link_to("Review", content[1], :class => " ")
+      - if more
+        = link_to "More", admin_waiting_for_approval_path

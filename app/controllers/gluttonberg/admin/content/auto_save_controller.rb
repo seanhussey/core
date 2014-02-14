@@ -15,7 +15,7 @@ module Gluttonberg
             content = nil
             if auto_save.auto_save_able.kind_of?(Gluttonberg::PageLocalization)
               content = auto_save.auto_save_able.contents.first
-            elsif Gluttonberg::Article && auto_save.auto_save_able.kind_of?(Gluttonberg::ArticleLocalization)
+            elsif Gluttonberg.constants.include?(:Blog) && Gluttonberg::Blog::Article && auto_save.auto_save_able.kind_of?(Gluttonberg::Blog::ArticleLocalization)
               content = auto_save.auto_save_able
             end
             if !content.blank? && content.version.to_s != params[:version].to_s

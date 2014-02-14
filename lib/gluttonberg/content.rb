@@ -67,5 +67,10 @@ module Gluttonberg
     def self.localization_associations
       @@localization_associations
     end
+
+    def self.actual_content_classes
+      Gluttonberg::Content::Block.classes
+      @@localization_classes + Block.classes.select {|c| !c.localized? }   
+    end
   end
 end

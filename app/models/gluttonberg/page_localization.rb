@@ -8,6 +8,7 @@ module Gluttonberg
     attr_accessible :name, :path , :slug, :navigation_label, :seo_title, :seo_keywords, :seo_description, :fb_icon_id, :contents, :locale_id
 
     attr_accessor :current_path
+    delegate :version, :loaded_version, :versions, :to => :first_content, :allow_nil => true
 
     # Iterate block/content classes to just load these constants before setting up association with their localization. This is kind of hack for lazyloading
     Gluttonberg::Content::Block.classes.uniq.each do |klass|
@@ -17,6 +18,8 @@ module Gluttonberg
     Gluttonberg::Content.localizations.each do |assoc, klass|
       has_many  assoc, :class_name => klass.to_s
     end
+    
+    MixinManager.load_mixins(self)
 
     MixinManager.load_mixins(self)
 
@@ -52,6 +55,10 @@ module Gluttonberg
       @contents
     end
 
+    def first_content
+      contents.first
+    end
+
     # Returns an array of content localizations
     def localized_contents
       @localized_contents ||= begin
@@ -82,6 +89,12 @@ module Gluttonberg
     def contents=(params)
       self.content_needs_saving = true
       contents.each do |content|
+        content_page = content.respond_to?(:page) ? content.page : content.parent.page
+        unless content_page.blank?
+          content_page.state = self.page.state
+          content_page._publish_status = self.page._publish_status
+          content_page.current_user_id = self.page.current_user_id
+        end
         content_association = params[content.association_name]
         content_association = params[content.association_name.to_s] if content_association.blank?
         update = content_association[content.id.to_s]

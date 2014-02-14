@@ -18,6 +18,7 @@ module Gluttonberg
 
         def new
           @user = User.new
+          prepare_authorizations
         end
 
         def create
@@ -28,11 +29,13 @@ module Gluttonberg
             flash[:notice] = "Account registered!"
             redirect_to admin_users_path
           else
+            prepare_authorizations
             render :action => :new
           end
         end
 
         def edit
+          prepare_authorizations
         end
 
         def update
@@ -46,6 +49,7 @@ module Gluttonberg
               redirect_to  :action => :edit
             end
           else
+            prepare_authorizations
             flash[:notice] = "Failed to save account changes!"
             render :action => :edit
           end
@@ -75,6 +79,21 @@ module Gluttonberg
 
           def authorize_user
             authorize! :manage, User
+          end
+
+          def prepare_authorizations
+            if @user.contributor? && @user.id != current_user.id
+              @user.authorizations.build(:authorizable_type => "Gluttonberg::Page") if @user.authorizations.where(:authorizable_type => "Gluttonberg::Page").first.blank?
+              if Gluttonberg.constants.include?(:Blog)
+                Gluttonberg::Blog::Weblog.all.each do |blog|
+                  @user.authorizations.build(:authorizable_type => "Gluttonberg::Blog::Weblog", :authorizable_id => blog.id) if @user.authorizations.where(:authorizable_type => "Gluttonberg::Blog::Weblog", :authorizable_id => blog.id).first.blank?
+                end
+              end
+              @user.authorizations.build(:authorizable_type => "Gluttonberg::Gallery") if Rails.configuration.enable_gallery && @user.authorizations.where(:authorizable_type => "Gluttonberg::Gallery").first.blank?
+              Gluttonberg::Components.can_custom_model_list.each do |model_name|
+                @user.authorizations.build(:authorizable_type => model_name) if @user.authorizations.where(:authorizable_type => model_name).first.blank?
+              end
+            end
           end
 
       end

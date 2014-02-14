@@ -415,6 +415,7 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.integer :position
     t.column :state , :string #use for publishing
     t.datetime :published_at
+    t.integer :user_id
 
     t.timestamps
   end
@@ -456,6 +457,13 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.timestamps
   end
 
+  create_table :gb_authorizations do |t|
+    t.string :authorizable_type
+    t.integer :authorizable_id
+    t.integer :user_id
+    t.boolean :allow
+    t.timestamps
+  end
   create_table :gb_embeds do |t|
     t.string :title
     t.string :shortcode
