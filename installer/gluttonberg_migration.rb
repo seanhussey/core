@@ -341,7 +341,7 @@ class GluttonbergMigration < ActiveRecord::Migration
     end
 
     create_table :gb_versions do |t|
-      t.float :version_number
+      t.float :version_number, :null => false
     end
 
   end
