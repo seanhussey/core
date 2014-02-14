@@ -81,6 +81,11 @@ module Gluttonberg
           self.generate_or_update_settings(sitewise_settings, key)
         end
       end
+
+      version = Version.new
+      version.version_number = Gluttonberg::VERSION
+      version.save
+
     end
 
     def self.has_deletable_settings?

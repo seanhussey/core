@@ -5,6 +5,7 @@ class GluttonbergMigration2 < ActiveRecord::Migration
     rescue => e
       puts e
     end
+
     begin
       Gluttonberg::HtmlContentLocalization.create_versioned_table
     rescue => e
