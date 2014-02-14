@@ -9,6 +9,7 @@ module Gluttonberg
         def destroy_assets_in_bulk
           @assets = Asset.where(:id => params[:asset_ids].split(",")).all
           @assets.each do |asset|
+            authorize! :destroy, asset
             asset.destroy
           end
           redirect_to admin_asset_category_path(:category => 'all' , :page => 1 )

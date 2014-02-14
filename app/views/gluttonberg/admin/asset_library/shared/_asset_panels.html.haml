@@ -31,7 +31,7 @@
       - for asset in @assets
         %tr
           %td
-            - unless breadcrumbs_val.blank?
+            - if !breadcrumbs_val.blank? && can?(:destroy , asset)
               = check_box_tag "select_asset_#{asset.id}" , nil, false, :rel => "#{asset.id}" , :class => "select_asset_checkbox"
           %td
             - if asset.category == 'audio'
