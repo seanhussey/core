@@ -19,7 +19,7 @@ class <%= class_name %> < ActiveRecord::Base
   <% if localized? %>is_localized do
     <% if versioned? %>
     is_versioned :non_versioned_columns => []
-    delegate :state, :_publish_status, :state_changed?, :title_or_name? , :to => :parent
+    delegate :state, :_publish_status, :state_changed?, :title_or_name? , :to => :parent, :allow_nil => true
     <% end %>
     belongs_to :fb_icon , :class_name => "Gluttonberg::Asset" , :foreign_key => "fb_icon_id"
     # it validates all columns values using max limit from database schema
