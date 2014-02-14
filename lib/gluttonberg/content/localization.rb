@@ -134,7 +134,7 @@ module Gluttonberg
         def current_localization
           if @current_localization.blank?
             @current_localization = self.default_localization
-            @current_localization.parent = self
+            @current_localization.parent = self unless @current_localization.blank?
           end
           @current_localization
         end
@@ -160,7 +160,7 @@ module Gluttonberg
           if self.current_localization.blank? && fallback
             self.current_localization = self.default_localization
           end
-          self.current_localization.parent = self
+          self.current_localization.parent = self unless self.current_localization.blank?
           self.current_localization
         end
 
