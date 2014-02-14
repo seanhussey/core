@@ -176,9 +176,11 @@ module Gluttonberg
 
         Gluttonberg::Components.nav_entries.each do |entry|
           unless entry[4].blank?
-            if Kernel.const_get(entry[4]).versioned?
-              association = entry[4].demodulize.underscore
-              query = Kernel.const_get(entry[4])::Version.where(:version_status => ['submitted_for_approval']).includes(association)
+             is_localized =  Kernel.const_get(entry[4]).respond_to?(:localized?) && Kernel.const_get(entry[4]).localized?
+             model_name = is_localized ? "#{entry[4]}Localization" : entry[4]
+            if Kernel.const_get(model_name).versioned?
+              association = model_name.demodulize.underscore
+              query = Kernel.const_get(model_name)::Version.where(:version_status => ['submitted_for_approval']).includes(association)
               query.all.each do |submitted_version|
                 object = submitted_version.send(association)
                 versions = object.versions
@@ -190,7 +192,7 @@ module Gluttonberg
                     published_version = version if version.version_status == "published"
                     if (published_version.blank? || published_version.version < version.version) 
                       if version.version_status == "submitted_for_approval"
-                        path = "#{url_for(entry[2])}/#{object.id}/edit" + "?version=#{version.version}"
+                        path = "#{url_for(entry[2])}/#{object.id}/edit" + "?version=#{version.version}#{is_localized ? "&locale_id=#{object.locale_id}" : ''}"
                         submitted_content << [object.title_or_name?, path, version] 
                         break
                       end

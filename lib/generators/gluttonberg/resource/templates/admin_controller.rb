@@ -29,7 +29,7 @@ module Admin
       <% if localized? %>@<%= singular_name %>.load_localization(params[:locale_id]) unless params[:locale_id].blank? <%end%>
       <% if versioned? %>unless params[:version].blank?
         @version = params[:version]
-        @<%= singular_name %>.revert_to(@version)
+        @<%= singular_name %><% if localized? %>.current_localization<% end %>.revert_to(@version)
       end<%end%>
     end
 
