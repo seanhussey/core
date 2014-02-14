@@ -84,9 +84,9 @@ module Gluttonberg
           def prepare_authorizations
             if @user.contributor? && @user.id != current_user.id
               @user.authorizations.build(:authorizable_type => "Gluttonberg::Page") if @user.authorizations.where(:authorizable_type => "Gluttonberg::Page").first.blank?
-              if Gluttonberg::Comment.table_exists?
-                Gluttonberg::Blog.all.each do |blog|
-                  @user.authorizations.build(:authorizable_type => "Gluttonberg::Blog", :authorizable_id => blog.id) if @user.authorizations.where(:authorizable_type => "Gluttonberg::Blog", :authorizable_id => blog.id).first.blank?
+              if Gluttonberg.constants.include?(:Blog)
+                Gluttonberg::Blog::Weblog.all.each do |blog|
+                  @user.authorizations.build(:authorizable_type => "Gluttonberg::Blog::Weblog", :authorizable_id => blog.id) if @user.authorizations.where(:authorizable_type => "Gluttonberg::Blog::Weblog", :authorizable_id => blog.id).first.blank?
                 end
               end
               @user.authorizations.build(:authorizable_type => "Gluttonberg::Gallery") if Rails.configuration.enable_gallery && @user.authorizations.where(:authorizable_type => "Gluttonberg::Gallery").first.blank?

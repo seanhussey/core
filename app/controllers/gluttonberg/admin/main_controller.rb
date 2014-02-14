@@ -13,13 +13,13 @@ module Gluttonberg
         @tags_counts =  ActsAsTaggableOn::Tag.count - @categories_count.to_i
 
         if Gluttonberg.constants.include?(:Blog)
-          @blog = Blog::Weblog.first
+          @blog = Gluttonberg::Blog::Weblog.first
         end
 
         if Gluttonberg.constants.include?(:Blog)
-          @comments = Blog::Comment.all_pending.where({:commentable_type => "Gluttonberg::Article" , :moderation_required => true }).order("created_at DESC").limit(5)
-          @article = Blog::Article.new
-          @blogs = Blog::Weblog.all
+          @comments = Gluttonberg::Blog::Comment.all_pending.where({:commentable_type => "Gluttonberg::Article" , :moderation_required => true }).order("created_at DESC").limit(5)
+          @article = Gluttonberg::Blog::Article.new
+          @blogs = Gluttonberg::Blog::Weblog.all
           @authors = User.all
         end
       end
@@ -32,6 +32,7 @@ module Gluttonberg
 
       def decline_content
         status = false
+        Gluttonberg::Blog::Article if params[:object_class] == "Gluttonberg::Blog::ArticleLocalization" #just make sure article class is loaded
         version = params[:object_class].constantize::Version.where(:id => params[:version_id]).first
         unless version.blank?
           if version.version_status == 'submitted_for_approval'
@@ -45,7 +46,7 @@ module Gluttonberg
               object_id = (version.respond_to?(:page_localization_id) ? version.page_localization_id : version.page_id)
               object = Gluttonberg::PageLocalization.where(:id => object_id).first
               object.name unless object.blank?
-            elsif params[:object_class] == "Gluttonberg::ArticleLocalization"
+            elsif params[:object_class] == "Gluttonberg::Blog::ArticleLocalization"
               object = version.article_localization
               object.title unless object.blank?
             else

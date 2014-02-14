@@ -30,8 +30,6 @@ module Gluttonberg
               @page_localization.page.update_attributes(page_attributes)
             end
 
-            update_publish_state
-
             flash[:notice] = "The page was successfully updated."
             redirect_to edit_admin_page_page_localization_path( :page_id => params[:page_id], :id =>  @page_localization.id)+ (@page_localization.reload && @page_localization.versions && @page_localization.versions.latest.version != @page_localization.version ? "?version=#{@page_localization.versions.latest.version}" : "")
           else

@@ -47,7 +47,7 @@ module Gluttonberg
             if page.number_of_children > 0
               output << "<ol class='dd-list'>"
               children = page.children.find_all{|page| current_user.can_view_page(page) } 
-              page_table_rows(children, output, inset + 1 , row)
+              page_table_rows(children, page.id, output, inset + 1 , row)
               output << "</ol>"
             end
           output << "</li>"

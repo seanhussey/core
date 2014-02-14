@@ -114,7 +114,7 @@ class User < ActiveRecord::Base
       else
         false
       end
-    when "Gluttonberg::Blog"
+    when "Gluttonberg::Blog::Weblog"
       auth = self.authorizations.where(:authorizable_type => object.class.name, :authorizable_id => object.id).first
       unless auth.blank?
         auth.allow == true

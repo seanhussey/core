@@ -37,7 +37,7 @@
           %label
             Page
           = auth_form.select(:authorizable_id, pages_lists_options, {:prompt => "Select Page"}, {:class=>" chzn-select"})
-        - elsif auth_form.object.authorizable_type == "Gluttonberg::Blog"            
+        - elsif auth_form.object.authorizable_type == "Gluttonberg::Blog::Weblog"            
           = auth_form.label :allow , "Blog (#{auth_form.object.authorizable.name})"
           = auth_form.check_box :allow
           = auth_form.hidden_field :authorizable_id
