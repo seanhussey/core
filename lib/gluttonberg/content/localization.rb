@@ -38,9 +38,10 @@ module Gluttonberg
             loc = self.localized_model.new(:locale_id => locale.id)
             new_model.instance_variable_set(:@current_localization, loc)
             new_model.localizations << loc
+            loc.parent = new_model
             #update current object and current localization
             attrs.each do |name, value|
-              new_model.send("#{name}=", value) 
+              new_model.send("#{name}=", value)
             end
             if locale.default?
                default_localization = loc
@@ -133,6 +134,7 @@ module Gluttonberg
         def current_localization
           if @current_localization.blank?
             @current_localization = self.default_localization
+            @current_localization.parent = self
           end
           @current_localization
         end
@@ -158,6 +160,7 @@ module Gluttonberg
           if self.current_localization.blank? && fallback
             self.current_localization = self.default_localization
           end
+          self.current_localization.parent = self
           self.current_localization
         end
 

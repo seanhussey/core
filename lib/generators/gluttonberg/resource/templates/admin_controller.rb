@@ -35,7 +35,7 @@ module Admin
 
     def create
       @<%= singular_name %> = <% if localized? %><%= class_name %>.new_with_localization(params[:<%= singular_name %>])<% else %><%= class_name %>.new(params[:<%= singular_name %>]) <%end%>
-      <% if versioned? %>@<%= singular_name %>.current_user_id = current_user.id<%end%>
+      <% if versioned? %>@<%= singular_name %><% if localized? %>.current_localization<% end %>.current_user_id = current_user.id<%end%>
       if @<%= singular_name %>.save
         flash[:notice] = "The <%= singular_name.titleize.downcase %> was successfully created."
         redirect_to admin_<%= plural_name %>_path
@@ -46,7 +46,7 @@ module Admin
 
     def update
       <% if localized? %>@<%= singular_name %>.load_localization(params[:locale_id]) unless params[:locale_id].blank? <%end%>
-      <% if versioned? %>@<%= singular_name %>.current_user_id = current_user.id<%end%>
+      <% if versioned? %>@<%= singular_name %><% if localized? %>.current_localization<% end %>.current_user_id = current_user.id<%end%>
       if @<%= singular_name %>.update_attributes(params[:<%= singular_name %>])
         flash[:notice] = "The <%= singular_name.titleize.downcase %> was successfully updated."
         redirect_to admin_<%= plural_name %>_path
