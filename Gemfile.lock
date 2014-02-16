@@ -86,7 +86,7 @@ GEM
       addressable
     dotenv (0.9.0)
     erubis (2.7.0)
-    fakes3 (0.1.5)
+    fakes3 (0.1.5.2)
       builder
       thor
     foreman (0.63.0)
@@ -200,7 +200,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  fakes3 (= 0.1.5)
+  fakes3 (= 0.1.5.2)
   gluttonberg-core!
   jquery-rails (= 3.1.0)
   pg (~> 0.17.1)
