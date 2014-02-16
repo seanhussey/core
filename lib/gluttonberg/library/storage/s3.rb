@@ -71,7 +71,7 @@ module Gluttonberg
             }
             mime_type = asset.mime_type if mime_type.blank?
             options[:content_type] = mime_type unless mime_type.blank?
-            response = bucket_key.write(File.open(File.join(Rails.root,local_file)), options)
+            response = bucket_key.write(File.open(File.join((Rails.env == 'test' ? Engine.root : Rails.root),local_file)), options)
             puts "Copied"
           end
 
