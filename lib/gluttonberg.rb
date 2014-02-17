@@ -7,7 +7,7 @@ module Gluttonberg
     require 'authlogic'
     require 'will_paginate'
     require 'will_paginate/array'
-    require 'zip/zip'
+    require 'zip'
     require 'acts_as_tree'
     require 'acts_as_versioned'
     require 'paperclip'

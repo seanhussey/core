@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'authlogic', "3.3.0"
   s.add_dependency 'will_paginate' , '3.0.5'
-  s.add_dependency 'rubyzip', '0.9.9'
+  s.add_dependency 'rubyzip', '1.1.0'
   s.add_dependency 'acts_as_tree', '1.5.0'
   s.add_dependency 'freerange_acts_as_versioned', '2.0.0'
   s.add_dependency 'acts-as-taggable-on', '3.0.1'
@@ -29,9 +29,9 @@ Gem::Specification.new do |s|
   s.add_dependency 'active_link_to', '1.0.2'
   s.add_dependency 'texticle', '1.0.4.20101004123327'
   s.add_dependency 'ruby-mp3info', '0.8.3'
-  s.add_dependency 'paperclip', '3.5.1'
+  s.add_dependency 'paperclip', '4.1.0'
   s.add_dependency 'acl9', '0.12.1'
-  s.add_dependency 'sitemap_generator', '4.1.1'
+  s.add_dependency 'sitemap_generator', '5.0.0'
   s.add_dependency 'domainatrix', '0.0.11'
   s.add_dependency 'aws-sdk', '1.14.1'
   s.add_dependency 'highline', '1.6.20'

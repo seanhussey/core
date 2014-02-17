@@ -10,7 +10,7 @@ module Gluttonberg
       zip = asset_params[:file]
       dir = create_tmp_folder
       begin
-        Zip::ZipFile.open(zip.tempfile.path).each do |entry|
+        Zip::File.open(zip.tempfile.path).each do |entry|
           asset = self.make_asset_for_entry(asset_params, current_user, entry , dir)
           new_assets << asset if asset && asset.kind_of?(Gluttonberg::Asset)
         end
