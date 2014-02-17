@@ -33,7 +33,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'acl9', '0.12.1'
   s.add_dependency 'sitemap_generator', '5.0.0'
   s.add_dependency 'domainatrix', '0.0.11'
-  s.add_dependency 'aws-sdk', '1.14.1'
+  s.add_dependency 'aws-sdk', '1.34.0'
   s.add_dependency 'highline', '1.6.20'
   s.add_dependency 'haml', '4.0.5'
   s.add_dependency 'sass', '3.2.14'
