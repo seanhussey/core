@@ -83,7 +83,7 @@ module Gluttonberg
       end
 
       version = Version.new
-      version.version_number = Gluttonberg::VERSION
+      version.version_number = VERSION
       version.save
 
     end
