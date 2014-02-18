@@ -1,13 +1,11 @@
 .span5
   %legend
     Content
-
   <% attributes.each do |attribute| -%>%p
     = f.label :<%= attr_db_name_wrapper(attribute) %>
   <% if ['asset', 'image','video','document', 'audio'].include?(attribute.type.to_s) %>  = f.asset_browser :<%= attr_db_name_wrapper(attribute) %> , :class => "attr_<%= attr_db_name_wrapper(attribute) %> " , :filter => "<%=asset_filter_value(attribute)%>"
   <%else%>  = f.<%= attribute.field_type %> :<%= attribute.name %> , :class => "attr_<%= attribute.name %> span5 <%= attribute.field_type.to_s == 'text_area' ? 'jwysiwyg' : ''  %>" <%end%>
   <% end %>
-
 .span4
   %legend{ :class => "expandable" , "rel"=>".seo_body"}
     SEO
@@ -28,16 +26,7 @@
       = f.label :fb_icon_id , "Facebook Icon"
       = f.asset_browser :fb_icon_id , :class => "" , :filter => "image"
 
-  %legend
-    Publishing
-  %p
-    - if can? :publish , <%=class_name %>
-      = f.publisable_dropdown
-  %p
-    = submit_tag "Publish", :class => "btn btn-success"
-    or
-    %a{:href => admin_<%= plural_name %>_path}
-      Cancel
+  = submit_and_publish_controls(f, @<%= singular_name %>, can?(:publish , <%=class_name %>))
 
 = enable_redactor("jwysiwyg")
 = enable_slug_management_on("attr_#{f.object.get_slug_source}")

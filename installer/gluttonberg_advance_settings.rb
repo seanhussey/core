@@ -35,8 +35,8 @@
   # Full text search config
     # Rails.configuration.search_models = {
     #   "Gluttonberg::Page" => [:name],
-    #   "Gluttonberg::Blog" => [:name , :description],
-    #   "Gluttonberg::ArticleLocalization" => [:title , :body],
+    #   "Gluttonberg::Blog::Weblog" => [:name , :description],
+    #   "Gluttonberg::Blog::ArticleLocalization" => [:title , :body],
     #   "Gluttonberg::PlainTextContentLocalization" => [:text] ,
     #   "Gluttonberg::HtmlContentLocalization" => [:text]
     # }

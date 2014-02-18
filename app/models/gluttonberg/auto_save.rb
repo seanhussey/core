@@ -5,6 +5,7 @@ module Gluttonberg
     attr_accessible :auto_save_able_id, :auto_save_able_type, :auto_save_able_id
     attr_accessible :data
     MixinManager.load_mixins(self)
+    
     def self.param_name_for(class_name)
       ActiveModel::Naming.param_key(class_name.constantize).to_sym
     end
@@ -15,7 +16,7 @@ module Gluttonberg
         hash = JSON.parse(auto_save_obj.data)
         if object.class.name == "Gluttonberg::PageLocalization"
           hash.delete('page')
-        elsif object.class.name == "Gluttonberg::ArticleLocalization"
+        elsif object.class.name == "Gluttonberg::Blog::ArticleLocalization"
           hash.delete('article')
         end
         object.assign_attributes(hash)

@@ -5,6 +5,10 @@ module Gluttonberg
     module AssetLibrary
       class AssetsController < Gluttonberg::Admin::AssetLibrary::BaseController
         before_filter :find_asset , :only => [:crop , :save_crop , :delete , :edit , :show , :update , :destroy  ]
+        before_filter :authorize_user , :except => [:destroy , :delete]
+        before_filter :authorize_user_for_destroy , :only => [:destroy , :delete]
+        before_filter :authorize_user_for_edit , :only => [:edit , :update, :crop, :save_crop]
+
         record_history :@asset
         include Gluttonberg::ApplicationHelper
 
@@ -131,7 +135,19 @@ module Gluttonberg
         private
           def find_asset
             @asset = Asset.where(:id => params[:id]).first
-            raise ActiveRecord::RecordNotFound  if @asset.blank?
+            raise ActiveRecord::RecordNotFound if @asset.blank?
+          end
+
+          def authorize_user
+            authorize! :manage, Gluttonberg::Asset
+          end
+
+          def authorize_user_for_destroy
+            authorize! :destroy, @asset
+          end
+
+          def authorize_user_for_edit
+            authorize! :edit, @asset
           end
 
       end # controller

@@ -70,7 +70,7 @@ namespace :gluttonberg do
   desc "Clean Html for all models"
   task :clean_html_for_all_models => :environment do
     Rails.application.initialize!
-    [Gluttonberg::HtmlContentLocalization , Gluttonberg::Page , Gluttonberg::Article , Gluttonberg::Blog , Gluttonberg::Article , Theme , Idea , User , Speaker ].each do |constant|
+    [Gluttonberg::HtmlContentLocalization , Gluttonberg::Page ,  Gluttonberg::Blog::Weblog , Gluttonberg::Blog::Article, Gluttonberg::Blog::ArticleLocalization , User ].each do |constant|
       if not constant.nil? and constant.is_a? Class and constant.superclass == ActiveRecord::Base
         puts constant
         begin
@@ -113,7 +113,14 @@ namespace :gluttonberg do
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "bootstrap-theme.min.css"), File.join(Rails.root, "app", "assets", "stylesheets", "bootstrap-theme.min.css"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "bootstrap.min.js"), File.join(Rails.root, "app", "assets", "javascripts", "bootstrap.min.js"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "application_helper.rb"), File.join(Rails.root, "app", "helpers", "application_helper.rb"))
+      FileUtils.cp(File.join(Gluttonberg::Engine.root, "app", "models", "ability.rb"), File.join(Rails.root, "app", "models", "ability.rb"))
+
       FileUtils.rm(File.join(Rails.root, "public", "index.html"))
+      FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "500.html"), File.join(Rails.root, "public", "500.html"))
+
+      FileUtils.mkdir_p(File.join(Rails.root, "app", "views", "exceptions"))
+      FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "not_found.html.haml"), File.join(Rails.root, "app", "views", "exceptions", "not_found.html.haml"))
+      FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "access_denied.html.haml"), File.join(Rails.root, "app", "views", "exceptions", "access_denied.html.haml"))
       return true
     rescue => e
       line.say("<%= color('Failure!', RED) %>")

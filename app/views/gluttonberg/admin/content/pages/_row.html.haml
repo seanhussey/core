@@ -1,37 +1,45 @@
-.dd-handle.dd3-handle
+- if can?(:reorder , Gluttonberg::Page)
+  .dd-handle.dd3-handle
 .dd3-content
   .dd-column.title
-    = link_to("#{page.home ? "#{page.current_localization.name} (Home page)" : page.current_localization.name}", edit_admin_page_page_localization_path( :page_id => page.id, :id => page.current_localization.id))
+    - current_page_title = "#{page.home ? "#{page.current_localization.name} (Home page)" : page.current_localization.name}"
+    - if can? :manage_object , page
+      = link_to(current_page_title, edit_admin_page_page_localization_path( :page_id => page.id, :id => page.current_localization.id))
+    - else
+      = current_page_title
+
   .dd-column.author
     = page.user.full_name
   .dd-column.published_state{:class=>"#{page.publishing_status.downcase}"}
     = page.publishing_status
   .dd-column.actions
-    .btn-group
-      %a{ :class => "btn dropdown-toggle" , "data-toggle" => "dropdown" , :href => "#"}
-        Actions
-        %span.caret
-      %ul.dropdown-menu
-        - if Gluttonberg.localized? &&  page.localizations.length > 1
-          - Gluttonberg::Locale.all.each_with_index do |locale, index|
-            - if index > 0
-              %li.divider
-            - localization = Gluttonberg::PageLocalization.find(:first , :conditions => { :page_id => page.id , :locale_id => locale.id } )
-            %li.menu-section-title
-              = locale.name
-            %li= link_to("Edit Page", edit_admin_page_page_localization_path( :page_id => page.id, :id => localization.id), :class => "")
+    - if can? :manage_object , page
+      .btn-group
+        %a{ :class => "btn dropdown-toggle" , "data-toggle" => "dropdown" , :href => "#"}
+          Actions
+          %span.caret
+        %ul.dropdown-menu
+          - if Gluttonberg.localized? &&  page.localizations.length > 1
+            - Gluttonberg::Locale.all.each_with_index do |locale, index|
+              - if index > 0
+                %li.divider
+              - localization = Gluttonberg::PageLocalization.where(:page_id => page.id , :locale_id => locale.id).first
+              %li.menu-section-title
+                = locale.name
+              %li= link_to("Edit Page", edit_admin_page_page_localization_path( :page_id => page.id, :id => localization.id), :class => "")
+              %li= link_to("View Page", page.current_localization.public_path, :class => "", :target => "_blank")
+          - else
+            %li= link_to("Edit Page", edit_admin_page_page_localization_path( :page_id => page.id, :id => page.current_localization.id), :class => "")
             %li= link_to("View Page", page.current_localization.public_path, :class => "", :target => "_blank")
-        - else
-          %li= link_to("Edit Page", edit_admin_page_page_localization_path( :page_id => page.id, :id => page.current_localization.id), :class => "")
-          %li= link_to("View Page", page.current_localization.public_path, :class => "", :target => "_blank")
 
-        %li.divider
-        %li= link_to("Duplicate", duplicate_admin_page_path( :id => page.id), :class => "")
 
-        %li.divider
-        %li= link_to("Add New Child Page", new_admin_page_path + "?parent_id=#{page.id}", :class => "")
-
-        - if can? :destroy , Gluttonberg::Page
           %li.divider
-          %li.danger
-            = link_to 'Delete',  delete_admin_page_path(page), :class => ""
+          %li= link_to("Duplicate", duplicate_admin_page_path( :id => page.id), :class => "")
+
+          %li.divider
+          %li= link_to("Add New Child Page", new_admin_page_path + "?parent_id=#{page.id}", :class => "")
+
+          - if can? :destroy , Gluttonberg::Page
+            %li.divider
+            %li.danger
+              = link_to 'Delete',  delete_admin_page_path(page), :class => ""

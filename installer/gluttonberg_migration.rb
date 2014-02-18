@@ -288,7 +288,7 @@ class GluttonbergMigration < ActiveRecord::Migration
     create_table :gb_galleries do |t|
       t.column :title , :string , :limit => 255
       t.column :description, :text
-      t.integer :user_id, :null => false
+      t.integer :user_id
       t.column :slug , :string
       t.column :state , :string
       t.datetime :published_at
@@ -330,6 +330,14 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.integer :auto_save_able_id
       t.string :auto_save_able_type
       t.text :data
+      t.timestamps
+    end
+
+    create_table :gb_authorizations do |t|
+      t.string :authorizable_type
+      t.integer :authorizable_id
+      t.integer :user_id
+      t.boolean :allow
       t.timestamps
     end
 
