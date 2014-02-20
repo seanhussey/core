@@ -48,13 +48,9 @@ module Gluttonberg
         prepared_content = case content.class.name
           when "Gluttonberg::ImageContent"
             content.asset.url_for opts[:url_for] unless content.asset.blank?
-          when "Gluttonberg::HtmlContentLocalization"
+          when "Gluttonberg::HtmlContentLocalization", "Gluttonberg::TextareaContentLocalization"
             content.text.html_safe
-          when "Gluttonberg::TextareaContentLocalization"
-            content.text.html_safe
-          when "Gluttonberg::PlainTextContentLocalization"
-            content.text
-          when "Gluttonberg::SelectContent"
+          when "Gluttonberg::PlainTextContentLocalization", "Gluttonberg::SelectContent"
             content.text
         end
       rescue
