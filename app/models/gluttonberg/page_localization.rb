@@ -89,12 +89,7 @@ module Gluttonberg
     def contents=(params)
       self.content_needs_saving = true
       contents.each do |content|
-        content_page = content.respond_to?(:page) ? content.page : content.parent.page
-        unless content_page.blank?
-          content_page.state = self.page.state
-          content_page._publish_status = self.page._publish_status
-          content_page.current_user_id = self.page.current_user_id
-        end
+        content_page_publishing_info(content)
         content_association = params[content.association_name]
         content_association = params[content.association_name.to_s] if content_association.blank?
         update = content_association[content.id.to_s]
@@ -169,6 +164,15 @@ module Gluttonberg
         potential_duplicates = self.class.where([ "path = ? AND page_id != ?", new_path, page.id]).all
         potential_duplicates = potential_duplicates.find_all{|l| l.page.parent_id == self.page.parent_id}
         Content::SlugManagement::ClassMethods.check_for_duplication(new_path, self, potential_duplicates)
+      end
+
+      def content_page_publishing_info(content)
+        content_page = content.respond_to?(:page) ? content.page : content.parent.page
+        unless content_page.blank?
+          content_page.state = self.page.state
+          content_page._publish_status = self.page._publish_status
+          content_page.current_user_id = self.page.current_user_id
+        end
       end
 
   end
