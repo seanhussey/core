@@ -57,6 +57,7 @@ module Gluttonberg
               asset = Gluttonberg::Asset.where(:asset_hash => asset_hash).first
               unless asset.blank?
                 local_file = asset.tmp_directory + "/" + file_name
+                local_file = "public/user_assets/" + asset_hash + "/" + file_name unless File.exist?(local_file)
                 puts " Copying #{local_file} to #{self.s3_bucket_name}"
                 self.upload_file_to(asset, bucket.objects[key_for_s3], mime_type, local_file)
                 asset.update_attributes(:copied_to_s3 => true)
