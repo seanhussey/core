@@ -182,11 +182,11 @@ module Gluttonberg
 
         Gluttonberg::Components.nav_entries.each do |entry|
           unless entry[4].blank?
-             is_localized =  Kernel.const_get(entry[4]).respond_to?(:localized?) && Kernel.const_get(entry[4]).localized?
+             is_localized =  entry[4].constantize.respond_to?(:localized?) && entry[4].constantize.localized?
              model_name = is_localized ? "#{entry[4]}Localization" : entry[4]
-            if Kernel.const_get(model_name).versioned?
+            if model_name.constantize.versioned?
               association = model_name.demodulize.underscore
-              query = Kernel.const_get(model_name)::Version.where(:version_status => ['submitted_for_approval']).includes(association)
+              query = model_name.constantize::Version.where(:version_status => ['submitted_for_approval']).includes(association)
               query.all.each do |submitted_version|
                 object = submitted_version.send(association)
                 versions = object.versions
