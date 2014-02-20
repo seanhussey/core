@@ -131,84 +131,9 @@ module Gluttonberg
       def version_dashboard_notifications_data
         submitted_content = []
 
-        Gluttonberg::Content::actual_content_classes.each do |klass|
-          uniq_key = klass.columns.map(&:name).include?('page_localization_id') ? :page_localization_id : :page_id
-          klass::Version.where(:version_status => ['submitted_for_approval']).select(uniq_key).uniq.all.each do |submitted_version|
-            object_id = (submitted_version.respond_to?(:page_localization_id) ? submitted_version.page_localization_id : submitted_version.page_id)
-            object = Gluttonberg::PageLocalization.where(:id => object_id).first
-            unless object.blank?
-              versions = object.versions
-              unless versions.blank?
-                versions = versions.sort{|x, y| y.version <=> x.version}
-                versions = versions.find_all{|v| v.version_status == "published" ||  v.version_status == "submitted_for_approval"}
-                
-                published_version = nil
-                versions.each do |version|
-                  published_version = version if version.version_status == "published"
-                  if (published_version.blank? || published_version.version < version.version) 
-                    if version.version_status == "submitted_for_approval"
-                      path = edit_admin_page_page_localization_path( :page_id => object.page_id, :id => object.id) + "?version=#{version.version}"
-                      submitted_content << [object.name, path, version] 
-                      break
-                    end
-                  end
-                end # versions loop
-              end
-            end
-          end
-        end # pages
-
-        if Gluttonberg.constants.include?(:Blog) && Gluttonberg::Blog::Article
-          Gluttonberg::Blog::ArticleLocalization::Version.where(:version_status => ['submitted_for_approval']).includes(:article_localization).all.each do |submitted_version|
-            object = submitted_version.article_localization
-            versions = object.versions
-            unless versions.blank?
-              versions = versions.sort{|x, y| y.version <=> x.version}
-              versions = versions.find_all{|v| v.version_status == "published" ||  v.version_status == "submitted_for_approval"}
-              published_version = nil
-              versions.each do |version|
-                published_version = version if version.version_status == "published"
-                if (published_version.blank? || published_version.version < version.version) 
-                  if version.version_status == "submitted_for_approval"
-                    path = edit_admin_blog_article_path( :blog_id => object.article.blog_id, :localization_id => object.id, :id => object.article.id, :version => version.version)
-                    submitted_content << [object.title, path, version] 
-                    break
-                  end
-                end
-              end 
-            end
-          end
-        end # articles
-
-        Gluttonberg::Components.nav_entries.each do |entry|
-          unless entry[4].blank?
-             is_localized =  entry[4].constantize.respond_to?(:localized?) && entry[4].constantize.localized?
-             model_name = is_localized ? "#{entry[4]}Localization" : entry[4]
-            if model_name.constantize.versioned?
-              association = model_name.demodulize.underscore
-              query = model_name.constantize::Version.where(:version_status => ['submitted_for_approval']).includes(association)
-              query.all.each do |submitted_version|
-                object = submitted_version.send(association)
-                versions = object.versions
-                unless versions.blank?
-                  versions = versions.sort{|x, y| y.version <=> x.version}
-                  versions = versions.find_all{|v| v.version_status == "published" ||  v.version_status == "submitted_for_approval"}
-                  published_version = nil
-                  versions.each do |version|
-                    published_version = version if version.version_status == "published"
-                    if (published_version.blank? || published_version.version < version.version) 
-                      if version.version_status == "submitted_for_approval"
-                        path = "#{url_for(entry[2])}/#{object.id}/edit" + "?version=#{version.version}#{is_localized ? "&locale_id=#{object.locale_id}" : ''}"
-                        submitted_content << [object.title_or_name?, path, version] 
-                        break
-                      end
-                    end
-                  end 
-                end
-              end
-            end #versioned
-          end
-        end # custom models
+        _page_version_dashboard_notifications_data(submitted_content)
+        _blog_version_dashboard_notifications_data(submitted_content)
+        _custom_models_version_dashboard_notifications_data(submitted_content)
 
         submitted_content.uniq! unless submitted_content.blank?
         submitted_content = submitted_content.sort{|x,y| y[2].created_at <=>  x[2].created_at }
@@ -270,6 +195,94 @@ module Gluttonberg
           </script>
         }.html_safe
       end
+
+
+      private
+
+        def _page_version_dashboard_notifications_data(submitted_content)
+          Gluttonberg::Content::actual_content_classes.each do |klass|
+            uniq_key = klass.columns.map(&:name).include?('page_localization_id') ? :page_localization_id : :page_id
+            klass::Version.where(:version_status => ['submitted_for_approval']).select(uniq_key).uniq.all.each do |submitted_version|
+              object_id = (submitted_version.respond_to?(:page_localization_id) ? submitted_version.page_localization_id : submitted_version.page_id)
+              object = Gluttonberg::PageLocalization.where(:id => object_id).first
+              unless object.blank?
+                versions = object.versions
+                unless versions.blank?
+                  versions = versions.sort{|x, y| y.version <=> x.version}
+                  versions = versions.find_all{|v| v.version_status == "published" ||  v.version_status == "submitted_for_approval"}
+                  
+                  published_version = nil
+                  versions.each do |version|
+                    published_version = version if version.version_status == "published"
+                    if (published_version.blank? || published_version.version < version.version) 
+                      if version.version_status == "submitted_for_approval"
+                        path = edit_admin_page_page_localization_path( :page_id => object.page_id, :id => object.id) + "?version=#{version.version}"
+                        submitted_content << [object.name, path, version] 
+                        break
+                      end
+                    end
+                  end # versions loop
+                end
+              end
+            end
+          end # pages
+        end
+
+        def _blog_version_dashboard_notifications_data(submitted_content)
+          if Gluttonberg.constants.include?(:Blog) && Gluttonberg::Blog::Article
+            Gluttonberg::Blog::ArticleLocalization::Version.where(:version_status => ['submitted_for_approval']).includes(:article_localization).all.each do |submitted_version|
+              object = submitted_version.article_localization
+              versions = object.versions
+              unless versions.blank?
+                versions = versions.sort{|x, y| y.version <=> x.version}
+                versions = versions.find_all{|v| v.version_status == "published" ||  v.version_status == "submitted_for_approval"}
+                published_version = nil
+                versions.each do |version|
+                  published_version = version if version.version_status == "published"
+                  if (published_version.blank? || published_version.version < version.version) 
+                    if version.version_status == "submitted_for_approval"
+                      path = edit_admin_blog_article_path( :blog_id => object.article.blog_id, :localization_id => object.id, :id => object.article.id, :version => version.version)
+                      submitted_content << [object.title, path, version] 
+                      break
+                    end
+                  end
+                end 
+              end
+            end
+          end # articles
+        end
+
+        def _custom_models_version_dashboard_notifications_data(submitted_content)
+          Gluttonberg::Components.nav_entries.each do |entry|
+            unless entry[4].blank?
+               is_localized =  entry[4].constantize.respond_to?(:localized?) && entry[4].constantize.localized?
+               model_name = is_localized ? "#{entry[4]}Localization" : entry[4]
+              if model_name.constantize.versioned?
+                association = model_name.demodulize.underscore
+                query = model_name.constantize::Version.where(:version_status => ['submitted_for_approval']).includes(association)
+                query.all.each do |submitted_version|
+                  object = submitted_version.send(association)
+                  versions = object.versions
+                  unless versions.blank?
+                    versions = versions.sort{|x, y| y.version <=> x.version}
+                    versions = versions.find_all{|v| v.version_status == "published" ||  v.version_status == "submitted_for_approval"}
+                    published_version = nil
+                    versions.each do |version|
+                      published_version = version if version.version_status == "published"
+                      if (published_version.blank? || published_version.version < version.version) 
+                        if version.version_status == "submitted_for_approval"
+                          path = "#{url_for(entry[2])}/#{object.id}/edit" + "?version=#{version.version}#{is_localized ? "&locale_id=#{object.locale_id}" : ''}"
+                          submitted_content << [object.title_or_name?, path, version] 
+                          break
+                        end
+                      end
+                    end 
+                  end
+                end
+              end #versioned
+            end
+          end # custom models
+        end
 
     end #Form
   end
