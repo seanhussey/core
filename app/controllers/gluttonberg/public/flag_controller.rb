@@ -3,12 +3,7 @@ module Gluttonberg
     class FlagController <  Gluttonberg::Public::BaseController
 
       def new
-        model = nil
-        if params[:flaggable_type].include?("Gluttonberg::")
-          model = Gluttonberg.const_get(params[:flaggable_type][13..-1])
-        else
-          model = Kernel.const_get(params[:flaggable_type])
-        end
+        model = params[:flaggable_type].constantize
         @flaggable = model.where(:id => params[:flaggable_id]).first
         respond_to do |format|
           format.html

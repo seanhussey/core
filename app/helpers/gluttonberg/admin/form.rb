@@ -107,17 +107,23 @@ module Gluttonberg
           your_revisions = []
           submitted_for_approval = []
           published_version = nil
+          viewing_waiting_for_approval = nil
           versions.each do |version|
             published_version = version if version.version_status == "published"
-            if (published_version.blank? || published_version.version < version.version) && version.version != selected_version_num.to_i
-              submitted_for_approval << version if version.version_status == "submitted_for_approval"
-              your_revisions << version if version.version_status == "revision" && version.version_user_id == current_user.id
+            if (published_version.blank? || published_version.version < version.version)
+              if version.version != selected_version_num.to_i
+                submitted_for_approval << version if version.version_status == "submitted_for_approval"
+                your_revisions << version if version.version_status == "revision" && version.version_user_id == current_user.id
+              else
+                viewing_waiting_for_approval = version if version.version_status == "submitted_for_approval"
+              end
             end
           end
           render :partial => "/gluttonberg/admin/shared/version_alerts", :locals => {
             :submitted_for_approval => submitted_for_approval,
             :your_revisions => your_revisions,
-            :can_publish => can_publish
+            :can_publish => can_publish,
+            :viewing_waiting_for_approval => viewing_waiting_for_approval
           }
         end
       end #version_alerts
@@ -176,11 +182,11 @@ module Gluttonberg
 
         Gluttonberg::Components.nav_entries.each do |entry|
           unless entry[4].blank?
-             is_localized =  Kernel.const_get(entry[4]).respond_to?(:localized?) && Kernel.const_get(entry[4]).localized?
+             is_localized =  entry[4].constantize.respond_to?(:localized?) && entry[4].constantize.localized?
              model_name = is_localized ? "#{entry[4]}Localization" : entry[4]
-            if Kernel.const_get(model_name).versioned?
+            if model_name.constantize.versioned?
               association = model_name.demodulize.underscore
-              query = Kernel.const_get(model_name)::Version.where(:version_status => ['submitted_for_approval']).includes(association)
+              query = model_name.constantize::Version.where(:version_status => ['submitted_for_approval']).includes(association)
               query.all.each do |submitted_version|
                 object = submitted_version.send(association)
                 versions = object.versions

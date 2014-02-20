@@ -8,6 +8,10 @@ module Gluttonberg
 
     has_and_belongs_to_many :groups, :class_name => "Group" , :join_table => "gb_groups_members"
     has_attached_file :image, :styles => { :profile => ["600x600"], :thumb => ["142x95#"] , :thumb_for_backend => ["100x75#"]}
+    # Validate content type
+    validates_attachment_content_type :image, :content_type => /\Aimage/
+    # Validate filename
+    validates_attachment_file_name :image, :matches => [/png\Z/, /jpe?g\Z/]
 
     validates_format_of :password, :with => Rails.configuration.password_pattern , :if => :require_password?, :message => Rails.configuration.password_validation_message
     validates_presence_of :first_name , :email
