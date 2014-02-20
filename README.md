@@ -17,7 +17,7 @@ The following setups will get you up and running.
 1. Create a new **Rails** app.
 `rails new gluttonberg_app  --skip-bundle --database=postgresql`
 2. Add **Gluttonberg** to the *Gemfile* and then bundle install.
-`gem 'gluttonberg-core', :git => 'git://github.com/Gluttonberg/core.git', :require => 'gluttonberg'`
+`gem 'gluttonberg-core', :git => 'git://github.com/Gluttonberg/core.git', :require => 'gluttonberg', :branch => '3.0'`
 `bundle install`
 3. Double check the username and password in the *database.yml* and then create the database.
 `bundle exec rake db:create`
