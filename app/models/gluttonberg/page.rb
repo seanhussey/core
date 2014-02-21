@@ -27,14 +27,14 @@ module Gluttonberg
     delegate :version, :loaded_version,  :to => :current_localization
 
     def easy_contents(section_name, opts = {})
-      begin
+      #begin
         prepared_content = nil
         section_name = section_name.to_sym
         load_localization(opts[:locale]) if current_localization.blank?
         content = current_localization.contents.pluck {|c| (c.respond_to?(:parent) && c.parent.section[:name] ==  section_name ) || (c.respond_to?(:section) && c.section[:name] ==  section_name ) }
-        prepared_content = _prepare_content(content)
-      rescue
-      end
+        prepared_content = _prepare_content(content, opts)
+      # rescue
+      # end
       prepared_content
     end
 
@@ -116,7 +116,7 @@ module Gluttonberg
     end
 
     private
-      def _prepare_content(content)
+      def _prepare_content(content, opts)
         case content.class.name
           when "Gluttonberg::ImageContent"
             content.asset.url_for opts[:url_for] unless content.asset.blank?
