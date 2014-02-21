@@ -8,7 +8,10 @@ module Gluttonberg
     include Content::PageFinder
     include Content::DefaultTemplateFile
     include Content::PageDescriptionInfo
+    include Content::PageChildren
+    include Content::HomePage
     self.slug_scope = :parent_id
+    self.table_name = "gb_pages"
 
     belongs_to :user
     has_many :localizations, :class_name => "Gluttonberg::PageLocalization", :dependent => :destroy
@@ -30,16 +33,10 @@ module Gluttonberg
 
     validates_presence_of :name , :description_name
 
-    self.table_name = "gb_pages"
-
-    after_save   :check_for_home_update
-
     is_drag_tree :scope => :parent_id, :flat => false , :order => "position", :counter_cache => :children_count
 
-    attr_accessor :current_localization, :locale_id, :paths_need_recaching
-
+    attr_accessor :current_localization, :locale_id, :paths_need_recaching, :current_user_id
     delegate :version, :loaded_version,  :to => :current_localization
-    attr_accessor :current_user_id
 
     def easy_contents(section_name, opts = {})
       begin
@@ -121,20 +118,6 @@ module Gluttonberg
       self.current_localization = Gluttonberg::PageLocalization.where(:page_id => id , :locale_id => Gluttonberg::Locale.first_default.id).first
     end
 
-    def home=(state)
-      write_attribute(:home, state)
-      @home_updated = state
-    end
-
-    def self.home_page
-      self.where(:home => true).first
-    end
-
-    def self.home_page_name
-      home_temp = self.home_page
-      home_temp.blank? ? "Not Selected" : home_temp.name
-    end
-
     def self.repair_pages_structure
       PageRepairer.repair_pages_structure
     end
@@ -150,43 +133,6 @@ module Gluttonberg
     def collapsed?(current_user)
       !self.collapsed_pages.find_all{|page| page.user_id == current_user.id}.blank?
     end
-
-    def grand_child_of?(page)
-      if self.parent_id.blank? || page.blank?
-        false
-      else
-        self.parent_id == page.id || self.parent.grand_child_of?(page)
-      end
-    end
-
-    def grand_parent_of?(page)
-      page.grand_child_of?(self)
-    end
-
-    def self.fix_children_count
-      self.all.each do |page|
-        self.reset_counters(page.id, :children)
-      end
-    end
-
-    def number_of_children
-      if self.respond_to?(:children_count)
-        self.children_count
-      else
-        self.children.count
-      end
-    end
-
-    private
-
-      # Checks to see if this page has been set as the homepage. If it has, we
-      # then go and
-      def check_for_home_update
-        if @home_updated && @home_updated == true
-          previous_home = Page.where([ "home = ? AND id <> ? " , true ,self.id ] ).first
-          previous_home.update_attributes(:home => false) if previous_home
-        end
-      end
 
   end
 end
