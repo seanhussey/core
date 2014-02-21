@@ -3,6 +3,14 @@ module Gluttonberg
     module PageChildren
       extend ActiveSupport::Concern
 
+      module ClassMethods
+        def fix_children_count
+          self.all.each do |page|
+            self.reset_counters(page.id, :children)
+          end
+        end
+      end
+
       def grand_child_of?(page)
         if self.parent_id.blank? || page.blank?
           false
@@ -13,12 +21,6 @@ module Gluttonberg
 
       def grand_parent_of?(page)
         page.grand_child_of?(self)
-      end
-
-      def self.fix_children_count
-        self.all.each do |page|
-          self.reset_counters(page.id, :children)
-        end
       end
 
       def number_of_children

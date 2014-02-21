@@ -9,7 +9,7 @@ module Gluttonberg
     include Content::DefaultTemplateFile
     include Content::PageDescriptionInfo
     include Content::PageChildren
-    include Content::HomePage
+    include Content::HomePageInfo
     self.slug_scope = :parent_id
     self.table_name = "gb_pages"
 
