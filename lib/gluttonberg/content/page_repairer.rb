@@ -62,26 +62,29 @@ module Gluttonberg
         old_description = PageDescription[old_description_name.to_sym]
         new_description = PageDescription[new_description_name.to_sym]
         if old_description && new_description
-          used_sections = []
-          new_description.sections.each do |section_name,  section_info|
-            matched_type_section = old_description.sections.find_all{|old_section_name, old_section_info| !used_sections.include?(old_section_name) &&  old_section_name == section_name && old_section_info[:type] == section_info[:type] }.first
-            association = page.send(section_info[:type].to_s.pluralize)
-            unless matched_type_section.blank?
-              content = association.where(:section_name => matched_type_section.first.to_s).first
-              used_sections << matched_type_section.first.to_s
-              unless content.blank?
-                content.update_attributes(:section_name => section_name)
-              end
-            else
-            end
-          end #sections loop
-
+          PageRepairer.update_page_sections(page, old_description, new_description)
         elsif new_description #old one does not exist anymore
         end
         page.update_attributes(page_attributes)
         PageRepairer.create_missing_sections(page)
         page.create_default_template_file
       end
+    end
+
+    def self.update_page_sections(page, old_description, new_description)
+      used_sections = []
+      new_description.sections.each do |section_name,  section_info|
+        matched_type_section = old_description.sections.find_all{|old_section_name, old_section_info| !used_sections.include?(old_section_name) &&  old_section_name == section_name && old_section_info[:type] == section_info[:type] }.first
+        association = page.send(section_info[:type].to_s.pluralize)
+        unless matched_type_section.blank?
+          content = association.where(:section_name => matched_type_section.first.to_s).first
+          used_sections << matched_type_section.first.to_s
+          unless content.blank?
+            content.update_attributes(:section_name => section_name)
+          end
+        else
+        end
+      end #sections loop
     end
 
     def self.create_missing_section_localizations(page, section_name, section_info, content)
@@ -107,6 +110,8 @@ module Gluttonberg
         })
       end
     end
+
+
 
   end #PageRepairer
 end
