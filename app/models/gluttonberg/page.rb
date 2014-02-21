@@ -32,14 +32,7 @@ module Gluttonberg
         section_name = section_name.to_sym
         load_localization(opts[:locale]) if current_localization.blank?
         content = current_localization.contents.pluck {|c| (c.respond_to?(:parent) && c.parent.section[:name] ==  section_name ) || (c.respond_to?(:section) && c.section[:name] ==  section_name ) }
-        prepared_content = case content.class.name
-          when "Gluttonberg::ImageContent"
-            content.asset.url_for opts[:url_for] unless content.asset.blank?
-          when "Gluttonberg::HtmlContentLocalization", "Gluttonberg::TextareaContentLocalization"
-            content.text.html_safe
-          when "Gluttonberg::PlainTextContentLocalization", "Gluttonberg::SelectContent"
-            content.text
-        end
+        prepared_content = _prepare_content(content)
       rescue
       end
       prepared_content
@@ -121,6 +114,18 @@ module Gluttonberg
     def collapsed?(current_user)
       !self.collapsed_pages.find_all{|page| page.user_id == current_user.id}.blank?
     end
+
+    private
+      def _prepare_content(content)
+        case content.class.name
+          when "Gluttonberg::ImageContent"
+            content.asset.url_for opts[:url_for] unless content.asset.blank?
+          when "Gluttonberg::HtmlContentLocalization", "Gluttonberg::TextareaContentLocalization"
+            content.text.html_safe
+          when "Gluttonberg::PlainTextContentLocalization", "Gluttonberg::SelectContent"
+            content.text
+        end
+      end
 
   end
 end
