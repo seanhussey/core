@@ -22,9 +22,10 @@ module Gluttonberg
         end
 
         def create
-          role = params[:user].delete(:role) unless params[:user].blank?
-          @user = User.new(params[:user])
-          @user.role = role if current_user.user_valid_roles(@user).include?(role)
+          @user = User.new
+          set_role
+          @user.assign_attributes(params[:user])
+
           if @user.save
             flash[:notice] = "Account registered!"
             redirect_to admin_users_path
@@ -39,8 +40,7 @@ module Gluttonberg
         end
 
         def update
-          role = params[:user].delete(:role) unless params[:user].blank?
-          @user.role = role if current_user.user_valid_roles(@user).include?(role)
+          set_role
           if @user.update_attributes(params[:user])
             flash[:notice] = "Account updated!"
             if current_user.super_admin? || current_user.admin?
@@ -84,16 +84,29 @@ module Gluttonberg
           def prepare_authorizations
             if @user.contributor? && @user.id != current_user.id
               @user.authorizations.build(:authorizable_type => "Gluttonberg::Page") if @user.authorizations.where(:authorizable_type => "Gluttonberg::Page").first.blank?
-              if Gluttonberg.constants.include?(:Blog)
-                Gluttonberg::Blog::Weblog.all.each do |blog|
-                  @user.authorizations.build(:authorizable_type => "Gluttonberg::Blog::Weblog", :authorizable_id => blog.id) if @user.authorizations.where(:authorizable_type => "Gluttonberg::Blog::Weblog", :authorizable_id => blog.id).first.blank?
-                end
-              end
+              prepare_authorizations_for_blog
               @user.authorizations.build(:authorizable_type => "Gluttonberg::Gallery") if Rails.configuration.enable_gallery && @user.authorizations.where(:authorizable_type => "Gluttonberg::Gallery").first.blank?
-              Gluttonberg::Components.can_custom_model_list.each do |model_name|
-                @user.authorizations.build(:authorizable_type => model_name) if @user.authorizations.where(:authorizable_type => model_name).first.blank?
+              prepare_authorizations_for_custom_models
+            end
+          end
+
+          def prepare_authorizations_for_blog
+            if Gluttonberg.constants.include?(:Blog)
+              Gluttonberg::Blog::Weblog.all.each do |blog|
+                @user.authorizations.build(:authorizable_type => "Gluttonberg::Blog::Weblog", :authorizable_id => blog.id) if @user.authorizations.where(:authorizable_type => "Gluttonberg::Blog::Weblog", :authorizable_id => blog.id).first.blank?
               end
             end
+          end
+
+          def prepare_authorizations_for_custom_models
+            Gluttonberg::Components.can_custom_model_list.each do |model_name|
+              @user.authorizations.build(:authorizable_type => model_name) if @user.authorizations.where(:authorizable_type => model_name).first.blank?
+            end
+          end
+
+          def set_role
+            role = params[:user].delete(:role) unless params[:user].blank?
+            @user.role = role if current_user.user_valid_roles(@user).include?(role)
           end
 
       end

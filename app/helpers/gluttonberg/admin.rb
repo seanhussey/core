@@ -5,6 +5,7 @@ module Gluttonberg
       include Gluttonberg::Admin::Messages
       include Gluttonberg::Admin::Form
       include Gluttonberg::Admin::Assets
+      include Gluttonberg::Admin::Versioning
 
       # Returns a link for sorting assets in the library
       def sorter_link(name, param, url)
@@ -35,12 +36,7 @@ module Gluttonberg
       # Writes out a row for each page and then for each page's children,
       # iterating down through the heirarchy.
       def page_table_rows(pages, parent_id=nil, output = "", inset = 0 , row = 0)
-        filtered_pages = pages.find_all{|page| page.parent_id == parent_id}
-        filtered_pages.each do |page|
-          page.position = filtered_pages.length + 1 if page.position.blank?
-        end
-        filtered_pages = filtered_pages.sort{|x,y| x.position <=> y.position} unless filtered_pages.blank?
-        filtered_pages.each do |page|
+        filtered_pages_for_table_rows(pages, parent_id).each do |page|
           row += 1
           output << "<li class='dd-item #{page.collapsed?(current_user) ? 'page-collapsed' : ''}' data-id='#{page.id}' >"
             output << render( :partial => "gluttonberg/admin/content/pages/row", :locals => { :page => page, :inset => inset , :row => row })
@@ -102,58 +98,43 @@ module Gluttonberg
         end
         pages = pages.find_all{|page| current_user.can_view_page(page) } 
         pages.each do |page|
-          array << [page.name, page.id, {class: "level-#{level}"}.merge(current_user.ability.can?(:manage_object, page) ? {} : {:disabled => :disabled})]
-          unless page.children.blank?
-            pages_lists_options(page.children, array, level+1)
-          end
+          page_and_its_children_options(page, array, level)
         end
         array
+      end
+
+      def page_and_its_children_options(page, array, level)
+        array << [page.name, page.id, {class: "level-#{level}"}.merge(current_user.ability.can?(:manage_object, page) ? {} : {:disabled => :disabled})]
+        unless page.children.blank?
+          pages_lists_options(page.children, array, level+1)
+        end
       end
 
       def page_description_options
         @descriptions = {}
         Gluttonberg::PageDescription.all.each do |name, desc|
-          if !current_user.contributor? || desc.contributor_access? || (@page && name.to_s == @page.description_name)
-            group = desc[:group].blank? ? "" : desc[:group]
-            @descriptions[group] = [] if @descriptions[group].blank?
-            @descriptions[group] << [desc[:description], name]
-          end
+          page_description_option(name, desc, @descriptions)
         end
         @descriptions
       end
 
-      def auto_save(object)
-        "#{auto_save_js_tag(object)} \n #{auto_save_version(object)}".html_safe
+      def page_description_option(name, desc, descriptions)
+        if !current_user.contributor? || desc.contributor_access? || (@page && name.to_s == @page.description_name)
+          group = desc[:group].blank? ? "" : desc[:group]
+          descriptions[group] = [] if descriptions[group].blank?
+          descriptions[group] << [desc[:description], name]
+        end
       end
 
-      def auto_save_js_tag(object)
-        delay = Gluttonberg::Setting.get_setting('auto_save_time')
-        unless delay.blank?
-          javascript_tag do
-            %{
-              $(document).ready(function(){
-                AutoSave.save("/admin/autosave/#{object.class.name}/#{object.id}", #{delay});
-              });
-            }.html_safe
+
+      private
+        def filtered_pages_for_table_rows(pages, parent_id)
+          filtered_pages = pages.find_all{|page| page.parent_id == parent_id}
+          filtered_pages.each do |page|
+            page.position = filtered_pages.length + 1 if page.position.blank?
           end
+          filtered_pages = filtered_pages.sort{|x,y| x.position <=> y.position} unless filtered_pages.blank?
         end
-      end
-
-      def auto_save_version(object)
-        auto_save = AutoSave.where(:auto_save_able_id => object.id, :auto_save_able_type => object.class.name).first
-        if !auto_save.blank? && auto_save.updated_at > object.updated_at
-          render :partial => "/gluttonberg/admin/shared/auto_save_version" , :locals => {:object => object} , :formats => [:html]
-        end
-      end
-
-      def previous_version_warning(versions , selected_version_num)
-        if !versions.blank? && !selected_version_num.blank?
-          versions = versions.sort{|x,y| y.version <=> x.version}
-          if selected_version_num.to_i < versions.first.version
-            render :partial => "/gluttonberg/admin/shared/previous_version_warning" , :locals => {:selected_version_num => selected_version_num} , :formats => [:html]
-          end
-        end
-      end
 
     end # Admin
 end # Gluttonberg

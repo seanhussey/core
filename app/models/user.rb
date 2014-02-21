@@ -108,35 +108,51 @@ class User < ActiveRecord::Base
     auth = nil
     status = case object.class.name.to_s
     when "Gluttonberg::Page"
-      auth = self.authorizations.where(:authorizable_type => object.class.name).first
-      unless auth.blank? 
-        auth.authorizable_id == object.id || object.grand_child_of?(auth.authorizable) 
-      else
-        false
-      end
+      _authorize_page?(object)
     when "Gluttonberg::Blog::Weblog"
-      auth = self.authorizations.where(:authorizable_type => object.class.name, :authorizable_id => object.id).first
-      unless auth.blank?
-        auth.allow == true
-      else
-        false
-      end
+      _authorize_blog?(object)
     when "String"
-      auth = self.authorizations.where(:authorizable_type => object).first
-      unless auth.blank?
-        auth.allow == true 
-      else
-        false
-      end
+      _authorize_class_name?(object)
     else
-      auth = self.authorizations.where(:authorizable_type => object.class.name).first
-      unless auth.blank?
-        auth.allow == true
-      else
-        true
-      end
+      _authorize_class?(object)
     end
     status
+  end
+
+  def _authorize_page?(object)
+    auth = self.authorizations.where(:authorizable_type => object.class.name).first
+    unless auth.blank? 
+      auth.authorizable_id == object.id || object.grand_child_of?(auth.authorizable) 
+    else
+      false
+    end
+  end
+
+  def _authorize_blog?(object)
+    auth = self.authorizations.where(:authorizable_type => object.class.name, :authorizable_id => object.id).first
+    unless auth.blank?
+      auth.allow == true
+    else
+      false
+    end
+  end
+
+  def _authorize_class_name?(object)
+    auth = self.authorizations.where(:authorizable_type => object).first
+    unless auth.blank?
+      auth.allow == true 
+    else
+      false
+    end
+  end
+
+  def _authorize_class?(object)
+    auth = self.authorizations.where(:authorizable_type => object.class.name).first
+    unless auth.blank?
+      auth.allow == true
+    else
+      true
+    end
   end
 
   def can_view_page(object)
