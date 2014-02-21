@@ -31,15 +31,7 @@ module Gluttonberg
       end
 
       def decline_content
-        status = false
-        Gluttonberg::Blog::Article if params[:object_class] == "Gluttonberg::Blog::ArticleLocalization" #just make sure article class is loaded
-        version = params[:object_class].constantize::Version.where(:id => params[:version_id]).first
-        unless version.blank?
-          if version.version_status == 'submitted_for_approval'
-            version.version_status = 'declined'
-            status = version.save
-          end
-        end
+        version, status = find_version_and_status
         if status
           unless version.user.blank?
             title = if Gluttonberg::Content::actual_content_classes.map{|obj| obj.name}.include?(params[:object_class])
@@ -65,6 +57,25 @@ module Gluttonberg
       private
         def authorizer_for_publish
           authorize! :publish, :any
+        end
+
+        def find_version_and_status
+          make_sure_localized_classes_are_loaded
+          status = false
+          version = params[:object_class].constantize::Version.where(:id => params[:version_id]).first
+          unless version.blank?
+            if version.version_status == 'submitted_for_approval'
+              version.version_status = 'declined'
+              status = version.save
+            end
+          end
+          return version, status
+        end
+
+        def make_sure_localized_classes_are_loaded
+          if params[:object_class][-12..-1] == "Localization"
+            params[:object_class][0..-13].constantize
+          end
         end
 
     end
