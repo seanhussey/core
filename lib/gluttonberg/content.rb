@@ -13,6 +13,7 @@ require File.join(content, "content", "page_repairer")
 require File.join(content, "content", "page_duplicate")
 require File.join(content, "content", "page_finder")
 require File.join(content, "content", "page_localization_slug")
+require File.join(content, "content", "default_template_file")
 require File.join(content, "content", "validations")
 
 module Gluttonberg

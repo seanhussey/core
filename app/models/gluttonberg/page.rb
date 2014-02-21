@@ -6,6 +6,7 @@ module Gluttonberg
     include Content::Publishable
     include Content::SlugManagement
     include Content::PageFinder
+    include Content::DefaultTemplateFile
     self.slug_scope = :parent_id
 
     belongs_to :user
@@ -177,31 +178,6 @@ module Gluttonberg
     def self.home_page_name
       home_temp = self.home_page
       home_temp.blank? ? "Not Selected" : home_temp.name
-    end
-
-    # if page type is not redirection or rewrite.
-    # then create default view files for all localzations of the page.
-    # file will be created in host appliation/app/views/pages/template_name.locale-slug.html.haml
-    def create_default_template_file
-      unless self.description.redirection_required? || self.description.rewrite_required?
-        pages_root = File.join(Rails.root, "app", "views" , "pages")
-        FileUtils.mkdir(pages_root) unless File.exists?(pages_root)
-        self.localizations.each do |page_localization|
-          file_path = File.join(pages_root , "#{self.view}.#{page_localization.locale.slug}.html.haml"  )
-          unless File.exists?(file_path)
-            file = File.new(file_path, "w")
-
-            page_localization.contents.each do |content|
-              if content.kind_of?(Gluttonberg::TextareaContent) || content.kind_of?(Gluttonberg::HtmlContent) || content.kind_of?(Gluttonberg::TextareaContentLocalization) || content.kind_of?(Gluttonberg::HtmlContentLocalization)
-                file.puts("= shortcode_safe @page.easy_contents(:#{content.section_name})")
-              else
-                file.puts("= @page.easy_contents(:#{content.section_name})")
-              end
-            end
-            file.close
-          end
-        end
-      end
     end
 
     def self.repair_pages_structure
