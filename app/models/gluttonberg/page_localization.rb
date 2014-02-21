@@ -21,8 +21,6 @@ module Gluttonberg
     
     MixinManager.load_mixins(self)
 
-    MixinManager.load_mixins(self)
-
     after_save :update_content_localizations
     attr_accessor :paths_need_recaching, :content_needs_saving
 
