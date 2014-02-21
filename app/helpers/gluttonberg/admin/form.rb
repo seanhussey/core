@@ -101,33 +101,6 @@ module Gluttonberg
         end
       end #version_listing
 
-      def version_alerts(versions , selected_version_num, can_publish)
-        unless versions.blank?
-          versions = versions.order("version DESC")
-          your_revisions = []
-          submitted_for_approval = []
-          published_version = nil
-          viewing_waiting_for_approval = nil
-          versions.each do |version|
-            published_version = version if version.version_status == "published"
-            if (published_version.blank? || published_version.version < version.version)
-              if version.version != selected_version_num.to_i
-                submitted_for_approval << version if version.version_status == "submitted_for_approval"
-                your_revisions << version if version.version_status == "revision" && version.version_user_id == current_user.id
-              else
-                viewing_waiting_for_approval = version if version.version_status == "submitted_for_approval"
-              end
-            end
-          end
-          render :partial => "/gluttonberg/admin/shared/version_alerts", :locals => {
-            :submitted_for_approval => submitted_for_approval,
-            :your_revisions => your_revisions,
-            :can_publish => can_publish,
-            :viewing_waiting_for_approval => viewing_waiting_for_approval
-          }
-        end
-      end #version_alerts
-
 
       # Creates an editable span for the given property of the given object.
       #
