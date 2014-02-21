@@ -17,9 +17,7 @@ module Gluttonberg
           set_page_localization_attributes(page_attributes)
           if @page_localization.update_attributes(params["gluttonberg_page_localization"]) || !@page_localization.changed?
             update_page_attributes(page_attributes)
-
-            flash[:notice] = "The page was successfully updated."
-            redirect_to edit_admin_page_page_localization_path( :page_id => params[:page_id], :id =>  @page_localization.id)+ (@page_localization.reload && @page_localization.versions && @page_localization.versions.latest.version != @page_localization.version ? "?version=#{@page_localization.versions.latest.version}" : "")
+            redirect_to_edit_page
           else
             flash[:error] = "Sorry, The page could not be updated."
             prepare_to_edit
@@ -98,6 +96,11 @@ module Gluttonberg
             else
               @page_localization.page.update_attributes(page_attributes)
             end
+          end
+
+          def redirect_to_edit_page
+            flash[:notice] = "The page was successfully updated."
+            redirect_to edit_admin_page_page_localization_path( :page_id => params[:page_id], :id =>  @page_localization.id)+ (@page_localization.reload && @page_localization.versions && @page_localization.versions.latest.version != @page_localization.version ? "?version=#{@page_localization.versions.latest.version}" : "")
           end
 
       end #class
