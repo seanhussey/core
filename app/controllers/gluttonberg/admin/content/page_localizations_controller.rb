@@ -14,21 +14,9 @@ module Gluttonberg
         def update
           update_updated_at
           page_attributes = params["gluttonberg_page_localization"].delete(:page)
-          @page_localization.page.current_user_id = current_user.id
-          state = page_attributes.delete(:state)
-          published_at = page_attributes.delete(:published_at)
-          @page_localization.page.state = state unless state.blank?
-          @page_localization.page.published_at = published_at unless published_at.blank?
-          @page_localization.page._publish_status = page_attributes[:_publish_status]
+          set_page_localization_attributes(page_attributes)
           if @page_localization.update_attributes(params["gluttonberg_page_localization"]) || !@page_localization.changed?
-            old_description_name = @page_localization.page.description_name
-            new_description_name = page_attributes[:description_name]
-
-            if(old_description_name != new_description_name)
-              PageRepairer.change_page_description(@page_localization.page, old_description_name, new_description_name, page_attributes)
-            else
-              @page_localization.page.update_attributes(page_attributes)
-            end
+            update_page_attributes(page_attributes)
 
             flash[:notice] = "The page was successfully updated."
             redirect_to edit_admin_page_page_localization_path( :page_id => params[:page_id], :id =>  @page_localization.id)+ (@page_localization.reload && @page_localization.versions && @page_localization.versions.latest.version != @page_localization.version ? "?version=#{@page_localization.versions.latest.version}" : "")
@@ -89,6 +77,26 @@ module Gluttonberg
             localization_detail = ""
             if Gluttonberg.localized?
               localization_detail = "(#{@page_localization.locale.slug})"
+            end
+          end
+
+          def set_page_localization_attributes(page_attributes)
+            @page_localization.page.current_user_id = current_user.id
+            state = page_attributes.delete(:state)
+            published_at = page_attributes.delete(:published_at)
+            @page_localization.page.state = state unless state.blank?
+            @page_localization.page.published_at = published_at unless published_at.blank?
+            @page_localization.page._publish_status = page_attributes[:_publish_status]
+          end
+
+          def update_page_attributes(page_attributes)
+            old_description_name = @page_localization.page.description_name
+            new_description_name = page_attributes[:description_name]
+
+            if(old_description_name != new_description_name)
+              PageRepairer.change_page_description(@page_localization.page, old_description_name, new_description_name, page_attributes)
+            else
+              @page_localization.page.update_attributes(page_attributes)
             end
           end
 
