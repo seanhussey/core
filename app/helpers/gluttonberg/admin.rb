@@ -102,24 +102,32 @@ module Gluttonberg
         end
         pages = pages.find_all{|page| current_user.can_view_page(page) } 
         pages.each do |page|
-          array << [page.name, page.id, {class: "level-#{level}"}.merge(current_user.ability.can?(:manage_object, page) ? {} : {:disabled => :disabled})]
-          unless page.children.blank?
-            pages_lists_options(page.children, array, level+1)
-          end
+          page_and_its_children_options(page, array, level)
         end
         array
+      end
+
+      def page_and_its_children_options(page, array, level)
+        array << [page.name, page.id, {class: "level-#{level}"}.merge(current_user.ability.can?(:manage_object, page) ? {} : {:disabled => :disabled})]
+        unless page.children.blank?
+          pages_lists_options(page.children, array, level+1)
+        end
       end
 
       def page_description_options
         @descriptions = {}
         Gluttonberg::PageDescription.all.each do |name, desc|
-          if !current_user.contributor? || desc.contributor_access? || (@page && name.to_s == @page.description_name)
-            group = desc[:group].blank? ? "" : desc[:group]
-            @descriptions[group] = [] if @descriptions[group].blank?
-            @descriptions[group] << [desc[:description], name]
-          end
+          page_description_option(name, desc, @descriptions)
         end
         @descriptions
+      end
+
+      def page_description_option(name, desc, descriptions)
+        if !current_user.contributor? || desc.contributor_access? || (@page && name.to_s == @page.description_name)
+          group = desc[:group].blank? ? "" : desc[:group]
+          descriptions[group] = [] if descriptions[group].blank?
+          descriptions[group] << [desc[:description], name]
+        end
       end
 
       def auto_save(object)
