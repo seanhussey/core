@@ -3,13 +3,8 @@
 
 module Gluttonberg
   class Page < ActiveRecord::Base
-    include Content::Publishable
-    include Content::SlugManagement
-    include Content::PageFinder
-    include Content::DefaultTemplateFile
-    include Content::PageDescriptionInfo
-    include Content::PageChildren
-    include Content::HomePageInfo
+    include Content::PageComponents
+    
     self.slug_scope = :parent_id
     self.table_name = "gb_pages"
 
@@ -21,13 +16,6 @@ module Gluttonberg
     attr_accessible :parent_id, :parent, :position, :name
     attr_accessible :navigation_label, :slug, :description_name
     attr_accessible :hide_in_nav, :group_ids, :home
-
-    # Generate the associations for the block/content classes
-    Content::Block.classes.each do |klass|
-      has_many klass.association_name, :class_name => klass.name, :dependent => :destroy
-    end
-
-    MixinManager.load_mixins(self)
 
     has_many :collapsed_pages, :class_name => "Gluttonberg::CollapsedPage", :dependent => :destroy
 
