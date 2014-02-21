@@ -36,12 +36,7 @@ module Gluttonberg
       # Writes out a row for each page and then for each page's children,
       # iterating down through the heirarchy.
       def page_table_rows(pages, parent_id=nil, output = "", inset = 0 , row = 0)
-        filtered_pages = pages.find_all{|page| page.parent_id == parent_id}
-        filtered_pages.each do |page|
-          page.position = filtered_pages.length + 1 if page.position.blank?
-        end
-        filtered_pages = filtered_pages.sort{|x,y| x.position <=> y.position} unless filtered_pages.blank?
-        filtered_pages.each do |page|
+        filtered_pages_for_table_rows(pages, parent_id).each do |page|
           row += 1
           output << "<li class='dd-item #{page.collapsed?(current_user) ? 'page-collapsed' : ''}' data-id='#{page.id}' >"
             output << render( :partial => "gluttonberg/admin/content/pages/row", :locals => { :page => page, :inset => inset , :row => row })
@@ -130,6 +125,16 @@ module Gluttonberg
           descriptions[group] << [desc[:description], name]
         end
       end
+
+
+      private
+        def filtered_pages_for_table_rows(pages, parent_id)
+          filtered_pages = pages.find_all{|page| page.parent_id == parent_id}
+          filtered_pages.each do |page|
+            page.position = filtered_pages.length + 1 if page.position.blank?
+          end
+          filtered_pages = filtered_pages.sort{|x,y| x.position <=> y.position} unless filtered_pages.blank?
+        end
 
     end # Admin
 end # Gluttonberg
