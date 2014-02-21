@@ -63,17 +63,29 @@ module Gluttonberg
 
         def notify_user(version)
           title = if Gluttonberg::Content::actual_content_classes.map{|obj| obj.name}.include?(params[:object_class])
-            object_id = (version.respond_to?(:page_localization_id) ? version.page_localization_id : version.page_id)
-            object = Gluttonberg::PageLocalization.where(:id => object_id).first
-            object.name unless object.blank?
+            find_page_object_and_title(version)
           elsif params[:object_class] == "Gluttonberg::Blog::ArticleLocalization"
-            object = version.article_localization
-            object.title unless object.blank?
+            find_article_and_title(version)
           else
-            object = version.send(params[:object_class].demodulize.underscore.to_sym)
-            object.title_or_name? unless object.blank?
+            find_custom_model_and_title(version) 
           end
           Notifier.version_declined(current_user, version, request.referer, title).deliver 
+        end
+
+        def find_page_object_and_title(version)
+          object_id = (version.respond_to?(:page_localization_id) ? version.page_localization_id : version.page_id)
+          object = Gluttonberg::PageLocalization.where(:id => object_id).first
+          object.name unless object.blank?
+        end
+
+        def find_article_and_title(version)
+          object = version.article_localization
+          object.title unless object.blank?
+        end
+
+        def find_custom_model_and_title(version)
+          object = version.send(params[:object_class].demodulize.underscore.to_sym)
+          object.title_or_name? unless object.blank?
         end
 
         def make_sure_localized_classes_are_loaded
