@@ -208,8 +208,7 @@ module Gluttonberg
               unless object.blank?
                 versions = object.versions
                 unless versions.blank?
-                  versions = versions.sort{|x, y| y.version <=> x.version}
-                  versions = versions.find_all{|v| v.version_status == "published" ||  v.version_status == "submitted_for_approval"}
+                  versions = _find_sorted_submitted_or_published_versions(versions)
                   
                   published_version = nil
                   versions.each do |version|
@@ -234,8 +233,7 @@ module Gluttonberg
               object = submitted_version.article_localization
               versions = object.versions
               unless versions.blank?
-                versions = versions.sort{|x, y| y.version <=> x.version}
-                versions = versions.find_all{|v| v.version_status == "published" ||  v.version_status == "submitted_for_approval"}
+                versions = _find_sorted_submitted_or_published_versions(versions)
                 published_version = nil
                 versions.each do |version|
                   published_version = version if version.version_status == "published"
@@ -255,33 +253,45 @@ module Gluttonberg
         def _custom_models_version_dashboard_notifications_data(submitted_content)
           Gluttonberg::Components.nav_entries.each do |entry|
             unless entry[4].blank?
-               is_localized =  entry[4].constantize.respond_to?(:localized?) && entry[4].constantize.localized?
-               model_name = is_localized ? "#{entry[4]}Localization" : entry[4]
-              if model_name.constantize.versioned?
-                association = model_name.demodulize.underscore
-                query = model_name.constantize::Version.where(:version_status => ['submitted_for_approval']).includes(association)
-                query.all.each do |submitted_version|
-                  object = submitted_version.send(association)
-                  versions = object.versions
-                  unless versions.blank?
-                    versions = versions.sort{|x, y| y.version <=> x.version}
-                    versions = versions.find_all{|v| v.version_status == "published" ||  v.version_status == "submitted_for_approval"}
-                    published_version = nil
-                    versions.each do |version|
-                      published_version = version if version.version_status == "published"
-                      if (published_version.blank? || published_version.version < version.version) 
-                        if version.version_status == "submitted_for_approval"
-                          path = "#{url_for(entry[2])}/#{object.id}/edit" + "?version=#{version.version}#{is_localized ? "&locale_id=#{object.locale_id}" : ''}"
-                          submitted_content << [object.title_or_name?, path, version] 
-                          break
-                        end
-                      end
-                    end 
-                  end
-                end
-              end #versioned
+              _custom_model_version_dashboard_notifications_data(entry, submitted_content)
             end
           end # custom models
+        end
+
+        def _custom_model_version_dashboard_notifications_data(entry, submitted_content)
+          is_localized =  entry[4].constantize.respond_to?(:localized?) && entry[4].constantize.localized?
+          model_name = is_localized ? "#{entry[4]}Localization" : entry[4]
+          if model_name.constantize.versioned?
+            association = model_name.demodulize.underscore
+            query = model_name.constantize::Version.where(:version_status => ['submitted_for_approval']).includes(association)
+            query.all.each do |submitted_version|
+              _prepare_message_for_a_submission_of_custom_model(entry, is_localized, model_name, association, submitted_version, submitted_content)
+            end
+          end #versioned
+        end
+
+        def _prepare_message_for_a_submission_of_custom_model(entry, is_localized, model_name, association, submitted_version, submitted_content)
+          object = submitted_version.send(association)
+          versions = object.versions
+          unless versions.blank?
+            versions = _find_sorted_submitted_or_published_versions(versions)
+            published_version = nil
+            versions.each do |version|
+              published_version = version if version.version_status == "published"
+              if (published_version.blank? || published_version.version < version.version) 
+                if version.version_status == "submitted_for_approval"
+                  path = "#{url_for(entry[2])}/#{object.id}/edit" + "?version=#{version.version}#{is_localized ? "&locale_id=#{object.locale_id}" : ''}"
+                  submitted_content << [object.title_or_name?, path, version] 
+                  break
+                end
+              end
+            end 
+          end
+        end
+
+        def _find_sorted_submitted_or_published_versions(versions)
+          versions = versions.sort{|x, y| y.version <=> x.version}
+          versions = versions.find_all{|v| v.version_status == "published" ||  v.version_status == "submitted_for_approval"}
         end
 
     end #Form
