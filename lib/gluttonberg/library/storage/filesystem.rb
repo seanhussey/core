@@ -31,9 +31,9 @@ module Gluttonberg
           "/user_assets"
         end
 
-        def make_backup
-          FileUtils.rm(original_file_on_disk) if File.exist?(original_file_on_disk)
-          FileUtils.cp location_on_disk, original_file_on_disk
+        def make_backup(replace_backup=true)
+          FileUtils.rm(original_file_on_disk) if replace_backup && File.exist?(original_file_on_disk)
+          FileUtils.cp location_on_disk, original_file_on_disk unless File.exist?(original_file_on_disk)
           FileUtils.chmod(0755,original_file_on_disk)
         end
 
