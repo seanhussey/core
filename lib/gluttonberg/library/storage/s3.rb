@@ -109,7 +109,7 @@ module Gluttonberg
           "#{s3_bucket_root_url}/user_assets"
         end
 
-        def make_backup
+        def make_backup(replace_backup=true)
           unless File.exist?(tmp_original_file_on_disk)
             FileUtils.cp tmp_location_on_disk, tmp_original_file_on_disk
             FileUtils.chmod(0755,tmp_original_file_on_disk)
