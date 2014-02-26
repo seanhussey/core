@@ -46,6 +46,7 @@ module Gluttonberg
 
       def version_listing(versions , selected_version_num)
         unless versions.blank?
+          versions = versions.order("version DESC")
           selected = versions.last.version
           selected_version = versions.first
           collection = []
