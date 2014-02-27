@@ -22,6 +22,7 @@ module Gluttonberg
             str = self.removeStyle(str)
             str = self.removeMetaTag(str)
             str = removeEmptyTag(str)
+            str = removeDuplicatedBreaks(str)
           end
           str
         end
@@ -33,6 +34,10 @@ module Gluttonberg
           end
 
           str
+        end
+
+        def removeDuplicatedBreaks(str)
+          str.gsub(/((<br[\s]*\/>[\s]*)|(<br[\s]*>[\s]*))+/,'<br/>')
         end
 
         def removeStyle(str)
