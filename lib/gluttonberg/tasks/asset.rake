@@ -21,6 +21,17 @@ namespace :gluttonberg do
       end
     end
 
+    desc "Regenerate all thumbnails for all assets using sidekiq"
+    task :create_thumbnails_delayed => :environment do
+      category = Gluttonberg::AssetCategory.where(:name => "image").first
+      if category
+        assets = category.assets
+        assets.each do |asset|
+          PhotoJob.perform_async(asset.id)
+        end
+      end
+    end
+
     desc "Rebuild AssetType information and reassociate with existing Assets"
     task :bootstrap => :environment do
       Gluttonberg::Library.bootstrap

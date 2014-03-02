@@ -14,6 +14,7 @@ module Gluttonberg
     require 'cancan'
     require 'texticle'
     require 'audio_job'
+    require 'photo_job'
     require 'aws'
     require 'acl9'
     require 'sidekiq'
