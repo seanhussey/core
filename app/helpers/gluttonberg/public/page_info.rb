@@ -3,6 +3,7 @@
 module Gluttonberg
   module Public
     module PageInfo
+
       def page_title
         title_setting = Gluttonberg::Setting.get_setting("title", current_site_config_name)
         page_title = _prepare_page_title
@@ -15,6 +16,39 @@ module Gluttonberg
           "#{page_title} | #{title_setting}"
         end
       end
+
+      def og_title
+        og_title = _prepare_page_title
+        return og_title if !og_title.blank?
+        return nil
+      end
+
+      def og_site_name
+        og_site_name = Gluttonberg::Setting.get_setting("title", current_site_config_name)
+        return og_site_name if !og_site_name.blank?
+        return nil
+      end
+
+      def og_image
+        object = find_current_object_for_meta_tags
+        fb_icon_id = Gluttonberg::Setting.get_setting("fb_icon", current_site_config_name)
+
+        if !object.blank? && object.respond_to?(:fb_icon_id) && !object.fb_icon_id.blank?
+          fb_icon_id = object.fb_icon_id
+        end
+
+        asset = unless fb_icon_id.blank?
+          Asset.where(:id => fb_icon_id).first
+        end
+
+        if asset
+          return "http://#{request.host_with_port}#{asset.url}"
+        else
+          return nil
+        end
+      end
+
+      alias_method :page_fb_icon_path, :og_image
 
       def page_description
         object = find_current_object_for_meta_tags
@@ -42,23 +76,6 @@ module Gluttonberg
         elsif !keywords_settings.blank?
           keywords_settings
         end
-      end
-
-      def page_fb_icon_path
-        path = nil
-        object = find_current_object_for_meta_tags
-        fb_icon_id = Gluttonberg::Setting.get_setting("fb_icon", current_site_config_name)
-
-        if !object.blank? && object.respond_to?(:fb_icon_id) && !object.fb_icon_id.blank?
-          fb_icon_id = object.fb_icon_id
-        end
-
-        asset = unless fb_icon_id.blank?
-          Asset.where(:id => fb_icon_id).first
-        end
-
-        path = asset.url unless asset.blank?
-        path
       end
 
       def body_class(page=nil)

@@ -335,6 +335,10 @@ ActiveRecord::Schema.define(:version => 20130403011606) do
     t.datetime "updated_at",                         :null => false
   end
 
+  create_table "gb_versions", :force => true do |t|
+    t.float "version_number", :null => false
+  end
+
   create_table "html_content_localization_versions", :force => true do |t|
     t.integer  "html_content_localization_id"
     t.integer  "version"

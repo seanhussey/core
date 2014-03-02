@@ -347,6 +347,11 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.text :body
       t.timestamps
     end
+
+    create_table :gb_versions do |t|
+      t.float :version_number, :null => false
+    end
+
   end
 
 end

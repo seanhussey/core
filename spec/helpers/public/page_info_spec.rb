@@ -139,7 +139,7 @@ module Gluttonberg
     end
     it "Website fb_icon" do
       Setting.update_settings("fb_icon" => @asset.id)
-      helper.page_fb_icon_path.should eql(@asset.url)
+      helper.og_image.should eql("http://test.host#{@asset.url}")
       Setting.update_settings("fb_icon" => nil)
     end
 
@@ -148,7 +148,7 @@ module Gluttonberg
       @_page.current_localization.fb_icon_id = @asset2.id
       @_page.save
       assign(:page, @_page)
-      helper.page_fb_icon_path.should eql(@asset2.url)
+      helper.og_image.should eql("http://test.host#{@asset2.url}")
       Setting.update_settings("fb_icon" => nil)
       @_page.current_localization.fb_icon_id = nil
       @_page.save
@@ -156,24 +156,24 @@ module Gluttonberg
 
     it "Page fb_icon" do
       assign(:page, @_page)
-      helper.page_fb_icon_path.should be_nil
+      helper.og_image.should be_nil
     end
 
     it "Custom model fb_icon" do
       assign(:custom_model_object, @_custom_model_object)
-      helper.page_fb_icon_path.should be_nil
+      helper.og_image.should be_nil
 
       @_custom_model_object.fb_icon_id = @asset2.id
       @_custom_model_object.save
 
       assign(:custom_model_object, @_custom_model_object)
-      helper.page_fb_icon_path.should eql(@asset2.url)
+      helper.og_image.should eql("http://test.host#{@asset2.url}")
 
       @_custom_model_object.fb_icon_id = nil
       @_custom_model_object.save
 
       assign(:custom_model_object, @_custom_model_object)
-      helper.page_fb_icon_path.should be_nil
+      helper.og_image.should be_nil
     end
 
     it "Page classes" do

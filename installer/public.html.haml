@@ -12,15 +12,17 @@
     = csrf_meta_tag
     %meta{ :charset =>"utf-8"}
     = google_analytics_js_tag
-    - unless page_keywords.blank?
+    - if !page_keywords.blank?
       %meta{:content=>"#{page_keywords}",:property=>"keywords"}
-    - unless page_description.blank?
+    - if !page_description.blank?
       %meta{:content=>"#{page_description}",:property=>"description"}
       %meta{:content=>"#{page_description}",:property=>"og:description"}
-    - unless page_fb_icon_path.blank?
-      %meta{:content=>"#{page_fb_icon_path}",:property=>"og:image"}
-    - unless page_title.blank?
-      %meta{:content=>"#{page_title}",:property=>"og:title"}
+    - if !og_image.blank?
+      %meta{:content=>"#{og_image}",:property=>"og:image"}
+    - if !og_site_name.blank?
+      %meta{:content=>"#{og_site_name}",:property=>"og:site_name"}
+    - if !page_title.blank?
+      %meta{:content=>"#{og_title}",:property=>"og:title"}
     %link{ :rel=>"shortcut icon", :href=>"/assets/favicon.png"}
   %body{:class=>body_class(@page)}
     .navbar.navbar-inverse.navbar-static-top{role: "navigation"}
