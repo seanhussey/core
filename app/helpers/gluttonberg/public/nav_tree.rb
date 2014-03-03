@@ -64,7 +64,7 @@ module Gluttonberg
           if page.description && page.description.top_level_page?
             return content_tag(:a, span, :href=>"javascript:;", :class => "menu_disabled").html_safe
           else
-            return content_tag(:a, span, :href => page_url(page , opts), :target => "#{page.redirect_required? ? '_blank' : ''}").html_safe
+            return content_tag(:a, span, :href => page_url(page , opts), :target => "#{page.redirect_required? && URI(page.redirect_url).absolute? ? '_blank' : ''}").html_safe
           end
         end
       end
