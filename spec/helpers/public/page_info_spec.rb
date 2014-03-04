@@ -223,7 +223,7 @@ module Gluttonberg
     end
     it "Website fb_icon" do
       Setting.update_settings("fb_icon" => @asset.id)
-      helper.page_fb_icon_path.should eql(@asset.url)
+      helper.page_fb_icon_path.should eql("http://test.host/" + @asset.url)
       Setting.update_settings("fb_icon" => nil)
     end
 
@@ -232,7 +232,7 @@ module Gluttonberg
       @_page.current_localization.fb_icon_id = @asset2.id
       @_page.save
       assign(:page, @_page)
-      helper.page_fb_icon_path.should eql(@asset2.url)
+      helper.page_fb_icon_path.should eql("http://test.host/" + @asset2.url)
       Setting.update_settings("fb_icon" => nil)
       @_page.current_localization.fb_icon_id = nil
       @_page.save
