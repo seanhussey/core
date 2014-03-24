@@ -152,6 +152,9 @@ var AssetBrowser = {
     AssetBrowser.display.find("select.size_selector").change(AssetBrowser.sizeSelectHandler);
 
     $("#assetsDialog form#asset_search_form").submit(AssetBrowser.search_submit);
+    $("#assetsDialog #asset_date_filter").blur(AssetBrowser.date_filter);
+    $("#assetsDialog #asset_date_filter").change(AssetBrowser.date_filter);
+    $("#assetsDialog #asset_date_filter").bsdatepicker();
 
     AssetBrowser.browser.find("#ajax_new_asset_form").submit(function(e) {
       if($("#ajax_new_asset_form #ajax_asset_file").val() != null && $("#ajax_new_asset_form #asset_name").val() != null && $("#ajax_new_asset_form #ajax_asset_file").val() != "" && $("#ajax_new_asset_form #asset_name").val() != ""){
@@ -271,6 +274,38 @@ var AssetBrowser = {
       $("#search_tab_results").html(json.markup);
       $("#search_tab_results").find("a").click(AssetBrowser.click);
     });
+    e.preventDefault();
+  },
+  date_filter: function(e){
+    console.log($(this).val());
+    var dateTokens = $(this).val().split("/");
+    console.log(dateTokens)
+    if(dateTokens.length == 3){
+      var day = parseInt(dateTokens[0]);
+      var month = parseInt(dateTokens[1]);
+      var year = parseInt(dateTokens[2]);
+      if(day > 0 && day <= 31 && month > 0 && month <= 12 && year > 1971 && year <= 2050){
+        var date = new Date(year,month-1, day); 
+        var formattedDate = year + "-" + month + "-" + day;
+        console.log(date);
+
+        var serverDateFormat = "";
+
+        $("#progress_ajax_upload").ajaxStart(function() {
+          $(this).show();
+        }).ajaxComplete(function() {
+          $(this).hide();
+        });
+        var url = "/admin/filter_assets_by_date.json?asset_date_filter=" + formattedDate;
+        $.getJSON(url, null, function(json){
+          $("#search_tab_results").html(json.markup);
+          $("#search_tab_results").find("a").click(AssetBrowser.click);
+        });
+      }
+
+    }
+    
+
     e.preventDefault();
   },
   sizeSelectHandler: function(){
@@ -600,14 +635,13 @@ function initBulkDeleteAsset(){
     selected_assets_ids = [];
     if($(".select_all_assets").is(':checked')){
       $(".select_asset_checkbox").each(function(){
-           selected_assets_ids.push($(this).attr("rel"));
+        selected_assets_ids.push($(this).attr("rel"));
       });
       $(".delete_selected_assets").show();
     }else{
       selected_assets_ids = [];
       $(".delete_selected_assets").hide();
     }
-
   });
 
   $(".delete_selected_assets").click(function(e){

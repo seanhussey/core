@@ -71,4 +71,7 @@
           = image_tag("/assets/gb_spinner.gif" )
   #search_tab.tab-pane
     = render :partial => "search_form"
+    %p
+      Filter assets by uploaded date : 
+      = text_field_tag :asset_date_filter, nil, :class => "asset_date_filter", "data-datepicker" => "bsdatepicker"
     #search_tab_results
