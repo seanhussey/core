@@ -57,7 +57,7 @@ module Gluttonberg
           Asset.where(:id => fb_icon_id).first
         end
 
-        path = asset.url unless asset.blank?
+        path = asset_file_url(asset) unless asset.blank?
         path
       end
 
@@ -73,6 +73,16 @@ module Gluttonberg
               "#{class_name} #{object.slug}"
             end
           end
+        end
+      end
+
+      def og_type
+        if !@page.blank? && @page.home == true
+          'website'
+        elsif !@blog.blank? && @article.blank?
+          'blog'
+        else
+          'article'
         end
       end
 
@@ -99,6 +109,7 @@ module Gluttonberg
                 return object.send(method)
               end
             end
+            nil
           end
         end
 
