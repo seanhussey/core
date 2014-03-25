@@ -103,6 +103,7 @@ Rails.application.routes.draw do
         post "destroy_assets_in_bulk"  => "assets_bulk#destroy_assets_in_bulk" , :as => :destroy_assets_in_bulk
         get "browser"  => "assets#browser" , :as => :asset_browser
         get "browser-collection/:id"  => "assets_ajax#browser_collection" , :as => :asset_browser_collection
+        get "filter_assets_by_date"  => "assets_ajax#filter_assets_by_date" , :as => :filter_assets_by_date
         get "assets/:category/page/:page"  => "assets#category" , :as => :asset_category
         get "collections/:id/page/:page"  => "collections#show" , :as => :asset_collection
         resources :collections  do

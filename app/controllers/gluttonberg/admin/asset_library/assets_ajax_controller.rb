@@ -24,6 +24,24 @@ module Gluttonberg
           render :layout => false
         end
 
+        def filter_assets_by_date
+          unless params[:asset_date_filter].blank?
+            date = Time.zone.parse(params[:asset_date_filter])
+            @search_assets = Asset.where(["created_at between ? AND ?", date.beginning_of_day, date.end_of_day ] )
+            respond_to do |format|
+              format.html do
+                @search_assets = @search_assets.paginate({
+                  :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items"),
+                  :page => params[:page]
+                })
+              end
+              format.json do 
+                render :template => "/gluttonberg/admin/asset_library/assets/search.json.haml"
+              end
+            end
+          end
+        end
+
         private
           def handle_blank_asset_name
             @blank_asset_name = false

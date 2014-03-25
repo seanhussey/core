@@ -70,5 +70,10 @@
           Please wait while file is uploading. 
           = image_tag("/assets/gb_spinner.gif" )
   #search_tab.tab-pane
+    %p
+      Search by keyword : 
     = render :partial => "search_form"
+    %p
+      Search by date : 
+      = text_field_tag :asset_date_filter, nil, :class => "asset_date_filter", "data-datepicker" => "bsdatepicker"
     #search_tab_results

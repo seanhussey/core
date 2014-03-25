@@ -72,7 +72,7 @@ module Gluttonberg
           unless( current_user &&( authorize! :manage, Gluttonberg::Page) )
             @page = nil if @page.blank? || !@page.published?
           end
-          raise ActiveRecord::RecordNotFound  if @page.blank?
+          raise ActiveRecord::RecordNotFound if @page.blank?
         end
 
         def verify_page_access
