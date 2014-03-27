@@ -106,6 +106,7 @@ namespace :gluttonberg do
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "gluttonberg_basic_settings.rb"), File.join(Rails.root, "config", "initializers", "gluttonberg_basic_settings.rb"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "gluttonberg_advance_settings.rb"), File.join(Rails.root, "config", "initializers", "gluttonberg_advance_settings.rb"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "sidekiq.rb"), File.join(Rails.root, "config", "initializers", "sidekiq.rb"))
+      FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "sidekiq.yml"), File.join(Rails.root, "config", "sidekiq.yml"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "public.html.haml"), File.join(Rails.root, "app", "views", "layouts", "public.html.haml"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "Procfile"), File.join(Rails.root, "Procfile"))
       FileUtils.cp(File.join(Gluttonberg::Engine.root, "installer", "unicorn.rb"), File.join(Rails.root, "config", "unicorn.rb"))
