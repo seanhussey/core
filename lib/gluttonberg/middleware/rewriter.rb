@@ -11,7 +11,8 @@ module Gluttonberg
 
       # Reads curent path and if its not needs to be bypassed or rails route then
       # tries to find a Gluttonberg CMS Page using this path, if it finds a page then redirect to 
-      # Public::Page show action. otherwise
+      # Public::Page show action. It assigns page object env['GLUTTONBERG.PAGE'] , 
+      # env['GLUTTONBERG.PATH_INFO'] as as page path. It helps in debugging. 
       # it also tries to find it by previous_path, if it finds a page then it redirects
       # permanently to new path of this page. Othwerise
       # it simply returns back from this middleware
