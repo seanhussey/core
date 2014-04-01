@@ -9,7 +9,7 @@ module Gluttonberg
         @app = app
       end
 
-      # Reads curent path and if its not needs to be bypassed or rails route then
+      # Reads current path and if its not needs to be bypassed or rails route then
       # tries to find a Gluttonberg CMS Page using this path, if it finds a page then redirect to 
       # Public::Page show action. It assigns page object env['GLUTTONBERG.PAGE'] , 
       # env['GLUTTONBERG.PATH_INFO'] as as page path. It helps in debugging. 
