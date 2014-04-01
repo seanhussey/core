@@ -5,6 +5,11 @@ module Gluttonberg
         @app = app
       end
 
+      # Reads current path if it contains any valid Gluttonberg::Locale slug 
+      # then it removes from path and add it to env['GLUTTONBERG.LOCALE_INFO']
+      # in addition to that it addes locale object to env['GLUTTONBERG.LOCALE']
+      #
+      # @param env [Hash] looking for PATH_INFO
       def call(env)
         env['PATH_INFO'] = '' if env['PATH_INFO'].nil?
         path =  env['PATH_INFO']
