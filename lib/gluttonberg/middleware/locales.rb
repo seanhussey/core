@@ -31,7 +31,7 @@ module Gluttonberg
       # Checks if we need to skip current path from analysing it for locales or gluttonberg pages
       #
       # @param path [String]
-      # @param env [Hash] Its not used anymore. CleaningRequired env param is not used more. Please remove it but make sure its remove from the place its called.
+      # @param env [Hash] Its not used anymore. CleaningRequired env param is not used anymore. Please remove it but make sure its also removed from the place where its called.
       # @return [Boolean] fales if we cannot bypass current path otherwise true.
       def self.bypass_path?(path, env)
         if path.blank?
