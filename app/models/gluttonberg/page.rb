@@ -4,7 +4,7 @@
 
 module Gluttonberg
   # One of the most important model of Gluttonberg.
-  # It basic meta data about page and have associations with its related models
+  # It stores basic meta data about page and have associations with its related models
 
   class Page < ActiveRecord::Base
     include Content::PageComponents
