@@ -1,11 +1,15 @@
 module Gluttonberg
  class Setting  < ActiveRecord::Base
     self.table_name = "gb_settings"
+
     after_save :update_settings_in_config
 
     before_destroy :destroy_cache
+
     attr_accessible :name, :value, :values_list, :help, :category
     attr_accessible :row, :delete_able, :enabled, :site
+
+    # Included mixins which are registered by host app for extending functionality
     MixinManager.load_mixins(self)
 
     def self.generate_or_update_settings(settings, site=nil)
@@ -38,6 +42,10 @@ module Gluttonberg
       name.titlecase
     end
 
+    # Generate common settings for gluttonberg
+    # If its not multisite case then it only creates one set of settings
+    # In case of multisite it creates one set of global settings 
+    # and xx times for websited based settings
     def self.generate_common_settings
       cms_settings = {
         :number_of_revisions => ["10" , 6 , "Number of revisions to maintain for versioned contents."],

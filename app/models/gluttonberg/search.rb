@@ -1,6 +1,8 @@
 # encoding: utf-8
 require 'will_paginate/array'
 module Gluttonberg
+  # this class do text based searching. 
+  # It supports like query for mysql and native postgresql text based searching for postgresql
   class Search
     def self.find(query, opts = {} )
       query= query.gsub(/[\\\!\*″′‟‛„‚”“”˝\(\)\;\:\.\@\&\=\+\$\,\/?\%\#\[\]]/, '')

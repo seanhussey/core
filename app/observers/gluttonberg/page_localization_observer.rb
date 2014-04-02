@@ -1,4 +1,5 @@
 module Gluttonberg
+  # Observe PageLocalization for any path/slug related changes
   class PageLocalizationObserver < ActiveRecord::Observer
     observe PageLocalization
 

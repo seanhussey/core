@@ -1,23 +1,27 @@
 class User < ActiveRecord::Base
-  attr_accessible :first_name , :last_name , :email , :password , :password_confirmation , :bio , :image_id
-
   self.table_name = "gb_users"
+
   belongs_to :images , :foreign_key => "image_id" , :class_name => "Gluttonberg::Asset"
-
-  validates_presence_of :first_name , :email , :role
-  validates_format_of :password, :with => Rails.configuration.password_pattern , :if => :require_password?, :message => Rails.configuration.password_validation_message
-
   has_many :collapsed_pages, :class_name => "Gluttonberg::CollapsedPage", :dependent => :destroy
   has_many :authorizations, :class_name => "Gluttonberg::Authorization", :dependent => :destroy
+
+  attr_accessible :first_name , :last_name , :email
+  attr_accessible :password , :password_confirmation
+  attr_accessible :bio , :image_id
+
   attr_accessible :authorizations, :authorizations_attributes
   accepts_nested_attributes_for :authorizations, :allow_destroy => false
 
+  validates_presence_of :first_name , :email , :role
+  validates_format_of :password, :with => Rails.configuration.password_pattern , :if => :require_password?, :message => Rails.configuration.password_validation_message
+  
   clean_html [:bio]
 
   acts_as_authentic do |c|
     c.login_field = "email"
   end
 
+  # Included mixins which are registered by host app for extending functionality
   Gluttonberg::MixinManager.load_mixins(self)
 
   def full_name
@@ -79,6 +83,7 @@ class User < ActiveRecord::Base
     self.where(:role => ["super_admin" , "admin", 'editor']).all
   end
 
+  # Search users based on current user role
   def self.search_users(query, current_user, get_order)
     users = User.order(get_order)
     unless query.blank?
@@ -93,6 +98,7 @@ class User < ActiveRecord::Base
     users
   end
 
+  # Find user based on current user role
   def self.find_user(id, current_user)
     user = User.where(:id => id)
     if current_user.super_admin?
@@ -104,6 +110,7 @@ class User < ActiveRecord::Base
     user.first
   end
 
+  # core logic for authorization system
   def authorized?(object)
     auth = nil
     status = case object.class.name.to_s

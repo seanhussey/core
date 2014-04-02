@@ -3,13 +3,14 @@
 module Gluttonberg
   module Admin
     module Form
+      # Use this helper on public submissions forms to avoid robotic submissions
       def honeypot_field_tag
         html = label_tag(Rails.configuration.honeypot_field_name , Rails.configuration.honeypot_field_name.humanize )
         html << text_field_tag( Rails.configuration.honeypot_field_name )
         content_tag :div , html , :class => Rails.configuration.honeypot_field_name , :style => "display:none"
       end
 
-      # Controls for standard forms. Writes out a save button and a cancel link
+      # Controls for standard forms. Writes out a save button with gluttonberg default styling
       def form_controls(return_url , opts={})
         content = "#{submit_tag("Save" , :id => opts[:submit_id], :class => "btn btn-success").html_safe} #{link_to("Cancel".html_safe, return_url, :class => "btn")}"
         content_tag(:p, content.html_safe, :class => "controls")
@@ -26,18 +27,21 @@ module Gluttonberg
         content.html_safe
       end
 
+      # Form controls for contributor. It renders "Save draft", "Submit for approval" buttons.
       def contributor_form_controls(published, opts={})
         html = submit_tag("Save draft" , :id => "#{published ? 'revision_btn' : 'draft_btn'}", :class => "btn publishing_btn").html_safe
         html += " ".html_safe +  submit_tag("Submit for approval" , :id => "approval_btn", :class => "btn btn-success publishing_btn").html_safe
         content_tag(:p, html.html_safe, :class => "controls")
       end
 
+      # Form controls for admin when object is on draft status. It renders "Save draft", "Publish" buttons.
       def admin_form_controls_for_draft_objects(opts={})
         html = submit_tag("Save draft" , :id => "draft_btn", :class => "btn publishing_btn").html_safe
         html += " ".html_safe +  submit_tag("Publish" , :id => "publish_btn", :class => "btn btn-success publishing_btn").html_safe
         content_tag(:p, html.html_safe, :class => "controls")
       end
 
+      # Form controls for admin when object is already published. It rendres "Save revision", "Update", "Unpublish" buttons.
       def admin_form_controls_for_published_objects(revisions=true, opts={})
         html =  ""
         html += submit_tag("Save revision" , :id => "revision_btn", :class => "btn publishing_btn").html_safe if revisions == true
@@ -46,6 +50,7 @@ module Gluttonberg
         content_tag(:p, html.html_safe, :class => "controls")
       end
 
+      # Form controls for admin when they are viewing submitted revision of an object. It renders "Approve", "Decline" buttons.
       def admin_form_controls_for_approving_or_decling_objects(version, opts={})
         html = submit_tag("Approve" , :id => "publish_btn", :class => "btn btn-success publishing_btn").html_safe
         html += " ".html_safe +  link_to("Decline", admin_decline_content_path(version.class.name.gsub("::Version",""), version.id) , :id => "decline_btn", :class => "btn btn-danger ").html_safe
@@ -53,6 +58,8 @@ module Gluttonberg
       end
 
       # new form controls based on new logic of authorization and publishing workflow
+      # It renders some hidden fields which manage publishing status.
+      # It also renders form controls based on current_user role, and status of object.
       def submit_and_publish_controls(form, object, can_publish, schedule_field=true, revisions=true, opts={})
         version_status = ''
         begin
@@ -81,6 +88,7 @@ module Gluttonberg
         html.html_safe
       end
 
+      # It renders a dropdown with the list of all revisions of given object
       def version_listing(versions , selected_version_num)
         unless versions.blank?
           versions = versions.order("version DESC")
