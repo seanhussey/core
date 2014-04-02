@@ -1,16 +1,16 @@
 class User < ActiveRecord::Base
   self.table_name = "gb_users"
 
+  belongs_to :images , :foreign_key => "image_id" , :class_name => "Gluttonberg::Asset"
+  has_many :collapsed_pages, :class_name => "Gluttonberg::CollapsedPage", :dependent => :destroy
+  has_many :authorizations, :class_name => "Gluttonberg::Authorization", :dependent => :destroy
+
   attr_accessible :first_name , :last_name , :email
   attr_accessible :password , :password_confirmation
   attr_accessible :bio , :image_id
 
   attr_accessible :authorizations, :authorizations_attributes
   accepts_nested_attributes_for :authorizations, :allow_destroy => false
-  
-  belongs_to :images , :foreign_key => "image_id" , :class_name => "Gluttonberg::Asset"
-  has_many :collapsed_pages, :class_name => "Gluttonberg::CollapsedPage", :dependent => :destroy
-  has_many :authorizations, :class_name => "Gluttonberg::Authorization", :dependent => :destroy
 
   validates_presence_of :first_name , :email , :role
   validates_format_of :password, :with => Rails.configuration.password_pattern , :if => :require_password?, :message => Rails.configuration.password_validation_message
