@@ -2,13 +2,16 @@ module Gluttonberg
   require 'mime/types'
   class AssetType < ActiveRecord::Base
     self.table_name = "gb_asset_types"
+
     has_many    :assets , :class_name => "Asset", dependent: :nullify
     has_many    :asset_mime_types , :class_name => "AssetMimeType", dependent: :nullify
     belongs_to  :asset_category, :class_name => "AssetCategory"
 
     validates_uniqueness_of :name
     validates_presence_of :name
+    
     attr_accessible :name, :asset_category_id, :asset_category
+    
     # Included mixins which are registered by host app for extending functionality
     MixinManager.load_mixins(self)
 

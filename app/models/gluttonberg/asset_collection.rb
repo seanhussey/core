@@ -1,13 +1,18 @@
 module Gluttonberg
   class AssetCollection < ActiveRecord::Base
     self.table_name = "gb_asset_collections"
+
     has_and_belongs_to_many :assets, :class_name => "Asset" , :join_table => "gb_asset_collections_assets"
+    
     validates_uniqueness_of :name
     validates_presence_of :name
+    
     attr_accessible :name
+    
     # Included mixins which are registered by host app for extending functionality
     MixinManager.load_mixins(self)
 
+    # Find all images within collection
     def images
       data = assets.includes([:asset_type]).all
       data.find_all{|d| d.category == "image"}

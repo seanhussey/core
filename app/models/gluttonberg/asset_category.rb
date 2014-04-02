@@ -10,6 +10,7 @@ module Gluttonberg
     # Included mixins which are registered by host app for extending functionality
     MixinManager.load_mixins(self)
 
+    # Dynamic methods for categories.
     def self.method_missing(methId, *args)
       method_info = methId.id2name.split('_')
       if method_info.length == 2 then
@@ -24,8 +25,8 @@ module Gluttonberg
       raise NoMethodError
     end
 
+    # Ensure the default categories exist in the database.
     def self.build_defaults
-      # Ensure the default categories exist in the database.
       ensure_exists('audio')
       ensure_exists('image')
       ensure_exists('video')
@@ -33,6 +34,8 @@ module Gluttonberg
       ensure_exists(Library::UNCATEGORISED_CATEGORY, true)
     end
 
+    # Find assets for a category. It supports comma seperated categories
+    # It also works for 'all'
     def self.find_assets_by_category(category_name)
       if category_name == "all" || category_name.blank? then
         # ignore asset category if user selects 'all' from category
@@ -53,6 +56,8 @@ module Gluttonberg
       end # category#all
     end
 
+    # Find assets for a category within a collection. It supports comma seperated categories
+    # It also works for 'all'
     def self.find_assets_by_category_and_collection(category_name, collection)
       if category_name == "all" || category_name.blank? then
         collection.assets
@@ -71,6 +76,7 @@ module Gluttonberg
       end
     end
 
+    # find category if not exists it makes new one
     def self.ensure_exists(name, unknown=false)
       cat = where(:name => name).first
       if cat then
@@ -80,7 +86,6 @@ module Gluttonberg
         cat = create(:name => name, :unknown => unknown)
       end
     end
-
 
   end
 end
