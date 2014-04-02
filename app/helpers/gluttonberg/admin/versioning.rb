@@ -1,6 +1,8 @@
 module Gluttonberg
   module Admin
     module Versioning
+      # it renders a warning box with message and buttons for restoring/cancel  (warning about un saved version)
+      # if there is any auto save version exists.
       def auto_save_version(object)
         auto_save = AutoSave.where(:auto_save_able_id => object.id, :auto_save_able_type => object.class.name).first
         if !auto_save.blank? && auto_save.updated_at > object.updated_at
@@ -8,6 +10,7 @@ module Gluttonberg
         end
       end
 
+      # It renders warning for if user is viewing older revision of and object
       def previous_version_warning(versions , selected_version_num)
         if !versions.blank? && !selected_version_num.blank?
           versions = versions.sort{|x,y| y.version <=> x.version}
@@ -17,6 +20,7 @@ module Gluttonberg
         end
       end
 
+      # Enable auto save on a form
       def auto_save(object)
         "#{auto_save_js_tag(object)} \n #{auto_save_version(object)}".html_safe
       end
@@ -34,6 +38,10 @@ module Gluttonberg
         end
       end
 
+      # It shows 3 kind of warnings depending on case
+      # Reviewing Version xx: Submitted for approval
+      # Version xx: Waiting for approval
+      # Version xx: Unpublished revision 
       def version_alerts(versions , selected_version_num, can_publish)
         unless versions.blank?
           versions = versions.order("version DESC")
