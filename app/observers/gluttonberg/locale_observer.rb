@@ -1,7 +1,12 @@
 module Gluttonberg
+  # Locale Observer makes sures that if new locale is created then 
+  # create localization for existing pages 
+  # It also adjusts some variables on locale update
+
   class LocaleObserver < ActiveRecord::Observer
     observe Locale
     
+    # create localization for existing pages 
     def after_create(locale)   
       Page.all.each do |page|
         #create localizations for all pages for new locale
@@ -16,9 +21,7 @@ module Gluttonberg
           end
         end
       end
-    end
-
-      
+    end      
     
     def after_update(locale)
       existing_localization_ids = []
@@ -27,6 +30,7 @@ module Gluttonberg
     end 
 
     private
+      # create localization for a page
       def create_page_localization(page, locale)
         new_localizations = []
         new_localizations << page.localizations.create(
@@ -36,6 +40,7 @@ module Gluttonberg
         new_localizations
       end 
 
+      # create content localization for page localization 
       def create_page_content(page, new_localizations, name, section)
         association = page.send(section[:type].to_s.pluralize)
         content = association.where(:section_name => name).first

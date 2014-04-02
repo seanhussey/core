@@ -1,9 +1,11 @@
 module Gluttonberg
+  # Observe Page, if there is any change occurred
+  # then update its related localizations and contents
   class PageObserver < ActiveRecord::Observer
 
     observe Page
 
-    # Generate a series of content models for this page based on the specified
+    # Generate a series of content model objects for this page based on the specified
     # template. These models will be empty, but ready to be displayed in the
     # admin interface for editing.
     def after_create(page)
@@ -12,17 +14,17 @@ module Gluttonberg
       create_page_contents(page)
     end
 
+    # This checks to make sure if we need to regenerate paths for child-pages
+    # and adds a flag if it does.
     def before_update(page)
-      # This checks to make see if we need to regenerate paths for child-pages
-      # and adds a flag if it does.
       if page.parent_id_changed? || page.slug_changed?
         page.paths_need_recaching = true
       end
     end
 
+    # This has the page localizations regenerate their path if the slug or
+    # parent for this page has changed.
     def after_update(page)
-      # This has the page localizations regenerate their path if the slug or
-      # parent for this page has changed.
       if page.paths_need_recaching?
         page.localizations.each { |l| l.regenerate_path! }
       end
