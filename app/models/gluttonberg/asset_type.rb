@@ -9,6 +9,7 @@ module Gluttonberg
     validates_uniqueness_of :name
     validates_presence_of :name
     attr_accessible :name, :asset_category_id, :asset_category
+    # Included mixins which are registered by host app for extending functionality
     MixinManager.load_mixins(self)
 
     # Take the reported mime-type and the file_name and return

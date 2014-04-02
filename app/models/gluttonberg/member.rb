@@ -22,6 +22,7 @@ module Gluttonberg
     attr_accessor :return_url , :term_and_conditions
     attr_accessor :image_delete
 
+    # Included mixins which are registered by host app for extending functionality
     MixinManager.load_mixins(self)
 
     include Membership::Import

@@ -4,6 +4,7 @@ module Gluttonberg
     belongs_to :page, :class_name => "Gluttonberg::Page"
     belongs_to :user
     attr_accessible :user_id, :page_id
+    # Included mixins which are registered by host app for extending functionality
     MixinManager.load_mixins(self)
   end
 end

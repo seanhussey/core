@@ -4,6 +4,7 @@ module Gluttonberg
     belongs_to :auto_save_able, :polymorphic => true
     attr_accessible :auto_save_able_id, :auto_save_able_type, :auto_save_able_id
     attr_accessible :data
+    # Included mixins which are registered by host app for extending functionality
     MixinManager.load_mixins(self)
     
     def self.param_name_for(class_name)

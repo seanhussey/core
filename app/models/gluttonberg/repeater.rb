@@ -7,6 +7,7 @@ module Gluttonberg
     attr_accessible :repeatable, :repeatable_type, :repeatable_id
     attr_accessible :title
     attr_accessible :position
+    # Included mixins which are registered by host app for extending functionality
     MixinManager.load_mixins(self)
 
     def duplicate!(dup_repeatable)

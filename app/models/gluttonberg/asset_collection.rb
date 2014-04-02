@@ -5,6 +5,7 @@ module Gluttonberg
     validates_uniqueness_of :name
     validates_presence_of :name
     attr_accessible :name
+    # Included mixins which are registered by host app for extending functionality
     MixinManager.load_mixins(self)
 
     def images

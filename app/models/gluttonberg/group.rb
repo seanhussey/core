@@ -6,6 +6,7 @@ module Gluttonberg
     has_and_belongs_to_many :pages, :class_name => "Gluttonberg::Page" , :join_table => "gb_groups_pages"
 
     attr_accessible :name, :default, :position
+    # Included mixins which are registered by host app for extending functionality
     MixinManager.load_mixins(self)
 
     def self.default_group

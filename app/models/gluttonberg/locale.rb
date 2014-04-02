@@ -9,6 +9,7 @@ module Gluttonberg
     validates_uniqueness_of :slug , :name
     attr_accessible :name, :slug, :slug_type, :default
     after_save :clear_cache
+    # Included mixins which are registered by host app for extending functionality
     MixinManager.load_mixins(self)
 
     SLUG_TYPES = ["prefix"]

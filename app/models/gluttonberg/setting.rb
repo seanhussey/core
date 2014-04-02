@@ -6,6 +6,7 @@ module Gluttonberg
     before_destroy :destroy_cache
     attr_accessible :name, :value, :values_list, :help, :category
     attr_accessible :row, :delete_able, :enabled, :site
+    # Included mixins which are registered by host app for extending functionality
     MixinManager.load_mixins(self)
 
     def self.generate_or_update_settings(settings, site=nil)

@@ -4,6 +4,7 @@ module Gluttonberg
     belongs_to :feedable, :polymorphic => true
     self.table_name = "gb_feeds"
     attr_accessible :user, :feedable, :feedable_type, :feedable_id, :title, :action_type
+    # Included mixins which are registered by host app for extending functionality
     MixinManager.load_mixins(self)
 
     def self.log(user,object,title,action_type)
