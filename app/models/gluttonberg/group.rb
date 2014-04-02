@@ -1,11 +1,16 @@
 module Gluttonberg
+  # This model is used for grouping in membership system. 
+  # Members can be grouped, CMS pages can be grouped
   class Group < ActiveRecord::Base
-    is_drag_tree :flat => true , :order => "position"
     self.table_name = "gb_groups"
+
+    is_drag_tree :flat => true , :order => "position"
+    
     has_and_belongs_to_many :members, :class_name => "Member" , :join_table => "gb_groups_members"
     has_and_belongs_to_many :pages, :class_name => "Gluttonberg::Page" , :join_table => "gb_groups_pages"
 
     attr_accessible :name, :default, :position
+
     # Included mixins which are registered by host app for extending functionality
     MixinManager.load_mixins(self)
 

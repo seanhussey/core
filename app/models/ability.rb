@@ -1,3 +1,5 @@
+# Default abilities of CMS users. 
+# This class needs to be overrided in host app if customization required
 class Ability
   include CanCan::Ability
   def initialize(user)

@@ -1,4 +1,5 @@
 module Gluttonberg
+  # Wrapper class for sitemap generator gem
   class Sitemap
     @@sitemap = nil
     @@links = {}
