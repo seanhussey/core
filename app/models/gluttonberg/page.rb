@@ -143,7 +143,7 @@ module Gluttonberg
     end
 
     private
-      # Message content based on its on content type
+      # Prepare content based on its on content type
       def _prepare_content(content, opts)
         case content.class.name
           when "Gluttonberg::ImageContent"
