@@ -4,32 +4,32 @@
   .span5
     %legend
       Details
-    
+
     - if current_user.id != @user.id
       %p
-        = f.label :role            
+        = f.label :role
         = f.select(:role , current_user.user_valid_roles(@user).collect{|u| [u.humanize , u] }  )
-    
+
     %p
       = f.label :first_name
       = f.text_field(:first_name, :class => "large required")
-  
+
     %p
       = f.label :last_name
-      = f.text_field(:last_name, :class => "large")  
+      = f.text_field(:last_name, :class => "large")
 
     %p
       = f.label :email , "E-mail"
       = f.text_field(:email, :class => "large required")
-    
+
     %p
       = f.label :bio, "Bio"
       = f.text_area(:bio, :class => "large ")
-    
+
     %p
       = f.label :image_id , "Image"
-      = f.asset_browser( :image_id ,  opts = { :filter => "image"   } )  
-    
+      = f.asset_browser( :image_id ,  opts = { :filter => "image"   } )
+
     = f.fields_for :authorizations do |auth_form|
       %p
         = auth_form.hidden_field :authorizable_type
@@ -37,7 +37,7 @@
           %label
             Page
           = auth_form.select(:authorizable_id, pages_lists_options, {:prompt => "Select Page"}, {:class=>" chzn-select"})
-        - elsif auth_form.object.authorizable_type == "Gluttonberg::Blog::Weblog"            
+        - elsif auth_form.object.authorizable_type == "Gluttonberg::Blog::Weblog"
           = auth_form.label :allow , "Blog (#{auth_form.object.authorizable.name})"
           = auth_form.check_box :allow
           = auth_form.hidden_field :authorizable_id
@@ -46,9 +46,9 @@
           = auth_form.check_box :allow
 
   .span4
-    %legend 
+    %legend
       Password
-    %p  
+    %p
       = f.label :password , "Password"
       = f.password_field(:password, :class => "medium", :label => "Password")
       %p.help-block
@@ -56,9 +56,6 @@
     %p
       = f.label :password_confirmation , "Confirm Password"
       = f.password_field(:password_confirmation, :class => "medium", :label => "Confirm Password")
-  
-    
-    - if current_user.super_admin?
-      = form_controls(admin_users_path)
-    - else
-      = form_controls(admin_settings_path)
+
+
+    = form_controls(admin_users_path)

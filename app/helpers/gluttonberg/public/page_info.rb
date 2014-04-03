@@ -97,6 +97,23 @@ module Gluttonberg
       # returns current page slug and 'page' class if it is page 
       # returns current post slug and 'post' class if it is blog post 
       # otherwise class name and object slug
+      def page_fb_icon_path
+        path = nil
+        object = find_current_object_for_meta_tags
+        fb_icon_id = Gluttonberg::Setting.get_setting("fb_icon", current_site_config_name)
+
+        if !object.blank? && object.respond_to?(:fb_icon_id) && !object.fb_icon_id.blank?
+          fb_icon_id = object.fb_icon_id
+        end
+
+        asset = unless fb_icon_id.blank?
+          Asset.where(:id => fb_icon_id).first
+        end
+
+        path = asset_file_url(asset) unless asset.blank?
+        path
+      end
+
       def body_class(page=nil)
         page = @page if page.blank?
         if !page.blank?
@@ -107,6 +124,16 @@ module Gluttonberg
             class_name = (Gluttonberg.constants.include?(:Blog) && object.kind_of?(Gluttonberg::Blog::ArticleLocalization) ? 'post' : object.class.name.demodulize.downcase)
             "#{class_name} #{object.slug}"
           end
+        end
+      end
+
+      def og_type
+        if !@page.blank? && @page.home == true
+          'website'
+        elsif !@blog.blank? && @article.blank?
+          'blog'
+        else
+          'article'
         end
       end
 
@@ -133,6 +160,7 @@ module Gluttonberg
                 return object.send(method)
               end
             end
+            nil
           end
         end
 
