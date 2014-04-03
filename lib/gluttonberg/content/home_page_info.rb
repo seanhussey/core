@@ -1,5 +1,6 @@
 module Gluttonberg
   module Content
+    # Mixin which provides functionality related to home page for pages
     module HomePageInfo
       extend ActiveSupport::Concern
 

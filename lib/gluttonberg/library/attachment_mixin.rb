@@ -124,6 +124,7 @@ module Gluttonberg
         self.remove_file_from_tmp_storage
       end
 
+      # Perform asset processing
       def asset_processing
         asset_id_to_process = self.id
         asset = Asset.where(:id => asset_id_to_process).first

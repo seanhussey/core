@@ -1,5 +1,6 @@
 module Gluttonberg
   module Content
+    # Mixin which extends functionality of pages model for handling page childrens
     module PageChildren
       extend ActiveSupport::Concern
 

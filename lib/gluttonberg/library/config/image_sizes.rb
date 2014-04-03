@@ -1,6 +1,7 @@
 module Gluttonberg
   module Library
     module Config
+      # Mixin which provides image sizes functionality to asset model
       module ImageSizes
         extend ActiveSupport::Concern
 
