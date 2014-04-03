@@ -51,18 +51,25 @@ module Gluttonberg
         output.html_safe
       end
 
+      # if custom_css_for_cms settings is true in advance gluttonberg settings initalizer 
+      # it renders stylesheet link tag but you need make sure that gb_custom.css/sass file exists
+      # in your host app
       def custom_stylesheet_link_tag
         if Rails.configuration.custom_css_for_cms == true
           stylesheet_link_tag "gb_custom"
         end
       end
 
+      # if custom_js_for_cms settings is true in advance gluttonberg settings initalizer 
+      # it renders javascript include  tag but you need make sure that gb_custom.js file exists
+      # in your host app
       def custom_javascript_include_tag
         if Rails.configuration.custom_js_for_cms == true
           javascript_include_tag "gb_custom"
         end
       end
 
+      # returns comma seperated list of all tags for given tag type
       def tags_string(tag_type)
         @themes = ActsAsTaggableOn::Tag.find_by_sql(%{select DISTINCT tags.id , tags.name
           from tags inner join taggings on tags.id = taggings.tag_id
@@ -72,6 +79,7 @@ module Gluttonberg
         @themes.blank? ? "" : @themes.join(", ")
       end
 
+      # gluttonberg's default date format. 
       def date_format(date_time)
         if date_time < 1.week.ago
           date_time.strftime("%d/%m/%Y")
@@ -80,6 +88,7 @@ module Gluttonberg
         end
       end
 
+      # returns link for column sorting 
       def sortable_column(column, title = nil)
         title ||= column.titleize
         css_class = column == sort_column ? "current #{sort_direction}" : nil
@@ -92,6 +101,7 @@ module Gluttonberg
         action_name == "edit"  || action_name == "update"
       end
 
+      # returns pages list for dropdowns. it also add level-xx classes to children pages.
       def pages_lists_options(pages=nil, array=[], level=0)
         if pages.blank? && level==0
           pages = Gluttonberg::Page.where(:parent_id => nil).order("position ASC").all
@@ -110,6 +120,7 @@ module Gluttonberg
         end
       end
 
+      # formatted dropdown list for pages
       def page_description_options
         @descriptions = {}
         Gluttonberg::PageDescription.all.each do |name, desc|

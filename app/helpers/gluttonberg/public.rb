@@ -69,6 +69,7 @@ module Gluttonberg
         end
       end
 
+      # process shortcodes and returns processed string with all shortcode replaced to actual content
       def shortcode_safe(str)
         unless str.blank? || str.nil?
           temp_string = str
