@@ -80,6 +80,7 @@ module Gluttonberg
         submitted_content = submitted_content.sort{|x,y| y[2].created_at <=>  x[2].created_at }
       end
 
+      # this renders recently submitted contents(max 5 items). Its used on dashboard
       def version_dashboard_notifications
         if current_user.ability.can?(:publish, :any)
           submitted_content = version_dashboard_notifications_data
