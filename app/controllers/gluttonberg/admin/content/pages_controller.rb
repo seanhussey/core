@@ -57,6 +57,7 @@ module Gluttonberg
           })
         end
 
+        # This action is called from configuration in an ajax call for update home page
         def update_home
           @new_home = Page.where(:id => params[:home]).first
           unless @new_home.blank?
@@ -69,6 +70,7 @@ module Gluttonberg
           render :text => "Home page is changed"
         end
 
+        # Pages/posts lists for redactor
         def pages_list_for_tinymce
           @pages = Page.published.count
           @pages = Page.published.where("not(description_name = 'top_level_page')").order('position' )
@@ -95,6 +97,7 @@ module Gluttonberg
           end
         end
 
+        # Collapse a single page in pages list
         def collapse
           @page = Page.find(params[:id])
           collapse = CollapsedPage.where(:page_id => @page.id, :user_id => current_user.id).first
@@ -104,6 +107,7 @@ module Gluttonberg
           render :json => {:status => true}
         end
 
+        # Expand a children of single page in pages list
         def expand
           CollapsedPage.delete_all(:page_id => params[:id], :user_id => current_user.id)
           render :json => {:status => true}

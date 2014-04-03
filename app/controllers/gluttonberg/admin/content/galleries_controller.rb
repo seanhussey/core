@@ -4,6 +4,7 @@
 module Gluttonberg
   module Admin
     module Content
+      # Manage image/video gallery
       class GalleriesController < Gluttonberg::Admin::BaseController
         drag_tree GalleryImage , :route_name => :admin_gallery_move
         include ActionView::Helpers::TextHelper

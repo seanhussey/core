@@ -4,6 +4,7 @@ module Gluttonberg
   module Admin
     module AssetLibrary
       class AssetsAjaxController < Gluttonberg::Admin::AssetLibrary::BaseController
+        # Create asset for ajax request from asset selector
         def create
           handle_blank_asset_name
           # process new asset_collection and merge into existing collections
@@ -17,6 +18,7 @@ module Gluttonberg
           end
         end
 
+        # expand an asset collection
         def browser_collection
           @collection = AssetCollection.where(:id => params[:id]).first
           @category_filter =  params[:filter] || "all"
@@ -24,6 +26,7 @@ module Gluttonberg
           render :layout => false
         end
 
+        # Filter assets by a selected date in asset selector
         def filter_assets_by_date
           unless params[:asset_date_filter].blank?
             date = Time.zone.parse(params[:asset_date_filter])

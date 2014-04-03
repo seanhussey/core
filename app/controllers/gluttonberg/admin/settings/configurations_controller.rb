@@ -9,9 +9,13 @@ module Gluttonberg
         before_filter :authorize_user_for_create_or_destroy, :only => [:delete, :new, :create, :destroy]
         record_history :@setting
 
+        # Confuguration/settings listing page
         def index
+          # grab multisite settings
           @multisite = Rails.configuration.multisite.kind_of?(Hash)
+          # grab all global settings
           @cms_settings = Setting.where("site is NULL or site=''").order("row asc").all
+          # grab all settings for all sites
           @site_wise_settings = {}
           if @multisite
             Rails.configuration.multisite.each do |key, val|
