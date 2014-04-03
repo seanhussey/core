@@ -3,6 +3,7 @@
 module Gluttonberg
   module Public
     module CmsStylesheets
+      # It generates css links for all published CMS based css
       def cms_managed_stylesheets_link_tag
         if Rails.configuration.cms_based_public_css == true
           html = ""
