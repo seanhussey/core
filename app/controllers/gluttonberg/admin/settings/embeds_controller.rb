@@ -3,6 +3,8 @@
 module Gluttonberg
   module Admin
     module Settings
+      # this controller manages embed code (shortcodes). 
+      # wysiwyg snippets which can be embed in other content.
       class EmbedsController < Gluttonberg::Admin::BaseController
         before_filter :find_embed, :only => [:edit, :update, :delete, :destroy]
         before_filter :authorize_user , :except => [:destroy , :delete]

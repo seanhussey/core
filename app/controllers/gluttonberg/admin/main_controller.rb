@@ -4,6 +4,7 @@ module Gluttonberg
       unloadable
       before_filter :authorizer_for_publish , :only => [:waiting_for_approval , :decline_content]
 
+      # Dashboad
       def index
         @categories_count = ActsAsTaggableOn::Tag.find_by_sql(%{
           select count(DISTINCT tags.id) as category_count
@@ -27,9 +28,11 @@ module Gluttonberg
       def show
       end
 
+      # list of content which is waiting for approval
       def waiting_for_approval
       end
 
+      # decline content which is waiting for approval
       def decline_content
         version, status = find_version_and_update_status
         if status

@@ -1,5 +1,6 @@
 module Gluttonberg
   module Content
+    # Mixin which provides page description related funtionality to page model
     module PageDescriptionInfo
       extend ActiveSupport::Concern
 

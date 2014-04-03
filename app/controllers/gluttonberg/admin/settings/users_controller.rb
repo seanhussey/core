@@ -71,7 +71,7 @@ module Gluttonberg
           })
         end
 
-       private
+        private
           def find_user
             @user = User.find_user(params[:id], current_user)
             raise ActiveRecord::RecordNotFound  unless @user

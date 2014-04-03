@@ -1,5 +1,6 @@
 module Gluttonberg
   module Content
+    # This mixin provides helper methods which are used to clean html
     module CleanHtml
       extend ActiveSupport::Concern
       def self.setup

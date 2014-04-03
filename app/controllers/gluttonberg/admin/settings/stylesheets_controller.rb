@@ -3,6 +3,7 @@
 module Gluttonberg
   module Admin
     module Settings
+      # CMS based stylesheets management
       class StylesheetsController < Gluttonberg::Admin::BaseController
         drag_tree Stylesheet , :route_name => :admin_stylesheet_move
         before_filter :find_stylesheet, :only => [:edit, :update, :delete, :destroy]

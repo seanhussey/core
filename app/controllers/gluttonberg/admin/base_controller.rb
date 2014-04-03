@@ -73,6 +73,7 @@ module Gluttonberg
 
         end
 
+        # Generic code for destroy action. It is done trying to avoid duplication of similar code
         def generic_destroy(object, opts)
           if object.destroy
             flash[:notice] = "The #{opts[:name]} was successfully deleted."
@@ -83,10 +84,12 @@ module Gluttonberg
           end
         end
 
+        # Generic code for create action. It is done trying to avoid duplication of similar code
         def generic_create(object, opts)
           generic_create_or_update(object, opts)
         end
 
+        # Generic code for update action. It is done trying to avoid duplication of similar code
         def generic_update(object, opts)
           generic_create_or_update(object, opts)
         end

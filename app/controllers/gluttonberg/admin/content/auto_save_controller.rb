@@ -3,6 +3,8 @@
 module Gluttonberg
   module Admin
     module Content
+      # this controllers saves json dump of admin forms. 
+      # javascript sends an ajax calls for saving draft version in autosave table for recovery purpose
       class AutoSaveController < Gluttonberg::Admin::BaseController
         before_filter :find_auto_save, :except => [:create]
         layout nil

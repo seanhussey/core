@@ -1,6 +1,8 @@
 module Gluttonberg
   class BaseController < ActionController::Base
     protect_from_forgery
+
+    # rescue exceptions in production enviroment and renders appropriate error page
     if Rails.env == "production"
       rescue_from ActionView::MissingTemplate, :with => :not_found
       rescue_from ActiveRecord::RecordNotFound, :with => :not_found
@@ -43,6 +45,8 @@ module Gluttonberg
         session[:return_to] = nil
       end
 
+      # its a generic code for find user/member from perishable_token
+      # Its used for admin user and public members
       def generic_find_using_perishable_token(klass)
         object = klass.where(:perishable_token => params[:id]).first
         unless object
@@ -52,6 +56,8 @@ module Gluttonberg
         object
       end
 
+      # its a generic code for updating reset password. 
+      # Its used for admin user and public members
       def generic_update_reset_password(object, success_path)
         if object.save
           flash[:notice] = "Password successfully updated"

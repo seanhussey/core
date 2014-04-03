@@ -5,6 +5,7 @@ module Gluttonberg
         before_filter :find_localization, :exclude => [:index, :new, :create]
         before_filter :authorize_user
 
+        # Edit page localization content (edit page)
         def edit
           fix_nav_label_and_slug
           @version = params[:version]  
@@ -50,8 +51,8 @@ module Gluttonberg
             end
           end
 
+          # update localization updated_at value for all contents of a page so that all contents have same version number.
           def update_updated_at
-            # update localization updated_at value so that all contents have same version number.
             @page_localization.contents.each do |content|
               content.updated_at = Time.now
             end
@@ -87,6 +88,7 @@ module Gluttonberg
             @page_localization.page._publish_status = page_attributes[:_publish_status]
           end
 
+          # Page description is changed then update page structure to reflect new page description
           def update_page_attributes(page_attributes)
             old_description_name = @page_localization.page.description_name
             new_description_name = page_attributes[:description_name]

@@ -1,5 +1,6 @@
 module Gluttonberg
   module Content
+    # This mixin provides functionality for generating default template for any page description which needs template file.
     module DefaultTemplateFile
       extend ActiveSupport::Concern
 

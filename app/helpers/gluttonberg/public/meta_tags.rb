@@ -3,10 +3,12 @@
 module Gluttonberg
   module Public
     module MetaTags
+      # Keywords meta tag with CMS settings of keywords
       def keywords_meta_tag
         _meta_tag("keywords", "keywords")
       end
 
+      # Description meta tag with CMS settings of description
       def description_meta_tag
         _meta_tag("description", "description")
       end
