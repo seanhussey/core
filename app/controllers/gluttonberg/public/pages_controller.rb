@@ -40,6 +40,7 @@ module Gluttonberg
         end
       end
 
+      # Html version of site sitemap
       def sitemap
         begin
           SitemapGenerator::Interpreter.respond_to?(:run)
@@ -48,6 +49,7 @@ module Gluttonberg
         end
       end
 
+      # serve CMS based css to public
       def stylesheets
         @stylesheet = Stylesheet.where(:slug => params[:id]).first
         unless params[:version].blank?
