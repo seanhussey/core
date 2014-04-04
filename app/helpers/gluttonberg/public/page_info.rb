@@ -163,8 +163,6 @@ module Gluttonberg
             nil
           end
         end
-
-
     end
   end
 end

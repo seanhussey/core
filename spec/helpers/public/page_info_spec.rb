@@ -4,6 +4,7 @@ require 'spec_helper'
 
 module Gluttonberg
   describe Public do
+
     before :all do
       Gluttonberg::Setting.generate_common_settings
       @_page = Page.create! :name => 'Page Title', :description_name => 'generic_page'
@@ -137,6 +138,7 @@ module Gluttonberg
       assign(:custom_model_object, @_custom_model_object)
       helper.page_description.should eql("")
     end
+
     it "Website fb_icon" do
       Setting.update_settings("fb_icon" => @asset.id)
       helper.og_image.should eql("http://test.host#{@asset.url}")
@@ -191,6 +193,7 @@ module Gluttonberg
 
       assign(:article, @_article)
       helper.page_fb_icon_path.should be_nil
+    end
 
     it "Custom model fb_icon" do
       assign(:custom_model_object, @_custom_model_object)
@@ -260,5 +263,5 @@ module Gluttonberg
       end
 
 
-  end #member
+  end #Public
 end
