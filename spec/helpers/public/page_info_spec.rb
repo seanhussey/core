@@ -161,40 +161,6 @@ module Gluttonberg
       helper.og_image.should be_nil
     end
 
-    it "Blog fb_icon" do
-      assign(:blog, @_blog)
-      helper.page_fb_icon_path.should be_nil
-
-      @_blog.fb_icon_id = @asset2.id
-      @_blog.save
-
-      assign(:blog, @_blog)
-      helper.page_fb_icon_path.should eql("http://test.host/" + @asset2.url)
-
-      @_blog.fb_icon_id = nil
-      @_blog.save
-
-      assign(:blog, @_blog)
-      helper.page_fb_icon_path.should be_nil
-    end
-
-    it "Article fb_icon" do
-      assign(:article, @_article)
-      helper.page_fb_icon_path.should be_nil
-
-      @_article.current_localization.fb_icon_id = @asset2.id
-      @_article.save
-
-      assign(:article, @_article)
-      helper.page_fb_icon_path.should eql("http://test.host/" + @asset2.url)
-
-      @_article.current_localization.fb_icon_id = nil
-      @_article.save
-
-      assign(:article, @_article)
-      helper.page_fb_icon_path.should be_nil
-    end
-
     it "Custom model fb_icon" do
       assign(:custom_model_object, @_custom_model_object)
       helper.og_image.should be_nil
