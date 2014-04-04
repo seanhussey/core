@@ -21,7 +21,9 @@ $(document).ready(function() {
   shortcodeNameValidation();
 });
 
-
+/*
+  General UI fixes.
+*/
 function initGluttonbergUI(){
   if ($('table').length > 0) {
     $('table').find('tr:last').css('background-image', 'none !important');
@@ -45,7 +47,8 @@ function initFormValidation(){
 
 
 
-// if container element has class "add_to_photoseries" , it returns html of new image
+// Initalize a tags for asset selector and remove button
+// It also handles autosave mode of asset selector
 function initClickEventsForAssetLinks(element) {
   element.find(".thumbnails a.choose_button").click(function(e) {
     var p = $(this).parent().parent().parent(".asset_selector_wrapper");
@@ -80,7 +83,10 @@ function initClickEventsForAssetLinks(element) {
 
 }
 
-
+/*
+  All functioanlity for asset selector
+  Listing, searching, ajax upload, auto save, inserting image in redactor, filters
+*/
 var AssetBrowser = {
   overlay: null,
   dialog: null,
@@ -471,7 +477,9 @@ function initSettingDropdownAjax() {
   initHomePageSettingDropdownAjax();
 }
 
-
+/* Home page dropdown setting is special case on settings page in backend, it is handled by 
+  a seperate ajax call.
+*/
 function initHomePageSettingDropdownAjax() {
   $(".home_page_setting_dropdown").change(function() {
     url = $(this).attr("rel");
@@ -824,6 +832,9 @@ function initSlugManagement() {
 function enable_slug_management_on(src_class){
   $("."+src_class).attr('id','page_title');
 }
+/*
+  Nestable is used for reordering pages. 
+*/
 
 function initNestable(){
   window.nestableSerializedDataOnPageLoad = [];
@@ -989,6 +1000,7 @@ function initGalleryImageRepeater(){
   }
 }
 
+/* If user modifies something in forms Autosave sends an ajax call to server and save form json dump */
 var AutoSave = {
   init : function(class_name){
     $(".retreive_changes").click(AutoSave.retrieve);
@@ -1162,6 +1174,7 @@ function initPreview(){
     e.preventDefault();
   })
 }
+
 
 function shortcodeNameValidation() {
   var regex = /[\!\*'"″′‟‛„‚”“”˝\(\);:.@&=+$,\/?%#\[\]]/gim;
