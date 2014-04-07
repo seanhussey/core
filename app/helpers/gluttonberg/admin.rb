@@ -54,19 +54,31 @@ module Gluttonberg
       # if custom_css_for_cms settings is true in advance gluttonberg settings initalizer 
       # it renders stylesheet link tag but you need make sure that gb_custom.css/sass file exists
       # in your host app
+      # now it supports multiple custom css files using config.custom_css_files_for_backend as an array of file names
       def custom_stylesheet_link_tag
+        files = ""
         if Rails.configuration.custom_css_for_cms == true
-          stylesheet_link_tag "gb_custom"
+          files += stylesheet_link_tag("gb_custom") + "\n"
         end
+        Rails.configuration.custom_css_files_for_backend.each do |file|
+          files += stylesheet_link_tag(file) + "\n"
+        end
+        files.blank? ? nil : files.html_safe
       end
 
       # if custom_js_for_cms settings is true in advance gluttonberg settings initalizer 
       # it renders javascript include  tag but you need make sure that gb_custom.js file exists
       # in your host app
+      # now it supports multiple custom js files using config.custom_js_files_for_backend as an array of file names
       def custom_javascript_include_tag
+        files = ""
         if Rails.configuration.custom_js_for_cms == true
-          javascript_include_tag "gb_custom"
+          files += javascript_include_tag("gb_custom") + "\n"
         end
+        Rails.configuration.custom_js_files_for_backend.each do |file|
+          files += javascript_include_tag(file) + "\n"
+        end
+        files.blank? ? nil : files.html_safe
       end
 
       # returns comma seperated list of all tags for given tag type
