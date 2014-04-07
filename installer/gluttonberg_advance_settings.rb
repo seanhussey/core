@@ -21,6 +21,10 @@
     # then you need to create custom.js file in you app
     Rails.configuration.custom_js_for_cms = false
 
+    # array of custom css/js files for backend
+    config.custom_css_files_for_backend += []
+    config.custom_js_files_for_backend += []
+
   # Backend User Config
     # User model always concat following three roles
     # ["super_admin" , "admin" , "contributor"]
