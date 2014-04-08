@@ -17,6 +17,7 @@ $(document).ready(function() {
   AutoSave.init();
   $(".chzn-select").chosen();
   initPublishingButton();
+  shortcodeNameValidation();
 });
 
 
@@ -671,7 +672,7 @@ function enableRedactor(selector, _linkCount) {
         'outdent', 'indent', '|', 'video',
         'table', '|', 'html', '|', 'fullscreen'
       ],
-      plugins: ['asset_library_image', 'gluttonberg_pages', 'fullscreen'],
+      plugins: ['asset_library_image', 'gluttonberg_embeds', 'gluttonberg_pages', 'fullscreen'],
       keyupCallback : function(){
         WarnNavigateAway.changeEventHandler();
         AutoSave.changeEventHandler();
@@ -1098,5 +1099,17 @@ function initPublishingButton(){
       $("._publish_status").val("revision");
     }
 
+  });
+}
+
+function shortcodeNameValidation() {
+  var regex = /[\!\*'"″′‟‛„‚”“”˝\(\);:.@&=+$,\/?%#\[\]]/gim;
+  var field = $("#gluttonberg_embed_shortcode");
+  
+  field.bind("blur", function() {
+    field.val(field.val().toLowerCase().replace(/\s/gim, '-').replace(regex, ''));
+  });
+  field.bind("keyup", function() {
+    field.val(field.val().toLowerCase().replace(/\s/gim, '-').replace(regex, ''));
   });
 }

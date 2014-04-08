@@ -98,6 +98,11 @@ Rails.application.routes.draw do
           get 'delete', :on => :member
         end
         post "/stylesheets/move(.:format)" => "stylesheets#move_node" , :as=> :stylesheet_move
+
+        resources :embeds do
+          get 'delete', :on => :member
+          get 'list-for-redactor' => :list_for_redactor, :on => :collection
+        end
       end
 
       namespace :membership do
