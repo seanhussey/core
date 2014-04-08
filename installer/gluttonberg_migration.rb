@@ -339,6 +339,13 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.boolean :allow
       t.timestamps
     end
+
+    create_table :gb_embeds do |t|
+      t.string :title
+      t.string :shortcode
+      t.text :body
+      t.timestamps
+    end
   end
 
 end

@@ -1,0 +1,29 @@
+#embedDialog.modal
+  .modal-header
+
+    %a.close.cancel.button
+      ×
+    %h3
+      Embed
+
+  .modal-body
+    %table{:class => "table table-bordered"}
+      %thead
+        %tr
+          %th Name
+          %th Shortcode
+          %th.controls Controls
+      %tbody
+        - @embeds.each do |embed|
+          %tr{:class => "#{cycle("even", "odd")}"}
+            %td
+              = embed.title
+            %td
+              = embed.shortcode
+            %td.controls
+              - if can? :manage , Gluttonberg::Embed
+                = link_to "Insert", "Javascript:;", :class => "btn embed-btn", "data-shortcode" => "[#{embed.shortcode}]"
+
+  .modal-footer
+    %a.cancel.btn.btn-danger
+      Close
