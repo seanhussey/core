@@ -22,7 +22,11 @@ module Gluttonberg
         def self.check_for_duplication(slug, object, potential_duplicates)
           unless potential_duplicates.blank?
             if potential_duplicates.length > 1 || (potential_duplicates.length == 1 && potential_duplicates.first.id != object.id )
-              slug = "#{self.slug_without_postfix(slug)}-#{potential_duplicates.length+1}"
+              number = potential_duplicates.length+1
+              begin
+                slug = "#{self.slug_without_postfix(slug)}-#{number}"
+                number += 1
+              end while object.find_potential_duplicates(slug).map{|o| o.slug}.include?(slug)
             end
           end
           slug
@@ -68,7 +72,7 @@ module Gluttonberg
           new_slug
         end
 
-        protected
+        #protected
         # Checks If slug is blank then tries to set slug using following logic
         # if slug_field_name is set then use its value and make it slug
         # otherwise checks for name column
@@ -90,7 +94,11 @@ module Gluttonberg
 
             unless potential_duplicates.blank?
               if potential_duplicates.length > 1 || (potential_duplicates.length == 1 && potential_duplicates.first.id != self.id )
-                self.slug = "#{slug_without_postfix(self.slug)}-#{potential_duplicates.length+1}"
+                number = potential_duplicates.length+1
+                begin
+                  self.slug = "#{slug_without_postfix(self.slug)}-#{number}"
+                  number += 1
+                end while find_potential_duplicates(slug).map{|o| o.slug}.include?(slug)
               end
             end
           end
