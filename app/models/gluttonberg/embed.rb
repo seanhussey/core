@@ -6,5 +6,8 @@ module Gluttonberg
     
     # Included mixins which are registered by host app for extending functionality
     MixinManager.load_mixins(self)
+    def name
+      title
+    end
   end
 end
