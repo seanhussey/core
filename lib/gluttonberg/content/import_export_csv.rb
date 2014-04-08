@@ -16,7 +16,7 @@ module Gluttonberg
           include ImportExportHelpers          
           if import_export_columns.blank?
             self.import_export_columns = self.new.attributes.keys
-            if self.localized?
+            if self.class.respond_to?(:localized?) && self.localized?
               self.import_export_columns += self.new_with_localization.current_localization.attributes.keys
               self.import_export_columns.uniq!
             end

@@ -59,7 +59,7 @@
                     - active = (@menu_section_name == entry[0])
                   - else
                     - active = (( Gluttonberg::Components.nav_entries(entry[0]).collect{|c| c[1]}).include?(controller_name.to_sym) )
-              - if enabled && !entry[2][:can_model_name].blank? && can?(:manage , eval(entry[2][:can_model_name]))
+              - if enabled && (entry[2][:can_model_name].blank? || (!entry[2][:can_model_name].blank? && can?(:manage , eval(entry[2][:can_model_name]))) ) 
                 %li{:class => "mainNavLi"}
                   = active_link_to(entry[0], url_for(entry[1]), {:id => (entry[0].to_s.underscore).gsub(/\s/, '_') + "Nav" , :title => entry[0], :active => active } )
 

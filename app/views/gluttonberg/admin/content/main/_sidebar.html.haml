@@ -1,9 +1,13 @@
+- @menu_section_name = Gluttonberg::Components.section_name_for_controller(controller_name)
 .span3
   .well.sidebar-nav
     %ul.nav.nav-list
       %li.nav-header
-        Content
-      - @menu_section_name = Gluttonberg::Components.section_name_for_controller(controller_name)
+        - if @menu_section_name
+          = @menu_section_name
+        - else
+          Content
+
       - unless @menu_section_name.blank?
         - for entry in Gluttonberg::Components.nav_entries(@menu_section_name)
           -if entry[3].blank? || entry[3]==false || (entry[3]==true && session.user.is_super_admin)
@@ -23,7 +27,7 @@
             = active_link_to("Galleries", admin_galleries_path, :title => "Galleries", :class => "gallery")
         - for entry in Gluttonberg::Components.nav_entries
           - if entry[3].blank? || entry[3]==false || (entry[3]==true && session.user.is_super_admin)
-            - if (!entry[4].blank? && can?(:manage_model , entry[4]))  
+            - if (entry[4].blank? || can?(:manage_model , entry[4]))  
               %li
                 = active_link_to(entry[0], url_for(entry[2]),  {:id => (entry[0].to_s.underscore).gsub(/\s/, '_') + "Nav" , :title => entry[0] } )
         - if Rails.configuration.flagged_content == true
