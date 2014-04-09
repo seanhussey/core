@@ -114,15 +114,19 @@ module Gluttonberg
           end
 
           def find_potential_duplicates(slug)
-            temp_slug = slug_without_postfix(slug)
-            potential_duplicates = self.class.where(["slug = ? OR slug = ? OR slug like ? ", slug, temp_slug, "#{temp_slug}-%"])
-            
-            unless self.class.slug_scope.blank?
-              potential_duplicates = potential_duplicates.where(self.class.slug_scope => self.send(self.class.slug_scope) )
+            unless self.class.where(["slug = ? ", slug]).first.blank?
+              temp_slug = slug_without_postfix(slug)
+              potential_duplicates = self.class.where(["slug = ? OR slug = ? OR slug like ? ", slug, temp_slug, "#{temp_slug}-%"])
+              
+              unless self.class.slug_scope.blank?
+                potential_duplicates = potential_duplicates.where(self.class.slug_scope => self.send(self.class.slug_scope) )
+              end
+              potential_duplicates = potential_duplicates.all
+              potential_duplicates = potential_duplicates.find_all{|obj| obj.id != self.id}
+              potential_duplicates
+            else
+              []
             end
-            potential_duplicates = potential_duplicates.all
-            potential_duplicates = potential_duplicates.find_all{|obj| obj.id != self.id}
-            potential_duplicates
           end
 
       end
