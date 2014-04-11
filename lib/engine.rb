@@ -36,6 +36,7 @@ module Gluttonberg
       # User model always concat following three roles
       # ["super_admin" , "admin" , "contributor"]
       config.user_roles = []
+      config.limited_roles = ["contributor"]
       config.cms_based_public_css = false
       config.flagged_content = false
       config.search_models = {

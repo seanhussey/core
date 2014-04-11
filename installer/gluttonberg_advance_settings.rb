@@ -29,6 +29,7 @@
     # User model always concat following three roles
     # ["super_admin" , "admin" , "contributor"]
     Rails.configuration.user_roles = []
+    Rails.configuration.limited_roles = ["contributor"]
 
   # CMS based public stylesheets
     Rails.configuration.cms_based_public_css = false

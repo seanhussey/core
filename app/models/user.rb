@@ -72,7 +72,7 @@ class User < ActiveRecord::Base
   end
 
   def have_backend_access?
-    ["super_admin" , "admin", 'editor' , "contributor"].include?(self.role)
+    true
   end
 
   def self.all_super_admin_and_admins
