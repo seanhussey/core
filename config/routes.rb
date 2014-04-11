@@ -81,6 +81,7 @@ Rails.application.routes.draw do
         resources :members do
           get 'delete', :on => :member
           get 'welcome' , :on => :member
+          get 'group/:id' => "members#group", :on => :collection, :as => :group_members
         end
         resources :groups do
           get 'delete', :on => :member
