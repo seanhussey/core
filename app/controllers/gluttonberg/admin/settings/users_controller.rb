@@ -82,7 +82,7 @@ module Gluttonberg
           end
 
           def prepare_authorizations
-            if (@user.contributor? || @user.editor?) && @user.id != current_user.id
+            if Rails.configuration.limited_roles.include?(@user.role) && @user.id != current_user.id
               @user.authorizations.build(:authorizable_type => "Gluttonberg::Page") if @user.authorizations.where(:authorizable_type => "Gluttonberg::Page").first.blank?
               if Gluttonberg::Comment.table_exists?
                 Gluttonberg::Blog.all.each do |blog|
