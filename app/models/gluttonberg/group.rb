@@ -18,5 +18,14 @@ module Gluttonberg
       self.where(:default =>  true).first
     end
 
+    # find group if not exists it makes new one
+    def self.ensure_exists(name)
+      cat = where(:name => name).first
+      if cat.blank?
+        cat = create(:name => name)
+      end
+      cat
+    end
+
   end
 end

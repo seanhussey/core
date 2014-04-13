@@ -29,6 +29,7 @@
                   = link_to(group.name, edit_admin_membership_group_url(group)   , :class => "")
                 %td{:style => 'width:10%;'}= group.default == true ? "Default Group" : ""
                 %td.controls{:style => 'width:20%'}
-                  = link_to("Edit", edit_admin_membership_group_url(group)   , :class => "btn")
-                  = link_to("Delete", delete_admin_membership_group_url(group) , :class => "btn btn-danger" )
+                  = link_to("View group members", group_members_admin_membership_members_path(group)   , :class => "btn")
+                  = link_to("Edit", edit_admin_membership_group_path(group)   , :class => "btn")
+                  = link_to("Delete", delete_admin_membership_group_path(group) , :class => "btn btn-danger" )
 

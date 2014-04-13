@@ -60,6 +60,11 @@ module Gluttonberg
         end
       end
 
+      def find_potential_duplicates(_path)
+        potential_duplicates = self.class.where([ "path = ? AND page_id != ?", _path, page.id]).all
+        potential_duplicates = potential_duplicates.find_all{|l| l.page.parent_id == self.page.parent_id}
+      end
+
       private
         def prepare_new_path
           if page.parent_id && !page.parent.blank? && page.parent.home != true
@@ -73,10 +78,11 @@ module Gluttonberg
 
         def check_duplication_in(new_path)
           # check duplication: add id at the end if its duplicated
-          potential_duplicates = self.class.where([ "path = ? AND page_id != ?", new_path, page.id]).all
-          potential_duplicates = potential_duplicates.find_all{|l| l.page.parent_id == self.page.parent_id}
+          potential_duplicates = find_potential_duplicates(new_path)
           Content::SlugManagement::ClassMethods.check_for_duplication(new_path, self, potential_duplicates)
         end
+
+
 
     end
   end

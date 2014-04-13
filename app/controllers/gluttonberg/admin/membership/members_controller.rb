@@ -19,6 +19,18 @@ module Gluttonberg
           @members = @members.paginate(:page => params[:page] , :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items") )
         end
 
+        def group
+          @group = Group.where(:id => params[:id]).first
+          @members = @group.members.order(get_order).includes(:groups)
+          unless params[:query].blank?
+            query = clean_public_query(params[:query])
+            command = Gluttonberg.like_or_ilike
+            @members = @members.where(["first_name #{command} :query OR last_name #{command} :query OR email #{command} :query OR bio #{command} :query " , :query => "%#{query}%" ])
+          end
+          @members = @members.paginate(:page => params[:page] , :per_page => Gluttonberg::Setting.get_setting("number_of_per_page_items") )
+          render :template => "/gluttonberg/admin/membership/members/index"
+        end
+
         def new
           @member = Member.new
           @member.group_ids = [Group.default_group.id] unless Group.default_group.blank?

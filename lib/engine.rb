@@ -31,9 +31,12 @@ module Gluttonberg
       config.asset_mixins = []
       config.custom_css_for_cms = false
       config.custom_js_for_cms = false
+      config.custom_css_files_for_backend = []
+      config.custom_js_files_for_backend = []
       # User model always concat following three roles
       # ["super_admin" , "admin" , "contributor"]
       config.user_roles = []
+      config.limited_roles = ["contributor"]
       config.cms_based_public_css = false
       config.flagged_content = false
       config.search_models = {

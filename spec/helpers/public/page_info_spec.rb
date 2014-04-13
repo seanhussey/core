@@ -4,6 +4,7 @@ require 'spec_helper'
 
 module Gluttonberg
   describe Public do
+
     before :all do
       Gluttonberg::Setting.generate_common_settings
       @_page = Page.create! :name => 'Page Title', :description_name => 'generic_page'
@@ -137,6 +138,7 @@ module Gluttonberg
       assign(:custom_model_object, @_custom_model_object)
       helper.page_description.should eql("")
     end
+
     it "Website fb_icon" do
       Setting.update_settings("fb_icon" => @asset.id)
       helper.og_image.should eql("http://test.host#{@asset.url}")
@@ -158,39 +160,6 @@ module Gluttonberg
       assign(:page, @_page)
       helper.og_image.should be_nil
     end
-
-    it "Blog fb_icon" do
-      assign(:blog, @_blog)
-      helper.page_fb_icon_path.should be_nil
-
-      @_blog.fb_icon_id = @asset2.id
-      @_blog.save
-
-      assign(:blog, @_blog)
-      helper.page_fb_icon_path.should eql("http://test.host/" + @asset2.url)
-
-      @_blog.fb_icon_id = nil
-      @_blog.save
-
-      assign(:blog, @_blog)
-      helper.page_fb_icon_path.should be_nil
-    end
-
-    it "Article fb_icon" do
-      assign(:article, @_article)
-      helper.page_fb_icon_path.should be_nil
-
-      @_article.current_localization.fb_icon_id = @asset2.id
-      @_article.save
-
-      assign(:article, @_article)
-      helper.page_fb_icon_path.should eql("http://test.host/" + @asset2.url)
-
-      @_article.current_localization.fb_icon_id = nil
-      @_article.save
-
-      assign(:article, @_article)
-      helper.page_fb_icon_path.should be_nil
 
     it "Custom model fb_icon" do
       assign(:custom_model_object, @_custom_model_object)
@@ -260,5 +229,5 @@ module Gluttonberg
       end
 
 
-  end #member
+  end #Public
 end

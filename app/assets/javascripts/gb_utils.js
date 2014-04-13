@@ -6,6 +6,7 @@ function extractLast( term ) {
   return split( term ).pop();
 }
 
+/* Very handy method to check if javascript field/variable is empty */
 function blank(obj){
   return obj === undefined || obj === null || obj === "null" || obj === "" || (obj.length !== undefined && obj.length <= 0) || obj == "/gray_scale_images/original/missing.png";
 }
@@ -1742,6 +1743,8 @@ function getParameterByName(url, name ){
 }
 
 
+/* Helper methods for form repeater. Add/remove functionality of repeatable component.
+*/
 var HtmlFormRepeater = {
   add: function(containerselector, rowSelector, link, callback){
     var duplicatedForm = $(containerselector).find(rowSelector).last().clone();
