@@ -109,7 +109,7 @@ module Gluttonberg
         Gluttonberg::Content::Block.register(Gluttonberg::ImageContent)
         Gluttonberg::Content::Block.register(Gluttonberg::TextareaContent)
         Gluttonberg::Content::Block.register(Gluttonberg::SelectContent)
-        
+
 
         Gluttonberg::Content.setup
 
@@ -137,7 +137,7 @@ module Gluttonberg
       def init_asset_precompile(app)
         if Rails.version > "3.1"
           #Gluttonberg precompile hook
-          app.config.assets.precompile += ["*.js", "chosen.css", "gb_360player.css", "gb_bootstrap-responsive.css", "gb_bootstrap.css", "gluttonberg.css", "redactor.css"]
+          app.config.assets.precompile += ["*.js", "chosen.css", "gb_360player.css", "gb_bootstrap-responsive.css", "gb_bootstrap.css", "gluttonberg.css", "redactor.css", "gb_admin-override.css"]
         end
       end
   end
