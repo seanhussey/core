@@ -196,6 +196,7 @@ class GluttonbergMigration < ActiveRecord::Migration
 
 
     create_table :tags do |t|
+      t.integer :taggings_count, :default => 0
       t.string :name
       t.string :slug
     end
