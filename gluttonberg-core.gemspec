@@ -7,17 +7,17 @@ require "gluttonberg/version"
 Gem::Specification.new do |s|
   s.name        = "gluttonberg-core"
   s.version     = Gluttonberg::VERSION
-  s.authors     = ["Nick Crowther","Abdul Rauf", "Luke Sutton", "Yuri Tomanek"]
+  s.authors     = ["Nick Crowther", "Yuri Tománek", "Abdul Rauf", "Luke Sutton"]
   s.email       = ["office@freerangefuture.com"]
   s.homepage    = "http://gluttonberg.com"
-  s.summary     = "Gluttonberg - An Open Source Content Management System being developed by Freerange Future"
-  s.description = "The Gluttonberg goal has always been to create a Content Management System that's great for users, content manager and developers. The focus of Gluttonberg 2.5 has been two-fold: a refined management user interface to make maintaining your website even easier and a change in the architecture of the system to support our new functionality modules: Events, TV, Mobile and soon eCommerce."
+  s.summary     = "Gluttonberg is an Open Source CMS developed by the team at Freerange Future."
+  s.description = "Gluttonberg is an Open Source CMS developed by the team at Freerange Future. As designers and developers, we love the flexibility of Ruby, but got tired of taking care of authentication, asset mangement, page management (and so on...) with every install. We created Gluttonberg to take care of that boring stuff so we could start having fun sooner."
 
   s.files = Dir["{app,config,db,lib}/**/*"] + ["Rakefile", "README.md"]
   s.require_paths = ["lib"]
   s.test_files = Dir["spec/**/*"]
 
-  s.add_dependency 'authlogic', "3.3.0"
+  s.add_dependency 'authlogic', "3.4.0"
   s.add_dependency 'will_paginate' , '3.0.5'
   s.add_dependency 'rubyzip', '1.1.0'
   s.add_dependency 'acts_as_tree', '1.5.0'
