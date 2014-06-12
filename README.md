@@ -1,6 +1,6 @@
 # Gluttonberg Core
 
-[![Gem Version](https://badge.fury.io/rb/gluttonberg-core@2x.png)](http://badge.fury.io/rb/gluttonberg-core)
+[![Gem Version](https://badge.fury.io/rb/gluttonberg-core.png)](http://badge.fury.io/rb/gluttonberg-core)
 [![Build Status](https://travis-ci.org/Gluttonberg/core.png?branch=master)](https://travis-ci.org/Gluttonberg/core)
 [![Dependency Status](https://gemnasium.com/Gluttonberg/core.png)](https://gemnasium.com/Gluttonberg/core)
 [![Code Climate](https://codeclimate.com/github/Gluttonberg/core.png)](https://codeclimate.com/github/Gluttonberg/core)
