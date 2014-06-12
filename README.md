@@ -7,7 +7,7 @@
 
 ## About
 
-The **Gluttonberg** goal has always been to create a Content Management System that's great for users, content manager and developers. The focus of **Gluttonberg 2.5** has been two-fold: a refined management user interface to make maintaining your website even easier and a change in the architecture of the system to support our new functionality modules: *Events*, *TV*, *Mobile* and soon *eCommerce*.
+**Gluttonberg** is an Open Source CMS developed by the team at ***Freerange Future***. As designers and developers, we love the flexibility of Ruby, but got tired of taking care of authentication, asset mangement, page management (and so on...) with every install. We created **Gluttonberg** to take care of that boring stuff so we could start having fun sooner.
 
 ## Setup
 
