@@ -65,8 +65,8 @@ module Gluttonberg
       Page.home_page.id.should == current_home.id
       Page.home_page_name.should == current_home.name
 
-      current_home.home.should be_true
-      page2.home.should be_false
+      current_home.home.should be_truthy
+      page2.home.should be_falsey
 
       page3 = Page.create(:name => "Page3" , :description_name => 'home')
       page4 = Page.create(:name => "Page4" , :home => true, :description_name => 'home')
@@ -74,8 +74,8 @@ module Gluttonberg
       current_home.reload
       page4.reload
 
-      page4.home.should be_true
-      current_home.home.should be_false
+      page4.home.should be_truthy
+      current_home.home.should be_falsey
 
       page5 = Page.create(:name => "Page5" , :description_name => 'home')
       new_home = Page.create(:name => "New Home", :description_name => 'home')
@@ -85,8 +85,8 @@ module Gluttonberg
       new_home.reload
       current_home.reload
 
-      new_home.home.should be_true
-      current_home.home.should be_false
+      new_home.home.should be_truthy
+      current_home.home.should be_falsey
     end
 
 
@@ -209,13 +209,13 @@ module Gluttonberg
       page = Page.create! :name => 'redirect to path', :description_name => 'redirect_to_path'
       page.redirect_required?.should == true
       page.redirect_url.should == "/local-path"
-    end 
+    end
 
     it "rewrite_required?" do
       page = Page.create! :name => 'rewrite required', :description_name => 'examples'
       page.rewrite_required?.should == true
       @page.rewrite_required?.should == false
-    end 
+    end
 
   end #Page
 end
