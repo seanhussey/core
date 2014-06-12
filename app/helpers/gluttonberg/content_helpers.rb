@@ -8,7 +8,7 @@ module Gluttonberg
         @page.localized_contents.pluck {|c| c.section[:name] == section_name}
       end
 
-      # Renders an image url, allows the designer to 
+      # Renders an image url, allows the designer to
       # specify who they want to handle the image.
       def gb_image_url(section_name, opts = {})
         @page.easy_contents(section_name, opts)
@@ -21,7 +21,7 @@ module Gluttonberg
         end
       end
 
-      # Looks for a matching partial in the templates directory. 
+      # Looks for a matching partial in the templates directory.
       # Failing that, it falls back to Gluttonberg's view dir — views/content/editors
       def content_editor(content)
         locals  = {:content => content}
@@ -34,11 +34,11 @@ module Gluttonberg
         javascript_tag("enable_slug_management_on('#{html_class}')" )
       end
 
-      # generate javascript code to enable tinymce on it. 
+      # generate javascript code to enable tinymce on it.
       def enable_redactor(html_class)
         if Gluttonberg::Setting.get_setting("enable_WYSIWYG") == "Yes"
           link_count = Page.published.count
-          link_count += Article.published.count if Gluttonberg::Comment.table_exists?
+          link_count += Gluttonberg::Blog::Article.published.count if Gluttonberg.constants.include?(:Blog)
           content = "enableRedactor('.#{html_class}', #{link_count}); \n"
           javascript_tag(content)
         end

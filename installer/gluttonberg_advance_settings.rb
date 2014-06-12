@@ -10,9 +10,6 @@
       # apps/engines which depends on gluttonberg-core can
       # use this to provide additional processor for assets
       Rails.configuration.asset_processors = []
-    # Asset Mixin
-      # List of custom mixin for assets (It will enable developer to extend asset model)
-      Rails.configuration.asset_mixins = []
 
   # Backend CSS and JS config
     # setting it to true will include custom.css file in admin layout
@@ -24,10 +21,15 @@
     # then you need to create custom.js file in you app
     Rails.configuration.custom_js_for_cms = false
 
+    # array of custom css/js files for backend
+    config.custom_css_files_for_backend += []
+    config.custom_js_files_for_backend += []
+
   # Backend User Config
     # User model always concat following three roles
     # ["super_admin" , "admin" , "contributor"]
     Rails.configuration.user_roles = []
+    Rails.configuration.limited_roles = ["contributor"]
 
   # CMS based public stylesheets
     Rails.configuration.cms_based_public_css = false
@@ -38,8 +40,8 @@
   # Full text search config
     # Rails.configuration.search_models = {
     #   "Gluttonberg::Page" => [:name],
-    #   "Gluttonberg::Blog" => [:name , :description],
-    #   "Gluttonberg::ArticleLocalization" => [:title , :body],
+    #   "Gluttonberg::Blog::Weblog" => [:name , :description],
+    #   "Gluttonberg::Blog::ArticleLocalization" => [:title , :body],
     #   "Gluttonberg::PlainTextContentLocalization" => [:text] ,
     #   "Gluttonberg::HtmlContentLocalization" => [:text]
     # }
@@ -60,9 +62,10 @@
         :groups => "GROUPS",
         :bio => "BIO"
       }
-    # Member Mixin
-      # List of custom mixin for member (It will enable to extend member model)
-      Rails.configuration.member_mixins = []
+    # Register Gluttonberg Model Mixin
+      # It enables you to extend any gluttonberg model
+      # Following example is adding vendormix which is defined in rails application to Gluttonberg member model
+      # Gluttonberg::MixinManager.register_mixin("Gluttonberg::Member", VendorMixin)
 
     # Password pattern and validation message applies on both members and backend users
     Rails.configuration.password_pattern = /^(?=.*\d)(?=.*[a-zA-Z])(?!.*[^\w\S\s]).{6,}$/

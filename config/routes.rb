@@ -1,20 +1,22 @@
 Rails.application.routes.draw do
-
   mount_at = Gluttonberg::Engine.config.mount_at
 
   scope :module => 'gluttonberg' do
     namespace :admin do
       root :to => "main#index"
+      get "waiting-for-approval" => "main#waiting_for_approval" , :as => :waiting_for_approval
+      get "decline-content/:object_class/:version_id" => "main#decline_content" , :as => :decline_content
+      
+
       scope :module => 'content' do
         controller :auto_save do
           match "/autosave/:model_name/:id" => :create , :as => :autosave
           get "/remove_autosaved_version/:model_name/:id" => :destroy , :as => :remove_autosaved_version
           get "/retreive_changes/:model_name/:id" => :retreive_changes , :as => :retreive_changes
         end
-        
+
         get "/flagged_contents" => "flag#index" , :as => :flagged_contents
         get '/flagged_contents/moderation/:id/:moderation' => "flag#moderation", :as => :flagged_contents_moderation
-        
 
         resources :pages do
           member do
@@ -31,42 +33,10 @@ Rails.application.routes.draw do
             get 'collapse_all'
             get 'expand_all'
           end
-          
+
           resources :page_localizations
         end
         get "pages_list_for_tinymce" => "pages#pages_list_for_tinymce" , :as => :pages_list_for_tinymce
-        
-        scope 'comments', :controller => :comments, :as => :comments do
-          get 'spam_detection_for_all_pending' , :as => :spam_detection_for_all_pending
-          get 'pending', :as => :pending
-          get 'spam' , :as => :spam
-          get 'approved' , :as => :approved
-          get 'rejected' => :rejected , :as => :rejected
-          get '/moderation/:id' => :moderation , :as => :moderation
-          get '/delete/:id' => :delete , :as => :delete
-          delete '/destroy/:id' => :destroy , :as => :destroy
-          get '/block_author/:id' => :block_author , :as => :block_author
-        end
-
-        resources :blogs do
-          get 'delete', :on => :member
-          resources :articles do
-            member do
-              get 'delete'
-              get 'duplicate'
-            end
-            collection do
-              match 'import'
-              get 'export'
-            end
-            resources :comments do
-              member do
-                get 'delete'
-                get 'moderation'
-              end
-            end
-          end
-        end
 
         post "/pages/move(.:format)" => "pages#move_node" , :as=> :page_move
         resources :galleries do
@@ -78,7 +48,6 @@ Rails.application.routes.draw do
 
       # Settings
       scope :module => 'settings' do
-        get 'settings' => "main#index",      :as => :settings
         get 'history' => "global_history#index",      :as => :global_history
         resources :locales do
           get 'delete', :on => :member
@@ -96,6 +65,11 @@ Rails.application.routes.draw do
           get 'delete', :on => :member
         end
         post "/stylesheets/move(.:format)" => "stylesheets#move_node" , :as=> :stylesheet_move
+
+        resources :embeds do
+          get 'delete', :on => :member
+          get 'list-for-redactor' => :list_for_redactor, :on => :collection
+        end
       end
 
       namespace :membership do
@@ -107,6 +81,7 @@ Rails.application.routes.draw do
         resources :members do
           get 'delete', :on => :member
           get 'welcome' , :on => :member
+          get 'group/:id' => "members#group", :on => :collection, :as => :group_members
         end
         resources :groups do
           get 'delete', :on => :member
@@ -129,6 +104,7 @@ Rails.application.routes.draw do
         post "destroy_assets_in_bulk"  => "assets_bulk#destroy_assets_in_bulk" , :as => :destroy_assets_in_bulk
         get "browser"  => "assets#browser" , :as => :asset_browser
         get "browser-collection/:id"  => "assets_ajax#browser_collection" , :as => :asset_browser_collection
+        get "filter_assets_by_date"  => "assets_ajax#filter_assets_by_date" , :as => :filter_assets_by_date
         get "assets/:category/page/:page"  => "assets#category" , :as => :asset_category
         get "collections/:id/page/:page"  => "collections#show" , :as => :asset_collection
         resources :collections  do
@@ -148,22 +124,9 @@ Rails.application.routes.draw do
       get "/_public/page" => "pages#show"
       get "/restrict_site_access" => "pages#restrict_site_access" , :as => :restrict_site_access
       get "sitemap" => "pages#sitemap" , :as => :sitemap
-      # Blog Stuff
-
-      scope "(/:locale)" do
-        resources :blogs do
-          resources :articles do
-            resources :comments
-            get "preview"
-          end
-        end
-      end
-
 
       get "/mark_as_flag/:flaggable_type/:flaggable_id" => "flag#new" , :as => :mark_as_flag
       post "/save_mark_as_flag" => "flag#create" , :as => :save_mark_as_flag
-      get "/articles/tag/:tag" => "articles#tag" , :as => :articles_by_tag
-      get "/articles/unsubscribe/:reference" => "articles#unsubscribe" , :as => :unsubscribe_article_comments
       get "(/:locale)/member/login" => "member_sessions#new" , :as => :member_login
       post "(/:locale)/member/login" => "member_sessions#create"  , :as => :member_login
       get "(/:locale)/member/logout" => "member_sessions#destroy", :as => :member_logout

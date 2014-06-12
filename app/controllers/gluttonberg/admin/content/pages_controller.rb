@@ -12,6 +12,7 @@ module Gluttonberg
 
         def index
           @pages = Page.where(:parent_id => nil).includes(:user, :localizations, :collapsed_pages).order('position').all
+          @pages = @pages.find_all{|page| current_user.can_view_page(page) } 
         end
 
         def show
@@ -19,8 +20,8 @@ module Gluttonberg
 
         def new
           @page = Page.new(:parent_id => params[:parent_id])
+          authorize! :manage_object, @page
           @page_localization = PageLocalization.new
-          prepare_to_edit
         end
 
         def delete
@@ -37,12 +38,12 @@ module Gluttonberg
           @page.state = "draft"
           @page.published_at = nil
           @page.user_id = current_user.id
+          @page.current_user_id = current_user.id
           if @page.save
             @page.create_default_template_file
             flash[:notice] = "The page was successfully created."
             redirect_to edit_admin_page_page_localization_path( :page_id => @page.id, :id => @page.current_localization.id)
           else
-            prepare_to_edit
             render :new
           end
         end
@@ -56,11 +57,7 @@ module Gluttonberg
           })
         end
 
-        def edit_home
-          @current_home_page_id  = Page.home_page.id unless Page.home_page.blank?
-          @pages = Page.all
-        end
-
+        # This action is called from configuration in an ajax call for update home page
         def update_home
           @new_home = Page.where(:id => params[:home]).first
           unless @new_home.blank?
@@ -73,14 +70,15 @@ module Gluttonberg
           render :text => "Home page is changed"
         end
 
+        # Pages/posts lists for redactor
         def pages_list_for_tinymce
           @pages = Page.published.count
           @pages = Page.published.where("not(description_name = 'top_level_page')").order('position' )
 
           @articles_count = 0
-          if Blog.table_exists?
-            @articles_count = Article.published.count
-            @blogs = Blog.published.order("name ASC")
+          if Gluttonberg.constants.include?(:Blog)
+            @articles_count = Gluttonberg::Blog::Article.published.count
+            @blogs = Gluttonberg::Blog::Weblog.published.order("name ASC")
           end
 
           render :layout => false
@@ -99,6 +97,7 @@ module Gluttonberg
           end
         end
 
+        # Collapse a single page in pages list
         def collapse
           @page = Page.find(params[:id])
           collapse = CollapsedPage.where(:page_id => @page.id, :user_id => current_user.id).first
@@ -108,6 +107,7 @@ module Gluttonberg
           render :json => {:status => true}
         end
 
+        # Expand a children of single page in pages list
         def expand
           CollapsedPage.delete_all(:page_id => params[:id], :user_id => current_user.id)
           render :json => {:status => true}
@@ -132,10 +132,6 @@ module Gluttonberg
         end
 
         private
-
-        def prepare_to_edit
-          @pages  = params[:id] ? Page.where("id  != ? " , params[:id]).all : Page.all
-        end
 
         def find_page
           @page = Page.find( params[:id])

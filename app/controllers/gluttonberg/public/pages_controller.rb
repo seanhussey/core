@@ -3,11 +3,14 @@ module Gluttonberg
     class PagesController < Gluttonberg::Public::BaseController
       before_filter :retrieve_page , :only => [ :show ]
 
-      # If localized template file exist then render 
+      # If localized template file exist then render
       # that file otherwise render non-localized template
       # for ajax request do not render layout
       def show
         return unless verify_page_access
+        if current_user && params[:preview].to_s == "true"
+          Gluttonberg::AutoSave.load_version(@page.current_localization)
+        end
         template = @page.view
         template_path = "pages/#{template}"
 
@@ -37,14 +40,16 @@ module Gluttonberg
         end
       end
 
+      # Html version of site sitemap
       def sitemap
         begin
           SitemapGenerator::Interpreter.respond_to?(:run)
         rescue
-          render :layout => "bare" , :template => 'gluttonberg/public/exceptions/not_found' , :status => 404, :handlers => [:haml], :formats => [:html]
+          render :layout => "bare" , :template => 'exceptions/not_found' , :status => 404, :handlers => [:haml], :formats => [:html]
         end
       end
 
+      # serve CMS based css to public
       def stylesheets
         @stylesheet = Stylesheet.where(:slug => params[:id]).first
         unless params[:version].blank?
@@ -59,7 +64,7 @@ module Gluttonberg
       end
 
       def error_404
-        render :layout => "bare" , :template => 'gluttonberg/public/exceptions/not_found' , :status => 404, :handlers => [:haml], :formats => [:html]
+        render :layout => "bare" , :template => 'exceptions/not_found' , :status => 404, :handlers => [:haml], :formats => [:html]
       end
 
 
@@ -69,7 +74,7 @@ module Gluttonberg
           unless( current_user &&( authorize! :manage, Gluttonberg::Page) )
             @page = nil if @page.blank? || !@page.published?
           end
-          raise ActiveRecord::RecordNotFound  if @page.blank?
+          raise ActiveRecord::RecordNotFound if @page.blank?
         end
 
         def verify_page_access

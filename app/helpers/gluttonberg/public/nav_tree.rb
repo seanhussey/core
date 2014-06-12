@@ -29,7 +29,7 @@ module Gluttonberg
           end
           li_content = build_page(page, opts)
           unless Gluttonberg::Page.home_page == page
-            li_content << find_children(page, page_depth, opts) if opts[:max_depth] >= page_depth
+            li_content << find_children(page, page_depth, opts) if opts[:max_depth] >= page_depth && page.number_of_children > 0
           end
           content << content_tag(:li, li_content.html_safe, li_opts).html_safe
         end
@@ -64,7 +64,7 @@ module Gluttonberg
           if page.description && page.description.top_level_page?
             return content_tag(:a, span, :href=>"javascript:;", :class => "menu_disabled").html_safe
           else
-            return content_tag(:a, span, :href => page_url(page , opts), :target => "#{page.redirect_required? ? '_blank' : ''}").html_safe
+            return content_tag(:a, span, :href => page_url(page , opts), :target => "#{page.redirect_required? && URI(page.redirect_url).absolute? ? '_blank' : ''}").html_safe
           end
         end
       end

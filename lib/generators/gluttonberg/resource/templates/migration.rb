@@ -1,6 +1,6 @@
 class Create<%= class_name %> < ActiveRecord::Migration
 
-  def change
+  def up
     create_table :<%= table_name %> do |t|
     <% unless localized? %><% attributes.each do |attribute| -%>
   t.<%= attr_db_type_wrapper(attribute)%> :<%= attr_db_name_wrapper(attribute) %>
@@ -18,6 +18,7 @@ class Create<%= class_name %> < ActiveRecord::Migration
       t.integer :parent_id
       t.integer :locale_id
       <%end%>
+      t.integer :user_id
       t.timestamps
     end
     <% if localized? %>
@@ -34,6 +35,16 @@ class Create<%= class_name %> < ActiveRecord::Migration
       t.timestamps
     end
     <% end %>
+
+    <% if versioned? %><% if localized? %><%= class_name %><% end %>
+    <%= versioned_class_name %>.create_versioned_table
+    <% end %>
+  end
+
+  def down
+    drop_table :<%= table_name %>
+    <% if versioned? %><%= versioned_class_name %>.drop_versioned_table<% end %>
+    <% if localized? %>drop_table :<%= singular_name %>_localizations<% end %>  
   end
 
 end

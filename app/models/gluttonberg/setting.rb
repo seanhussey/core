@@ -1,11 +1,16 @@
 module Gluttonberg
  class Setting  < ActiveRecord::Base
     self.table_name = "gb_settings"
+
     after_save :update_settings_in_config
 
     before_destroy :destroy_cache
+
     attr_accessible :name, :value, :values_list, :help, :category
     attr_accessible :row, :delete_able, :enabled, :site
+
+    # Included mixins which are registered by host app for extending functionality
+    MixinManager.load_mixins(self)
 
     def self.generate_or_update_settings(settings, site=nil)
       settings.each do |key , val |
@@ -37,6 +42,10 @@ module Gluttonberg
       name.titlecase
     end
 
+    # Generate common settings for gluttonberg
+    # If its not multisite case then it only creates one set of settings
+    # In case of multisite it creates one set of global settings 
+    # and xx times for websited based settings
     def self.generate_common_settings
       cms_settings = {
         :number_of_revisions => ["10" , 6 , "Number of revisions to maintain for versioned contents."],
@@ -57,7 +66,7 @@ module Gluttonberg
         :comment_blacklist => ["" , 19 , "When a comment contains any of these words in its comment, Author Name, Author website, Author e-mail, it will be marked as spam. It will match inside words, so \"able\" will match \"comparable\". Please separate words with a comma."],
         :comment_email_as_spam => ["Yes" , 20 , "Do you want to mark those comments as spam which only contains emails and urls?" , "Yes;No" ],
         :comment_number_of_emails_allowed => ["2" , 21 , "How many email addresses should a comment include to be marked as spam?" ],
-        :comment_number_of_urls_allowed => ["2" , 21 , "How many URLs should a comment include to be marked as spam?" ] 
+        :comment_number_of_urls_allowed => ["2" , 21 , "How many URLs should a comment include to be marked as spam?" ]
       }
 
       sitewise_settings = {
@@ -70,7 +79,7 @@ module Gluttonberg
         :restrict_site_access => ["" , 11 , "If this setting is provided then user needs to enter password to access public site."],
         :comment_notification => ["No" , 5 , "Enable comment notification" , "Yes;No" ]
       }
-      
+
       self.generate_or_update_settings(cms_settings)
       self.generate_or_update_settings(settings)
       if Rails.configuration.multisite == false
@@ -80,6 +89,11 @@ module Gluttonberg
           self.generate_or_update_settings(sitewise_settings, key)
         end
       end
+
+      version = Version.new
+      version.version_number = VERSION
+      version.save
+
     end
 
     def self.has_deletable_settings?

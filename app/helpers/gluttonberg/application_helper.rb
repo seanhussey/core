@@ -3,6 +3,7 @@ require File.join(helpers, "admin")
 require File.join(helpers, "asset_library")
 require File.join(helpers, "content_helpers")
 require File.join(helpers, "public")
+require File.join(helpers, "deprecated")
 module Gluttonberg
   module ApplicationHelper
     include Gluttonberg::Admin

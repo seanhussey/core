@@ -3,6 +3,7 @@ module Gluttonberg
     module FormBuilder
       include ActionView::Helpers
       def publisable_dropdown
+        ActiveSupport::Deprecation.warn "f.publisable_dropdown is deprecated and will be removed in Gluttonberg 4.0, use submit_and_publish_controls(form, object, can_publish, schedule_field=true, revisions=true, opts={}) instead."
         object = self.object
         val = object.state
         if val == "not_ready"
@@ -15,6 +16,14 @@ module Gluttonberg
         html += datetime_field("published_at")
         html += "</div></fieldset>"
 
+        html.html_safe
+      end
+
+      def publishing_schedule(schedule_field)
+        object = self.object
+        object.published_at = Time.zone.now if object.published_at.blank?
+        html = ""
+        html += schedule_field ? datetime_field("published_at") : hidden_field("published_at")
         html.html_safe
       end
 
@@ -93,6 +102,7 @@ module Gluttonberg
           view.extend ApplicationHelper
           view.render(:partial => partial, :locals => assigns)
         end
+
     end #FormBuilder
 
     ActionView::Helpers::FormBuilder.send(:include , Gluttonberg::Helpers::FormBuilder)

@@ -1,0 +1,12 @@
+- @page_title = "#{link_to "Embeds", admin_embeds_path} > Edit #{@embed.title}"
+
+.row-fluid
+  = render :partial => "/gluttonberg/admin/settings/main/sidebar"
+  .span9
+    .row-fluid
+      .page-header
+        %h1
+          = @page_title.html_safe
+      .subnav
+
+      = render :partial => "form", :locals => {:url => admin_embed_path(@embed)}

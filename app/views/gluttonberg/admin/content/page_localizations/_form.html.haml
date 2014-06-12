@@ -1,9 +1,5 @@
-- @page = @page_localization.page
 = form_for(@page_localization, :url => url, :html => {:class => "auto_save"}) do  |f|
-
   = gb_error_messages_for(@page_localization)
-
-
 
   .span5
     .tabbable
@@ -18,7 +14,7 @@
                 - localization = Gluttonberg::PageLocalization.where(:page_id => @page.id , :locale_id => locale.id).first
                 %li= link_to("Edit #{locale.name} Content", edit_admin_page_page_localization_path( :page_id => @page.id, :id => localization.id), :class => "")
         - unless @page_localization.contents.blank?
-          = version_listing(@page_localization.contents.first.versions , @version )
+          = version_listing(@page_localization.versions , (@version.blank? ? @page_localization.version : @version ))
     %ul.nav.nav-tabs
       %li.active
         %a{:href => "#content", "data-toggle" => "tab" }
@@ -46,6 +42,7 @@
                   Edit URL
 
                 = link_to("View Page", @page.current_localization.public_path, :class => "btn btn-mini", :target => "_blank")
+                = link_to("Preview", "Javascript:;", :class => "btn btn-mini preview-page", :target => "_blank", "data-url" => "#{@page.current_localization.public_path}?preview=true")
           .clear
           %p
             = f.label :navigation_label
@@ -81,19 +78,4 @@
     %p
       = f.fields_for :page , @page do |page_form|
         = render :partial => "/gluttonberg/admin/content/pages/page_settings" , :locals => {:f => page_form}
-
-    %legend
-      Publish
-
-    %p
-      - if @page.published?
-        - unless @page.published_at.blank?
-          %p
-            %span.date
-              Published on
-              = @page.published_at.strftime("%d/%m/%Y")
-        = submit_tag "Update", :class => "btn btn-success"
-        = submit_tag "Unpublish", :class => "btn btn-danger"
-      - else
-        = submit_tag "Publish", :class => "btn btn-success"
-        = submit_tag "Save as a draft", :class => "btn btn-inverse"
+        = submit_and_publish_controls(page_form, @page, can?(:publish , Gluttonberg::Page), false)

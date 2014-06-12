@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe User do
   before :all do
-    @all_roles = ["super_admin" , "admin" , "contributor", "sales", "accounts"]
+    @all_roles = ["super_admin" , "admin", 'editor' , "contributor", "sales", "accounts"]
     @params = {
       :first_name => "First",
       :email => "valid_user@test.com",
@@ -89,7 +89,7 @@ describe User do
     current_user.user_valid_roles(current_user).should == []
 
     current_user.role = "admin"
-    current_user.user_valid_roles(user).should == ["admin", "contributor", "sales", "accounts"]
+    current_user.user_valid_roles(user).should == ["admin", 'editor', "contributor", "sales", "accounts"]
     current_user.user_valid_roles(current_user).should == []
 
     current_user.role = "contributor"
@@ -266,4 +266,120 @@ describe User do
     user7.destroy
     user8.destroy
   end
+
+
+  it "should authorize contributor for model and object access" do
+    @page = Gluttonberg::Page.create! :name => 'first name', :description_name => 'generic_page'
+    @page1 = Gluttonberg::Page.create! :name => 'first name', :description_name => 'generic_page', :parent_id => @page.id
+    @page2 = Gluttonberg::Page.create! :name => 'first name', :description_name => 'generic_page', :parent_id => @page1.id
+    @staff1 = StaffProfile.create! :name => "Abdul"
+    @staff2 = StaffProfile.create! :name => "Abdul"
+    @staff3 = StaffProfile.create! :name => "Abdul"
+    asset1 = create_image_asset
+    asset2 = create_image_asset
+
+    params = {
+      :first_name => "First",
+      :email => "super_admin@test.com",
+      :password => "password1",
+      :password_confirmation => "password1"
+    }
+    super_admin = User.new(params)
+    super_admin.role = "super_admin"
+    super_admin.save
+
+    admin = User.new(params.merge(:email => "admin@test.com"))
+    admin.role = "admin"
+    admin.save
+
+    editor = User.new(params.merge(:email => "editor@test.com"))
+    editor.role = "editor"
+    editor.save
+
+    contributor = User.new(params.merge(:email => "contributor@test.com"))
+    contributor.role = "contributor"
+    contributor.save
+
+    @staff1.user_id = contributor.id
+    @staff1.save
+    @staff2.user_id = contributor.id
+    @staff2.save
+    @staff3.user_id = editor.id
+    @staff3.save
+
+    @staff2.publish!
+
+    asset1.user_id = contributor.id
+    asset1.save
+    asset2.user_id = editor.id
+    asset2.save
+
+    #super admin authorization
+    super_admin.ability.can?(:manage_object, @page).should == true
+    super_admin.ability.can?(:manage_model, "StaffProfile").should == true
+
+    #admin authorization
+    admin.ability.can?(:manage_object, @page).should == true
+    admin.ability.can?(:manage_model, "StaffProfile").should == true
+
+
+    #editor authorization
+    editor.ability.can?(:manage_object, @page).should == true
+    editor.ability.can?(:manage_object, @page).should == true
+    editor.ability.can?(:manage_object, @page1).should == true
+    editor.ability.can?(:manage_object, @page2).should == true
+    editor.can_view_page(@page).should == true
+    editor.can_view_page(@page1).should == true
+    editor.can_view_page(@page2).should == true
+    editor.ability.can?(:manage_model, "StaffProfile").should == true
+    editor.ability.can?(:destroy, @staff1).should == true
+    editor.ability.can?(:destroy, @staff2).should == true
+    editor.ability.can?(:destroy, @staff3).should == true
+    editor.ability.can?(:destroy, @page).should == true
+
+    editor.ability.can?(:destroy, asset1).should == true
+    editor.ability.can?(:destroy, asset2).should == true
+    
+
+    #contributor authorization
+    contributor.ability.can?(:manage_object, @page).should == false
+    contributor.ability.can?(:manage_model, "StaffProfile").should == false
+
+    contributor.authorizations.create(:authorizable_type => "StaffProfile")
+    contributor.ability.can?(:manage_model, "StaffProfile").should == false
+    contributor.authorizations.first.update_attributes(:allow => true)
+    contributor.ability.can?(:destroy, @staff).should == false
+    contributor.ability.can?(:destroy, @staff1).should == true
+    contributor.ability.can?(:destroy, @staff2).should == false
+    contributor.ability.can?(:destroy, @staff3).should == false
+    contributor.ability.can?(:destroy, @page).should == false
+    contributor.ability.can?(:manage_model, "StaffProfile").should == true
+    contributor.authorizations.first.destroy
+    contributor.ability.can?(:manage_model, "StaffProfile").should == false
+
+    contributor.authorizations.create(:authorizable_type => "Gluttonberg::Page")
+    contributor.ability.can?(:manage_object, @page).should == false
+    contributor.ability.can?(:manage_object, @page1).should == false
+    contributor.ability.can?(:manage_object, @page2).should == false
+    contributor.can_view_page(@page).should == false
+    contributor.can_view_page(@page1).should == false
+    contributor.can_view_page(@page2).should == false
+    contributor.authorizations.first.update_attributes(:authorizable_id => @page1.id)
+    contributor.ability.can?(:manage_object, @page).should == false
+    contributor.ability.can?(:manage_object, @page1).should == true
+    contributor.ability.can?(:manage_object, @page2).should == true
+
+    contributor.can_view_page(@page).should == true
+    contributor.can_view_page(@page1).should == true
+    contributor.can_view_page(@page2).should == true
+
+    contributor.ability.can?(:destroy, asset1).should == true
+    contributor.ability.can?(:destroy, asset2).should == false
+
+    super_admin.destroy
+    admin.destroy
+    editor.destroy
+    contributor.destroy
+  end
+
 end

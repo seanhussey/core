@@ -1,6 +1,8 @@
 module Gluttonberg
   module Public
     class PublicAssetsController <  ActionController::Base
+        # this action redirects to actual assets url. This action is accessed using 
+        # short url for assets with just 4 characters from hash and id of assets
         def show
           @asset = Asset.where("id = ? AND asset_hash like ? ", params[:id].to_i, params[:hash]+'%').first
           if @asset.blank?

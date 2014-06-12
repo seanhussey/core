@@ -16,9 +16,14 @@ $(document).ready(function() {
   WarnNavigateAway.init();
   AutoSave.init();
   $(".chzn-select").chosen();
+  initPublishingButton();
+  initPreview();
+  shortcodeNameValidation();
 });
 
-
+/*
+  General UI fixes.
+*/
 function initGluttonbergUI(){
   if ($('table').length > 0) {
     $('table').find('tr:last').css('background-image', 'none !important');
@@ -42,7 +47,8 @@ function initFormValidation(){
 
 
 
-// if container element has class "add_to_photoseries" , it returns html of new image
+// Initalize a tags for asset selector and remove button
+// It also handles autosave mode of asset selector
 function initClickEventsForAssetLinks(element) {
   element.find(".thumbnails a.choose_button").click(function(e) {
     var p = $(this).parent().parent().parent(".asset_selector_wrapper");
@@ -61,18 +67,26 @@ function initClickEventsForAssetLinks(element) {
     parent.find('.choose_asset_hidden_field').val('');
     parent.find('h5').html('');
     parent.find('img').remove();
-    $.ajax({
-      url: link.attr('data_url'),
-      data: 'gluttonberg_setting[value]=',
-      type: "PUT",
-      success: function(data) {}
-    });
+    if(!blank(link.attr('data_url'))){
+      $.ajax({
+        url: link.attr('data_url'),
+        data: 'gluttonberg_setting[value]=',
+        type: "PUT",
+        success: function(data) {}
+      });
+    }else{
+      changedSinceLastAutoSave = true;
+    }
+
     e.preventDefault();
   });
 
 }
 
-
+/*
+  All functioanlity for asset selector
+  Listing, searching, ajax upload, auto save, inserting image in redactor, filters
+*/
 var AssetBrowser = {
   overlay: null,
   dialog: null,
@@ -142,8 +156,11 @@ var AssetBrowser = {
     AssetBrowser.display.find("a").click(AssetBrowser.click);
     // Capture size selector change
     AssetBrowser.display.find("select.size_selector").change(AssetBrowser.sizeSelectHandler);
-    
+
     $("#assetsDialog form#asset_search_form").submit(AssetBrowser.search_submit);
+    $("#assetsDialog #asset_date_filter").blur(AssetBrowser.date_filter);
+    $("#assetsDialog #asset_date_filter").change(AssetBrowser.date_filter);
+    $("#assetsDialog #asset_date_filter").bsdatepicker();
 
     AssetBrowser.browser.find("#ajax_new_asset_form").submit(function(e) {
       if($("#ajax_new_asset_form #ajax_asset_file").val() != null && $("#ajax_new_asset_form #asset_name").val() != null && $("#ajax_new_asset_form #ajax_asset_file").val() != "" && $("#ajax_new_asset_form #asset_name").val() != ""){
@@ -265,6 +282,38 @@ var AssetBrowser = {
     });
     e.preventDefault();
   },
+  date_filter: function(e){
+    console.log($(this).val());
+    var dateTokens = $(this).val().split("/");
+    console.log(dateTokens)
+    if(dateTokens.length == 3){
+      var day = parseInt(dateTokens[0]);
+      var month = parseInt(dateTokens[1]);
+      var year = parseInt(dateTokens[2]);
+      if(day > 0 && day <= 31 && month > 0 && month <= 12 && year > 1971 && year <= 2050){
+        var date = new Date(year,month-1, day); 
+        var formattedDate = year + "-" + month + "-" + day;
+        console.log(date);
+
+        var serverDateFormat = "";
+
+        $("#progress_ajax_upload").ajaxStart(function() {
+          $(this).show();
+        }).ajaxComplete(function() {
+          $(this).hide();
+        });
+        var url = "/admin/filter_assets_by_date.json?asset_date_filter=" + formattedDate;
+        $.getJSON(url, null, function(json){
+          $("#search_tab_results").html(json.markup);
+          $("#search_tab_results").find("a").click(AssetBrowser.click);
+        });
+      }
+
+    }
+    
+
+    e.preventDefault();
+  },
   sizeSelectHandler: function(){
     var target = $(this);
     var image_url = target.val();
@@ -313,10 +362,10 @@ var AssetBrowser = {
             AssetBrowser.nameDisplay.html('');
           }
         }
-
+        changedSinceLastAutoSave = true;
         autoSaveAsset(AssetBrowser.logo_setting_url, id); //auto save if it is required
       } else {
-        
+
       }
 
       AssetBrowser.close();
@@ -428,7 +477,9 @@ function initSettingDropdownAjax() {
   initHomePageSettingDropdownAjax();
 }
 
-
+/* Home page dropdown setting is special case on settings page in backend, it is handled by 
+  a seperate ajax call.
+*/
 function initHomePageSettingDropdownAjax() {
   $(".home_page_setting_dropdown").change(function() {
     url = $(this).attr("rel");
@@ -525,8 +576,8 @@ function ajaxFileUploadForAssetLibrary(link) {
 
   $(".ajax-upload-progress").show();
   window.setTimeout(function(){
-    $("#ajax_asset_file").blur();  
-  }, 10);  
+    $("#ajax_asset_file").blur();
+  }, 10);
 
   return false;
 
@@ -592,14 +643,13 @@ function initBulkDeleteAsset(){
     selected_assets_ids = [];
     if($(".select_all_assets").is(':checked')){
       $(".select_asset_checkbox").each(function(){
-           selected_assets_ids.push($(this).attr("rel"));
+        selected_assets_ids.push($(this).attr("rel"));
       });
       $(".delete_selected_assets").show();
     }else{
       selected_assets_ids = [];
       $(".delete_selected_assets").hide();
     }
-
   });
 
   $(".delete_selected_assets").click(function(e){
@@ -670,11 +720,11 @@ function enableRedactor(selector, _linkCount) {
         'outdent', 'indent', '|', 'video',
         'table', '|', 'html', '|', 'fullscreen'
       ],
-      plugins: ['asset_library_image', 'gluttonberg_pages', 'fullscreen'],
+      plugins: ['asset_library_image', 'gluttonberg_embeds', 'gluttonberg_pages', 'fullscreen'],
       keyupCallback : function(){
         WarnNavigateAway.changeEventHandler();
         AutoSave.changeEventHandler();
-      } 
+      }
     });
 
   });
@@ -764,7 +814,7 @@ function initSlugManagement() {
     if(pt.length > 0 && ps.length > 0 ){
       var regex = /[\!\*'"″′‟‛„‚”“”˝\(\);:.@&=+$,\/?%#\[\]]/gim;
       var pt_function = function() {
-        if (!donotmodify) 
+        if (!donotmodify)
           ps.val(pt.val().toLowerCase().replace(/\s/gim, '-').replace(regex, ''));
       };
 
@@ -782,6 +832,9 @@ function initSlugManagement() {
 function enable_slug_management_on(src_class){
   $("."+src_class).attr('id','page_title');
 }
+/*
+  Nestable is used for reordering pages. 
+*/
 
 function initNestable(){
   window.nestableSerializedDataOnPageLoad = [];
@@ -798,12 +851,13 @@ function initNestable(){
     e.preventDefault();
   });
 
-  $('.dd').each(function(){
+  $('.dd.dd-sortable').each(function(){
     var $list = $(this);
     var $saveButton = $($list.attr('data-saveButton'));
     $saveButton.attr('disabled', 'disabled');
     $listNestable = $list.nestable({
       /* config options */
+      maxDepth: 10
     }).on("change", function(){
       if(doesListReallyChanged($list) ){
         enableButton($saveButton);
@@ -822,14 +876,14 @@ function initNestable(){
     $(".nestable_dragtree button[data-action='collapse']").click(function(e){
       var pageID = $(this).parents(".dd-item").attr('data-id');
       $.get( "/admin/pages/"+pageID+"/collapse", function( data ) {
-        
+
       });
     });
 
     $(".nestable_dragtree button[data-action='expand']").click(function(e){
       var pageID = $(this).parents(".dd-item").attr('data-id');
       $.get( "/admin/pages/"+pageID+"/expand", function( data ) {
-        
+
       });
     });
   });
@@ -897,7 +951,7 @@ var WarnNavigateAway = {
 
     $('form').submit(WarnNavigateAway.removeEventHandler);
   },
-  
+
   changeEventHandler : function(e){
     if(!editingInProgress){
       setNavigationAwayConfirm();
@@ -907,7 +961,7 @@ var WarnNavigateAway = {
       window.onbeforeunload = function() {
         AutoSave.save_now();
         return "Any changes to this page will not be saved.";
-      }; 
+      };
     }
   },
   removeEventHandler : function(){
@@ -946,6 +1000,7 @@ function initGalleryImageRepeater(){
   }
 }
 
+/* If user modifies something in forms Autosave sends an ajax call to server and save form json dump */
 var AutoSave = {
   init : function(class_name){
     $(".retreive_changes").click(AutoSave.retrieve);
@@ -958,22 +1013,32 @@ var AutoSave = {
   changeEventHandler: function(e){
     changedSinceLastAutoSave = true;
   },
-  save_now: function(){
-    if(changedSinceLastAutoSave){
+  save_now: function(successCallback){
+    var version = getParameterByName(window.location, 'version');
+
+    if(!blank(version) || changedSinceLastAutoSave){
       var form = AutoSave.formObj;
       if(form == undefined){
         form = $("form.auto_save");
       }
       if(form != null && form.length > 0 ){
         $.ajax({
-          url: AutoSave.autosave_url,
+          url: AutoSave.autosave_url+(blank(version) ? '' : '?version='+version),
           data: form.serialize(),
           type: "POST",
           success: function(data) {
+
           },
           complete: function(){
+            if(successCallback != undefined){
+              successCallback();
+            }
           }
         });
+      }
+    }else{
+      if(successCallback != undefined){
+        successCallback();
       }
     }
   },
@@ -1060,11 +1125,11 @@ var AutoSave = {
               element.val(val);
               if(!blank(val)){
                 getAssetDetails(val, element);
-                
+
               }else{
                 //delete
               }
-              
+
             }else{
               element.val(val);
             }
@@ -1083,3 +1148,42 @@ var AutoSave = {
   }
 };
 
+
+function initPublishingButton(){
+  $(".publishing_btn").click(function(e){
+    var id = $(this).attr('id');
+    if(id == "draft_btn" || id == "unpublish_btn"){
+      $("._publish_state").val("draft");
+    } else if(id == "publish_btn" || id == "update_btn"){
+      $("._publish_state").val("published");
+    } else if(id == "approval_btn"){
+      $("._publish_status").val("submitted_for_approval");
+    } else if(id  == "revision_btn"){
+      $("._publish_status").val("revision");
+    }
+  });
+}
+
+function initPreview(){
+  $(".preview-page").click(function(e){
+    var $this = $(this);
+    var url = $this.attr('data-url');
+    AutoSave.save_now(function(){
+      window.open(url);
+    });
+    e.preventDefault();
+  })
+}
+
+
+function shortcodeNameValidation() {
+  var regex = /[\!\*'"″′‟‛„‚”“”˝\(\);:.@&=+$,\/?%#\[\]]/gim;
+  var field = $("#gluttonberg_embed_shortcode");
+  
+  field.bind("blur", function() {
+    field.val(field.val().toLowerCase().replace(/\s/gim, '-').replace(regex, ''));
+  });
+  field.bind("keyup", function() {
+    field.val(field.val().toLowerCase().replace(/\s/gim, '-').replace(regex, ''));
+  });
+}

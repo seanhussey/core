@@ -33,12 +33,14 @@
                     - unless @asset.poster_image.blank?
                       %img{:src => @asset.poster_image.thumb_small_url  }
                 %br
-                %a{:href=>"#{edit_admin_asset_url(@asset)+breadcrumbs_val}", :class=>"btn"}
-                  Edit
-                %a{:href=>"#{crop_admin_asset_url(@asset)}", :class=>"btn"}
-                  Crop
-                %a{:href=>"#{delete_admin_asset_url(@asset)}", :class=>"btn btn-danger"}
-                  Delete
+                - if can? :edit , @asset
+                  %a{:href=>"#{edit_admin_asset_url(@asset)+breadcrumbs_val}", :class=>"btn"}
+                    Edit
+                  %a{:href=>"#{crop_admin_asset_url(@asset)}", :class=>"btn"}
+                    Crop
+                - if can? :destroy , @asset
+                  %a{:href=>"#{delete_admin_asset_url(@asset)}", :class=>"btn btn-danger"}
+                    Delete
 
               .span4
                 %div.pageBlock

@@ -1,6 +1,6 @@
 module Gluttonberg
   module Content
-    # A mixin which allows for any arbitrary model to have default validations
+    # A mixin which allows any arbitrary model to have default validations
     module Validations
       extend ActiveSupport::Concern
 

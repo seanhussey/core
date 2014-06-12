@@ -20,4 +20,3 @@ module Gluttonberg
     end
   end # Middleware
 end # Gluttonberg
-

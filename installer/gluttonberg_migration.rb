@@ -104,6 +104,7 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.string :state
       t.boolean :hide_in_nav
       t.datetime :published_at
+      t.integer :children_count, :default => 0
       t.timestamps
     end
 
@@ -192,7 +193,7 @@ class GluttonbergMigration < ActiveRecord::Migration
     end
 
 
-    
+
 
     create_table :tags do |t|
       t.string :name
@@ -287,7 +288,7 @@ class GluttonbergMigration < ActiveRecord::Migration
     create_table :gb_galleries do |t|
       t.column :title , :string , :limit => 255
       t.column :description, :text
-      t.integer :user_id, :null => false
+      t.integer :user_id
       t.column :slug , :string
       t.column :state , :string
       t.datetime :published_at
@@ -331,6 +332,26 @@ class GluttonbergMigration < ActiveRecord::Migration
       t.text :data
       t.timestamps
     end
+
+    create_table :gb_authorizations do |t|
+      t.string :authorizable_type
+      t.integer :authorizable_id
+      t.integer :user_id
+      t.boolean :allow
+      t.timestamps
+    end
+
+    create_table :gb_embeds do |t|
+      t.string :title
+      t.string :shortcode
+      t.text :body
+      t.timestamps
+    end
+
+    create_table :gb_versions do |t|
+      t.float :version_number, :null => false
+    end
+
   end
 
 end

@@ -54,11 +54,11 @@ module Gluttonberg
           ids = params[:element_ids].split(",")
           elements = self.class.drag_class.find_by_sorted_ids(ids)
           elements.each_with_index do |element , index|
-            element.update_attributes!({:position => index + 1})
+            element.update_attributes!({:position => index})
           end
         end
 
-        def _update_position_for_pages(klass, pages, parent_id)
+        def _update_position_for_pages(klass, pages, parent_id=nil)
           pages.each_with_index do |row, index|
             klass.update(row["id"], :position => index, :parent_id => parent_id)
             unless row["children"].blank?

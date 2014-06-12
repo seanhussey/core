@@ -1,15 +1,26 @@
 # encoding: utf-8
-# Do not remove above encoding line utf-8, its required for ruby 1.9.2. We are using some special chars in this file.
+# Do not remove above encoding line utf-8, its required for ruby 1.9.2. 
+# We are using some special chars in this file.
 
 module Gluttonberg
+  # One of the most important model of Gluttonberg.
+  # It stores basic meta data about page and have associations with its related models
+
   class Page < ActiveRecord::Base
-    include Content::Publishable
-    include Content::SlugManagement
-    include Content::PageFinder
+    include Content::PageComponents
+    
+    # this is used by slug management for the purpose of uniqueness within tree
     self.slug_scope = :parent_id
 
+    self.table_name = "gb_pages"
+
+    # User who has created this page
     belongs_to :user
+
+    # Page Lolcalizations
     has_many :localizations, :class_name => "Gluttonberg::PageLocalization", :dependent => :destroy
+    
+    # Groups (membership) This is used to restrict pages to particular group members
     has_and_belongs_to_many :groups, :class_name => "Group" , :join_table => "gb_groups_pages"
 
     attr_protected :user_id , :state , :published_at
@@ -17,46 +28,38 @@ module Gluttonberg
     attr_accessible :navigation_label, :slug, :description_name
     attr_accessible :hide_in_nav, :group_ids, :home
 
-    # Generate the associations for the block/content classes
-    Content::Block.classes.each do |klass|
-      has_many klass.association_name, :class_name => klass.name, :dependent => :destroy
-    end
-
+    # Store information regarding collapsed/expanded pages on pages tree
     has_many :collapsed_pages, :class_name => "Gluttonberg::CollapsedPage", :dependent => :destroy
 
     validates_presence_of :name , :description_name
 
-    self.table_name = "gb_pages"
+    is_drag_tree :scope => :parent_id, :flat => false , :order => "position", :counter_cache => :children_count
 
-    after_save   :check_for_home_update
+    attr_accessor :current_localization, :locale_id, :paths_need_recaching, :current_user_id
+    delegate :version, :loaded_version,  :to => :current_localization
 
-    is_drag_tree :scope => :parent_id, :flat => false , :order => "position"
-
-    attr_accessor :current_localization, :locale_id, :paths_need_recaching
-
+    # Returns content for a page section
+    #
+    # @param section_name [String or Symbol]
+    # @param opts [Hash] Its a optional parameter. 
+      # :locale
+      # :url_for for image contents. Pass image size symbol.
+    # @return [String] Html safe text content or image path depending on content type
     def easy_contents(section_name, opts = {})
       begin
         prepared_content = nil
         section_name = section_name.to_sym
         load_localization(opts[:locale]) if current_localization.blank?
-        content = localized_contents.pluck {|c| c.section[:name] == section_name}
-        prepared_content = case content.class.name
-          when "Gluttonberg::ImageContent"
-            content.asset.url_for opts[:url_for]
-          when "Gluttonberg::HtmlContent"
-            content.current_localization.text.html_safe
-          when "Gluttonberg::TextareaContent"
-            content.current_localization.text.html_safe
-          when "Gluttonberg::PlainTextContent"
-            content.current_localization.text
-          when "Gluttonberg::SelectContent"
-            content.text
-        end
+        content = current_localization.contents.pluck {|c| (c.respond_to?(:parent) && c.parent.section[:name] ==  section_name ) || (c.respond_to?(:section) && c.section[:name] ==  section_name ) }
+        prepared_content = _prepare_content(content, opts)
       rescue
       end
       prepared_content
     end
 
+    # Returns current localization of page if its not loaded yet then loads default localization
+    #
+    # @return [PageLocalization]
     def current_localization
       if @current_localization.blank?
         load_localization
@@ -64,54 +67,7 @@ module Gluttonberg
       @current_localization
     end
 
-    def redirect_required?
-      self.description.redirection_required?
-    end
-
-    def redirect_url
-      self.description.redirect_url(self,{})
-    end
-
-    # Indicates if the page is used as a mount point for a public-facing
-    # controller, e.g. a blog, message board etc.
-    def rewrite_required?
-      self.description.rewrite_required?
-    end
-
-    # Takes a path and rewrites it to point at an alternate route. The idea
-    # being that this path points to a controller.
-    def generate_rewrite_path(path)
-      path.gsub(current_localization.path, self.description.rewrite_route)
-    end
-
-    # Returns the PageDescription associated with this page.
-    def description
-      @description = PageDescription[self.description_name.to_sym] if self.description_name
-      @description
-    end
-
-    # Returns the page_options set in the PageDescription
-    def page_options
-      @page_options = description.options[:page_options]
-      @page_options
-    end
-
-    # Returns the name of the view template specified for this page —
-    # determined via the associated PageDescription
-    def view
-      self.description if @description.blank?
-      @description[:view] if @description
-    end
-
-    # Returns the name of the layout template specified for this page —
-    # determined via the associated PageDescription
-    def layout
-      self.description if @description.blank?
-      @description[:layout] if @description
-    end
-
-    # Returns the localized navigation label, or falls back to the page for a
-    # the default.
+    # Returns the localized navigation label, or falls back to the localized page name
     def nav_label
       if current_localization.navigation_label.blank?
         current_localization.name
@@ -125,16 +81,17 @@ module Gluttonberg
       current_localization.name
     end
 
-    # Delegates to the current_localization
+    # Delegates to the current_localization path
     def path
       current_localization.path
     end
 
+    # returns public path of current localization
     def public_path
       current_localization.public_path
     end
 
-
+    # this method returns true if page path needs to be recalculated.
     def paths_need_recaching?
       self.paths_need_recaching
     end
@@ -159,73 +116,42 @@ module Gluttonberg
       end
     end
 
+    # Load the default localization and set it as current_localization
     def load_default_localizations
       Gluttonberg::Locale.first_default.id
       self.current_localization = Gluttonberg::PageLocalization.where(:page_id => id , :locale_id => Gluttonberg::Locale.first_default.id).first
     end
 
-    def home=(state)
-      write_attribute(:home, state)
-      @home_updated = state
-    end
-
-    def self.home_page
-      self.where(:home => true).first
-    end
-
-    def self.home_page_name
-      home_temp = self.home_page
-      home_temp.blank? ? "Not Selected" : home_temp.name
-    end
-
-    # if page type is not redirection or rewrite.
-    # then create default view files for all localzations of the page.
-    # file will be created in host appliation/app/views/pages/template_name.locale-slug.html.haml
-    def create_default_template_file
-      unless self.description.redirection_required? || self.description.rewrite_required?
-        self.localizations.each do |page_localization|
-          file_path = File.join(Rails.root, "app", "views" , "pages" , "#{self.view}.#{page_localization.locale.slug}.html.haml"  )
-          unless File.exists?(file_path)
-            file = File.new(file_path, "w")
-
-            page_localization.contents.each do |content|
-              if content.kind_of?(Gluttonberg::TextareaContent) || content.kind_of?(Gluttonberg::HtmlContent) || content.kind_of?(Gluttonberg::TextareaContentLocalization) || content.kind_of?(Gluttonberg::HtmlContentLocalization)
-                file.puts("= shortcode_safe @page.easy_contents(:#{content.section_name})")
-              else
-                file.puts("= @page.easy_contents(:#{content.section_name})")
-              end
-            end
-            file.close
-          end
-        end
-      end
-    end
-
+    # Repair Page tree by optimizing 'position' column
     def self.repair_pages_structure
       PageRepairer.repair_pages_structure
     end
 
+    # if page does not belongs to group (membership) then its a public page
     def is_public?
       groups.blank?
     end
 
+    # Duplicate current page and draft it.
     def duplicate
       PageDuplicate.duplicate(self)
     end
 
+    # check if current page is collapsed for current user?
     def collapsed?(current_user)
       !self.collapsed_pages.find_all{|page| page.user_id == current_user.id}.blank?
     end
 
-
     private
-
-      # Checks to see if this page has been set as the homepage. If it has, we
-      # then go and
-      def check_for_home_update
-        if @home_updated && @home_updated == true
-          previous_home = Page.where([ "home = ? AND id <> ? " , true ,self.id ] ).first
-          previous_home.update_attributes(:home => false) if previous_home
+      # Prepare content based on its on content type
+      def _prepare_content(content, opts)
+        case content.class.name
+          when "Gluttonberg::ImageContent"
+            content.asset.url_for opts[:url_for] unless content.asset.blank?
+          when "Gluttonberg::HtmlContentLocalization", "Gluttonberg::TextareaContentLocalization"
+            content.text.html_safe
+          when "Gluttonberg::PlainTextContentLocalization", "Gluttonberg::SelectContent"
+            content.text
         end
       end
 

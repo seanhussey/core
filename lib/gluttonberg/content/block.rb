@@ -16,6 +16,7 @@ module Gluttonberg
         attr_reader :current_localization
 
         belongs_to :page
+        delegate :state, :_publish_status, :state_changed?, :to => :page
 
         # Generate the various names to be used in associations
         type = self.name.demodulize.underscore
@@ -96,6 +97,7 @@ module Gluttonberg
 
             localized_model.attr_accessible :text, :parent, :page_localization
             localized_model.is_versioned
+            localized_model.delegate :current_user_id, :to => :page
 
             localized_model.clean_html([:text])
           end
@@ -138,7 +140,7 @@ module Gluttonberg
       end
 
       def section_position
-        section[:position]
+        section[:position] if section
       end
 
       # Content type is simply the inflected version of the content class

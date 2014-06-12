@@ -30,7 +30,8 @@ module Gluttonberg
         :layout     => "public",
         :view       => "default",
         :page_options => {},
-        :group => nil
+        :group => nil,
+        :contributor_access => false
       }
       @sections = {}
       @@_descriptions[name] = self
@@ -165,6 +166,14 @@ module Gluttonberg
 
     def group(grp)
       @options[:group] = grp
+    end
+
+    def contributor_access(access)
+      @options[:contributor_access] = access
+    end
+
+    def contributor_access?
+      @options[:contributor_access]
     end
 
     # Configures the page to act as a rewrite to named route. This doesn’t

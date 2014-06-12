@@ -1,5 +1,6 @@
 module Admin
   class <%= plural_class_name %>Controller < Gluttonberg::Admin::BaseController
+    before_filter :find_<%= singular_name %>, :only => [:show, :edit, :update, :delete, :destroy, :duplicate]
     before_filter :authorize_user , :except => [:destroy , :delete]
     before_filter :authorize_user_for_destroy , :only => [:destroy , :delete]
     <%if draggable? %>
@@ -18,7 +19,6 @@ module Admin
     end
 
     def show
-      @<%= singular_name %> = <%= class_name %>.find(params[:id])
     end
 
     def new
@@ -26,12 +26,16 @@ module Admin
     end
 
     def edit
-      @<%= singular_name %> = <%= class_name %>.find(params[:id])
       <% if localized? %>@<%= singular_name %>.load_localization(params[:locale_id]) unless params[:locale_id].blank? <%end%>
+      <% if versioned? %>unless params[:version].blank?
+        @version = params[:version]
+        @<%= singular_name %><% if localized? %>.current_localization<% end %>.revert_to(@version)
+      end<%end%>
     end
 
     def create
       @<%= singular_name %> = <% if localized? %><%= class_name %>.new_with_localization(params[:<%= singular_name %>])<% else %><%= class_name %>.new(params[:<%= singular_name %>]) <%end%>
+      <% if versioned? %>@<%= singular_name %><% if localized? %>.current_localization<% end %>.current_user_id = current_user.id<%end%>
       if @<%= singular_name %>.save
         flash[:notice] = "The <%= singular_name.titleize.downcase %> was successfully created."
         redirect_to admin_<%= plural_name %>_path
@@ -41,8 +45,8 @@ module Admin
     end
 
     def update
-      @<%= singular_name %> = <%= class_name %>.find(params[:id])
       <% if localized? %>@<%= singular_name %>.load_localization(params[:locale_id]) unless params[:locale_id].blank? <%end%>
+      <% if versioned? %>@<%= singular_name %><% if localized? %>.current_localization<% end %>.current_user_id = current_user.id<%end%>
       if @<%= singular_name %>.update_attributes(params[:<%= singular_name %>])
         flash[:notice] = "The <%= singular_name.titleize.downcase %> was successfully updated."
         redirect_to admin_<%= plural_name %>_path
@@ -53,7 +57,6 @@ module Admin
     end
 
     def delete
-      @<%= singular_name %> = <%= class_name %>.find(params[:id])
       display_delete_confirmation(
         :title      => "Delete <%= class_name %> '#{@<%= singular_name %>.id}'?",
         :url        => admin_<%= singular_name %>_path(@<%= singular_name %>),
@@ -63,7 +66,7 @@ module Admin
     end
 
     def destroy
-      @<%= singular_name %> = <%= class_name %>.find(params[:id])
+      <% if localized? %>@<%= singular_name %>.current_localization <% end %>
       if @<%= singular_name %>.destroy
         flash[:notice] = "The <%= singular_name.titleize.downcase %> was successfully deleted."
         redirect_to admin_<%= plural_name %>_path
@@ -92,7 +95,6 @@ module Admin
     <% end %>
 
     def duplicate
-      @<%= singular_name %> = <%= class_name %>.find(params[:id])
       @cloned_<%= singular_name %> = @<%= singular_name %>.duplicate!
       if @cloned_<%= singular_name %>
         flash[:notice] = "The <%= singular_name.titleize.downcase %> was successfully duplicated."
@@ -105,12 +107,18 @@ module Admin
 
     private
 
+      def find_<%= singular_name %>
+        @<%= singular_name %> = <%= class_name %>.find(params[:id])
+        raise ActiveRecord::RecordNotFound.new if @<%= singular_name %>.blank?
+      end
+
       def authorize_user
         authorize! :manage, <%= class_name %>
+        authorize! :manage_model, "<%= class_name %>"
       end
 
       def authorize_user_for_destroy
-        authorize! :destroy, <%= class_name %>
+        authorize! :destroy, @<%= singular_name %>
       end
 
       <%unless draggable? %>

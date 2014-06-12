@@ -15,19 +15,6 @@ module Gluttonberg
       url
     end
 
-    def asset_file_url(asset , opts = {})
-      url = ""
-      if Rails.configuration.asset_storage == :s3
-        url = asset.url
-      else
-        url = "http://#{request.host_with_port}/#{asset.url}"
-        if opts[:thumb_name]
-          url << "/#{opts[:thumb_name]}"
-        end
-      end
-      url
-    end
-
     def asset_tag(asset , thumbnail_type = nil, options = {} )
       asset_tag_v2(asset , options, thumbnail_type)
     end
@@ -46,7 +33,6 @@ module Gluttonberg
         options[:alt] = asset.alt.blank? ? asset.name : asset.alt unless options.has_key?(:alt)
         options[:src] = asset.url_for(thumbnail_type)
       end
-
 
   end # Assets
 end # Gluttonberg

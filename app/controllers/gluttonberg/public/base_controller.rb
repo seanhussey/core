@@ -1,27 +1,28 @@
-# This Class is intended to be used to integrate an arbitrary controller into
-# the Gluttonberg front end. It provides access to the locale/dialect processing,
-# templating, page collections for generating navigations and injects a bunch of
-# other useful helpers.
-
 module Gluttonberg
+  # This Class is intended to be used to integrate an arbitrary controller into
+  # the Gluttonberg front end. It provides access to the locale/dialect processing,
+  # templating, page collections for generating navigations and injects a bunch of
+  # other useful helpers.
   module Public
     class BaseController < Gluttonberg::BaseController
-        # The included hook is used to create a bunch of class-ivars, which are used to
-        # store various configuration options.
-        #
-        # It also installs before and after hooks that have been declared elsewhere
-        # in this module.
+      # The included hook is used to create a bunch of class-ivars, which are used to
+      # store various configuration options.
+      #
+      # It also installs before and after hooks that have been declared elsewhere
+      # in this module.
 
-        attr_accessor :page, :locale
-        before_filter :retrieve_locale , :rails_locale
+      attr_accessor :page, :locale
+      before_filter :retrieve_locale , :rails_locale
 
-        layout "public"
+      layout "public"
 
-        helper_method :current_user_session, :current_user , :current_member_session , :current_member , :current_localization_slug
-        before_filter :verify_site_access
+      helper_method :current_user_session, :current_user , :current_member_session , :current_member , :current_localization_slug
+      before_filter :verify_site_access
 
       protected
 
+        # this makes sure that site is open for public otherwise it checks for 
+        # that admin user is logged in so that he/she can preview site
         def verify_site_access
           unless action_name == "restrict_site_access"
             setting = Gluttonberg::Setting.get_setting("restrict_site_access", current_site_config_name)
@@ -36,13 +37,13 @@ module Gluttonberg
           end
         end
 
+        # slug for current locale otherwise it sends default locale's slug
         def rails_locale
           if env['GLUTTONBERG.LOCALE'].blank?
             I18n.locale = I18n.default_locale
           else
             I18n.locale = env['GLUTTONBERG.LOCALE'].slug || I18n.default_locale
           end
-
         end
 
         def current_member_session
@@ -81,12 +82,6 @@ module Gluttonberg
           end
         end
 
-        def is_blog_enabled
-          unless Gluttonberg::Comment.table_exists? == true
-            raise ActiveRecord::RecordNotFound
-          end
-        end
-
         def store_location
           @page = env['GLUTTONBERG.PAGE']
           if @page.blank?
@@ -102,15 +97,11 @@ module Gluttonberg
 
         # Exception handlers
         def not_found
-          render :layout => "bare" , :template => 'gluttonberg/public/exceptions/not_found' , :status => 404, :handlers => [:haml], :formats => [:html]
+          render :layout => "bare" , :template => 'exceptions/not_found' , :status => 404, :handlers => [:haml], :formats => [:html]
         end
 
         def access_denied
-          render :layout => "bare" , :template => 'gluttonberg/public/exceptions/access_denied' , :status => 403, :handlers => [:haml], :formats => [:html]
-        end
-
-        def internal_server_error
-          render :layout => "bare" , :template => 'gluttonberg/public/exceptions/internal_server_error' , :status => 500, :handlers => [:haml], :formats => [:html]
+          render :layout => "bare" , :template => 'exceptions/access_denied' , :status => 403, :handlers => [:haml], :formats => [:html]
         end
 
         def current_localization_slug

@@ -12,6 +12,12 @@ require File.join(content, "content", "despamilator")
 require File.join(content, "content", "page_repairer")
 require File.join(content, "content", "page_duplicate")
 require File.join(content, "content", "page_finder")
+require File.join(content, "content", "page_localization_slug")
+require File.join(content, "content", "default_template_file")
+require File.join(content, "content", "page_description_info")
+require File.join(content, "content", "page_children")
+require File.join(content, "content", "home_page_info")
+require File.join(content, "content", "page_components")
 require File.join(content, "content", "validations")
 
 module Gluttonberg
@@ -66,6 +72,11 @@ module Gluttonberg
     # Returns an array of the localization association names.
     def self.localization_associations
       @@localization_associations
+    end
+
+    def self.actual_content_classes
+      Gluttonberg::Content::Block.classes
+      @@localization_classes + Block.classes.select {|c| !c.localized? }   
     end
   end
 end

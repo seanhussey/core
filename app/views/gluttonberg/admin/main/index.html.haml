@@ -8,9 +8,9 @@
         .span6
           %p
             %strong Content
-          - if Gluttonberg::Comment.table_exists?
+          - if Gluttonberg.constants.include?(:Blog)
             %p
-              = "#{Gluttonberg::Article.count} Posts"
+              = "#{Gluttonberg::Blog::Article.count} Posts"
           %p
             = "#{Gluttonberg::Page.count} Pages"
           %p
@@ -18,17 +18,17 @@
           %p
             = "#{@tags_counts} Tags"
         .span6
-          - if Gluttonberg::Comment.table_exists?
+          - if Gluttonberg.constants.include?(:Blog)
             %p
               %strong Discussion
             %p
-              = link_to "#{Gluttonberg::Comment.all_pending.count} Pending" , admin_comments_pending_path
+              = link_to "#{Gluttonberg::Blog::Comment.all_pending.count} Pending" , admin_comments_pending_path
             %p
-              = link_to "#{Gluttonberg::Comment.all_approved.count} Approved" , admin_comments_approved_path
+              = link_to "#{Gluttonberg::Blog::Comment.all_approved.count} Approved" , admin_comments_approved_path
             %p
-              = link_to "#{Gluttonberg::Comment.all_rejected.count} Rejected" , admin_comments_rejected_path
+              = link_to "#{Gluttonberg::Blog::Comment.all_rejected.count} Rejected" , admin_comments_rejected_path
             %p
-              = link_to "#{Gluttonberg::Comment.all_spam.count} Spam" , admin_comments_spam_path
+              = link_to "#{Gluttonberg::Blog::Comment.all_spam.count} Spam" , admin_comments_spam_path
   .span9
     %h1
       = website_title
@@ -37,8 +37,9 @@
       Edit Your Site
     %br
     .row-fluid.dashboard
-      - if Gluttonberg::Blog.table_exists?
-        - @blog = Gluttonberg::Blog.first
+      = version_dashboard_notifications
+      - if Gluttonberg.constants.include?(:Blog)
+        - @blog = Gluttonberg::Blog::Weblog.first
         - if @blog
           .span3
             .well
@@ -84,7 +85,7 @@
                 View Collections
     .row-fluid
       .span12
-        - if Gluttonberg::Comment.table_exists? && @comments.length > 0
+        - if Gluttonberg.constants.include?(:Blog) && @comments.length > 0
           %h3 Recent Comments
           %br
           - @comments.each do |comment|

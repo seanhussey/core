@@ -4,9 +4,20 @@
       Editing Version #{selected_version.version}
       %span.caret
     %ul.dropdown-menu
-      - collection.each do |c|
-        %li
-          = link_to c[0] , "?version=#{c[1]}" , :class => "#{c[1].to_s == selected.to_s ? 'active' : '' }"
+      - first_published = true
+      - versions.each do |version|
+        %li{:class => "#{version.version.to_s == selected.to_s ? 'active' : '' }"}
+          - title = "Version #{version.version} (#{version.updated_at.strftime("%d/%m/%Y at %H:%M")} )" 
+          - user = version.respond_to?(:user) ? version.user : nil
+          - title += " by #{user.full_name}" unless user.blank?
+          - if version.respond_to?(:version_status) && ((first_published && version.version_status == 'published') || version.version_status == 'submitted_for_approval' || version.version_status == 'declined')
+            - if version.version_status == 'published'
+              - first_published = false
+            - title += " [<b>#{version.version_status.humanize}</b>]"
+
+
+          = link_to  title.html_safe, "?version=#{version.version}"
+
 .clear
 %br/
 %br/

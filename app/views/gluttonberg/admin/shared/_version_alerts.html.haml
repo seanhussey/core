@@ -1,0 +1,34 @@
+- page_or_post = @page.blank? ? 'post' : 'page'
+- if can_publish
+  - unless viewing_waiting_for_approval.blank?
+    .restore-auto-save
+      %h4
+        Reviewing Version #{viewing_waiting_for_approval.version}: Submitted for approval 
+        - unless viewing_waiting_for_approval.user.blank?
+          by #{viewing_waiting_for_approval.user.full_name}
+      %p
+  - else
+    - submitted_for_approval.each do |version|
+      .restore-auto-save
+        %h4
+          Version #{version.version}: Waiting for approval
+        %p
+          - user_name = version.user.blank? ? 'someone' : version.user.full_name
+          #{user_name} has submitted a new version of this #{page_or_post} for approval #{time_ago_in_words(version.updated_at)} ago.
+          %br
+          To review changes to this #{page_or_post} click Review.
+
+        %p.controls
+          = link_to("Review", "?version=#{version.version}", :class => "btn ")
+
+  - your_revisions.each do |version|
+    .restore-auto-save
+      %h4
+        Version #{version.version}: Unpublished revision
+      %p
+        It looks like previous edits you made to this #{page_or_post} have not yet been published. 
+        %br
+        To review your changes to this #{page_or_post} and continue editing, click Review.
+
+      %p.controls
+        = link_to("Review", "?version=#{version.version}", :class => "btn ")

@@ -1,26 +1,32 @@
 module Gluttonberg
+  # Asset Model stores meta information for assets and get most of its 
+  # file management functionality from AttachmentMixin
   class Asset < ActiveRecord::Base
     self.table_name = "gb_assets"
+
+    # CleaningRequired I think is not used anymore it probably came from bigstores. 
     has_many :set_elements, :as => :element
+
+    # Custom user scaled/croppped thumbnails
     has_many :asset_thumbnails
 
-    #after_save  :update_file
+    # Set asset meta information regarding asset type and category
     before_validation  :set_category_and_type
 
+    # CleaningRequired I think is not used anymore it probably came from bigstores. 
     acts_as_taggable_on :locations , :characters , :themes, :photographers
 
+    # Attachment mix manages most of storage, config and asset processing functionality
     include Library::AttachmentMixin
-    asset_mixins = Rails.configuration.asset_mixins
-    unless asset_mixins.blank?
-      asset_mixins.each do |mixin|
-        include mixin
-      end
-    end
+
+    # Included mixins which are registered by host app for extending functionality
+    MixinManager.load_mixins(self)
 
     has_and_belongs_to_many :asset_collections     , :join_table => "gb_asset_collections_assets"
     belongs_to  :asset_type
     has_one :audio_asset_attribute , :dependent => :destroy, :class_name => "Gluttonberg::AudioAssetAttribute", dependent: :destroy
 
+    # User who has created this asset
     belongs_to :user
 
     attr_accessible :file, :name, :alt, :asset_collection_ids, :asset_collections, :mime_type
@@ -28,8 +34,10 @@ module Gluttonberg
     attr_accessible :artist_name, :link, :width, :height, :alt , :processed, :copied_to_s3
     attr_accessible :poster_image_id
 
+    # Poster image is only available for Video assets
+    # Once asset is created and its classified as Video then on edit form 
+    # user has option to upload another asset for poster image
     belongs_to :poster_image , :foreign_key => "poster_image_id" , :class_name => "Gluttonberg::Asset"
-
 
     attr_accessor :type
 
@@ -85,6 +93,7 @@ module Gluttonberg
       end
     end
 
+    # update asset type for all assets. Just for fixing purpose only
     def self.refresh_all_asset_types
       all.each do |asset|
         asset.auto_set_asset_type
@@ -103,6 +112,9 @@ module Gluttonberg
       self.file_name.split(".").first unless self.file_name.blank?
     end
 
+    # This is a helper method for rake task generate_asset_from_bulks_folder
+    # Make assets from files in bulks folder
+    # This is helpful to bootstrap server in case of large assets 
     def self.create_assets_from_ftp(absolute_directory_path=nil)
       collection = AssetCollection.first_or_create(:name => "BULKS")
       absolute_directory_path = Rails.root+"/bulks" if absolute_directory_path.blank?

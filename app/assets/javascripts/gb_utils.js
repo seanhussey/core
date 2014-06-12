@@ -6,6 +6,7 @@ function extractLast( term ) {
   return split( term ).pop();
 }
 
+/* Very handy method to check if javascript field/variable is empty */
 function blank(obj){
   return obj === undefined || obj === null || obj === "null" || obj === "" || (obj.length !== undefined && obj.length <= 0) || obj == "/gray_scale_images/original/missing.png";
 }
@@ -1531,6 +1532,37 @@ RedactorPlugins.asset_library_image = {
   }
 }
 
+RedactorPlugins.gluttonberg_embeds = {
+
+  init: function()
+  {
+    this.buttonAddAfter('table', 'gluttonberg_embeds', 'Embed', function()
+    {
+      this.selectionSave();
+      console.log($(".redactor_btn_gluttonberg_embeds").attr('title'))
+      var self = this;
+      var url = "/admin/embeds/list-for-redactor";
+      AssetBrowser.showOverlay()
+      $.get(url, null,
+        function(markup) {
+          $("body").append(markup);
+          $("#embedDialog .cancel").click(function(e){
+            AssetBrowser.overlay.hide();
+            $("#embedDialog").remove();
+            e.preventDefault();
+          });
+
+          $("#embedDialog .embed-btn").click(function(){
+            self.selectionRestore();
+            self.insertHtml($(this).attr('data-shortcode'));
+            $("#embedDialog .cancel").click();
+            e.preventDefault();
+          })
+        }
+      );
+    });
+  }
+}
 
 RedactorPlugins.gluttonberg_pages = {
 
@@ -1711,6 +1743,8 @@ function getParameterByName(url, name ){
 }
 
 
+/* Helper methods for form repeater. Add/remove functionality of repeatable component.
+*/
 var HtmlFormRepeater = {
   add: function(containerselector, rowSelector, link, callback){
     var duplicatedForm = $(containerselector).find(rowSelector).last().clone();

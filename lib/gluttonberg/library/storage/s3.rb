@@ -52,11 +52,12 @@ module Gluttonberg
           #takes file from public/assets folder and upload to s3 if s3 info is given in CMS settings
           def migrate_file_to_s3(asset_hash , file_name, mime_type='')
             bucket = bucket_handle
-            unless bucket.blank?
-              local_file = "public/user_assets/" + asset_hash + "/" + file_name
+            if bucket != nil
               key_for_s3 = "user_assets/" + asset_hash + "/" + file_name
               asset = Gluttonberg::Asset.where(:asset_hash => asset_hash).first
               unless asset.blank?
+                local_file = asset.tmp_directory + "/" + file_name
+                local_file = "public/user_assets/" + asset_hash + "/" + file_name unless File.exist?(local_file)
                 puts " Copying #{local_file} to #{self.s3_bucket_name}"
                 self.upload_file_to(asset, bucket.objects[key_for_s3], mime_type, local_file)
                 asset.update_attributes(:copied_to_s3 => true)
@@ -71,12 +72,9 @@ module Gluttonberg
             }
             mime_type = asset.mime_type if mime_type.blank?
             options[:content_type] = mime_type unless mime_type.blank?
-            response = bucket_key.write(File.open(File.join(Rails.root,local_file)), options)
+            response = bucket_key.write(File.open(File.join((Rails.env == 'test' ? Engine.root : Rails.root),local_file)), options)
             puts "Copied"
           end
-
-          # module_function :storage_setup, :s3_server_url, :s3_bucket_name, :s3_server_key_id, :s3_server_access_key
-          # module_function :bucket_handle, :upload_file_to, :migrate_file_to_s3
 
         end
 
@@ -111,7 +109,7 @@ module Gluttonberg
           "#{s3_bucket_root_url}/user_assets"
         end
 
-        def make_backup
+        def make_backup(replace_backup=true)
           unless File.exist?(tmp_original_file_on_disk)
             FileUtils.cp tmp_location_on_disk, tmp_original_file_on_disk
             FileUtils.chmod(0755,tmp_original_file_on_disk)
@@ -141,7 +139,7 @@ module Gluttonberg
             #  new file has been upload, if its image generate thumbnails, if mp3 collect sound info.
             asset_processing
             # delete local tmp folder
-            remove_file_from_tmp_storage
+            remove_file_from_tmp_storage  unless self.asset_type.asset_category.name == "video"
           end
         end
 
