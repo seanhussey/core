@@ -14,11 +14,12 @@ class User < ActiveRecord::Base
 
   validates_presence_of :first_name , :email , :role
   validates_format_of :password, :with => Rails.configuration.password_pattern , :if => :require_password?, :message => Rails.configuration.password_validation_message
-  
+
   clean_html [:bio]
 
   acts_as_authentic do |c|
     c.login_field = "email"
+    c.crypto_provider = Authlogic::CryptoProviders::Sha512
   end
 
   # Included mixins which are registered by host app for extending functionality
@@ -128,8 +129,8 @@ class User < ActiveRecord::Base
 
   def _authorize_page?(object)
     auth = self.authorizations.where(:authorizable_type => object.class.name).first
-    unless auth.blank? 
-      auth.authorizable_id == object.id || object.grand_child_of?(auth.authorizable) 
+    unless auth.blank?
+      auth.authorizable_id == object.id || object.grand_child_of?(auth.authorizable)
     else
       false
     end
@@ -147,7 +148,7 @@ class User < ActiveRecord::Base
   def _authorize_class_name?(object)
     auth = self.authorizations.where(:authorizable_type => object).first
     unless auth.blank?
-      auth.allow == true 
+      auth.allow == true
     else
       false
     end

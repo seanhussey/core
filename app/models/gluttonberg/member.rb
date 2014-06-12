@@ -8,7 +8,7 @@ module Gluttonberg
 
     has_and_belongs_to_many :groups, :class_name => "Group" , :join_table => "gb_groups_members"
     has_attached_file :image, :styles => { :profile => ["600x600"], :thumb => ["142x95#"] , :thumb_for_backend => ["100x75#"]}
-    
+
     # Validate content type
     validates_attachment_content_type :image, :content_type => /\Aimage/
     # Validate filename
@@ -34,6 +34,7 @@ module Gluttonberg
     acts_as_authentic do |c|
       c.session_class = MemberSession
       c.login_field = "email"
+      c.crypto_provider = Authlogic::CryptoProviders::Sha512
     end
 
     def full_name
