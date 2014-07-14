@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.summary     = "Gluttonberg is an Open Source CMS developed by the team at Freerange Future."
   s.description = "Gluttonberg is an Open Source CMS developed by the team at Freerange Future. As designers and developers, we love the flexibility of Ruby, but got tired of taking care of authentication, asset mangement, page management (and so on...) with every install. We created Gluttonberg to take care of that boring stuff so we could start having fun sooner."
 
-  s.files = Dir["{app,config,db,lib}/**/*"] + ["Rakefile", "README.md"]
+  s.files = Dir["{app,config,db,installer,lib,public}/**/*"] + ["Rakefile", "README.md"]
   s.require_paths = ["lib"]
   s.test_files = Dir["spec/**/*"]
 
