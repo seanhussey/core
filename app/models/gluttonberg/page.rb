@@ -1,5 +1,5 @@
 # encoding: utf-8
-# Do not remove above encoding line utf-8, its required for ruby 1.9.2. 
+# Do not remove above encoding line utf-8, its required for ruby 1.9.2.
 # We are using some special chars in this file.
 
 module Gluttonberg
@@ -8,7 +8,7 @@ module Gluttonberg
 
   class Page < ActiveRecord::Base
     include Content::PageComponents
-    
+
     # this is used by slug management for the purpose of uniqueness within tree
     self.slug_scope = :parent_id
 
@@ -19,7 +19,7 @@ module Gluttonberg
 
     # Page Lolcalizations
     has_many :localizations, :class_name => "Gluttonberg::PageLocalization", :dependent => :destroy
-    
+
     # Groups (membership) This is used to restrict pages to particular group members
     has_and_belongs_to_many :groups, :class_name => "Group" , :join_table => "gb_groups_pages"
 
@@ -41,7 +41,7 @@ module Gluttonberg
     # Returns content for a page section
     #
     # @param section_name [String or Symbol]
-    # @param opts [Hash] Its a optional parameter. 
+    # @param opts [Hash] Its a optional parameter.
       # :locale
       # :url_for for image contents. Pass image size symbol.
     # @return [String] Html safe text content or image path depending on content type
@@ -147,7 +147,13 @@ module Gluttonberg
       def _prepare_content(content, opts)
         case content.class.name
           when "Gluttonberg::ImageContent"
-            content.asset.url_for opts[:url_for] unless content.asset.blank?
+            if !content.asset.blank?
+              if opts.has_key?(:video_url_for_postfix)
+                content.asset.video_url_for_postfix(opts[:video_url_for_postfix])
+              else
+                content.asset.url_for opts[:url_for]
+              end
+            end
           when "Gluttonberg::HtmlContentLocalization", "Gluttonberg::TextareaContentLocalization"
             content.text.html_safe
           when "Gluttonberg::PlainTextContentLocalization", "Gluttonberg::SelectContent"
