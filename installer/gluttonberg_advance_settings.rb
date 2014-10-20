@@ -22,8 +22,8 @@
     Rails.configuration.custom_js_for_cms = false
 
     # array of custom css/js files for backend
-    Rails.config.custom_css_files_for_backend += []
-    Rails.config.custom_js_files_for_backend += []
+    Rails.configuration.custom_css_files_for_backend += []
+    Rails.configuration.custom_js_files_for_backend += []
 
   # Backend User Config
     # User model always concat following three roles
