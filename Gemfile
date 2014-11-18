@@ -9,5 +9,5 @@ gemspec
 
 gem 'rails', '3.2.17'
 gem 'pg', '~> 0.17.1'
-gem 'jquery-rails', '3.1.0'
+gem 'jquery-rails', '3.1.2'
 gem 'simplecov', :require => false, :group => :test
