@@ -40,7 +40,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'texticle', '2.2.0'
   s.add_dependency 'unicorn', '4.8.3'
   s.add_dependency 'will_paginate' , '3.0.7'
-  s.add_development_dependency 'rspec-rails', '3.0.1'
-  s.add_development_dependency 'fakes3', '0.1.5.2'
+  s.add_development_dependency 'rspec-rails', '3.1.0'
+  s.add_development_dependency 'fakes3', '0.1.6.0'
 
 end
