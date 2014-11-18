@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'haml', '4.0.5'
   s.add_dependency 'highline', '1.6.21'
   s.add_dependency 'jeditable-rails', '0.1.1'
-  s.add_dependency 'paperclip', '4.1.1'
+  s.add_dependency 'paperclip', '4.2.0'
   s.add_dependency 'rabl', '0.11.4'
   s.add_dependency 'ruby-mp3info', '0.8.5'
   s.add_dependency 'rubyzip', '1.1.6'
