@@ -19,7 +19,7 @@ PATH
       rabl (= 0.11.4)
       ruby-mp3info (= 0.8.5)
       rubyzip (= 1.1.6)
-      sass (= 3.4.7)
+      sass (= 3.4.8)
       sidekiq (= 3.2.6)
       sitemap_generator (= 5.0.5)
       texticle (= 2.2.0)
@@ -182,7 +182,7 @@ GEM
     rspec-support (3.1.2)
     ruby-mp3info (0.8.5)
     rubyzip (1.1.6)
-    sass (3.4.7)
+    sass (3.4.8)
     scrypt (1.2.1)
       ffi-compiler (>= 0.0.2)
       rake

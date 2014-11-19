@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'rabl', '0.11.4'
   s.add_dependency 'ruby-mp3info', '0.8.5'
   s.add_dependency 'rubyzip', '1.1.6'
-  s.add_dependency 'sass', '3.4.7'
+  s.add_dependency 'sass', '3.4.8'
   s.add_dependency 'sidekiq', '3.2.6'
   s.add_dependency 'sitemap_generator', '5.0.5'
   s.add_dependency 'texticle', '2.2.0'
