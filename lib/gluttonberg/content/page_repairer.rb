@@ -6,17 +6,14 @@ module Gluttonberg
       pages.each do |page|
         self.repair_page_structure(page)
       end # pages loop end
-      puts "completed"
     end #repair_pages_structure
 
     def self.repair_page_structure(page)
       if page.description.blank?
         puts "Page description '#{page.description_name}' for '#{page.name}' (#{page.id}) page  does not exist in page descriptions file. "
       elsif !page.description.sections.blank?
-        puts "Updating page structure for #{page.name} (#{page.id}) page"
         self.clean_page_sections(page)
         self.create_missing_sections(page)
-        puts "\n"
       end
     end
 
@@ -33,7 +30,6 @@ module Gluttonberg
     def self.clean_page_section(page, content, klass)
       found = page.description.contains_section?(content.section_name , content.class.to_s.demodulize.underscore)
       unless found
-        puts "#{content.section_name} (#{klass.name}) section from #{page.name} page"
         content.destroy
       end
     end
@@ -51,7 +47,6 @@ module Gluttonberg
       association = page.send(section_info[:type].to_s.pluralize)
       content = association.where(:section_name => section_name).first
       if content.blank?
-        puts "Create #{section_name} section for #{page.name} page"
         content = association.create(:section_name => section_name)
       end
       content
@@ -103,7 +98,6 @@ module Gluttonberg
       }).count
       # missing localization. create it
       if content_localization_count == 0
-        puts "Create #{localization.locale.name} localizations for #{content.section_name}"
         content.localizations.create({
           :parent => content,
           :page_localization => localization
