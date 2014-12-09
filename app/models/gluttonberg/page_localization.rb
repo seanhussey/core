@@ -1,5 +1,7 @@
 module Gluttonberg
   class PageLocalization < ActiveRecord::Base
+    include Content::PageLocalizationSlug
+
     belongs_to :page, :class_name => "Gluttonberg::Page"
     belongs_to :locale
     self.table_name = "gb_page_localizations"
@@ -18,7 +20,7 @@ module Gluttonberg
     Gluttonberg::Content.localizations.each do |assoc, klass|
       has_many  assoc, :class_name => klass.to_s
     end
-    
+
     MixinManager.load_mixins(self)
 
     after_save :update_content_localizations
@@ -122,7 +124,7 @@ module Gluttonberg
       page.reload #forcing that do not take cached page object
       slug = nil if slug.blank?
       new_path = prepare_new_path
-      
+
       self.previous_path = self.current_path
       write_attribute(:path, new_path)
     end

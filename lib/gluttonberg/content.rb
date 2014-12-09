@@ -1,6 +1,7 @@
 content = Pathname(__FILE__).dirname.expand_path
 
 require File.join(content, "content", "slug_management")
+require File.join(content, "content", "page_localization_slug")
 require File.join(content, "content", "block")
 require File.join(content, "content", "block_localization")
 require File.join(content, "content", "localization")
@@ -70,7 +71,7 @@ module Gluttonberg
 
     def self.actual_content_classes
       Gluttonberg::Content::Block.classes
-      @@localization_classes + Block.classes.select {|c| !c.localized? }   
+      @@localization_classes + Block.classes.select {|c| !c.localized? }
     end
   end
 end
