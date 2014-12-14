@@ -7,7 +7,7 @@
 
 ## About
 
-**Gluttonberg** is an Open Source CMS developed by the team at ***Freerange Future***. As designers and developers, we love the flexibility of Ruby, but got tired of taking care of authentication, asset mangement, page management (and so on...) with every install. We created **Gluttonberg** to take care of that boring stuff so we could start having fun sooner.
+**Gluttonberg** is an Open Source CMS developed by the team at ***Freerange Future***. As designers and developers, we love the flexibility of Ruby, but got tired of taking care of authentication, asset management, page management (and so on...) with every install. We created **Gluttonberg** to take care of that boring stuff so we could start having fun sooner.
 
 ## Setup
 
